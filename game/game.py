@@ -35,7 +35,7 @@ def start_game_loop():
     pass
 
 
-def game_loop():
+async def game_loop():
     while not stopped:
         for phase in ('day', 'night', 'role'):
             for role in game_state['players']:
