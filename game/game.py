@@ -18,7 +18,8 @@ game_state = {
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, guild_id):
+        self.guild_id = guild_id
         self.is_stopped = False
         self.start_time = None
         self.players = {}  # id: Player
@@ -81,16 +82,27 @@ class Game:
 
     def do_nighttime_phase(self):
         # werewolves vote 1 person to kill
-        poll_id = client.show_poll(self.werewolf_channel, self.get_alive_players())
-        result = await client.get_poll_result(poll_id)
-        self.players.get(result.player).get_killed()
+        # poll_id = client.show_poll(self.werewolf_channel, self.get_alive_players())
+        # result = await client.get_poll_result(poll_id)
+        # self.players.get(result.player).get_killed()
+        pass
 
     def do_daytime_phase(self):
         # villagers vote 1 person to kill
-        poll_id = client.show_poll(self.gameplay_channel, self.get_alive_players())
-        result = await client.get_poll_result(poll_id)
-        self.players.get(result.player).get_killed()
+        # poll_id = client.show_poll(self.gameplay_channel, self.get_alive_players())
+        # result = await client.get_poll_result(poll_id)
+        # self.players.get(result.player).get_killed()
+        pass
 
+class GameList:
+    def __init__(self):
+        self.game_list = {}
+
+    def add_game(self, guild_id, game):
+        self.game_list[guild_id] = game
+
+    def get_game(self, guild_id):
+        return self.game_list[guild_id]
 
 if __name__ == '__main__':
     game = Game()

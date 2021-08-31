@@ -1,4 +1,4 @@
-from game import game, roles
+from game.game import *
 
 import discord
 import os
@@ -19,7 +19,8 @@ if not DISCORD_TOKEN:
 
 async def process_message(client, message):
     if message.content.strip().startswith(BOT_PREFIX):
-        await command.parse_command(client, message)
+        game = game_list.get_game(message.guild.id)
+        await command.parse_command(game, client, message)
 
 
 def verify_ok(user):
@@ -29,7 +30,7 @@ def verify_ok(user):
 
 # ============ Discord server ============
 client = discord.Client()
-
+game_list = GameList()
 
 @client.event
 async def on_ready():
@@ -37,6 +38,8 @@ async def on_ready():
     print("=========================BOT STARTUP=========================")
     for guild in client.guilds:
         print("Connected to server: ", guild.name)
+        game_list.add_game(guild.id,Game(guild.id))
+
 
 
 @client.event
