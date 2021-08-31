@@ -19,8 +19,8 @@ if not DISCORD_TOKEN:
 
 async def process_message(client, message):
     if message.content.strip().startswith(BOT_PREFIX):
-        game = game_list.get_game(message.guild.id)
-        await command.parse_command(game, client, message)
+        guild_game = game_list.get_game(message.guild.id)
+        await command.parse_command(guild_game, client, message)
 
 
 def verify_ok(user):

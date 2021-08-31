@@ -1,17 +1,21 @@
+import discord
 from discord.utils import get
-
+from utils import logger
+import asyncio
 
 PRIVATE_CHANNEL_PREFIX='Private_'
 
 def isAdmin(author):
     # Check if this user has 'Admin' right
     admin_role = get(author.guild.roles, name="Admin")
-    if admin_role in author.roles:
+    if admin_role in author.guild.roles:
         return True
     else:
         return False
         
 async def create_channel(author, channel_name):
+    # Create text channel with limited permissions
+    # Only the author and Admin roles can view this channel
     guild = author.guild
     admin_role = get(guild.roles, name="Admin")
     overwrites = {
@@ -19,14 +23,19 @@ async def create_channel(author, channel_name):
         guild.me: discord.PermissionOverwrite(read_messages=True),
         admin_role: discord.PermissionOverwrite(read_messages=True)
     }
-    print("{} created channel {}".format(author.name, channel_name))
-    await client.reply("testing")
-    return await guild.create_text_channel(channel_name, overwrites=overwrites)
+    response = "{} created channel {}".format(author.name, channel_name)
+    print(response)
+    channel = await guild.create_text_channel(channel_name, overwrites=overwrites)
+    await channel.send(response)
+    return channel
 
 async def delete_channel(author, channel_name):
+    # Delete text channel. Any Admin can delete it
     try:
         channel = get(author.guild.channels, name=channel_name)
-        print("{} deleted channel {}", author.name, channel_name)
+        response = "{} deleted channel {}".format(author.name, channel_name)
+        print(response)
+        await channel.send(response)
         await channel.delete()
     except Exception as e:
         print(e)

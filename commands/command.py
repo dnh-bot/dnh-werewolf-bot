@@ -1,7 +1,8 @@
+from utils import logger
 from game import game
 from discord.utils import get
 from commands import admin
-from utils import logger
+
 
 async def do_join(game, client, message):
     ''' Join game '''
@@ -50,12 +51,10 @@ async def parse_command(game, client, message):
             do_start(client, message)
     elif cmd == '!create_channel': #Test only
         if admin.isAdmin(message.author):
-            create_channel(message.author, parameters[0])
+            await admin.create_channel(message.author, parameters)
     elif cmd == '!delete_channel': #Test only
-        logger_debug()
         if admin.isAdmin(message.author):
-            logger_debug()
-            delete_channel(message.author, parameters[0])
+            await admin.delete_channel(message.author, parameters)
 
 
 
