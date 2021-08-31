@@ -1,3 +1,9 @@
+# Cơ bản về Werewolf
+Ngôi làng DNH xưa nay là nơi quy tụ của ẩn sĩ, giang hồ tứ chiếng về ẩn mình. Cuộc sống vốn thanh bình, êm ả, bỗng nhiên bị xáo động khi một vài thành viên của làng bị phanh thây trong ba đêm liên tiếp, trên người có dấu tích của loài Werewolf vốn có thể hóa thành hình người. Vốn cô lập với phần còn lại của thế giới, dân làng nhanh chóng kết luận: lũ Werewolf đang núp mình trong làng, và có thể không chỉ một. Nhưng với tư cách là 1 hàng dân chủ, Trưởng làng không thể tự ý treo cổ tội phạm, mà cần thông qua biểu quyết để tiêu diệt sát nhân.
+Lũ Werewolf cần rất nhiều máu người để có thể chuyển hoàn toàn thành nhân dạng, vậy nên chúng phải giết nhân loại. Nhưng thế cô lực quạnh, chúng phải làm bí mật trong đêm, và năng lực chỉ cho phép giết một người mỗi đêm.
+Mặt khác, đã có vài thành viên có ý đồ chiếm đoạt Cấm thư, bảo vật của làng, và họ cần phải tiêu diệt tất cả mọi người - chắc chắn sẽ không ai chịu đầu hàng và giao ra bảo vật.
+
+Vậy bên nào sẽ chiến thắng, Thường dân, Werewolf, hay là phe Phản loạn? Hãy dùng lập luận của mình để chiến thắng và hoàn thành mục tiêu trong Werewolf.
 # Hướng dẫn cơ bản: 
 
 - Trò chơi chia làm 2 giai đoạn: **[D]ay Phase** (ban ngày) và **[N]ight Phase** (ban đêm).
