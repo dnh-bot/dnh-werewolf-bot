@@ -1,13 +1,40 @@
+from .. import game
+from enum import Enum
+
+
+class CharacterStatus(Enum):
+    ALIVE = 1
+    KILLED = 2
+    PROTECTED = 3
+
+
 class Character:
     def __init__(self, player):
-	self.player = player
-        self.status = None # Could be alive, dead, protected,...
+        self.player = player
+        self.status = CharacterStatus.ALIVE
 
+    def is_alive(self):
+        return self.status == CharacterStatus.ALIVE
+
+    def get_killed(self):
+        self.status = CharacterStatus.KILLED
+
+    def action(self):
+        pass
 
     def on_phase(self, phase):
-	if phase == 'day':
+        if phase == game.GamePhase.DAY:
             self.on_day()
-	elif phase == 'night':
-	    self.on_night()
-	elif phase == 'role':
-	    self.on_role()
+        elif phase == game.GamePhase.NIGHT:
+            self.on_night()
+        elif phase == game.GamePhase.ROLES:
+            self.on_role()
+
+    def on_day(self):
+        pass
+
+    def on_night(self):
+        pass
+
+    def on_role(self):
+        pass

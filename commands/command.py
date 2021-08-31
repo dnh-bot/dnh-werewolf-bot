@@ -1,6 +1,7 @@
 from game import game
 from discord.utils import get
 
+
 async def do_join(client, message):
     ''' Verify author '''
     author = message.author
@@ -11,6 +12,7 @@ async def do_join(client, message):
     role = get(message.guild.roles, name="Player")
     await message.author.add_roles(role)
 
+
 async def do_leave(client, message):
     ''' Verify author '''
     author = message.author
@@ -20,17 +22,20 @@ async def do_leave(client, message):
     role = get(message.guild.roles, name="Player")
     await message.author.remove_roles(role)
 
+
 async def do_start(client, message):
     ''' Verify author '''
     author = message.author
     game.start()
     await client.reply("Game start")
     
+
 async def do_stop(client, message):
     ''' Verify author '''
     author = message.author
     game.stop()
     await client.reply("Game stop")
+
 
 async def parse_command(client, message):
     cmd = message.content.strip().lower().split(' ')[0]
