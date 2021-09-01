@@ -17,17 +17,19 @@ async def create_channel(author, channel_name):
     # Create text channel with limited permissions
     # Only the author and Admin roles can view this channel
     guild = author.guild
-    admin_role = get(guild.roles, name="Admin")
-    overwrites = {
-        guild.default_role: discord.PermissionOverwrite(read_messages=False),
-        guild.me: discord.PermissionOverwrite(read_messages=True),
-        admin_role: discord.PermissionOverwrite(read_messages=True)
-    }
-    response = "{} created channel {}".format(author.name, channel_name)
-    print(response)
-    channel = await guild.create_text_channel(channel_name, overwrites=overwrites)
-    await channel.send(response)
-    return channel
+    existing_channel = get(guild.channels, name=channel_name)
+    if not existing_channel:
+        admin_role = get(guild.roles, name="Admin")
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            guild.me: discord.PermissionOverwrite(read_messages=True),
+            admin_role: discord.PermissionOverwrite(read_messages=True)
+        }
+        response = "{} created channel {}".format(author.name, channel_name)
+        print(response)
+        channel = await guild.create_text_channel(channel_name, overwrites=overwrites)
+        await channel.send(response)
+        return channel
 
 async def delete_channel(author, channel_name):
     # Delete text channel. Any Admin can delete it
@@ -40,6 +42,9 @@ async def delete_channel(author, channel_name):
     except Exception as e:
         print(e)
         await asyncio.sleep(0)
-    
 
-
+async def add_player_to_channel(guild, player, channel_name):
+    # Add a player to specific channel
+    print("===", player, channel_name)
+    channel = get(guild.channels, name=channel_name)
+    await channel.set_permissions(player, read_messages=True, send_messages=True)

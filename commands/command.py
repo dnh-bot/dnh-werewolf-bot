@@ -55,6 +55,11 @@ async def parse_command(game, client, message):
     elif cmd == '!delete_channel': #Test only
         if admin.isAdmin(message.author):
             await admin.delete_channel(message.author, parameters)
-
+    elif cmd == '!add':
+        if admin.isAdmin(message.author):
+            print(parameters)
+            player = message.mentions[0]
+            channel_name = parameters.split(' ')[1]
+            await admin.add_player_to_channel(message.guild, player, channel_name)
 
 
