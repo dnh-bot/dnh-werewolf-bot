@@ -2,7 +2,7 @@
 
 import datetime
 from enum import Enum
-
+import config
 
 class GamePhase(Enum):
     DAY = 1
@@ -24,6 +24,12 @@ class Game:
         self.start_time = None
         self.players = {}  # id: Player
         self.player_id = []
+        self.channels = {
+                'lobby': None,
+                'gameplay': None,
+                'werewolf': None
+                # Personal channel will goes into role class
+            }
 
     def get_guild(self):
         return self.guild
@@ -31,13 +37,33 @@ class Game:
     def awake(self):
         pass
 
+    #TODO: Sher
+    @staticmethod
+    def generate_roles(ids):
+        ids = ids.copy()
+        random.shuffle(ids)
+        r = dict()
+        l = len(ids)
+        werewolf=l//4
+        seer=1
+        docter=1
+        r.update((id_, roles.Werewolf(id_)) for id_ in ids[:werewolf])
+        r.update((id_, roles.Seer(id_)) for id_ in ids[werewolf:werewolf+seer])
+        r.update((id_, roles.Docter(id_)) for id_ in ids[werewofl+seer: werewolf+seer+docter])
+        r.update((id_, roles.Village(id_)) for id_ in ids[werewolf+seer+docter:])
+
+        return r
+
+
     def start(self):
-        for id_ in self.player_id:
-            game_state['players'].append(roles.random(id_))
+        self.players = self.generate_roles(self.player_id)
 
-        sort_roles(game_state['players'])
+        self.channels['lobby'] = commands.create_channel(config.LOBBY_CHANNEL)
+        self.channels['gampley'] = commands.create_channel(config.GAMEPLAY_CHANNEL)
+        self.channels['werewolf'] = commands.create_channel(config.WEREWOLF_CHANNEL)
 
-        self.start_time = game_state['start_time'] = datetime.datetime.now()
+
+        self.start_time = datetime.datetime.now()
         self.start_game_loop()
 
     def stop(self):
@@ -58,15 +84,9 @@ class Game:
         ]
 
     def start_game_loop(self):
-        pass
-
-    async def game_loop(self):
         while not self.is_stopped:
             for phase_item in GamePhase:
                 phase = phase_item.value
-
-                for role in game_state['players']:
-                    role.on_phase(phase)
 
                 if phase == GamePhase.DAY:
                     self.do_daytime_phase()
@@ -74,28 +94,40 @@ class Game:
                 if phase == GamePhase.NIGHT:
                     self.do_nighttime_phase()
 
+                for role in self.players:
+                    role.on_phase(phase)
+
             if self.end_game():
                 break
 
     def reset_game_state(self):
-        pass
+        self.player_id = []
+        self.players = {}
+
 
     def end_game(self):
-        pass
+        if any(werewolf.is_alive() for werewolf in self.players if  isinstance(role, roles.Werewolf)):
+            commands.send_text_to_channel("Werewolf is winner", self.channels['gameplay'])
+        else:
+            commands.send_text_to_channel("Village is winner", self.channels['gameplay'])
+        reset_game_state()
 
     def do_nighttime_phase(self):
-        # werewolves vote 1 person to kill
-        # poll_id = client.show_poll(self.werewolf_channel, self.get_alive_players())
-        # result = await client.get_poll_result(poll_id)
-        # self.players.get(result.player).get_killed()
-        pass
+        commands.send_text_to_channel("It's night time, everybody goes to sleep", self.channels["gameplay"])
+        # no need to mute, it's done in role.on_phase
+        commands.send_text_to_channel("Who would you like to kill tonight?", self.channels['werewolf'])
+        #TODO
+        commands.send_text_to_channel("List of alive player to poll", self.channels['werewolf'])
+
+
 
     def do_daytime_phase(self):
-        # villagers vote 1 person to kill
-        # poll_id = client.show_poll(self.gameplay_channel, self.get_alive_players())
-        # result = await client.get_poll_result(poll_id)
-        # self.players.get(result.player).get_killed()
-        pass
+        killed = len(self.states.killed_last_night)
+        commands.send_text_to_channel("It's daytime, let's discuss to find the werewolf", self.channels['gameplay'])
+        if killed:
+            commands.send_text_to_channel("Last night, {} people were killed".format(killed), self.channels['gameplay'])
+
+        # vote will be pm in role.on_phase
 
 class GameList:
     def __init__(self):
