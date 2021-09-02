@@ -1,7 +1,9 @@
 import discord
+import asyncio
 from utils import logger
 from commands import admin
-import asyncio
+from config import *
+
 
 
 async def do_join(game, client, message):
@@ -25,54 +27,56 @@ async def do_leave(game, client, message):
     await message.author.remove_roles(role)
 
 
-async def do_start(client, message):
+async def do_start(game, client, message):
     ''' Start game '''
-    author = message.author
     game.start()
-    await client.reply("Game start")
-    
+    await message.channel.send("Game start!")
 
-async def do_stop(client, message):
+async def do_stop(game, client, message):
     ''' Stop game '''
-    author = message.author
     game.stop()
-    await client.reply("Game stop")
+    await message.channel.send("Game stop!")
+
+async def send_text_to_channel(game, text, channel_name):
+    ''' Send a message to a channel '''
+    guild = game.get_guild()
+    channel = discord.utils.get(guild.channels, name=channel_name)
+    await channel.send(text)
 
 
 async def parse_command(game, client, message):
     cmd = message.content.strip().lower().split(' ')[0]
     parameters = ' '.join(message.content.strip().lower().split(' ')[1:])
+    # Game commands
     if cmd == '!join':
         await do_join(game, client, message)
     elif cmd == '!leave':
         await do_leave(game, client, message)
-    elif cmd == '!fstart':
-        if admin.isAdmin(message.author):
-            do_start(client, message)
-    elif cmd == '!create_channel': #Test only
-        if admin.isAdmin(message.author):
+
+    # Admin/Bot commands - User should not directly use these commands
+    elif admin.isAdmin(message.author):
+        if cmd == '!fstart':
+            await do_start(game, client, message)
+        elif cmd == '!create_channel': #Test only
             await admin.create_channel(message.author, parameters)
-    elif cmd == '!delete_channel': #Test only
-        if admin.isAdmin(message.author):
+        elif cmd == '!delete_channel': #Test only
             await admin.delete_channel(message.author, parameters)
-    elif cmd == '!add': #!add @user1 channel_name
-        if admin.isAdmin(message.author):
+        elif cmd == '!add': #!add @user1 channel_name
             print(parameters)
             player = message.mentions[0]
             channel_name = parameters.split(' ')[1]
             await admin.add_player_to_channel(message.guild, player, channel_name)
-    elif cmd == '!remove': #!remove @user1 channel_name
-        if admin.isAdmin(message.author):
+        elif cmd == '!remove': #!remove @user1 channel_name
             print(parameters)
             player = message.mentions[0]
             channel_name = parameters.split(' ')[1]
             await admin.remove_player_from_channel(message.guild, player, channel_name)
 
 
-async def test_admin_command(guild, client):
+async def test_admin_command(client, guild):
     print("-- Testing admin command --")
 
-    player_id = 640195766186672148 # [𝐒𝖎𝖒𝖕] Sena le Conseiller#0370
+    player_id = DISCORD_TESTING_USER1_ID 
     player = guild.get_member(player_id)
     assert isinstance(player, discord.Member)
         
@@ -85,11 +89,12 @@ async def test_admin_command(guild, client):
     assert discord.utils.get(channel.members, name=player.name)
     await asyncio.sleep(2)
     await admin.remove_player_from_channel(guild, player, channel_name)
+    await asyncio.sleep(3)
     assert not discord.utils.get(channel.members, name=player.name)
 
     print("-- End testing admin command --")
 
-async def test_commands(guild, client):
+async def test_commands(client, guild):
     print("Testing admin command")
     assert isinstance(guild, discord.Guild)
     assert isinstance(client, discord.Client)
@@ -101,4 +106,4 @@ async def test_commands(guild, client):
     # TODO:
 
     # Test admin commands
-    await test_admin_command(guild, client)
+    await test_admin_command(client, guild)

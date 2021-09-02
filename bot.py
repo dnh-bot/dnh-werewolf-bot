@@ -1,15 +1,8 @@
-from game.game import *
-
 import discord
-import os
 from commands import command
-from dotenv import load_dotenv
+from game.game import *
+from config import *
 
-load_dotenv()
-# ============ Configurations ===========
-# DISCORD_TOKEN in .env file
-DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
-BOT_PREFIX = '!'
 
 if not DISCORD_TOKEN:
     print("Use must setup DISCORD_TOKEN in .env file")
@@ -28,13 +21,14 @@ def verify_ok(user):
     return True
 
 # ============ Test Discord server =======
-async def test_bot(guild_game, client):
+async def test_bot(game, client, guild):
     print("------------ Bot testing ------------")
-    print(guild_game.name)
+    print(guild.name)
     # Test admin commands
-    await command.test_commands(guild_game, client)
-    # TODO: Test game commands
-    pass
+    await command.test_commands(client, guild)
+    # Test game commands
+    await command.send_text_to_channel(game, "Test sending message in public channel", "general")
+    await command.send_text_to_channel(game, "Test sending message in private channel", "werewolf")
     print("------------ End bot testing ------------")
 
 # ============ Discord server ============
@@ -51,10 +45,11 @@ async def on_ready():
     print("=========================BOT STARTUP=========================")
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id)
-        game_list.add_game(guild.id,Game(guild.id))
+        game_list.add_game(guild.id,Game(guild))
 
-    await test_bot(client.get_guild(881367187611349012), client) #Running test on Nhim's server
-    # await test_bot(client.get_guild(881130452377825280), client) #Running test on DNH ma sói bot's server
+    ''' Uncomment to run test '''
+    # await test_bot(game_list.get_game(DISCORD_TESTING_SERVER_ID), client, client.get_guild(DISCORD_TESTING_SERVER_ID)) #Running test on Nhim's server
+    # await test_bot(game_list.get_game(DISCORD_DEPLOY_SERVER_ID), client, client.get_guild(DISCORD_DEPLOY_SERVER_ID)) #Running test on DNH ma sói bot's server
 
 
 

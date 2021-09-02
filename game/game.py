@@ -18,12 +18,15 @@ game_state = {
 
 
 class Game:
-    def __init__(self, guild_id):
-        self.guild_id = guild_id
+    def __init__(self, guild):
+        self.guild = guild
         self.is_stopped = False
         self.start_time = None
         self.players = {}  # id: Player
         self.player_id = []
+
+    def get_guild(self):
+        return self.guild
 
     def awake(self):
         pass
