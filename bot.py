@@ -27,9 +27,22 @@ def verify_ok(user):
     # TODO: Check valid user in valid channel
     return True
 
+# ============ Test Discord server =======
+async def test_bot(guild_game, client):
+    print("------------ Bot testing ------------")
+    print(guild_game.name)
+    # Test admin commands
+    await command.test_commands(guild_game, client)
+    # TODO: Test game commands
+    pass
+    print("------------ End bot testing ------------")
 
 # ============ Discord server ============
-client = discord.Client()
+# We need to enable intents to access guild.members list 
+# details: https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
+intents = discord.Intents.default()
+intents.members = True
+client = discord.Client(intents=intents)
 game_list = GameList()
 
 @client.event
@@ -37,8 +50,11 @@ async def on_ready():
     ''' Log ready message, check server roles/channels setup '''
     print("=========================BOT STARTUP=========================")
     for guild in client.guilds:
-        print("Connected to server: ", guild.name)
+        print("Connected to server: ", guild.name, " ServerID: ", guild.id)
         game_list.add_game(guild.id,Game(guild.id))
+
+    await test_bot(client.get_guild(881367187611349012), client) #Running test on Nhim's server
+    # await test_bot(client.get_guild(881130452377825280), client) #Running test on DNH ma sói bot's server
 
 
 
