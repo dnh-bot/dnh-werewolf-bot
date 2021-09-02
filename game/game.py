@@ -3,6 +3,7 @@
 import datetime
 from enum import Enum
 import config
+import commands
 
 class GamePhase(Enum):
     DAY = 1
@@ -58,9 +59,9 @@ class Game:
     def start(self):
         self.players = self.generate_roles(self.player_id)
 
-        self.channels['lobby'] = commands.create_channel(config.LOBBY_CHANNEL)
-        self.channels['gampley'] = commands.create_channel(config.GAMEPLAY_CHANNEL)
-        self.channels['werewolf'] = commands.create_channel(config.WEREWOLF_CHANNEL)
+        commands.admin.create_channel(config.LOBBY_CHANNEL)
+        commands.admin.create_channel(config.GAMEPLAY_CHANNEL)
+        commands.admin.create_channel(config.WEREWOLF_CHANNEL)
 
 
         self.start_time = datetime.datetime.now()
@@ -97,6 +98,9 @@ class Game:
                 for role in self.players:
                     role.on_phase(phase)
 
+                # TODO: STANLEY
+                commands.wait_for_next_phase()
+
             if self.end_game():
                 break
 
@@ -107,25 +111,25 @@ class Game:
 
     def end_game(self):
         if any(werewolf.is_alive() for werewolf in self.players if  isinstance(role, roles.Werewolf)):
-            commands.send_text_to_channel("Werewolf is winner", self.channels['gameplay'])
+            commands.admin.send_text_to_channel("Werewolf is winner", config.GAMEPLAY_CHANNEL)
         else:
-            commands.send_text_to_channel("Village is winner", self.channels['gameplay'])
+            commands.admin.send_text_to_channel("Village is winner", config.GAMEPLAY_CHANNEL)
         reset_game_state()
 
     def do_nighttime_phase(self):
-        commands.send_text_to_channel("It's night time, everybody goes to sleep", self.channels["gameplay"])
+        commands.admin.send_text_to_channel("It's night time, everybody goes to sleep", config.GAMEPLAY_CHANNEL)
         # no need to mute, it's done in role.on_phase
-        commands.send_text_to_channel("Who would you like to kill tonight?", self.channels['werewolf'])
+        commands.admin.send_text_to_channel("Who would you like to kill tonight?", config.WEREWOLF_CHANNEL)
         #TODO
-        commands.send_text_to_channel("List of alive player to poll", self.channels['werewolf'])
+        commands.admin.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
 
 
 
     def do_daytime_phase(self):
         killed = len(self.states.killed_last_night)
-        commands.send_text_to_channel("It's daytime, let's discuss to find the werewolf", self.channels['gameplay'])
+        commands.admin.send_text_to_channel("It's daytime, let's discuss to find the werewolf", self.channels['gameplay'])
         if killed:
-            commands.send_text_to_channel("Last night, {} people were killed".format(killed), self.channels['gameplay'])
+            commands.admin.send_text_to_channel("Last night, {} people were killed".format(killed), self.channels['gameplay'])
 
         # vote will be pm in role.on_phase
 

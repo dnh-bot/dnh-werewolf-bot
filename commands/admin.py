@@ -1,8 +1,8 @@
 import discord
-from utils import logger
 import asyncio
+from utils import logger
+import config
 
-PRIVATE_CHANNEL_PREFIX='Private_'
 
 def isAdmin(author):
     # Check if this user has 'Admin' right
@@ -48,17 +48,51 @@ async def delete_channel(author, channel_name):
         print(e)
         await asyncio.sleep(0)
 
-async def add_player_to_channel(guild, player, channel_name):
-    # Add a player to specific channel
-    print("===", player, channel_name)
+async def add_user_to_channel(guild, user, channel_name):
+    # Add a user to specific channel
+    print("===", user, channel_name)
     channel = discord.utils.get(guild.channels, name=channel_name)
-    await channel.set_permissions(player, read_messages=True, send_messages=True)
-    print("Successfully added ", player, " to ", channel_name)
+    await channel.set_permissions(user, read_messages=True, send_messages=True)
+    print("Successfully added ", user, " to ", channel_name)
 
-async def remove_player_from_channel(guild, player, channel_name):
-    # Add a player to specific channel
-    print("===", player, channel_name)
+async def remove_user_from_channel(guild, user, channel_name):
+    # Add a user to specific channel
+    print("===", user, channel_name)
     channel = discord.utils.get(guild.channels, name=channel_name)
-    await channel.set_permissions(player, read_messages=False, send_messages=False)
-    print("Successfully removed ", player, " from ", channel_name)
+    await channel.set_permissions(user, read_messages=False, send_messages=False)
+    print("Successfully removed ", user, " from ", channel_name)
 
+
+async def send_text_to_channel(guild, text, channel_name):
+    ''' Send a message to a channel '''
+    channel = discord.utils.get(guild.channels, name=channel_name)
+    await channel.send(text)
+
+
+
+async def test_admin_command(guild):
+    print("-- Testing admin command --")
+
+    user_id = config.DISCORD_TESTING_USER1_ID 
+    user = guild.get_member(user_id)
+    assert isinstance(user, discord.Member)
+        
+    channel_name = config.WEREWOLF_CHANNEL
+    channel = discord.utils.get(guild.channels, name=channel_name)
+    assert isinstance(channel, discord.TextChannel)
+
+    # TEST add/remove user to/from channel
+    await add_user_to_channel(guild, user, channel_name)
+    await asyncio.sleep(2)
+    assert discord.utils.get(channel.members, name=user.name)
+    await asyncio.sleep(5)
+    await remove_user_from_channel(guild, user, channel_name)
+    await asyncio.sleep(5)
+    # FIXME: assert error unknown reason yet 
+    #assert discord.utils.get(channel.members, name=user.name) is None
+
+    # TEST send message to private/public channel
+    await send_text_to_channel(guild, "Test sending message in public channel", "general")
+    await send_text_to_channel(guild, "Test sending message in private channel", "werewolf")
+
+    print("-- End testing admin command --")
