@@ -1,5 +1,5 @@
 import discord
-from config import *
+import config
 
 async def do_join(message):
     ''' Join game '''

@@ -1,9 +1,8 @@
 import discord
 import asyncio
 from utils import logger
-from config import *
+import config
 
-PRIVATE_CHANNEL_PREFIX='Private_'
 
 def isAdmin(author):
     # Check if this user has 'Admin' right
@@ -74,11 +73,11 @@ async def send_text_to_channel(guild, text, channel_name):
 async def test_admin_command(guild):
     print("-- Testing admin command --")
 
-    user_id = DISCORD_TESTING_USER1_ID 
+    user_id = config.DISCORD_TESTING_USER1_ID 
     user = guild.get_member(user_id)
     assert isinstance(user, discord.Member)
         
-    channel_name = "werewolf"
+    channel_name = config.WEREWOLF_CHANNEL
     channel = discord.utils.get(guild.channels, name=channel_name)
     assert isinstance(channel, discord.TextChannel)
 
