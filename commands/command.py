@@ -70,18 +70,25 @@ async def parse_command(game, client, message):
 
 
 async def test_admin_command(guild, client):
-    print("Testing admin command")
+    print("-- Testing admin command --")
 
     player_id = 640195766186672148 # [𝐒𝖎𝖒𝖕] Sena le Conseiller#0370
     player = guild.get_member(player_id)
     assert isinstance(player, discord.Member)
         
     channel_name = "werewolf"
+    channel = discord.utils.get(guild.channels, name=channel_name)
+    assert isinstance(channel, discord.TextChannel)
 
     await admin.add_player_to_channel(guild, player, channel_name)
-    await asyncio.sleep(10)
+    await asyncio.sleep(2)
+    assert discord.utils.get(channel.members, name=player.name)
+    await asyncio.sleep(2)
     await admin.remove_player_from_channel(guild, player, channel_name)
-    
+    assert not discord.utils.get(channel.members, name=player.name)
+
+    print("-- End testing admin command --")
+
 async def test_commands(guild, client):
     print("Testing admin command")
     assert isinstance(guild, discord.Guild)
