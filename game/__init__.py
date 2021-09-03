@@ -26,10 +26,10 @@ class Game:
         self.guild = guild
         self.interface = interface
         self.channels = [
-                config.LOBBY_CHANNEL,
-                config.GAMEPLAY_CHANNEL,
-                config.WEREWOLF_CHANNEL,
-                # Personal channel will goes into role class
+            config.LOBBY_CHANNEL,
+            config.GAMEPLAY_CHANNEL,
+            config.WEREWOLF_CHANNEL,
+            # Personal channel will goes into role class
         ]  # List of channels in game
         self.reset_game_state()
         self.next_flag = asyncio.Event()
