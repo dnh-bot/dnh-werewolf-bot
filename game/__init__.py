@@ -21,14 +21,6 @@ game_state = {
     'players': []
 }
 
-def run(f, *a, **kw):
-    if asyncio.iscoroutinefunction(f):
-        loop = asyncio.get_event_loop()
-        r = loop.run_until_complete(f(*a, **kw))
-        loop.close()
-        return r
-    else:
-        return f(*a, **kw)
 
 class Game:
     def __init__(self, guild, interface):
@@ -69,30 +61,31 @@ class Game:
         return r
 
 
-    def start(self):
+    async def start(self):
         if not self.is_stopped:
-            self.interface.send_text_to_channel("======= Game started =======", config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel("======= Game started =======", config.GAMEPLAY_CHANNEL)
             self.players = self.generate_roles(self.player_id)
 
-            self.interface.create_channel(config.LOBBY_CHANNEL)
-            self.interface.create_channel(config.GAMEPLAY_CHANNEL)
-            self.interface.create_channel(config.WEREWOLF_CHANNEL)
+            await self.interface.create_channel(config.LOBBY_CHANNEL)
+            await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
+            await self.interface.create_channel(config.WEREWOLF_CHANNEL)
 
             self.start_time = datetime.datetime.now()
 
             self.game_phase = GamePhase.DAY
 
-            # FIXME: Error unable to run
-            run(self.start_game_loop)
-            print("End start")
+            self.task_game_loop = asyncio.create_task(self.start_game_loop())
+            print(self.task_game_loop)
 
-
-
-
-    def stop(self):
+    async def stop(self):
         print("======= Game stopped =======")
         self.is_stopped = True
         self.reset_game_state()
+        self.task_game_loop.cancel()
+        try:
+            await self.task_game_loop
+        except asyncio.CancelledError:
+            print("task_game_loop is cancelled now")
 
     def add_player(self, id_):
         print("Player", id_, "joined")
@@ -109,16 +102,16 @@ class Game:
             if player.status.is_alive()
         ]
 
-    def start_game_loop(self):
+    async def start_game_loop(self):
         print("Started game loop")
         while not self.is_stopped:
             print("Phase:", self.game_phase)
-            if self.end_game():
+            if await self.end_game():
                 break
             if self.game_phase == GamePhase.DAY:
-                self.do_daytime_phase()
+                await self.do_daytime_phase()
             elif self.game_phase == GamePhase.NIGHT:
-                    self.do_daytime_phase()
+                await self.do_nighttime_phase()
 
             for _,role in self.players.items():
                 role.on_phase(self.game_phase)
@@ -126,11 +119,10 @@ class Game:
             # Wait for `!next` from Admin
             # or Next phase control from bot
             # self.event.wait()
-            # self.next_flag.wait()
-            # self.next_flag.clear()
-            time.sleep(5)
+            await self.next_flag.wait()
+            self.next_flag.clear()
+            print("End phase")
         print("End start loop")
-        # await asyncio.sleep(0)
 
 
 
@@ -143,61 +135,60 @@ class Game:
         self.game_phase = GamePhase.NEW_GAME
         self.killed_last_night = [] # List of player id who was killed last night
 
-
-    def end_game(self):
+    async def end_game(self):
         # if end_game_condition_match:
         if False: #FIXME: Check end game condition @Sher
-            self.interface.send_text_to_channel("Game end!", config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel("Game end!", config.GAMEPLAY_CHANNEL)
             # if any(werewolf.is_alive() for werewolf in self.players if  isinstance(role, roles.Werewolf)):
-            #     self.interface.send_text_to_channel("Werewolf is winner", config.GAMEPLAY_CHANNEL)
+            #     await self.interface.send_text_to_channel("Werewolf is winner", config.GAMEPLAY_CHANNEL)
             # else:
-            #     self.interface.send_text_to_channel("Village is winner", config.GAMEPLAY_CHANNEL)
+            #     await self.interface.send_text_to_channel("Village is winner", config.GAMEPLAY_CHANNEL)
             reset_game_state()
 
-    def do_nighttime_phase(self):
-        self.interface.send_text_to_channel("It's night time, everybody goes to sleep", config.GAMEPLAY_CHANNEL)
+    async def do_nighttime_phase(self):
+        await self.interface.send_text_to_channel("It's night time, everybody goes to sleep", config.GAMEPLAY_CHANNEL)
         # no need to mute, it's done in role.on_phase
-        self.interface.send_text_to_channel("Who would you like to kill tonight?", config.WEREWOLF_CHANNEL)
+        await self.interface.send_text_to_channel("Who would you like to kill tonight?", config.WEREWOLF_CHANNEL)
         #TODO
-        self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
+        await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
 
 
 
-    def do_daytime_phase(self):
+    async def do_daytime_phase(self):
         killed = len(self.killed_last_night)
-        self.interface.send_text_to_channel("It's daytime, let's discuss to find the werewolf", config.GAMEPLAY_CHANNEL)
+        await self.interface.send_text_to_channel("It's daytime, let's discuss to find the werewolf", config.GAMEPLAY_CHANNEL)
         if killed:
-            self.interface.send_text_to_channel("Last night, {} people were killed".format(killed), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel("Last night, {} people were killed".format(killed), config.GAMEPLAY_CHANNEL)
 
         # vote will be pm in role.on_phase
 
-    def next_phase(self):
+    async def next_phase(self):
         print("Next phase")
-        assert self.game_phase != GamePhase.NEW
+        assert self.game_phase != GamePhase.NEW_GAME
         if self.game_phase == GamePhase.DAY:
             self.game_phase = GamePhase.NIGHT
         elif self.game_phase == GamePhase.NIGHT:
             self.game_phase = GamePhase.DAY
         else:
             print("Incorrect game flow")
-        loop.call_soon_threadsafe(self.next_flag.set)
+        asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
 
 
 
-    def test_game(self):
+    async def test_game(self):
         print("====== Begin test game =====")
         self.add_player(1)
         self.add_player(2)
         self.add_player(3)
         self.add_player(4)
-        self.start()
-        time.sleep(5)
-        self.next_phase()
-        time.sleep(5)
-        self.next_phase()
-        time.sleep(5)
-        self.next_phase()
-        self.stop()
+        await self.start()
+        await asyncio.sleep(3)
+        await self.next_phase()
+        await asyncio.sleep(3)
+        await self.next_phase()
+        await asyncio.sleep(3)
+        await self.next_phase()
+        await self.stop()
         print("====== End test game =====")
 
 class GameList:
@@ -210,12 +201,6 @@ class GameList:
     def get_game(self, guild_id):
         return self.game_list[guild_id]
 
-class ConsoleInterface:
-    def create_channel(self, channel_name):
-        print("Created channel #"+channel_name)
-    
-    def send_text_to_channel(self, text, channel_name):
-        print("In #"+channel_name+": "+text)
 
 if __name__ == '__main__':
     game = Game()

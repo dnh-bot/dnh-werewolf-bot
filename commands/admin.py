@@ -23,10 +23,9 @@ def list_users(guild):
         print("- ", user.name, user.id)
     print("-------------")
 
-async def create_channel(author, channel_name):
+async def create_channel(guild, author, channel_name):
     # Create text channel with limited permissions
     # Only the author and Admin roles can view this channel
-    guild = author.guild
     existing_channel = discord.utils.get(guild.channels, name=channel_name)
     if not existing_channel:
         admin_role = discord.utils.get(guild.roles, name="Admin")
@@ -41,10 +40,10 @@ async def create_channel(author, channel_name):
         await channel.send(response)
         return channel
 
-async def delete_channel(author, channel_name):
+async def delete_channel(guild, author, channel_name):
     # Delete text channel. Any Admin can delete it
     try:
-        channel = discord.utils.get(author.guild.channels, name=channel_name)
+        channel = discord.utils.get(guild.channels, name=channel_name)
         response = "{} deleted channel {}".format(author.name, channel_name)
         print(response)
         await channel.send(response)

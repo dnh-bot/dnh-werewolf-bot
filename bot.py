@@ -22,12 +22,14 @@ def verify_ok(user):
 
 # ============ Test Discord server =======
 async def test_bot(game, guild):
+    print("\n\n\n=====================================")
     print("------------ Bot testing ------------")
     print(guild.name)
     # Test admin/player commands
     # await command.test_commands(guild)
     # Test game commands
-    game.test_game()
+    await game.test_game()
+    # await game.test_game() # Rerun second time
 
     print("------------ End bot testing ------------")
 
@@ -46,11 +48,11 @@ async def on_ready():
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id)
         # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
-        game_list.add_game(guild.id,Game(guild, interface.DiscordInterface(guild)))
+        game_list.add_game(guild.id,Game(guild, interface.DiscordInterface(guild, client)))
 
     ''' Uncomment to run test '''
-    await test_bot(game_list.get_game(config.DISCORD_TESTING_SERVER_ID), client.get_guild(config.DISCORD_TESTING_SERVER_ID)) #Running test on Nhim's server
-    # await test_bot(game_list.get_game(config.DISCORD_DEPLOY_SERVER_ID), client.get_guild(config.DISCORD_DEPLOY_SERVER_ID)) #Running test on DNH ma sói bot's server
+    # await test_bot(game_list.get_game(config.DISCORD_TESTING_SERVER_ID), client.get_guild(config.DISCORD_TESTING_SERVER_ID)) #Running test on Nhim's server
+    await test_bot(game_list.get_game(config.DISCORD_DEPLOY_SERVER_ID), client.get_guild(config.DISCORD_DEPLOY_SERVER_ID)) #Running test on DNH ma sói bot's server
 
 
 
