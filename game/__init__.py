@@ -4,7 +4,7 @@ import datetime
 import random
 import time
 from enum import Enum
-
+import asyncio
 
 import config
 from game import roles
@@ -21,23 +21,29 @@ game_state = {
     'players': []
 }
 
+def run(f, *a, **kw):
+    if asyncio.iscoroutinefunction(f):
+        loop = asyncio.get_event_loop()
+        r = loop.run_until_complete(f(*a, **kw))
+        loop.close()
+        return r
+    else:
+        return f(*a, **kw)
 
 class Game:
     def __init__(self, guild, interface):
         self.guild = guild
         self.interface = interface
-        self.is_stopped = False
-        self.start_time = None
-        self.players = {}  # id: Player
-        self.player_id = []
-        self.channels = {
-                config.LOBBY_CHANNEL: None,
-                config.GAMEPLAY_CHANNEL: None,
-                config.WEREWOLF_CHANNEL: None
+        self.channels = [
+                config.LOBBY_CHANNEL,
+                config.GAMEPLAY_CHANNEL,
+                config.WEREWOLF_CHANNEL,
                 # Personal channel will goes into role class
-            }
-        self.game_loop_task = None
-        self.game_phase = GamePhase.NEW_GAME
+        ] # List of channels in game
+        self.reset_game_state()
+        self.next_flag = asyncio.Event()
+
+
 
     def get_guild(self):
         return self.guild
@@ -75,8 +81,13 @@ class Game:
             self.start_time = datetime.datetime.now()
 
             self.game_phase = GamePhase.DAY
-            self.start_game_loop() # TODO: Create thread heres
-            logger.logger_debug(self)
+
+            # FIXME: Error unable to run
+            run(self.start_game_loop)
+            print("End start")
+
+
+
 
     def stop(self):
         print("======= Game stopped =======")
@@ -115,13 +126,22 @@ class Game:
             # Wait for `!next` from Admin
             # or Next phase control from bot
             # self.event.wait()
-            time.sleep(3)
+            # self.next_flag.wait()
+            # self.next_flag.clear()
+            time.sleep(5)
+        print("End start loop")
+        # await asyncio.sleep(0)
 
 
 
     def reset_game_state(self):
+        # TODO: wrap these variables into a struct
+        self.is_stopped = False
+        self.start_time = None
+        self.players = {}  # id: Player
         self.player_id = []
-        self.players = {}
+        self.game_phase = GamePhase.NEW_GAME
+        self.killed_last_night = [] # List of player id who was killed last night
 
 
     def end_game(self):
@@ -144,10 +164,10 @@ class Game:
 
 
     def do_daytime_phase(self):
-        killed = len(self.states.killed_last_night)
-        self.interface.send_text_to_channel("It's daytime, let's discuss to find the werewolf", self.channels['gameplay'])
+        killed = len(self.killed_last_night)
+        self.interface.send_text_to_channel("It's daytime, let's discuss to find the werewolf", config.GAMEPLAY_CHANNEL)
         if killed:
-            self.interface.send_text_to_channel("Last night, {} people were killed".format(killed), self.channels['gameplay'])
+            self.interface.send_text_to_channel("Last night, {} people were killed".format(killed), config.GAMEPLAY_CHANNEL)
 
         # vote will be pm in role.on_phase
 
@@ -160,6 +180,7 @@ class Game:
             self.game_phase = GamePhase.DAY
         else:
             print("Incorrect game flow")
+        loop.call_soon_threadsafe(self.next_flag.set)
 
 
 

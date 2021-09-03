@@ -2,7 +2,7 @@ import discord
 from commands import command
 from game import *
 import config
-
+import interface
 
 if not config.DISCORD_TOKEN:
     print("Use must setup DISCORD_TOKEN in .env file")
@@ -45,7 +45,8 @@ async def on_ready():
     print("=========================BOT STARTUP=========================")
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id)
-        game_list.add_game(guild.id,Game(guild, ConsoleInterface()))
+        # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
+        game_list.add_game(guild.id,Game(guild, interface.DiscordInterface(guild)))
 
     ''' Uncomment to run test '''
     await test_bot(game_list.get_game(config.DISCORD_TESTING_SERVER_ID), client.get_guild(config.DISCORD_TESTING_SERVER_ID)) #Running test on Nhim's server
