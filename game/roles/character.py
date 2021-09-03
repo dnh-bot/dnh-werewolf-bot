@@ -1,4 +1,3 @@
-
 from enum import Enum
 
 
@@ -27,8 +26,6 @@ class Character:
         #     self.on_day()
         # elif phase == game.GamePhase.NIGHT:
         #     self.on_night()
-        # elif phase == game.GamePhase.ROLES:
-        #     self.on_role()
         pass
 
     def on_day(self):
@@ -37,5 +34,14 @@ class Character:
     def on_night(self):
         pass
 
-    def on_role(self):
-        pass
+    def vote(self):
+        poll_result = None
+        if self.status == CharacterStatus.ALIVE:
+            client.unmute(self.player)
+
+            # vote
+            poll_id = client.show_poll(client.get_personal_channel(self.player), game.get_alive_players())
+            await timeout() or get_poll_result(poll_id)
+            poll_result = get_poll_result(poll_id)
+
+        return poll_result

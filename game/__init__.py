@@ -1,5 +1,3 @@
-# Use OOP or FP here
-
 import datetime
 import random
 import time
@@ -9,6 +7,7 @@ import asyncio
 import config
 from game import roles
 
+
 class GamePhase(Enum):
     NEW_GAME = 0
     DAY = 1
@@ -17,7 +16,7 @@ class GamePhase(Enum):
 
 game_state = {
     'start_time': None,
-    'current_phase': None,  # Day, Night, Roles
+    'current_phase': None,  # GamePhase's property [Day, Night]
     'players': []
 }
 
@@ -27,15 +26,13 @@ class Game:
         self.guild = guild
         self.interface = interface
         self.channels = [
-                config.LOBBY_CHANNEL,
-                config.GAMEPLAY_CHANNEL,
-                config.WEREWOLF_CHANNEL,
-                # Personal channel will goes into role class
-        ] # List of channels in game
+            config.LOBBY_CHANNEL,
+            config.GAMEPLAY_CHANNEL,
+            config.WEREWOLF_CHANNEL,
+            # Personal channel will goes into role class
+        ]  # List of channels in game
         self.reset_game_state()
         self.next_flag = asyncio.Event()
-
-
 
     def get_guild(self):
         return self.guild
@@ -43,23 +40,22 @@ class Game:
     def awake(self):
         pass
 
-    #TODO: Sher
+    # TODO: Sher
     @staticmethod
     def generate_roles(ids):
         ids = ids.copy()
         random.shuffle(ids)
         r = dict()
         l = len(ids)
-        werewolf=l//4
-        seer=1
-        doctor=1
+        werewolf = l//4
+        seer = 1
+        doctor = 1
         r.update((id_, roles.Werewolf(id_)) for id_ in ids[:werewolf])
         r.update((id_, roles.Seer(id_)) for id_ in ids[werewolf:werewolf+seer])
         r.update((id_, roles.Doctor(id_)) for id_ in ids[werewolf+seer: werewolf+seer+doctor])
         r.update((id_, roles.Villager(id_)) for id_ in ids[werewolf+seer+doctor:])
         print("Player list:", r)
         return r
-
 
     async def start(self):
         if not self.is_stopped:
@@ -113,7 +109,7 @@ class Game:
             elif self.game_phase == GamePhase.NIGHT:
                 await self.do_nighttime_phase()
 
-            for _,role in self.players.items():
+            for _, role in self.players.items():
                 role.on_phase(self.game_phase)
 
             # Wait for `!next` from Admin
@@ -123,8 +119,6 @@ class Game:
             self.next_flag.clear()
             print("End phase")
         print("End start loop")
-
-
 
     def reset_game_state(self):
         # TODO: wrap these variables into a struct
@@ -137,7 +131,7 @@ class Game:
 
     async def end_game(self):
         # if end_game_condition_match:
-        if False: #FIXME: Check end game condition @Sher
+        if False:  # FIXME: Check end game condition @Sher
             await self.interface.send_text_to_channel("Game end!", config.GAMEPLAY_CHANNEL)
             # if any(werewolf.is_alive() for werewolf in self.players if  isinstance(role, roles.Werewolf)):
             #     await self.interface.send_text_to_channel("Werewolf is winner", config.GAMEPLAY_CHANNEL)
@@ -149,10 +143,8 @@ class Game:
         await self.interface.send_text_to_channel("It's night time, everybody goes to sleep", config.GAMEPLAY_CHANNEL)
         # no need to mute, it's done in role.on_phase
         await self.interface.send_text_to_channel("Who would you like to kill tonight?", config.WEREWOLF_CHANNEL)
-        #TODO
+        # TODO
         await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
-
-
 
     async def do_daytime_phase(self):
         killed = len(self.killed_last_night)
@@ -173,8 +165,6 @@ class Game:
             print("Incorrect game flow")
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
 
-
-
     async def test_game(self):
         print("====== Begin test game =====")
         self.add_player(1)
@@ -190,6 +180,7 @@ class Game:
         await self.next_phase()
         await self.stop()
         print("====== End test game =====")
+
 
 class GameList:
     def __init__(self):
