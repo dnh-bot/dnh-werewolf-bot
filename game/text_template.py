@@ -65,7 +65,8 @@ def generate_after_voting_werewolf(user):
 
 
 def generate_before_voting_seer():
-    return f"Tiên tri muốn thấy gì, từ ai? Hãy làm phép bằng cách nhập {config.BOT_PREFIX}choose user để xem người chơi đó là ai."
+    return "Tiên tri muốn thấy gì, từ ai? " +\
+        f"Hãy làm phép bằng cách nhập {config.BOT_PREFIX}choose user để xem người chơi đó là ai."
 
 
 def generate_after_voting_seer(user, is_werewolf):
@@ -75,7 +76,7 @@ def generate_after_voting_seer(user, is_werewolf):
 
 def generate_before_voting_doctor():
     return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập {config.BOT_PREFIX}choose user để người đó qua đêm an bình. " +\
-           "Nhớ chú ý an toàn của bản thân!"
+        "Nhớ chú ý an toàn của bản thân!"
 
 
 def generate_after_voting_doctor(user):
