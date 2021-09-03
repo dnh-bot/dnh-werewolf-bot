@@ -15,3 +15,4 @@ class Werewolf(Villager):
         # poll_id = client.show_poll(client.get_personal_channel(self.player), game.get_alive_players())
         # await timeout() or get_poll_result(poll_id)
         pass
+        # poll_result = self.vote() ???

@@ -17,7 +17,7 @@ class GamePhase(Enum):
 
 game_state = {
     'start_time': None,
-    'current_phase': None,  # Day, Night, Roles
+    'current_phase': None,  # GamePhase's property [Day, Night]
     'players': []
 }
 
