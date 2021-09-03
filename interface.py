@@ -2,28 +2,28 @@ import asyncio
 import commands
 
 class ConsoleInterface:
-    def send_text_to_channel(self, msg, channel):
-        print("{channel}: {msg}".format(channel=channel, msg=msg))
+    def __init__(self, guild=None):
+        self.guild = guild #Unused
 
-    def create_channel(self, channel):
+    async def send_text_to_channel(self, msg, channel):
+        print("#{channel}: {msg}".format(channel=channel, msg=msg))
+        await asyncio.sleep(0)
+
+    async def create_channel(self, channel):
         print("{channel} created!".format(channel=channel))
+        await asyncio.sleep(0)
 
-
-def run(f, *a, **kw):
-    if asyncio.iscoroutinefunction(f):
-        loop = asyncio.get_event_loop()
-        r = loop.run_until_complete(f(*a, **kw))
-        loop.close()
-        return r
-    else:
-        return f(*a, **kw)
 
 class DiscordInterface:
-    def send_text_to_channel(self, msg, channel):
-        return run(commands.admin.send_text_to_channel, msg, channel)
+    def __init__(self, guild, client):
+        self.guild = guild
+        self.client = client
 
-    def create_channel(self, channel)
-        return run(commands.admin.create_channel, channel)
+    async def send_text_to_channel(self, msg, channel):
+        await commands.admin.send_text_to_channel(self.guild, msg, channel)
+
+    async def create_channel(self, channel):
+        await commands.admin.create_channel(self.guild, self.client.user, channel)
 
 
 
