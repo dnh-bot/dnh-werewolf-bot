@@ -1,17 +1,17 @@
 import discord
 from commands import command
-from game.game import *
-from config import *
+from game import *
+import config
 
 
-if not DISCORD_TOKEN:
+if not config.DISCORD_TOKEN:
     print("Use must setup DISCORD_TOKEN in .env file")
     exit(1)
 # ============ Local functions ============
 
 
 async def process_message(message):
-    if message.content.strip().startswith(BOT_PREFIX):
+    if message.content.strip().startswith(config.BOT_PREFIX):
         game = game_list.get_game(message.guild.id)
         await command.parse_command(game, message)
 
@@ -25,9 +25,9 @@ async def test_bot(game, guild):
     print("------------ Bot testing ------------")
     print(guild.name)
     # Test admin/player commands
-    await command.test_commands(guild)
+    # await command.test_commands(guild)
     # Test game commands
-    # TODO
+    game.test_game()
 
     print("------------ End bot testing ------------")
 
@@ -45,11 +45,11 @@ async def on_ready():
     print("=========================BOT STARTUP=========================")
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id)
-        game_list.add_game(guild.id,Game(guild))
+        game_list.add_game(guild.id,Game(guild, ConsoleInterface()))
 
     ''' Uncomment to run test '''
-    # await test_bot(game_list.get_game(DISCORD_TESTING_SERVER_ID), client.get_guild(DISCORD_TESTING_SERVER_ID)) #Running test on Nhim's server
-    # await test_bot(game_list.get_game(DISCORD_DEPLOY_SERVER_ID), client.get_guild(DISCORD_DEPLOY_SERVER_ID)) #Running test on DNH ma sói bot's server
+    await test_bot(game_list.get_game(config.DISCORD_TESTING_SERVER_ID), client.get_guild(config.DISCORD_TESTING_SERVER_ID)) #Running test on Nhim's server
+    # await test_bot(game_list.get_game(config.DISCORD_DEPLOY_SERVER_ID), client.get_guild(config.DISCORD_DEPLOY_SERVER_ID)) #Running test on DNH ma sói bot's server
 
 
 
@@ -60,4 +60,4 @@ async def on_message(message):
         await process_message(message)  # loop through all commands and do action on first command that match
 
 
-client.run(DISCORD_TOKEN)
+client.run(config.DISCORD_TOKEN)

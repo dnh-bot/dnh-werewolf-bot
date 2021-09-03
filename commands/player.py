@@ -1,3 +1,7 @@
+'''
+This provides APIs for Player role
+'''
+
 import discord
 import config
 

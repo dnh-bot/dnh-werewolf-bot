@@ -1,6 +1,5 @@
 import discord
 import asyncio
-from utils import logger
 from commands import admin, player
 
 

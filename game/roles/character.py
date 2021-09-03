@@ -1,4 +1,4 @@
-from .. import game
+
 from enum import Enum
 
 
@@ -23,12 +23,13 @@ class Character:
         pass
 
     def on_phase(self, phase):
-        if phase == game.GamePhase.DAY:
-            self.on_day()
-        elif phase == game.GamePhase.NIGHT:
-            self.on_night()
-        elif phase == game.GamePhase.ROLES:
-            self.on_role()
+        # if phase == game.GamePhase.DAY:
+        #     self.on_day()
+        # elif phase == game.GamePhase.NIGHT:
+        #     self.on_night()
+        # elif phase == game.GamePhase.ROLES:
+        #     self.on_role()
+        pass
 
     def on_day(self):
         pass

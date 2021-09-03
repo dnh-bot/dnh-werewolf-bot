@@ -1,3 +1,8 @@
+
+'''
+This provides APIs for Admin role and bot role
+'''
+
 import discord
 import asyncio
 from utils import logger
