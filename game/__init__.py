@@ -4,6 +4,7 @@ import time
 from enum import Enum
 import asyncio
 from collections import Counter
+from functools import reduce
 
 import config
 from game import roles, text_template
@@ -130,9 +131,12 @@ class Game:
         # Player | Number of votes | Voters
         # (1, count(2,3,4), (2,3,4))
         # (2, count(1)    , (1) ) 
+        d = self.voter_dict
+        table_dict =reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, d.items(), dict())
         header = "Player  Num of votes   Voters\n"
         data = []
-        for v, k in self.lynched_last_day.items():
+        # FIXME: 
+        for v, k in table_dict.items():
             voters = ",".join([f'<@{i}>' for i in k])
             data.append(f'<@{v}>        {len(k)}       , {voters}')
         strdata = "\n".join(data)
@@ -180,7 +184,7 @@ class Game:
         self.player_id = []
         self.game_phase = GamePhase.NEW_GAME
         self.killed_last_night = []  # List of player id who was killed last night
-        self.lynched_last_day = {}  # Dict of voted players {user1:{user2,user3,user4}, user2:{user1}} . All items are ids.
+        self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1} . All items are ids.
         self.day = 0
 
     async def end_game(self):
@@ -224,9 +228,11 @@ class Game:
         await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day, alive_player), config.GAMEPLAY_CHANNEL)
 
     async def do_end_daytime_phase(self):
-        lynched = Game.get_top_voted(a for a in self.lynched_last_day for _ in self.lynched_last_day[a])
-        print("lynced list:",self.lynched_last_day)
-        self.lynched_last_day = {}
+        voter_list = [v for _, k in self.voter_dict.items() if k is not None]
+        lynched = Game.get_top_voted(voter_list)
+        # lynched = Game.get_top_voted(a for a in self.voter_dict for _ in self.voter_dict[a])
+        print("lynced list:",self.voter_dict)
+        self.voter_dict = {}
         if lynched:
             self.players[lynched].get_killed()
             await self.interface.send_text_to_channel(text_template.generate_lynch_text(f"<@{lynched}>"), config.GAMEPLAY_CHANNEL)
@@ -276,13 +282,9 @@ class Game:
         if not author.is_alive():
             return "You must be alive to vote!"
 
-        if not self.lynched_last_day.get(player_id):
-            # Empty key
-            self.lynched_last_day[player_id]={author_id}
-        else:
-            # Add the voter to a set of voters
-            self.lynched_last_day[player_id].add(author_id)
-        
+        # Vote for victim
+        self.voter_dict[author_id] = player_id
+
         #TODO: get user name
         return f"{author_id} voted to kill {player_id}"
 
