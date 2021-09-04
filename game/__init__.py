@@ -5,7 +5,7 @@ from enum import Enum
 import asyncio
 
 import config
-from game import roles
+from game import roles, text_template
 
 
 class GamePhase(Enum):
@@ -49,11 +49,11 @@ class Game:
         l = len(ids)
         werewolf = l//4
         seer = 1
-        doctor = 1
+        guard = 1
         r.update((id_, roles.Werewolf(id_)) for id_ in ids[:werewolf])
         r.update((id_, roles.Seer(id_)) for id_ in ids[werewolf:werewolf+seer])
-        r.update((id_, roles.Doctor(id_)) for id_ in ids[werewolf+seer: werewolf+seer+doctor])
-        r.update((id_, roles.Villager(id_)) for id_ in ids[werewolf+seer+doctor:])
+        r.update((id_, roles.Guard(id_)) for id_ in ids[werewolf+seer: werewolf+seer+guard])
+        r.update((id_, roles.Villager(id_)) for id_ in ids[werewolf+seer+guard:])
         print("Player list:", r)
         return r
 
@@ -154,7 +154,7 @@ class Game:
         lynched = Game.get_top_voted(self.lynched_last_day)
         self.lynched_last_day = []
         if lynched:
-            await self.interface.send_text_to_channel(f"So sad, player {lynched} has been lynched")
+            await self.interface.send_text_to_channel(f"So sad, player {lynched} has been lynched", config.GAMEPLAY_CHANNEL)
 
         await self.interface.send_text_to_channel("It's night time, everybody goes to sleep", config.GAMEPLAY_CHANNEL)
         # no need to mute, it's done in role.on_phase
@@ -185,35 +185,38 @@ class Game:
 
     async def vote(self, author_id, player_id):
         author = self.players[author_id]
-        if not author.status.is_alive():
+        if not author.is_alive():
             return "You must be alive to vote!"
 
         self.lynched_last_day.append(player_id)
         #TODO: get user name
-        return f"Voted to kill {player_id}"
+        return f"{author_id} voted to kill {player_id}"
 
 
     async def kill(self, author_id, player_id):
         author = self.players[author_id]
-        if not author.status.is_alive() or not isinstance(author, roles.Werewolf):
+        if not author.is_alive() or not isinstance(author, roles.Werewolf):
             return "You must be an alive werewolf to kill!"
         self.killed_last_night.append(player_id)
         #TODO: get user name
-        return "{author_id} voted to kill {player_id}"
+        return f"{author_id} voted to kill {player_id}"
 
 
     async def test_game(self):
         print("====== Begin test game =====")
+        DELAY_TIME=3
         self.add_player(1)
         self.add_player(2)
         self.add_player(3)
         self.add_player(4)
         await self.start()
-        await asyncio.sleep(3)
+        await asyncio.sleep(DELAY_TIME)
+        print(await self.vote(1,2))
+        print(await self.vote(3,2))
         await self.next_phase()
-        await asyncio.sleep(3)
+        await asyncio.sleep(DELAY_TIME)
         await self.next_phase()
-        await asyncio.sleep(3)
+        await asyncio.sleep(DELAY_TIME)
         await self.next_phase()
         await self.stop()
         print("====== End test game =====")

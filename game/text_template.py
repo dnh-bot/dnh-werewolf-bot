@@ -74,10 +74,10 @@ def generate_after_voting_seer(user, is_werewolf):
     return f"Ồ, {user} {is_werewolf_text}là sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."
 
 
-def generate_before_voting_doctor():
+def generate_before_voting_guard():
     return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập {config.BOT_PREFIX}choose user để người đó qua đêm an bình. " +\
         "Nhớ chú ý an toàn của bản thân!"
 
 
-def generate_after_voting_doctor(user):
+def generate_after_voting_guard(user):
     return f"Đã bảo vệ thành công {user}"

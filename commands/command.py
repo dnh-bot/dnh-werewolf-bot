@@ -15,10 +15,18 @@ async def parse_command(game, message):
         game.remove_player(message.author.id)
     elif cmd == '!start':
         await player.do_start(message)
-        game.start()
+        await game.start()
     elif cmd == '!stop':
         await player.do_stop(message)
-        game.stop()
+        await game.stop()
+    elif cmd == '!vote': # author: `!vote @target_user`
+        author = message.author
+        target_user = message.mentions[0]
+        await game.vote(author.id, target_user.id)
+    elif cmd == '!kill': # author: `!kill @target_user`
+        author = message.author
+        target_user = message.mentions[0]
+        await game.kill(author.id, target_user.id)
 
     # Admin/Bot commands - User should not directly use these commands
     elif admin.isAdmin(message.author):
