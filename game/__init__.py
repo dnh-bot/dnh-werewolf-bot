@@ -59,7 +59,7 @@ class Game:
 
     async def start(self, init_players=None):
         if not self.is_stopped:
-            await self.interface.send_text_to_channel("======= Game started =======", config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel(text_template.generate_start_text(), config.GAMEPLAY_CHANNEL)
             if not init_players:
                 self.players = self.generate_roles(self.player_id)
             else:
@@ -124,7 +124,7 @@ class Game:
             if isinstance(player, roles.Werewolf):
                 print("Wolf: ", player)
                 await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL)
-                await self.interface.send_text_to_channel(f"Hello werewolf <@{_id}>", config.GAMEPLAY_CHANNEL)
+                await self.interface.send_text_to_channel(f"Hello werewolf <@{_id}>", config.WEREWOLF_CHANNEL)
         await self.interface.send_text_to_channel(text, config.GAMEPLAY_CHANNEL)
         print("Started game loop")
         while not self.is_stopped:
@@ -158,6 +158,7 @@ class Game:
         self.game_phase = GamePhase.NEW_GAME
         self.killed_last_night = [] # List of player id who was killed last night
         self.lynched_last_day = []
+        self.day = 0
 
     async def end_game(self):
         num_werewolf = 0
@@ -171,11 +172,10 @@ class Game:
         print("DEBUG: ", num_players, num_werewolf)
 
         if (num_werewolf/num_players >= 0.5) or (num_werewolf == 0):
-            await self.interface.send_text_to_channel("Game end!", config.GAMEPLAY_CHANNEL)
             if any(werewolf.is_alive() for _,werewolf in self.players.items() if  isinstance(werewolf, roles.Werewolf)):
-                await self.interface.send_text_to_channel("Werewolf is winner", config.GAMEPLAY_CHANNEL)
+                await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)
             else:
-                await self.interface.send_text_to_channel("Village is winner", config.GAMEPLAY_CHANNEL)
+                await self.interface.send_text_to_channel(text_template.generate_endgame_text("Villager"), config.GAMEPLAY_CHANNEL)
             # Print werewolf list:
             werewolf_list = ",".join([str(f"<@{_id}>") for _id,_ in self.players.items() if  isinstance(werewolf, roles.Werewolf)])
             await self.interface.send_text_to_channel("Werewolfs: "+werewolf_list, config.GAMEPLAY_CHANNEL)
@@ -195,7 +195,11 @@ class Game:
         return None # have no vote or equal voted
 
     async def do_new_daytime_phase(self):
-        await self.interface.send_text_to_channel("It's daytime, let's discuss to find the werewolf", config.GAMEPLAY_CHANNEL)
+        self.day += 1
+        alive_player = ", ".join(
+            f"<@{id_}>" for id_ in self.players if self.players[id_].is_alive()
+        )
+        await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day, alive_player), config.GAMEPLAY_CHANNEL)
 
     async def do_end_daytime_phase(self):
         lynched = Game.get_top_voted(self.lynched_last_day)
@@ -203,12 +207,12 @@ class Game:
         self.lynched_last_day = []
         if lynched:
             self.players[lynched].get_killed()
-            await self.interface.send_text_to_channel(f"So sad, player <@{lynched}> has been lynched", config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel(text_template.generate_lynch_text(f"<@{lynched}>"), config.GAMEPLAY_CHANNEL)
 
     async def do_new_nighttime_phase(self):
-        await self.interface.send_text_to_channel("It's night time, everybody goes to sleep", config.GAMEPLAY_CHANNEL)
+        await self.interface.send_text_to_channel(text_template.generate_night_phase_beginning_text(), config.GAMEPLAY_CHANNEL)
         # no need to mute, it's done in role.on_phase
-        await self.interface.send_text_to_channel("Who would you like to kill tonight?", config.WEREWOLF_CHANNEL)
+        await self.interface.send_text_to_channel(text_template.generate_before_voting_werewolf(), config.WEREWOLF_CHANNEL)
         # TODO
         # await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
 
@@ -218,7 +222,7 @@ class Game:
         self.killed_last_night = []
         if killed:
             self.players[killed].get_killed()
-            await self.interface.send_text_to_channel("Last night, <@{killed}> were killed".format(killed), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel(text_template.generate_killed_text([f"<@{killed}>"]), config.GAMEPLAY_CHANNEL)
 
     async def new_phase(self):
         print(self.display_alive_player())
