@@ -28,6 +28,7 @@ async def parse_command(game, message):
         target_user = message.mentions[0]
         await game.kill(author.id, target_user.id)
 
+
     # Admin/Bot commands - User should not directly use these commands
     elif admin.isAdmin(message.author):
         if cmd == '!create_channel': #Test only
@@ -44,6 +45,8 @@ async def parse_command(game, message):
             user = message.mentions[0]
             channel_name = parameters.split(' ')[1]
             await admin.remove_player_from_channel(message.guild, user, channel_name)
+        elif cmd == '!next':  # Next phase
+            await game.next_phase()
 
 
 

@@ -57,10 +57,13 @@ class Game:
         print("Player list:", r)
         return r
 
-    async def start(self):
+    async def start(self, init_players=None):
         if not self.is_stopped:
             await self.interface.send_text_to_channel("======= Game started =======", config.GAMEPLAY_CHANNEL)
-            self.players = self.generate_roles(self.player_id)
+            if not init_players:
+                self.players = self.generate_roles(self.player_id)
+            else:
+                self.players = init_players
 
             await self.interface.create_channel(config.LOBBY_CHANNEL)
             await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
@@ -95,29 +98,55 @@ class Game:
         return [
             player
             for _id, player in self.players.items()
-            if player.status.is_alive()
+            if player.is_alive()
         ]
 
+    def display_alive_player(self):
+        return "\n".join((
+            "======== Alive players: =======",
+            "\n".join(
+                map(str,
+                [
+                    (player.player_id, player.__class__.__name__) 
+                    for _id, player in self.players.items()
+                    if player.is_alive()
+                ]
+                )
+            ),
+            "\n"
+        ))
+
+
     async def start_game_loop(self):
+        text ="Welcome players: "
+        for _id, player in self.players.items():
+            text += f"<@{_id}>, "
+            if isinstance(player, roles.Werewolf):
+                print("Wolf: ", player)
+                await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL)
+                await self.interface.send_text_to_channel(f"Hello werewolf <@{_id}>", config.GAMEPLAY_CHANNEL)
+        await self.interface.send_text_to_channel(text, config.GAMEPLAY_CHANNEL)
         print("Started game loop")
         while not self.is_stopped:
             print("Phase:", self.game_phase)
-            if await self.end_game():
-                break
-            if self.game_phase == GamePhase.DAY:
-                await self.do_daytime_phase()
-            elif self.game_phase == GamePhase.NIGHT:
-                await self.do_nighttime_phase()
+
+            # New phase
+            await self.new_phase()
 
             for _, role in self.players.items():
                 role.on_phase(self.game_phase)
 
             # Wait for `!next` from Admin
             # or Next phase control from bot
-            # self.event.wait()
             await self.next_flag.wait()
             self.next_flag.clear()
+
+            await self.end_phase()
+            # End_phase
+
             print("End phase")
+            if await self.end_game():
+                break;
         print("End start loop")
 
     def reset_game_state(self):
@@ -131,14 +160,30 @@ class Game:
         self.lynched_last_day = []
 
     async def end_game(self):
-        # if end_game_condition_match:
-        if False:  # FIXME: Check end game condition @Sher
+        num_werewolf = 0
+        num_players = 0
+        for _, player in self.players.items():
+            if player.is_alive():
+                num_players +=1
+                # FIXME: better use of type
+                if isinstance(player, roles.Werewolf):
+                    num_werewolf +=1
+        print("DEBUG: ", num_players, num_werewolf)
+
+        if (num_werewolf/num_players >= 0.5) or (num_werewolf == 0):
             await self.interface.send_text_to_channel("Game end!", config.GAMEPLAY_CHANNEL)
-            # if any(werewolf.is_alive() for werewolf in self.players if  isinstance(role, roles.Werewolf)):
-            #     await self.interface.send_text_to_channel("Werewolf is winner", config.GAMEPLAY_CHANNEL)
-            # else:
-            #     await self.interface.send_text_to_channel("Village is winner", config.GAMEPLAY_CHANNEL)
-            reset_game_state()
+            if any(werewolf.is_alive() for _,werewolf in self.players.items() if  isinstance(werewolf, roles.Werewolf)):
+                await self.interface.send_text_to_channel("Werewolf is winner", config.GAMEPLAY_CHANNEL)
+            else:
+                await self.interface.send_text_to_channel("Village is winner", config.GAMEPLAY_CHANNEL)
+            # Print werewolf list:
+            werewolf_list = ",".join([str(f"<@{_id}>") for _id,_ in self.players.items() if  isinstance(werewolf, roles.Werewolf)])
+            await self.interface.send_text_to_channel("Werewolfs: "+werewolf_list, config.GAMEPLAY_CHANNEL)
+            
+            self.reset_game_state()
+            return True
+        else:
+            return False
 
 
     @staticmethod
@@ -149,38 +194,55 @@ class Game:
             return top_voted[0][0]
         return None # have no vote or equal voted
 
+    async def do_new_daytime_phase(self):
+        await self.interface.send_text_to_channel("It's daytime, let's discuss to find the werewolf", config.GAMEPLAY_CHANNEL)
 
-    async def do_nighttime_phase(self):
+    async def do_end_daytime_phase(self):
         lynched = Game.get_top_voted(self.lynched_last_day)
+        print("lynced list:",self.lynched_last_day)
         self.lynched_last_day = []
         if lynched:
-            await self.interface.send_text_to_channel(f"So sad, player {lynched} has been lynched", config.GAMEPLAY_CHANNEL)
+            self.players[lynched].get_killed()
+            await self.interface.send_text_to_channel(f"So sad, player <@{lynched}> has been lynched", config.GAMEPLAY_CHANNEL)
 
+    async def do_new_nighttime_phase(self):
         await self.interface.send_text_to_channel("It's night time, everybody goes to sleep", config.GAMEPLAY_CHANNEL)
         # no need to mute, it's done in role.on_phase
         await self.interface.send_text_to_channel("Who would you like to kill tonight?", config.WEREWOLF_CHANNEL)
         # TODO
-        await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
+        # await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
 
-    async def do_daytime_phase(self):
+    async def do_end_nighttime_phase(self):
         #TODO: logic for other role as guard, hunter...?
         killed = Game.get_top_voted(self.killed_last_night)
         self.killed_last_night = []
-        await self.interface.send_text_to_channel("It's daytime, let's discuss to find the werewolf", config.GAMEPLAY_CHANNEL)
         if killed:
-            await self.interface.send_text_to_channel("Last night, {} were killed".format(killed), config.GAMEPLAY_CHANNEL)
+            self.players[killed].get_killed()
+            await self.interface.send_text_to_channel("Last night, <@{killed}> were killed".format(killed), config.GAMEPLAY_CHANNEL)
 
-        # vote will be pm in role.on_phase
+    async def new_phase(self):
+        print(self.display_alive_player())
+        if self.game_phase == GamePhase.DAY:
+            await self.do_new_daytime_phase()
+        elif self.game_phase == GamePhase.NIGHT:
+            await self.do_new_nighttime_phase()
 
-    async def next_phase(self):
-        print("Next phase")
+    async def end_phase(self):
         assert self.game_phase != GamePhase.NEW_GAME
+        if self.game_phase == GamePhase.DAY:
+            await self.do_end_daytime_phase()
+        elif self.game_phase == GamePhase.NIGHT:
+            await self.do_end_nighttime_phase()
+
         if self.game_phase == GamePhase.DAY:
             self.game_phase = GamePhase.NIGHT
         elif self.game_phase == GamePhase.NIGHT:
             self.game_phase = GamePhase.DAY
         else:
             print("Incorrect game flow")
+
+    async def next_phase(self):
+        print("Next phase")
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
 
     async def vote(self, author_id, player_id):
@@ -194,12 +256,14 @@ class Game:
 
 
     async def kill(self, author_id, player_id):
+        assert self.players is not None
+        print(self.players)
         author = self.players[author_id]
         if not author.is_alive() or not isinstance(author, roles.Werewolf):
             return "You must be an alive werewolf to kill!"
         self.killed_last_night.append(player_id)
         #TODO: get user name
-        return f"{author_id} voted to kill {player_id}"
+        return f"{author_id} decided to kill {player_id}"
 
 
     async def test_game(self):
@@ -209,15 +273,25 @@ class Game:
         self.add_player(2)
         self.add_player(3)
         self.add_player(4)
-        await self.start()
-        await asyncio.sleep(DELAY_TIME)
+        players = {
+            1:roles.Werewolf(1),
+            2:roles.Villager(2),
+            3:roles.Villager(3),
+            4:roles.Villager(4),
+        }
+        await self.start(players)
         print(await self.vote(1,2))
         print(await self.vote(3,2))
+
+        await self.next_phase()  # go NIGHT
+        await asyncio.sleep(DELAY_TIME)
+        print(await self.kill(1,3))
+
+        await self.next_phase()  # go DAY
+        await asyncio.sleep(DELAY_TIME)
+
         await self.next_phase()
         await asyncio.sleep(DELAY_TIME)
-        await self.next_phase()
-        await asyncio.sleep(DELAY_TIME)
-        await self.next_phase()
         await self.stop()
         print("====== End test game =====")
 
