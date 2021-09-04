@@ -118,6 +118,14 @@ class Game:
 
 
     async def start_game_loop(self):
+        text ="Welcome players: "
+        for _id, player in self.players.items():
+            text += f"<@{_id}>, "
+            if isinstance(player, roles.Werewolf):
+                print("Wolf: ", player)
+                await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL)
+                await self.interface.send_text_to_channel(f"Hello werewolf <@{_id}>", config.GAMEPLAY_CHANNEL)
+        await self.interface.send_text_to_channel(text, config.GAMEPLAY_CHANNEL)
         print("Started game loop")
         while not self.is_stopped:
             print("Phase:", self.game_phase)
@@ -168,6 +176,10 @@ class Game:
                 await self.interface.send_text_to_channel("Werewolf is winner", config.GAMEPLAY_CHANNEL)
             else:
                 await self.interface.send_text_to_channel("Village is winner", config.GAMEPLAY_CHANNEL)
+            # Print werewolf list:
+            werewolf_list = ",".join([str(f"<@{_id}>") for _id,_ in self.players.items() if  isinstance(werewolf, roles.Werewolf)])
+            await self.interface.send_text_to_channel("Werewolfs: "+werewolf_list, config.GAMEPLAY_CHANNEL)
+            
             self.reset_game_state()
             return True
         else:
@@ -191,7 +203,7 @@ class Game:
         self.lynched_last_day = []
         if lynched:
             self.players[lynched].get_killed()
-            await self.interface.send_text_to_channel(f"So sad, player {lynched} has been lynched", config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel(f"So sad, player <@{lynched}> has been lynched", config.GAMEPLAY_CHANNEL)
 
     async def do_new_nighttime_phase(self):
         await self.interface.send_text_to_channel("It's night time, everybody goes to sleep", config.GAMEPLAY_CHANNEL)
@@ -206,7 +218,7 @@ class Game:
         self.killed_last_night = []
         if killed:
             self.players[killed].get_killed()
-            await self.interface.send_text_to_channel("Last night, {} were killed".format(killed), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel("Last night, <@{killed}> were killed".format(killed), config.GAMEPLAY_CHANNEL)
 
     async def new_phase(self):
         print(self.display_alive_player())
