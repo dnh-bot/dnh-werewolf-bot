@@ -11,6 +11,7 @@ DISCORD_TESTING_USER2_ID = int(os.getenv('DISCORD_TESTING_USER2_ID'))  # Testing
 
 BOT_PREFIX = '!'
 
-LOBBY_CHANNEL = "general"
+GAME_CATEGORY = "GAME"
+LOBBY_CHANNEL = "lobby"
 GAMEPLAY_CHANNEL = "gameplay"
 WEREWOLF_CHANNEL = "werewolf"
