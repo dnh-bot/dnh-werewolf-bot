@@ -32,6 +32,20 @@ async def parse_command(game, message):
         if not target_user:
             admin.send_text_to_channel(message.guild, "Invalid command", message.channel.name)
         await game.vote(author.id, target_user.id)
+    elif cmd == "!fjoin":
+        author = message.author
+        users = message.mentions
+        if not users:
+            admin.send_text_to_channel(message.guid, "Usage: !fjoin @user1 @user2", message.channel.name)
+        for id_ in users:
+            await game.add_player(id_)
+    elif cmd == "!fleave":
+        author = message.author
+        users = message.mentions
+        if not users:
+            admin.send_text_to_channel(message.guid, "Usage: !fleave @user1 @user2", message.channel.name)
+        for id_ in users:
+            await game.remove_player(id_)
     elif cmd == '!kill': # author: `!kill @target_user`
         author = message.author
         target_user = message.mentions[0]
