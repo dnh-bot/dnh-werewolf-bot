@@ -8,8 +8,8 @@ class CharacterStatus(Enum):
 
 
 class Character:
-    def __init__(self, player):
-        self.player = player
+    def __init__(self, player_id):
+        self.player_id = player_id
         self.status = CharacterStatus.ALIVE
 
     def is_alive(self):

@@ -7,5 +7,5 @@ class Villager(Character):
         pass
 
     def on_night(self):
-        # client.mute(self.player)  # mute Village on night
+        # client.mute(self.player_id)  # mute Village on night
         pass
