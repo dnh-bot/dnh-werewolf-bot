@@ -14,13 +14,6 @@ class GamePhase(Enum):
     NIGHT = 2
 
 
-game_state = {
-    'start_time': None,
-    'current_phase': None,  # GamePhase's property [Day, Night]
-    'players': []
-}
-
-
 class Game:
     def __init__(self, guild, interface):
         self.guild = guild
@@ -46,8 +39,8 @@ class Game:
         ids = ids.copy()
         random.shuffle(ids)
         r = dict()
-        l = len(ids)
-        werewolf = l//4
+        len_ids = len(ids)
+        werewolf = len_ids//4
         seer = 1
         guard = 1
         r.update((id_, roles.Werewolf(id_)) for id_ in ids[:werewolf])
@@ -121,7 +114,6 @@ class Game:
         print("End start loop")
 
     def reset_game_state(self):
-        # TODO: wrap these variables into a struct
         self.is_stopped = False
         self.start_time = None
         self.players = {}  # id: Player
@@ -234,4 +226,4 @@ class GameList:
 
 
 if __name__ == '__main__':
-    game = Game()
+    game_list = GameList()

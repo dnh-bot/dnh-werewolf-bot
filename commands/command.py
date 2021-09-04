@@ -30,21 +30,20 @@ async def parse_command(game, message):
 
     # Admin/Bot commands - User should not directly use these commands
     elif admin.isAdmin(message.author):
-        if cmd == '!create_channel': #Test only
+        if cmd == '!create_channel':  # Test only
             await admin.create_channel(message.guild, message.author, parameters)
-        elif cmd == '!delete_channel': #Test only
+        elif cmd == '!delete_channel':  # Test only
             await admin.delete_channel(message.guild, message.author, parameters)
-        elif cmd == '!add': #!add @user1 channel_name
+        elif cmd == '!add':  # !add @user1 channel_name
             print(parameters)
             user = message.mentions[0]
             channel_name = parameters.split(' ')[1]
             await admin.add_player_to_channel(message.guild, user, channel_name)
-        elif cmd == '!remove': #!remove @user1 channel_name
+        elif cmd == '!remove':  # !remove @user1 channel_name
             print(parameters)
             user = message.mentions[0]
             channel_name = parameters.split(' ')[1]
             await admin.remove_player_from_channel(message.guild, user, channel_name)
-
 
 
 async def test_commands(guild):
