@@ -37,6 +37,8 @@ async def parse_command(game, message):
         target_user = message.mentions[0]
         if not target_user:
             admin.send_text_to_channel(message.guild, "Invalid command", message.channel.name)
+        elif message.channel.name != config.GAMEPLAY_CHANNEL:
+            await admin.send_text_to_channel(message.guild, f"Command in invalid channel. Please use in #{config.GAMEPLAY_CHANNEL}", message.channel.name)
         else:
             await game.vote(author.id, target_user.id)
     elif cmd == '!kill': # author: `!kill @target_user`
