@@ -8,6 +8,9 @@ async def parse_command(game, message):
     parameters = ' '.join(message.content.strip().lower().split(' ')[1:])
     # Game commands
     if cmd == '!join':
+        if game.is_started():
+            text = "Game started. Please wait until next game!"
+            await admin.send_text_to_channel(message.guild, text, message.channel.name)
         await player.do_join(message)
         game.add_player(message.author.id)
     elif cmd == '!leave':

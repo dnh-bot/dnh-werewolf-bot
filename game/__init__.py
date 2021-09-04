@@ -37,6 +37,9 @@ class Game:
     def get_guild(self):
         return self.guild
 
+    def is_started(self):
+        return (self.game_phase != GamePhase.NEW_GAME)
+
     def awake(self):
         pass
 
@@ -177,9 +180,9 @@ class Game:
             else:
                 await self.interface.send_text_to_channel(text_template.generate_endgame_text("Villager"), config.GAMEPLAY_CHANNEL)
             # Print werewolf list:
-            werewolf_list = ",".join([str(f"<@{_id}>") for _id,_ in self.players.items() if  isinstance(werewolf, roles.Werewolf)])
+            werewolf_list = ",".join([str(f"<@{_id}>") for _id, werewolf in self.players.items() if  isinstance(werewolf, roles.Werewolf)])
             await self.interface.send_text_to_channel("Werewolfs: "+werewolf_list, config.GAMEPLAY_CHANNEL)
-            
+
             self.reset_game_state()
             return True
         else:
