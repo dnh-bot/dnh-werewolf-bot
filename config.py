@@ -11,6 +11,9 @@ DISCORD_TESTING_USER2_ID = int(os.getenv('DISCORD_TESTING_USER2_ID'))  # Testing
 
 BOT_PREFIX = '!'
 
+# each !next cmd have at least 15 seconds apart
+NEXT_CMD_DELAY = 15
+
 GAME_CATEGORY = "GAME"
 LOBBY_CHANNEL = "lobby"
 GAMEPLAY_CHANNEL = "gameplay"

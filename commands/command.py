@@ -2,7 +2,9 @@ import discord
 import asyncio
 from commands import admin, player
 import config
+import time
 
+last_next = time.time()
 
 async def parse_command(game, message):
     cmd = message.content.strip().lower().split(' ')[0]
@@ -64,7 +66,12 @@ async def parse_command(game, message):
             channel_name = parameters.split(' ')[1]
             await admin.remove_user_from_channel(message.guild, user, channel_name)
         elif cmd == '!next':  # Next phase
-            await game.next_phase()
+            global last_next
+            if time.time() - last_next > config.NEXT_CMD_DELAY:
+                last_next = time.time()
+                await game.next_phase()
+            else:
+                await admin.send_text_to_channel(message.guild, f"Run !next command too quick, please wait for {config.NEXT_CMD_DELAY - time.time() + last_next:.1f} seconds", message.channel.name)
         elif cmd == '!end':
             await admin.delete_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
             await admin.delete_channel(message.guild, message.author, config.WEREWOLF_CHANNEL)
