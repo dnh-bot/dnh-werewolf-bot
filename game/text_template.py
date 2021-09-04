@@ -78,3 +78,11 @@ def generate_lynch_text(user):
 
 def generate_endgame_text(winner):
     return f"Trò chơi kết thúc, với chiến thắng thuộc về phe {winner}"
+
+def generate_table(header, data):
+    # This needs to be adjusted based on expected range of values or   calculated dynamically
+    for i in data:
+        header.append('   '.join([str(item) for item in data]))
+        # Joining up scores into a line
+    d = '```'+'\n'.join(header) + '```'
+    return d
