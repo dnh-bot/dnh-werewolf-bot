@@ -6,24 +6,22 @@ import discord
 import config
 from game import text_template as tt
 
-async def do_join(message):
+async def do_join(guild, channel, user):
     ''' Join game '''
-    author = message.author
     # response = "Welcome player {}".format(author)
-    response = tt.generate_join_text(author.name)
+    response = tt.generate_join_text(user.name)
     # TODO: Reply on GAME_CHANNEL only
-    await message.channel.send(response)
-    role = discord.utils.get(message.guild.roles, name="Player")
-    await message.author.add_roles(role)
+    await channel.send(response)
+    role = discord.utils.get(guild.roles, name="Player")
+    await user.add_roles(role)
 
 
-async def do_leave(message):
+async def do_leave(guild, channel, user):
     ''' Leave game '''
-    author = message.author
-    response = "Goodbye player {}".format(author)
-    await message.channel.send(response)
-    role = discord.utils.get(message.guild.roles, name="Player")
-    await message.author.remove_roles(role)
+    response = "Goodbye player {}".format(user)
+    await channel.send(response)
+    role = discord.utils.get(guild.roles, name="Player")
+    await user.remove_roles(role)
 
 # Require at least 2 players to start the game
 async def do_start(message):
