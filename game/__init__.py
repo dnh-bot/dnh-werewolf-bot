@@ -183,7 +183,7 @@ class Game:
         self.players = {}  # id: Player
         self.player_id = []
         self.game_phase = GamePhase.NEW_GAME
-        self.killed_last_night = []  # List of player id who was killed last night
+        self.killed_last_night = dict()  # dict[wolf] -> player
         self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1} . All items are ids.
         self.day = 0
 
@@ -246,8 +246,8 @@ class Game:
 
     async def do_end_nighttime_phase(self):
         #TODO: logic for other role as guard, hunter...?
-        killed = Game.get_top_voted(self.killed_last_night)
-        self.killed_last_night = []
+        killed = Game.get_top_voted(self.killed_last_night.values())
+        self.killed_last_night = dict()
         if killed:
             self.players[killed].get_killed()
             await self.interface.send_text_to_channel(text_template.generate_killed_text([f"<@{killed}>"]), config.GAMEPLAY_CHANNEL)
@@ -295,7 +295,7 @@ class Game:
         author = self.players[author_id]
         if not author.is_alive() or not isinstance(author, roles.Werewolf):
             return "You must be an alive werewolf to kill!"
-        self.killed_last_night.append(player_id)
+        self.killed_last_night[author_id] = player_id
         #TODO: get user name
         return f"{author_id} decided to kill {player_id}"
 
