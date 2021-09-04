@@ -44,7 +44,7 @@ def generate_night_phase_beginning_text():
 
 
 def generate_before_voting_werewolf():
-    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập {config.BOT_PREFIX}choose user để lặng lẽ xử lý nạn nhân. " +\
+    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập {config.BOT_PREFIX}kill user để lặng lẽ xử lý nạn nhân. " +\
         "Các Werewolf hãy chọn đúng để giành lấy chiến thắng!"
 
 
@@ -54,7 +54,7 @@ def generate_after_voting_werewolf(user):
 
 def generate_before_voting_seer():
     return "Tiên tri muốn thấy gì, từ ai? " +\
-        f"Hãy làm phép bằng cách nhập {config.BOT_PREFIX}choose user để xem người chơi đó là ai."
+        f"Hãy làm phép bằng cách nhập {config.BOT_PREFIX}check user để xem người chơi đó là ai."
 
 
 def generate_after_voting_seer(user, is_werewolf):
@@ -63,7 +63,7 @@ def generate_after_voting_seer(user, is_werewolf):
 
 
 def generate_before_voting_guard():
-    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập {config.BOT_PREFIX}choose user để người đó qua đêm an bình. " +\
+    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập {config.BOT_PREFIX}guard user để người đó qua đêm an bình. " +\
         "Nhớ chú ý an toàn của bản thân!"
 
 
