@@ -9,8 +9,8 @@ class ConsoleInterface:
         print("#{channel}: {msg}".format(channel=channel_name, msg=msg))
         await asyncio.sleep(0)
 
-    async def create_channel(self, channel):
-        print("{channel} created!".format(channel=channel))
+    async def create_category(self, category_name):
+        print("#{category}: {msg}".format(category=category_name))
         await asyncio.sleep(0)
 
     async def create_channel(self, channel_name):
@@ -31,6 +31,8 @@ class DiscordInterface:
     async def send_text_to_channel(self, msg, channel_name):
         await commands.admin.send_text_to_channel(self.guild, msg, channel_name)
 
+    async def create_category(self, category_name):
+        await commands.admin.create_category(self.guild, self.client.user, category_name)
 
     async def create_channel(self, channel_name):
         await commands.admin.create_channel(self.guild, self.client.user, channel_name)

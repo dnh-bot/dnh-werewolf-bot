@@ -1,6 +1,7 @@
 import discord
 import asyncio
 from commands import admin, player
+import config
 
 
 async def parse_command(game, message):
@@ -11,11 +12,14 @@ async def parse_command(game, message):
         if game.is_started():
             text = "Game started. Please wait until next game!"
             await admin.send_text_to_channel(message.guild, text, message.channel.name)
+        await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
         await player.do_join(message)
         game.add_player(message.author.id)
+        await admin.add_user_to_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
     elif cmd == '!leave':
         await player.do_leave(message)
         game.remove_player(message.author.id)
+        await admin.remove_user_from_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
     elif cmd == '!start':
         await player.do_start(message)
         await game.start()
@@ -25,6 +29,8 @@ async def parse_command(game, message):
     elif cmd == '!vote': # author: `!vote @target_user`
         author = message.author
         target_user = message.mentions[0]
+        if not target_user:
+            admin.send_text_to_channel(message.guild, "Invalid command", message.channel.name)
         await game.vote(author.id, target_user.id)
     elif cmd == '!kill': # author: `!kill @target_user`
         author = message.author
@@ -38,18 +44,26 @@ async def parse_command(game, message):
             await admin.create_channel(message.guild, message.author, parameters)
         elif cmd == '!delete_channel': #Test only
             await admin.delete_channel(message.guild, message.author, parameters)
-        elif cmd == '!add': #!add @user1 channel_name
+        elif cmd == '!create':  # Create game channels
+            await admin.create_category(message.guild, message.author, config.GAME_CATEGORY)
+            await admin.create_channel(message.guild, message.author, config.LOBBY_CHANNEL, is_public=True)
+            await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
+        elif cmd == '!add':  #!add @user1 channel_name
             print(parameters)
             user = message.mentions[0]
             channel_name = parameters.split(' ')[1]
-            await admin.add_player_to_channel(message.guild, user, channel_name)
+            await admin.add_user_to_channel(message.guild, user, channel_name)
         elif cmd == '!remove': #!remove @user1 channel_name
             print(parameters)
             user = message.mentions[0]
             channel_name = parameters.split(' ')[1]
-            await admin.remove_player_from_channel(message.guild, user, channel_name)
+            await admin.remove_user_from_channel(message.guild, user, channel_name)
         elif cmd == '!next':  # Next phase
             await game.next_phase()
+        elif cmd == '!end':
+            await admin.delete_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
+            await admin.delete_channel(message.guild, message.author, config.WEREWOLF_CHANNEL)
+            await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
 
 
 

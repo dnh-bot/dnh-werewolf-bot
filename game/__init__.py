@@ -68,8 +68,6 @@ class Game:
             else:
                 self.players = init_players
 
-            await self.interface.create_channel(config.LOBBY_CHANNEL)
-            await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
             await self.interface.create_channel(config.WEREWOLF_CHANNEL)
 
             self.start_time = datetime.datetime.now()
