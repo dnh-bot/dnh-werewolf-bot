@@ -4,6 +4,7 @@ import time
 from enum import Enum
 import asyncio
 from collections import Counter
+from functools import reduce
 
 import config
 from game import roles, text_template
@@ -124,6 +125,24 @@ class Game:
             "\n"
         ))
 
+    def get_vote_status(self):
+        # From {1:{2,3,4}, 2{1}}
+        # to
+        # Player | Number of votes | Voters
+        # (1, count(2,3,4), (2,3,4))
+        # (2, count(1)    , (1) ) 
+        d = self.voter_dict
+        table_dict =reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, d.items(), dict())
+        header = "Player  Num of votes   Voters\n"
+        data = []
+        # FIXME: 
+        for v, k in table_dict.items():
+            voters = ",".join([f'<@{i}>' for i in k])
+            data.append(f'<@{v}>        {len(k)}       , {voters}')
+        strdata = "\n".join(data)
+        return header+strdata
+        # return text_template.generate_table(header, data)
+
 
     async def start_game_loop(self):
         text ="Welcome players: "
@@ -164,8 +183,8 @@ class Game:
         self.players = {}  # id: Player
         self.player_id = []
         self.game_phase = GamePhase.NEW_GAME
-        self.killed_last_night = [] # List of player id who was killed last night
-        self.lynched_last_day = []
+        self.killed_last_night = []  # List of player id who was killed last night
+        self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1} . All items are ids.
         self.day = 0
 
     async def end_game(self):
@@ -209,9 +228,11 @@ class Game:
         await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day, alive_player), config.GAMEPLAY_CHANNEL)
 
     async def do_end_daytime_phase(self):
-        lynched = Game.get_top_voted(self.lynched_last_day)
-        print("lynced list:",self.lynched_last_day)
-        self.lynched_last_day = []
+        voter_list = [v for _, k in self.voter_dict.items() if k is not None]
+        lynched = Game.get_top_voted(voter_list)
+        # lynched = Game.get_top_voted(a for a in self.voter_dict for _ in self.voter_dict[a])
+        print("lynced list:",self.voter_dict)
+        self.voter_dict = {}
         if lynched:
             self.players[lynched].get_killed()
             await self.interface.send_text_to_channel(text_template.generate_lynch_text(f"<@{lynched}>"), config.GAMEPLAY_CHANNEL)
@@ -261,7 +282,9 @@ class Game:
         if not author.is_alive():
             return "You must be alive to vote!"
 
-        self.lynched_last_day.append(player_id)
+        # Vote for victim
+        self.voter_dict[author_id] = player_id
+
         #TODO: get user name
         return f"{author_id} voted to kill {player_id}"
 
@@ -279,6 +302,12 @@ class Game:
 
     async def test_game(self):
         print("====== Begin test game =====")
+        await self.test_case1()
+        
+        print("====== End test game =====")
+
+    async def test_case1(self):
+        print("====== Begin test case =====")
         DELAY_TIME=3
         self.add_player(1)
         self.add_player(2)
@@ -293,6 +322,7 @@ class Game:
         await self.start(players)
         print(await self.vote(1,2))
         print(await self.vote(3,2))
+        print(await self.vote(4,1))
 
         await self.next_phase()  # go NIGHT
         await asyncio.sleep(DELAY_TIME)
@@ -304,7 +334,7 @@ class Game:
         await self.next_phase()
         await asyncio.sleep(DELAY_TIME)
         await self.stop()
-        print("====== End test game =====")
+        print("====== End test case =====")
 
 
 class GameList:
