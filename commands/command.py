@@ -12,14 +12,18 @@ async def parse_command(game, message):
         if game.is_started():
             text = "Game started. Please wait until next game!"
             await admin.send_text_to_channel(message.guild, text, message.channel.name)
-        await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
-        await player.do_join(message)
-        game.add_player(message.author.id)
-        await admin.add_user_to_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
+        else:
+            await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
+            await player.do_join(message.guild, message.channel, message.author)
+            game.add_player(message.author.id)
+            await admin.add_user_to_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
     elif cmd == '!leave':
-        await player.do_leave(message)
-        game.remove_player(message.author.id)
-        await admin.remove_user_from_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
+        if game.is_started():
+            await admin.send_text_to_channel(message.guild, "Game started. Please wait until next game!", message.channel.name)
+        else:
+            await player.do_leave(message.guild, message.channel, message.author)
+            game.remove_player(message.author.id)
+            await admin.remove_user_from_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
     elif cmd == '!start':
         await player.do_start(message)
         await game.start()
@@ -31,21 +35,8 @@ async def parse_command(game, message):
         target_user = message.mentions[0]
         if not target_user:
             admin.send_text_to_channel(message.guild, "Invalid command", message.channel.name)
-        await game.vote(author.id, target_user.id)
-    elif cmd == "!fjoin":
-        author = message.author
-        users = message.mentions
-        if not users:
-            admin.send_text_to_channel(message.guid, "Usage: !fjoin @user1 @user2", message.channel.name)
-        for id_ in users:
-            await game.add_player(id_)
-    elif cmd == "!fleave":
-        author = message.author
-        users = message.mentions
-        if not users:
-            admin.send_text_to_channel(message.guid, "Usage: !fleave @user1 @user2", message.channel.name)
-        for id_ in users:
-            await game.remove_player(id_)
+        else:
+            await game.vote(author.id, target_user.id)
     elif cmd == '!kill': # author: `!kill @target_user`
         author = message.author
         target_user = message.mentions[0]
@@ -78,7 +69,29 @@ async def parse_command(game, message):
             await admin.delete_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
             await admin.delete_channel(message.guild, message.author, config.WEREWOLF_CHANNEL)
             await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
-
+        elif cmd == "!fjoin":
+            if game.is_started():
+                text = "Game started. Please wait until next game!"
+                await admin.send_text_to_channel(message.guild, text, message.channel.name)
+            else:
+                if not message.mentions:
+                    await admin.send_text_to_channel(message.guid, "Invalid Command.\nUsage: !fjoin @user1 @user2 ...", message.channel.name)
+                else:
+                    await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
+                    for user in message.mentions:
+                        await player.do_join(message.guild, message.channel, user)
+                        game.add_player(user.id)
+                        await admin.add_user_to_channel(message.guild, user, config.GAMEPLAY_CHANNEL)
+        elif cmd == "!fleave":
+            if game.is_started():
+                await admin.send_text_to_channel(message.guild, "Game started. Please wait until next game!", message.channel.name)
+            else:
+                if not message.mentions:
+                    await admin.send_text_to_channel(message.guid, "Invalid Command\nUsage: !fleave @user1 @user2 ...", message.channel.name)
+                for user in message.mentions:
+                    await player.do_leave(message.guild, message.channel, user)
+                    game.remove_player(user.id)
+                    await admin.remove_user_from_channel(message.guild, user, config.GAMEPLAY_CHANNEL)
 
 
 async def test_commands(guild):
