@@ -4,11 +4,13 @@ This provides APIs for Player role
 
 import discord
 import config
+from game import text_template as tt
 
 async def do_join(message):
     ''' Join game '''
     author = message.author
-    response = "Welcome player {}".format(author)
+    # response = "Welcome player {}".format(author)
+    response = tt.generate_join_text(author.name)
     # TODO: Reply on GAME_CHANNEL only
     await message.channel.send(response)
     role = discord.utils.get(message.guild.roles, name="Player")

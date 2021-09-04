@@ -5,7 +5,7 @@ from enum import Enum
 import asyncio
 
 import config
-from game import roles
+from game import roles, text_template
 
 
 class GamePhase(Enum):
@@ -49,11 +49,11 @@ class Game:
         l = len(ids)
         werewolf = l//4
         seer = 1
-        doctor = 1
+        guard = 1
         r.update((id_, roles.Werewolf(id_)) for id_ in ids[:werewolf])
         r.update((id_, roles.Seer(id_)) for id_ in ids[werewolf:werewolf+seer])
-        r.update((id_, roles.Doctor(id_)) for id_ in ids[werewolf+seer: werewolf+seer+doctor])
-        r.update((id_, roles.Villager(id_)) for id_ in ids[werewolf+seer+doctor:])
+        r.update((id_, roles.Guard(id_)) for id_ in ids[werewolf+seer: werewolf+seer+guard])
+        r.update((id_, roles.Villager(id_)) for id_ in ids[werewolf+seer+guard:])
         print("Player list:", r)
         return r
 
@@ -128,6 +128,7 @@ class Game:
         self.player_id = []
         self.game_phase = GamePhase.NEW_GAME
         self.killed_last_night = [] # List of player id who was killed last night
+        self.lynched_last_day = []
 
     async def end_game(self):
         # if end_game_condition_match:
@@ -139,7 +140,22 @@ class Game:
             #     await self.interface.send_text_to_channel("Village is winner", config.GAMEPLAY_CHANNEL)
             reset_game_state()
 
+
+    @staticmethod
+    def get_top_voted(list_id):
+        from collections import Counter
+        top_voted=Counter(list_id).most_common(2)
+        if len(top_voted)==1 or (len(top_voted)==2 and top_voted[0][1]>top_voted[1][1]):
+            return top_voted[0][0]
+        return None # have no vote or equal voted
+
+
     async def do_nighttime_phase(self):
+        lynched = Game.get_top_voted(self.lynched_last_day)
+        self.lynched_last_day = []
+        if lynched:
+            await self.interface.send_text_to_channel(f"So sad, player {lynched} has been lynched", config.GAMEPLAY_CHANNEL)
+
         await self.interface.send_text_to_channel("It's night time, everybody goes to sleep", config.GAMEPLAY_CHANNEL)
         # no need to mute, it's done in role.on_phase
         await self.interface.send_text_to_channel("Who would you like to kill tonight?", config.WEREWOLF_CHANNEL)
@@ -147,10 +163,12 @@ class Game:
         await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
 
     async def do_daytime_phase(self):
-        killed = len(self.killed_last_night)
+        #TODO: logic for other role as guard, hunter...?
+        killed = Game.get_top_voted(self.killed_last_night)
+        self.killed_last_night = []
         await self.interface.send_text_to_channel("It's daytime, let's discuss to find the werewolf", config.GAMEPLAY_CHANNEL)
         if killed:
-            await self.interface.send_text_to_channel("Last night, {} people were killed".format(killed), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel("Last night, {} were killed".format(killed), config.GAMEPLAY_CHANNEL)
 
         # vote will be pm in role.on_phase
 
@@ -165,18 +183,40 @@ class Game:
             print("Incorrect game flow")
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
 
+    async def vote(self, author_id, player_id):
+        author = self.players[author_id]
+        if not author.is_alive():
+            return "You must be alive to vote!"
+
+        self.lynched_last_day.append(player_id)
+        #TODO: get user name
+        return f"{author_id} voted to kill {player_id}"
+
+
+    async def kill(self, author_id, player_id):
+        author = self.players[author_id]
+        if not author.is_alive() or not isinstance(author, roles.Werewolf):
+            return "You must be an alive werewolf to kill!"
+        self.killed_last_night.append(player_id)
+        #TODO: get user name
+        return f"{author_id} voted to kill {player_id}"
+
+
     async def test_game(self):
         print("====== Begin test game =====")
+        DELAY_TIME=3
         self.add_player(1)
         self.add_player(2)
         self.add_player(3)
         self.add_player(4)
         await self.start()
-        await asyncio.sleep(3)
+        await asyncio.sleep(DELAY_TIME)
+        print(await self.vote(1,2))
+        print(await self.vote(3,2))
         await self.next_phase()
-        await asyncio.sleep(3)
+        await asyncio.sleep(DELAY_TIME)
         await self.next_phase()
-        await asyncio.sleep(3)
+        await asyncio.sleep(DELAY_TIME)
         await self.next_phase()
         await self.stop()
         print("====== End test game =====")
