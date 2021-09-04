@@ -228,8 +228,7 @@ class Game:
         await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day, alive_player), config.GAMEPLAY_CHANNEL)
 
     async def do_end_daytime_phase(self):
-        voter_list = [v for _, k in self.voter_dict.items() if k is not None]
-        lynched = Game.get_top_voted(voter_list)
+        lynched = Game.get_top_voted(self.voter_dict.values())
         # lynched = Game.get_top_voted(a for a in self.voter_dict for _ in self.voter_dict[a])
         print("lynced list:",self.voter_dict)
         self.voter_dict = {}
@@ -238,9 +237,12 @@ class Game:
             await self.interface.send_text_to_channel(text_template.generate_lynch_text(f"<@{lynched}>"), config.GAMEPLAY_CHANNEL)
 
     async def do_new_nighttime_phase(self):
+        alive_player = ", ".join(
+            f"<@{id_}>" for id_ in self.players if self.players[id_].is_alive()
+        )
         await self.interface.send_text_to_channel(text_template.generate_night_phase_beginning_text(), config.GAMEPLAY_CHANNEL)
         # no need to mute, it's done in role.on_phase
-        await self.interface.send_text_to_channel(text_template.generate_before_voting_werewolf(), config.WEREWOLF_CHANNEL)
+        await self.interface.send_text_to_channel(text_template.generate_before_voting_werewolf(alive_player), config.WEREWOLF_CHANNEL)
         # TODO
         # await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
 
@@ -278,26 +280,26 @@ class Game:
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
 
     async def vote(self, author_id, player_id):
-        author = self.players[author_id]
-        if not author.is_alive():
-            return "You must be alive to vote!"
+        author = self.players.get(author_id, None)
+        if author is None or not author.is_alive():
+            return "You must be alive ingame to vote!"
 
         # Vote for victim
         self.voter_dict[author_id] = player_id
 
         #TODO: get user name
-        return f"{author_id} voted to kill {player_id}"
+        return f"<@{author_id}> voted to kill <@{player_id}>"
 
 
     async def kill(self, author_id, player_id):
         assert self.players is not None
         print(self.players)
-        author = self.players[author_id]
-        if not author.is_alive() or not isinstance(author, roles.Werewolf):
+        author = self.players.get(author_id, None)
+        if author is None or not author.is_alive() or not isinstance(author, roles.Werewolf):
             return "You must be an alive werewolf to kill!"
         self.killed_last_night[author_id] = player_id
         #TODO: get user name
-        return f"{author_id} decided to kill {player_id}"
+        return f"<@{author_id}> decided to kill <@{player_id}>"
 
 
     async def test_game(self):

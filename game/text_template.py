@@ -43,9 +43,8 @@ def generate_night_phase_beginning_text():
     return "Đêm đã tới. Cảnh vật hóa tĩnh lặng, mọi người an giấc. Liệu đêm nay có xảy ra chuyện gì không?"
 
 
-def generate_before_voting_werewolf():
-    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập {config.BOT_PREFIX}kill user để lặng lẽ xử lý nạn nhân. " +\
-        "Các Werewolf hãy chọn đúng để giành lấy chiến thắng!"
+def generate_before_voting_werewolf(user_list):
+    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập {config.BOT_PREFIX}kill @user để lặng lẽ xử lý nạn nhân.\nDanh sách người chơi: {user_list}"
 
 
 def generate_after_voting_werewolf(user):
