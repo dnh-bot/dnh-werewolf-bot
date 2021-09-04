@@ -32,22 +32,8 @@ def generate_execution_text(users_list, user_vote_number_list):
         return "Không có ai bị hành hình. Trò chơi sẽ tiếp tục. Hãy cẩn thân để sống sót!"
 
 
-def generate_day_phase_beginning_text(
-        phase_id, day, roles_list, role_member_alive_number_list, is_game_ended, winner_role=None
-        ):
-    result = f"Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:"
-    if phase_id == 1:
-        result += "".join(
-            f"\n- Số {role_name} hiện tại: {role_member_alive}."
-            for role_name, role_member_alive in zip(roles_list, role_member_alive_number_list)
-        )
-    else:
-        # winner_role: Thường dân, Sói, {&3rd_role}
-        if not is_game_ended:
-            winner_role = None
-        game_current_state = f"{winner_role} đã chiến thắng." if is_game_ended else "Đang tiến hành..."
-        result += f"Tình trạng ván đấu: {game_current_state}"
-
+def generate_day_phase_beginning_text(day, role_member_alive):
+    result = f"Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:\n- Các người chơi hiện tại: {role_member_alive}."
     return result
 
 
@@ -81,3 +67,12 @@ def generate_before_voting_guard():
 
 def generate_after_voting_guard(user):
     return f"Đã bảo vệ thành công {user}"
+
+def generate_killed_text(user):
+    return f"Đêm qua, {user} đã bị mất tích một cách bí ẩn"
+
+def generate_lynch_text(user):
+    return f"Dân làng đã đồng lòng loại bỏ {user} khỏi làng"
+
+def generate_endgame_text(winner):
+    return f"Trò chơi kết thúc, với chiến thắng thuộc về phe {winner}"
