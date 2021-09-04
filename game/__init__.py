@@ -3,6 +3,7 @@ import random
 import time
 from enum import Enum
 import asyncio
+from collections import Counter
 
 import config
 from game import roles, text_template
@@ -68,6 +69,12 @@ class Game:
             else:
                 self.players = init_players
 
+            role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
+
+            await self.interface.send_text_to_channel(text_template.generate_role_list_text(role_list), config.GAMEPLAY_CHANNEL)
+
+            await self.interface.create_channel(config.LOBBY_CHANNEL)
+            await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
             await self.interface.create_channel(config.WEREWOLF_CHANNEL)
 
             self.start_time = datetime.datetime.now()
@@ -189,7 +196,6 @@ class Game:
 
     @staticmethod
     def get_top_voted(list_id):
-        from collections import Counter
         top_voted=Counter(list_id).most_common(2)
         if len(top_voted)==1 or (len(top_voted)==2 and top_voted[0][1]>top_voted[1][1]):
             return top_voted[0][0]

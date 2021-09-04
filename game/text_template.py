@@ -8,6 +8,8 @@ def generate_join_text(user):
 def generate_start_text():
     return "Tất cả người chơi đã sẵn sàng. Hệ thống tiến hành phân vai và trò chơi sẽ bắt đầu ngay sau đây!"
 
+def generate_role_list_text(roles):
+    return f"Danh sách nhân vật trong game: {roles}"
 
 def generate_vote_user_text(voted_user, users_list, user_vote_number_list):
     return f"""Đã vote hành hình {voted_user}.\nDanh sách những kẻ có khả năng bị hành hình:""" +\
