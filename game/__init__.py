@@ -57,10 +57,13 @@ class Game:
         print("Player list:", r)
         return r
 
-    async def start(self):
+    async def start(self, init_players=None):
         if not self.is_stopped:
             await self.interface.send_text_to_channel("======= Game started =======", config.GAMEPLAY_CHANNEL)
-            self.players = self.generate_roles(self.player_id)
+            if not init_players:
+                self.players = self.generate_roles(self.player_id)
+            else:
+                self.players = init_players
 
             await self.interface.create_channel(config.LOBBY_CHANNEL)
             await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
@@ -95,8 +98,24 @@ class Game:
         return [
             player
             for _id, player in self.players.items()
-            if player.status.is_alive()
+            if player.is_alive()
         ]
+
+    def display_alive_player(self):
+        return "\n".join((
+            "======== Alive players: =======",
+            "\n".join(
+                map(str,
+                [
+                    (player.player_id, player.__class__.__name__) 
+                    for _id, player in self.players.items()
+                    if player.is_alive()
+                ]
+                )
+            ),
+            "\n"
+        ))
+
 
     async def start_game_loop(self):
         print("Started game loop")
@@ -189,6 +208,7 @@ class Game:
             return "You must be alive to vote!"
 
         self.lynched_last_day.append(player_id)
+        author.get_killed()
         #TODO: get user name
         return f"{author_id} voted to kill {player_id}"
 
@@ -198,6 +218,7 @@ class Game:
         if not author.is_alive() or not isinstance(author, roles.Werewolf):
             return "You must be an alive werewolf to kill!"
         self.killed_last_night.append(player_id)
+        author.get_killed()
         #TODO: get user name
         return f"{author_id} voted to kill {player_id}"
 
@@ -209,14 +230,30 @@ class Game:
         self.add_player(2)
         self.add_player(3)
         self.add_player(4)
-        await self.start()
-        await asyncio.sleep(DELAY_TIME)
+        players = {
+            1:roles.Werewolf(1),
+            2:roles.Villager(2),
+            3:roles.Villager(3),
+            4:roles.Villager(4),
+        }
+        await self.start(players)
+        print(self.display_alive_player())
         print(await self.vote(1,2))
         print(await self.vote(3,2))
-        await self.next_phase()
         await asyncio.sleep(DELAY_TIME)
-        await self.next_phase()
+
+        await self.next_phase()  # go NIGHT
+        print(self.display_alive_player())
+        print(await self.kill(1,3))
         await asyncio.sleep(DELAY_TIME)
+
+        await self.next_phase()  # go DAY
+        await asyncio.sleep(DELAY_TIME)
+
+        await self.next_phase()  # go NIGHT
+        await asyncio.sleep(DELAY_TIME)
+
+
         await self.next_phase()
         await self.stop()
         print("====== End test game =====")
