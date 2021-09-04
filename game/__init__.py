@@ -128,6 +128,7 @@ class Game:
         self.player_id = []
         self.game_phase = GamePhase.NEW_GAME
         self.killed_last_night = [] # List of player id who was killed last night
+        self.lynched_last_day = []
 
     async def end_game(self):
         # if end_game_condition_match:
@@ -139,7 +140,22 @@ class Game:
             #     await self.interface.send_text_to_channel("Village is winner", config.GAMEPLAY_CHANNEL)
             reset_game_state()
 
+
+    @staticmethod
+    def get_top_voted(list_id):
+        from collections import Counter
+        top_voted=Counter(list_id).most_common(2)
+        if len(top_voted)==1 or (len(top_voted)==2 and top_voted[0][1]>top_voted[1][1]):
+            return top_voted[0][0]
+        return None # have no vote or equal voted
+
+
     async def do_nighttime_phase(self):
+        lynched = Game.get_top_voted(self.lynched_last_day)
+        self.lynched_last_day = []
+        if lynched:
+            await self.interface.send_text_to_channel(f"So sad, player {lynched} has been lynched")
+
         await self.interface.send_text_to_channel("It's night time, everybody goes to sleep", config.GAMEPLAY_CHANNEL)
         # no need to mute, it's done in role.on_phase
         await self.interface.send_text_to_channel("Who would you like to kill tonight?", config.WEREWOLF_CHANNEL)
@@ -147,10 +163,12 @@ class Game:
         await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
 
     async def do_daytime_phase(self):
-        killed = len(self.killed_last_night)
+        #TODO: logic for other role as guard, hunter...?
+        killed = Game.get_top_voted(self.killed_last_night)
+        self.killed_last_night = []
         await self.interface.send_text_to_channel("It's daytime, let's discuss to find the werewolf", config.GAMEPLAY_CHANNEL)
         if killed:
-            await self.interface.send_text_to_channel("Last night, {} people were killed".format(killed), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel("Last night, {} were killed".format(killed), config.GAMEPLAY_CHANNEL)
 
         # vote will be pm in role.on_phase
 
@@ -164,6 +182,25 @@ class Game:
         else:
             print("Incorrect game flow")
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
+
+    async def vote(self, author_id, player_id):
+        author = self.players[author_id]
+        if not author.status.is_alive():
+            return "You must be alive to vote!"
+
+        self.lynched_last_day.append(player_id)
+        #TODO: get user name
+        return f"Voted to kill {player_id}"
+
+
+    async def kill(self, author_id, player_id):
+        author = self.players[author_id]
+        if not author.status.is_alive() or not isinstance(author, roles.Werewolf):
+            return "You must be an alive werewolf to kill!"
+        self.killed_last_night.append(player_id)
+        #TODO: get user name
+        return "{author_id} voted to kill {player_id}"
+
 
     async def test_game(self):
         print("====== Begin test game =====")
