@@ -28,7 +28,7 @@ async def do_leave(message):
 # Require at least 2 players to start the game
 async def do_start(message):
     ''' Start game '''
-    await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL}! (Only Player can view)")
+    await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL} ! (Only Player can view)")
 
 # Player can call stop game when they want to finish game regardless current game state
 # Need 2/3 players type: `!stop` to end the game
