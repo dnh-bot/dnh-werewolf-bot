@@ -285,7 +285,6 @@ class Game:
         # Vote for victim
         self.voter_dict[author_id] = player_id
 
-        # TODO: get user name
         return text_template.generate_vote_text(f"<@{author_id}>", f"<@{player_id}>")
 
     async def kill(self, author_id, player_id):
@@ -295,7 +294,6 @@ class Game:
         if author is None or not author.is_alive() or not isinstance(author, roles.Werewolf):
             return "You must be an alive werewolf to kill!"
         self.killed_last_night[author_id] = player_id
-        # TODO: get user name
         return text_template.generate_kill_text(f"<@{author_id}>", f"<@{player_id}>")
 
     async def test_game(self):
