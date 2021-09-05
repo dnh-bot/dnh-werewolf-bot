@@ -109,12 +109,18 @@ class Game:
         )
 
     def add_player(self, id_):
+        if id_ in self.player_id: return False
+
         print("Player", id_, "joined")
         self.player_id.append(id_)
+        return True
 
     def remove_player(self, id_):
+        if id_ not in self.player_id: return False
+
         print("Player", id_, "left")
         self.player_id.remove(id_)
+        return True
 
     def get_alive_players(self):
         return [
