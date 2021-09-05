@@ -25,7 +25,7 @@ game_state = {
 
 class Game:
     def __init__(self, guild, interface):
-        self.guild = guild
+        self.guild = guild  # Should not use. Reserved for future.
         self.interface = interface
         self.channels = [
             config.LOBBY_CHANNEL,
@@ -48,7 +48,7 @@ class Game:
 
     # TODO: Sher
     @staticmethod
-    def generate_roles(guild, ids):
+    def generate_roles(interface, ids):
         ids = ids.copy()
         random.shuffle(ids)
         r = dict()
@@ -56,10 +56,10 @@ class Game:
         werewolf = l//4
         seer = 1
         guard = 1
-        r.update((id_, roles.Werewolf(guild, id_)) for id_ in ids[:werewolf])
-        r.update((id_, roles.Seer(guild, id_)) for id_ in ids[werewolf:werewolf+seer])
-        r.update((id_, roles.Guard(guild, id_)) for id_ in ids[werewolf+seer: werewolf+seer+guard])
-        r.update((id_, roles.Villager(guild, id_)) for id_ in ids[werewolf+seer+guard:])
+        r.update((id_, roles.Werewolf(interface, id_)) for id_ in ids[:werewolf])
+        r.update((id_, roles.Seer(interface, id_)) for id_ in ids[werewolf:werewolf+seer])
+        r.update((id_, roles.Guard(interface, id_)) for id_ in ids[werewolf+seer: werewolf+seer+guard])
+        r.update((id_, roles.Villager(interface, id_)) for id_ in ids[werewolf+seer+guard:])
         print("Player list:", r)
         return r
 
@@ -67,7 +67,7 @@ class Game:
         if self.is_stopped:
             await self.interface.send_text_to_channel(text_template.generate_start_text(), config.LOBBY_CHANNEL)
             if not init_players:
-                self.players = self.generate_roles(self.guild, self.player_id)
+                self.players = self.generate_roles(self.interface, self.player_id)
             else:
                 self.players = init_players
 
@@ -306,8 +306,8 @@ class Game:
 
     async def test_game(self):
         print("====== Begin test game =====")
-        # await self.test_case_real_players()  # Will tag real people on Discord
-        await self.test_case_simulated_players() # Better for fast testing
+        await self.test_case_real_players()  # Will tag real people on Discord
+        # await self.test_case_simulated_players() # Better for fast testing. Use with ConsoleInterface only
 
         print("====== End test game =====")
 
@@ -320,10 +320,10 @@ class Game:
         self.add_player(real_id[3])
         self.add_player(real_id[4])
         players = {
-            real_id[1]:roles.Werewolf(self.guild, real_id[1]),
-            real_id[2]:roles.Seer(self.guild, real_id[2]),
-            real_id[3]:roles.Villager(self.guild, real_id[3]),
-            real_id[4]:roles.Villager(self.guild, real_id[4]),
+            real_id[1]:roles.Werewolf(self.interface, real_id[1]),
+            real_id[2]:roles.Seer(self.interface, real_id[2]),
+            real_id[3]:roles.Villager(self.interface, real_id[3]),
+            real_id[4]:roles.Villager(self.interface, real_id[4]),
         }
         await self.start(players)
         print(await self.vote(real_id[1], real_id[2]))
@@ -350,10 +350,10 @@ class Game:
         self.add_player(3)
         self.add_player(4)
         players = {
-            1:roles.Werewolf(self.guild, 1),
-            2:roles.Seer(self.guild, 2),
-            3:roles.Villager(self.guild, 3),
-            4:roles.Villager(self.guild, 4),
+            1:roles.Werewolf(self.interface, 1),
+            2:roles.Seer(self.interface, 2),
+            3:roles.Villager(self.interface, 3),
+            4:roles.Villager(self.interface, 4),
         }
         await self.start(players)
         print(await self.vote(1, 2))
