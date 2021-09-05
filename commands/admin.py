@@ -20,7 +20,7 @@ def isAdmin(author):
 def list_users(guild):
     print("Server member: ")
     for user in guild.members:
-        print("- ", user.name, user.id)
+        print("- ", user.display_name, user.id)
     print("-------------")
 
 async def create_category(guild, author, category_name):
@@ -35,7 +35,7 @@ async def create_category(guild, author, category_name):
             guild.me: discord.PermissionOverwrite(read_messages=True),
             admin_role: discord.PermissionOverwrite(read_messages=True)
         }
-        response = "{} created category {}".format(author.name, category_name)
+        response = "{} created category {}".format(author.display_name, category_name)
         print(response)
         category = await guild.create_category(category_name, overwrites=overwrites)
         return category
@@ -52,7 +52,7 @@ async def create_channel(guild, author, channel_name, category_name=config.GAME_
             guild.me: discord.PermissionOverwrite(read_messages=True),
             admin_role: discord.PermissionOverwrite(read_messages=True)
         }
-        response = "{} created channel {}".format(author.name, channel_name)
+        response = "{} created channel {}".format(author.display_name, channel_name)
         print(response)
         category = discord.utils.get(guild.categories, name=category_name)
         logger.logger_debug(category)
@@ -66,7 +66,7 @@ async def delete_channel(guild, author, channel_name):
     # Delete text channel. Any Admin can delete it
     try:
         channel = discord.utils.get(guild.channels, name=channel_name)
-        response = "{} deleted channel {}".format(author.name, channel_name)
+        response = "{} deleted channel {}".format(author.display_name, channel_name)
         assert isinstance(channel, discord.TextChannel)
         print(response)
         # await channel.send(response)
