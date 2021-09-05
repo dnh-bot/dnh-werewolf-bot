@@ -47,7 +47,7 @@ class Game:
 
     # TODO: Sher
     @staticmethod
-    def generate_roles(ids):
+    def generate_roles(guild, ids):
         ids = ids.copy()
         random.shuffle(ids)
         r = dict()
@@ -55,18 +55,19 @@ class Game:
         werewolf = l//4
         seer = 1
         guard = 1
-        r.update((id_, roles.Werewolf(id_)) for id_ in ids[:werewolf])
-        r.update((id_, roles.Seer(id_)) for id_ in ids[werewolf:werewolf+seer])
-        r.update((id_, roles.Guard(id_)) for id_ in ids[werewolf+seer: werewolf+seer+guard])
-        r.update((id_, roles.Villager(id_)) for id_ in ids[werewolf+seer+guard:])
+        r.update((id_, roles.Werewolf(guild, id_)) for id_ in ids[:werewolf])
+        r.update((id_, roles.Seer(guild, id_)) for id_ in ids[werewolf:werewolf+seer])
+        r.update((id_, roles.Guard(guild, id_)) for id_ in ids[werewolf+seer: werewolf+seer+guard])
+        r.update((id_, roles.Villager(guild, id_)) for id_ in ids[werewolf+seer+guard:])
         print("Player list:", r)
         return r
 
     async def start(self, init_players=None):
         if not self.is_stopped:
+            self.reset_game_state()
             await self.interface.send_text_to_channel(text_template.generate_start_text(), config.GAMEPLAY_CHANNEL)
             if not init_players:
-                self.players = self.generate_roles(self.player_id)
+                self.players = self.generate_roles(self.guild, self.player_id)
             else:
                 self.players = init_players
 
@@ -82,13 +83,16 @@ class Game:
 
             self.game_phase = GamePhase.DAY
 
+            for player in self.players.values():
+                await player.create_personal_channel()
+
             self.task_game_loop = asyncio.create_task(self.start_game_loop())
             print(self.task_game_loop)
 
     async def stop(self):
         print("======= Game stopped =======")
         self.is_stopped = True
-        self.reset_game_state()
+        #self.reset_game_state()
         self.task_game_loop.cancel()
         try:
             await self.task_game_loop
@@ -116,7 +120,7 @@ class Game:
             "\n".join(
                 map(str,
                 [
-                    (player.player_id, player.__class__.__name__) 
+                    (player.player_id, player.__class__.__name__)
                     for _id, player in self.players.items()
                     if player.is_alive()
                 ]
@@ -130,12 +134,12 @@ class Game:
         # to
         # Player | Number of votes | Voters
         # (1, count(2,3,4), (2,3,4))
-        # (2, count(1)    , (1) ) 
+        # (2, count(1)    , (1) )
         d = self.voter_dict
         table_dict =reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, d.items(), dict())
         header = "Player  Num of votes   Voters\n"
         data = []
-        # FIXME: 
+        # FIXME:
         for v, k in table_dict.items():
             voters = ",".join([f'<@{i}>' for i in k])
             data.append(f'<@{v}>        {len(k)}       , {voters}')
@@ -145,14 +149,11 @@ class Game:
 
 
     async def start_game_loop(self):
-        text ="Welcome players: "
         for _id, player in self.players.items():
-            text += f"<@{_id}>, "
             if isinstance(player, roles.Werewolf):
                 print("Wolf: ", player)
                 await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL)
                 await self.interface.send_text_to_channel(f"Hello werewolf <@{_id}>", config.WEREWOLF_CHANNEL)
-        await self.interface.send_text_to_channel(text, config.GAMEPLAY_CHANNEL)
         print("Started game loop")
         while not self.is_stopped:
             print("Phase:", self.game_phase)
@@ -160,8 +161,7 @@ class Game:
             # New phase
             await self.new_phase()
 
-            for _, role in self.players.items():
-                role.on_phase(self.game_phase)
+            await asyncio.gather(*[role.on_phase(self.game_phase) for role in self.players.values()])
 
             # Wait for `!next` from Admin
             # or Next phase control from bot
@@ -206,8 +206,6 @@ class Game:
             # Print werewolf list:
             werewolf_list = ",".join([str(f"<@{_id}>") for _id, werewolf in self.players.items() if  isinstance(werewolf, roles.Werewolf)])
             await self.interface.send_text_to_channel("Werewolfs: "+werewolf_list, config.GAMEPLAY_CHANNEL)
-
-            self.reset_game_state()
             return True
         else:
             return False
@@ -252,7 +250,7 @@ class Game:
         self.killed_last_night = dict()
         if killed:
             self.players[killed].get_killed()
-            await self.interface.send_text_to_channel(text_template.generate_killed_text([f"<@{killed}>"]), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel(text_template.generate_killed_text(f"<@{killed}>"), config.GAMEPLAY_CHANNEL)
 
     async def new_phase(self):
         print(self.display_alive_player())
@@ -305,30 +303,36 @@ class Game:
     async def test_game(self):
         print("====== Begin test game =====")
         await self.test_case1()
-        
+
         print("====== End test game =====")
 
     async def test_case1(self):
         print("====== Begin test case =====")
         DELAY_TIME=3
-        self.add_player(1)
-        self.add_player(2)
-        self.add_player(3)
-        self.add_player(4)
+        real_id = {
+            1: 529944293390155776, #Stanley
+            2: 606716506889519125, #Nhim
+            3: 420248840583643156, #Boi
+            4: 571919661613187093  #Sher
+        }
+        self.add_player(real_id[1])
+        self.add_player(real_id[2])
+        self.add_player(real_id[3])
+        self.add_player(real_id[4])
         players = {
-            1:roles.Werewolf(1),
-            2:roles.Villager(2),
-            3:roles.Villager(3),
-            4:roles.Villager(4),
+            real_id[1]:roles.Werewolf(self.guild, real_id[1]),
+            real_id[2]:roles.Seer(self.guild, real_id[2]),
+            real_id[3]:roles.Villager(self.guild, real_id[3]),
+            real_id[4]:roles.Villager(self.guild, real_id[4]),
         }
         await self.start(players)
-        print(await self.vote(1,2))
-        print(await self.vote(3,2))
-        print(await self.vote(4,1))
+        print(await self.vote(real_id[1], real_id[2]))
+        print(await self.vote(real_id[3], real_id[2]))
+        print(await self.vote(real_id[4], real_id[1]))
 
         await self.next_phase()  # go NIGHT
         await asyncio.sleep(DELAY_TIME)
-        print(await self.kill(1,3))
+        print(await self.kill(real_id[1], real_id[3]))
 
         await self.next_phase()  # go DAY
         await asyncio.sleep(DELAY_TIME)

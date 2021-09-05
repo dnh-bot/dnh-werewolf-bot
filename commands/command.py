@@ -85,6 +85,7 @@ async def parse_command(game, message):
             await admin.delete_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
             await admin.delete_channel(message.guild, message.author, config.WEREWOLF_CHANNEL)
             await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
+            await asyncio.gather(*[player.delete_personal_channel() for player in game.players.values()])
         elif cmd == "!fjoin":
             if game.is_started():
                 text = "Game started. Please wait until next game!"
