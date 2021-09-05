@@ -297,7 +297,7 @@ class Game:
         self.voter_dict[author_id] = player_id
 
         #TODO: get user name
-        return f"<@{author_id}> voted to kill <@{player_id}>"
+        return text_template.generate_vote_text(f"<@{author_id}>", f"<@{player_id}>")
 
 
     async def kill(self, author_id, player_id):
@@ -308,7 +308,7 @@ class Game:
             return "You must be an alive werewolf to kill!"
         self.killed_last_night[author_id] = player_id
         #TODO: get user name
-        return f"<@{author_id}> decided to kill <@{player_id}>"
+        return text_template.generate_kill_text(f"<@{author_id}>", f"<@{player_id}>")
 
 
     async def test_game(self):
