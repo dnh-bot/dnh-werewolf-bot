@@ -48,10 +48,10 @@ class Game:
         guard = 1 if len_ids > 5 else 0
         seer = 1 if len_ids > 6 else 0
         r = dict()
-        r.update((id_, roles.Werewolf(id_)) for id_ in ids[:werewolf])
-        r.update((id_, roles.Seer(id_)) for id_ in ids[werewolf:werewolf+seer])
-        r.update((id_, roles.Guard(id_)) for id_ in ids[werewolf+seer:werewolf+seer+guard])
-        r.update((id_, roles.Villager(id_)) for id_ in ids[werewolf+seer+guard:])
+        r.update((id_, roles.Werewolf(interface,id_)) for id_ in ids[:werewolf])
+        r.update((id_, roles.Seer(interface,id_)) for id_ in ids[werewolf:werewolf+seer])
+        r.update((id_, roles.Guard(interface,id_)) for id_ in ids[werewolf+seer:werewolf+seer+guard])
+        r.update((id_, roles.Villager(interface,id_)) for id_ in ids[werewolf+seer+guard:])
         print("Player list:", r)
         return r
 
