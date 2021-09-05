@@ -51,6 +51,12 @@ def generate_after_voting_werewolf(user):
     return f"Đang tiến hành xử lý {user}. Mong là mọi việc thuận lợi, đi ngủ thôi."
 
 
+def generate_vote_text(author, user):
+    return f"{author} đã biểu quyết loại bỏ {user} khỏi làng"
+
+def generate_kill_text(werewolf, user):
+    return f"Sói {werewolf} muốn xử lý {user} trong đêm nay"
+
 def generate_before_voting_seer():
     return "Tiên tri muốn thấy gì, từ ai? " +\
         f"Hãy làm phép bằng cách nhập {config.BOT_PREFIX}check user để xem người chơi đó là ai."
