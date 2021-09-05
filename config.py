@@ -4,10 +4,11 @@ load_dotenv()
 # ============ Configurations ===========
 # DISCORD_TOKEN in .env file
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
-DISCORD_TESTING_SERVER_ID = int(os.getenv('DISCORD_TESTING_SERVER_ID'))  # Testing server ID
-DISCORD_DEPLOY_SERVER_ID = int(os.getenv('DISCORD_DEPLOY_SERVER_ID'))  # Deploy server ID
-DISCORD_TESTING_USER1_ID = int(os.getenv('DISCORD_TESTING_USER1_ID'))  # Testing user1 ID
-DISCORD_TESTING_USER2_ID = int(os.getenv('DISCORD_TESTING_USER2_ID'))  # Testing user1 ID
+DISCORD_TESTING_SERVER_ID = int(os.getenv('DISCORD_TESTING_SERVER_ID'))
+DISCORD_DEPLOY_SERVER_ID = int(os.getenv('DISCORD_DEPLOY_SERVER_ID'))
+DISCORD_TESTING_USER1_ID = int(os.getenv('DISCORD_TESTING_USER1_ID'))
+DISCORD_TESTING_USER2_ID = int(os.getenv('DISCORD_TESTING_USER2_ID'))
+DISCORD_TESTING_ADMIN1_ID = int(os.getenv('DISCORD_TESTING_ADMIN1_ID'))
 
 DISCORD_TESTING_USERS_ID = list(map(int, os.getenv('DISCORD_TESTING_USERS_ID').split(',')))
 
