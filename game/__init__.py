@@ -34,7 +34,7 @@ class Game:
         return self.guild
 
     def is_started(self):
-        return (self.game_phase != GamePhase.NEW_GAME)
+        return self.game_phase != GamePhase.NEW_GAME
 
     def awake(self):
         pass
@@ -48,10 +48,10 @@ class Game:
         guard = 1 if len_ids > 5 else 0
         seer = 1 if len_ids > 6 else 0
         r = dict()
-        r.update((id_, roles.Werewolf(id_)) for id_ in ids[:werewolf])
-        r.update((id_, roles.Seer(id_)) for id_ in ids[werewolf:werewolf+seer])
-        r.update((id_, roles.Guard(id_)) for id_ in ids[werewolf+seer:werewolf+seer+guard])
-        r.update((id_, roles.Villager(id_)) for id_ in ids[werewolf+seer+guard:])
+        r.update((id_, roles.Werewolf(interface, id_)) for id_ in ids[:werewolf])
+        r.update((id_, roles.Seer(interface, id_)) for id_ in ids[werewolf:werewolf+seer])
+        r.update((id_, roles.Guard(interface, id_)) for id_ in ids[werewolf+seer:werewolf+seer+guard])
+        r.update((id_, roles.Villager(interface, id_)) for id_ in ids[werewolf+seer+guard:])
         print("Player list:", r)
         return r
 
@@ -59,7 +59,7 @@ class Game:
         if self.is_stopped:
             await self.interface.send_text_to_channel(text_template.generate_start_text(), config.LOBBY_CHANNEL)
             if not init_players:
-                self.players = self.generate_roles(self.interface, self.player_id)
+                self.players = self.generate_roles(self.interface, self.players.keys())
             else:
                 self.players = init_players
 
@@ -78,11 +78,10 @@ class Game:
 
     async def create_channel(self):
         await asyncio.gather(
-                self.interface.create_channel(config.GAMEPLAY_CHANNEL),
-                self.interface.create_channel(config.WEREWOLF_CHANNEL),
-                *[player.create_personal_channel() for player in self.players.values()]
+            self.interface.create_channel(config.GAMEPLAY_CHANNEL),
+            self.interface.create_channel(config.WEREWOLF_CHANNEL),
+            *[player.create_personal_channel() for player in self.players.values()]
         )
-
 
     async def stop(self):
         print("======= Game stopped =======")
@@ -103,23 +102,25 @@ class Game:
         )
 
     def add_player(self, id_):
-        if id_ in self.player_id: return False
+        if id_ in self.players:
+            return False
 
         print("Player", id_, "joined")
-        self.player_id.append(id_)
+        self.players[id_] = None
         return True
 
     def remove_player(self, id_):
-        if id_ not in self.player_id: return False
+        if id_ not in self.players:
+            return False
 
         print("Player", id_, "left")
-        self.player_id.remove(id_)
+        del self.players[id_]
         return True
 
     def get_alive_players(self):
         return [
             player
-            for _id, player in self.players.items()
+            for player in self.players.values()
             if player.is_alive()
         ]
 
@@ -128,9 +129,9 @@ class Game:
             "======== Alive players: =======",
             "\n".join(
                 map(str, [
-                        (player.player_id, player.__class__.__name__)
-                        for _id, player in self.players.items()
-                        if player.is_alive()
+                    (player_id, player.__class__.__name__)
+                    for player_id, player in self.players.items()
+                    if player.is_alive()
                 ])
             ),
             "\n"
@@ -140,10 +141,9 @@ class Game:
         # From {'u1':'u2', 'u2':'u1', 'u3':'u1'}
         # to {'u2': {'u1'}, 'u1': {'u3', 'u2'}}
         d = self.voter_dict
-        table_dict =reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, d.items(), dict())
+        table_dict = reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, d.items(), dict())
         print(table_dict)
         return table_dict
-
 
     async def start_game_loop(self):
         print("Starting game loop")
@@ -152,6 +152,7 @@ class Game:
                 print("Wolf: ", player)
                 await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL)
                 await self.interface.send_text_to_channel(f"Hello werewolf <@{_id}>", config.WEREWOLF_CHANNEL)
+
         print("Started game loop")
         while not self.is_stopped:
             print("Phase:", self.game_phase)
@@ -173,13 +174,13 @@ class Game:
             if self.is_end_game():
                 break
 
-        if any(werewolf.is_alive() for _,werewolf in self.players.items() if  isinstance(werewolf, roles.Werewolf)):
+        if any(a_player.is_alive() for a_player in self.players.values() if isinstance(a_player, roles.Werewolf)):
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)
         else:
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Villager"), config.GAMEPLAY_CHANNEL)
         # Print werewolf list:
-        werewolf_list = ",".join([str(f"<@{_id}>") for _id, werewolf in self.players.items() if  isinstance(werewolf, roles.Werewolf)])
-        await self.interface.send_text_to_channel("Werewolfs: "+werewolf_list, config.GAMEPLAY_CHANNEL)
+        werewolf_list = ", ".join([str(f"<@{_id}>") for _id, a_player in self.players.items() if isinstance(a_player, roles.Werewolf)])
+        await self.interface.send_text_to_channel("Werewolves: "+werewolf_list, config.GAMEPLAY_CHANNEL)
         print("End start loop")
 
     def reset_game_state(self):
@@ -187,10 +188,9 @@ class Game:
         self.is_stopped = True
         self.start_time = None
         self.players = {}  # id: Player
-        self.player_id = []
         self.game_phase = GamePhase.NEW_GAME
         self.killed_last_night = dict()  # dict[wolf] -> player
-        self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1} . All items are ids.
+        self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1}. All items are ids.
         self.vote_start = set()
         self.vote_stop = set()
         self.day = 0
@@ -206,10 +206,7 @@ class Game:
                     num_werewolf += 1
         print("DEBUG: ", num_players, num_werewolf)
 
-        if (num_werewolf/num_players >= 0.5) or (num_werewolf == 0):
-            return True
-        else:
-            return False
+        return num_werewolf == 0 or num_werewolf * 2 >= num_players
 
     @staticmethod
     def get_top_voted(list_id):
@@ -228,7 +225,7 @@ class Game:
     async def do_end_daytime_phase(self):
         lynched = Game.get_top_voted(self.voter_dict.values())
         # lynched = Game.get_top_voted(a for a in self.voter_dict for _ in self.voter_dict[a])
-        print("lynced list:",self.voter_dict)
+        print("lynced list:", self.voter_dict)
         self.voter_dict = {}
         if lynched:
             self.players[lynched].get_killed()
@@ -305,17 +302,17 @@ class Game:
 
     async def test_case_real_players(self):
         print("====== Begin test case =====")
-        DELAY_TIME=3
-        real_id = dict((i+1,x) for i,x in enumerate(config.DISCORD_TESTING_USERS_ID))
+        DELAY_TIME = 3
+        real_id = dict((i+1, x) for i, x in enumerate(config.DISCORD_TESTING_USERS_ID))
         self.add_player(real_id[1])
         self.add_player(real_id[2])
         self.add_player(real_id[3])
         self.add_player(real_id[4])
         players = {
-            real_id[1]:roles.Werewolf(self.interface, real_id[1]),
-            real_id[2]:roles.Seer(self.interface, real_id[2]),
-            real_id[3]:roles.Villager(self.interface, real_id[3]),
-            real_id[4]:roles.Villager(self.interface, real_id[4]),
+            real_id[1]: roles.Werewolf(self.interface, real_id[1]),
+            real_id[2]: roles.Seer(self.interface, real_id[2]),
+            real_id[3]: roles.Villager(self.interface, real_id[3]),
+            real_id[4]: roles.Villager(self.interface, real_id[4]),
         }
         await self.start(players)
         print(await self.vote(real_id[1], real_id[2]))
@@ -336,7 +333,7 @@ class Game:
 
     async def test_case_simulated_players(self):
         print("====== Begin test case =====")
-        DELAY_TIME=3
+        DELAY_TIME = 3
         self.add_player(1)
         self.add_player(2)
         self.add_player(3)
