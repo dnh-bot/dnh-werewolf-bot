@@ -40,6 +40,9 @@ async def do_generate_vote_status_table(channel, table):
     # Player | Number of votes | Voters
     #  u1             2           u2, u3
     #  u2             1           u1
+    if not table:
+        await channel.send("Nobody has voted yet")
+        return
     victim_list = []
     voter_count = []
     voter_list = []
