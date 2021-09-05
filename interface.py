@@ -7,22 +7,22 @@ class ConsoleInterface:
 
     async def send_text_to_channel(self, msg, channel_name):
         print("#{channel}: {msg}".format(channel=channel_name, msg=msg))
-        await asyncio.sleep(0)
+
 
     async def create_category(self, category_name):
         print("#{category}: {msg}".format(category=category_name))
-        await asyncio.sleep(0)
+
 
     async def create_channel(self, channel_name):
         print("{channel} created!".format(channel=channel_name))
-        await asyncio.sleep(0)
+
 
     async def delete_channel(self, channel_name):
         print(f"{channel_name} deleted!")
 
     async def add_user_to_channel(self, player_id, channel_name):
         print(f"Added {player_id} to channel #{channel_name}")
-        await asyncio.sleep(0)
+
 
 
 class DiscordInterface:
