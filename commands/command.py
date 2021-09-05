@@ -105,6 +105,8 @@ async def parse_command(game, message):
                     await player.do_leave(message.guild, message.channel, user)
                     game.remove_player(user.id)
                     await admin.remove_user_from_channel(message.guild, user, config.GAMEPLAY_CHANNEL)
+        elif cmd == "!fstart":
+            await player.do_start(game, message, force=True)
 
 
 async def test_commands(guild):
