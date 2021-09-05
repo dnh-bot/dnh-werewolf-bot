@@ -8,20 +8,14 @@ from game import text_template as tt
 
 async def do_join(guild, channel, user):
     ''' Join game '''
-    # response = "Welcome player {}".format(author)
     response = tt.generate_join_text(user.display_name)
-    # TODO: Reply on GAME_CHANNEL only
     await channel.send(response)
-    role = discord.utils.get(guild.roles, name="Player")
-    await user.add_roles(role)
 
 
 async def do_leave(guild, channel, user):
     ''' Leave game '''
     response = "Goodbye player {}".format(user.display_name)
     await channel.send(response)
-    role = discord.utils.get(guild.roles, name="Player")
-    await user.remove_roles(role)
 
 # Require at least 2 players to start the game
 async def do_start(game, message):
