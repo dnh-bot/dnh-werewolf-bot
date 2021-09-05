@@ -9,7 +9,7 @@ from game import text_template as tt
 async def do_join(guild, channel, user):
     ''' Join game '''
     # response = "Welcome player {}".format(author)
-    response = tt.generate_join_text(user.name)
+    response = tt.generate_join_text(user.display_name)
     # TODO: Reply on GAME_CHANNEL only
     await channel.send(response)
     role = discord.utils.get(guild.roles, name="Player")
@@ -18,20 +18,53 @@ async def do_join(guild, channel, user):
 
 async def do_leave(guild, channel, user):
     ''' Leave game '''
-    response = "Goodbye player {}".format(user)
+    response = "Goodbye player {}".format(user.display_name)
     await channel.send(response)
     role = discord.utils.get(guild.roles, name="Player")
     await user.remove_roles(role)
 
 # Require at least 2 players to start the game
-async def do_start(message):
+async def do_start(game, message):
     ''' Start game '''
+    if message.author.id not in game.player_id:
+        return await message.reply("You are not in the game.")
+
+    game.vote_start.add(message.author.id)
+
+    num_players = len(game.player_id)
+    num_vote = len(game.vote_start)
+
+    if num_players < 4:
+        return await message.reply("At least 4 players to start game.")
+
+    text = f"Player {message.author.display_name} votes for start the game. (vote rate {num_vote}/{num_players})"
+    print(text)
+    await message.channel.send(text)
+
+    if num_vote / num_players < 2/3: return
+
+    await game.start()
     await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL} ! (Only Player can view)")
 
 # Player can call stop game when they want to finish game regardless current game state
 # Need 2/3 players type: `!stop` to end the game
-async def do_stop(message):
+async def do_stop(game, message):
     ''' Stop game '''
+    if message.author.id not in game.player_id:
+        return await message.reply("You are not in the game.")
+
+    game.vote_stop.add(message.author.id)
+
+    num_players = len(game.player_id)
+    num_vote = len(game.vote_stop)
+
+    text = f"Player {message.author.display_name} votes for stop the game. (vote rate {num_vote}/{num_players})"
+    print(text)
+    await message.channel.send(text)
+
+    if num_vote / num_players < 2/3: return
+
+    await game.stop()
     await message.channel.send("Game stop!")
 
 

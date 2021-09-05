@@ -111,12 +111,18 @@ class Game:
         )
 
     def add_player(self, id_):
+        if id_ in self.player_id: return False
+
         print("Player", id_, "joined")
         self.player_id.append(id_)
+        return True
 
     def remove_player(self, id_):
+        if id_ not in self.player_id: return False
+
         print("Player", id_, "left")
         self.player_id.remove(id_)
+        return True
 
     def get_alive_players(self):
         return [
@@ -196,6 +202,8 @@ class Game:
         self.game_phase = GamePhase.NEW_GAME
         self.killed_last_night = dict()  # dict[wolf] -> player
         self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1} . All items are ids.
+        self.vote_start = set()
+        self.vote_stop = set()
         self.day = 0
 
     def is_end_game(self):
