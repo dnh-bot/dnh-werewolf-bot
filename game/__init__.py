@@ -33,6 +33,7 @@ class Game:
             config.WEREWOLF_CHANNEL,
             # Personal channel will goes into role class
         ]  # List of channels in game
+        self.task_game_loop = None
         self.reset_game_state()
         self.next_flag = asyncio.Event()
 
@@ -95,11 +96,12 @@ class Game:
         print("======= Game stopped =======")
         await self.delete_channel()
         self.reset_game_state()
-        self.task_game_loop.cancel()
-        try:
-            await self.task_game_loop
-        except asyncio.CancelledError:
-            print("task_game_loop is cancelled now")
+        if self.task_game_loop:
+            self.task_game_loop.cancel()
+            try:
+                await self.task_game_loop
+            except asyncio.CancelledError:
+                print("task_game_loop is cancelled now")
 
     async def delete_channel(self):
         await asyncio.gather(
@@ -304,11 +306,12 @@ class Game:
 
     async def test_game(self):
         print("====== Begin test game =====")
-        await self.test_case1()
+        # await self.test_case_real_players()  # Will tag real people on Discord
+        await self.test_case_simulated_players() # Better for fast testing
 
         print("====== End test game =====")
 
-    async def test_case1(self):
+    async def test_case_real_players(self):
         print("====== Begin test case =====")
         DELAY_TIME=3
         real_id = dict((i+1,x) for i,x in enumerate(config.DISCORD_TESTING_USERS_ID))
@@ -330,6 +333,36 @@ class Game:
         await self.next_phase()  # go NIGHT
         await asyncio.sleep(DELAY_TIME)
         print(await self.kill(real_id[1], real_id[3]))
+
+        await self.next_phase()  # go DAY
+        await asyncio.sleep(DELAY_TIME)
+
+        await self.next_phase()
+        await asyncio.sleep(DELAY_TIME)
+        await self.stop()
+        print("====== End test case =====")
+
+    async def test_case_simulated_players(self):
+        print("====== Begin test case =====")
+        DELAY_TIME=3
+        self.add_player(1)
+        self.add_player(2)
+        self.add_player(3)
+        self.add_player(4)
+        players = {
+            1:roles.Werewolf(self.guild, 1),
+            2:roles.Seer(self.guild, 2),
+            3:roles.Villager(self.guild, 3),
+            4:roles.Villager(self.guild, 4),
+        }
+        await self.start(players)
+        print(await self.vote(1, 2))
+        print(await self.vote(3, 2))
+        print(await self.vote(4, 1))
+
+        await self.next_phase()  # go NIGHT
+        await asyncio.sleep(DELAY_TIME)
+        print(await self.kill(1, 3))
 
         await self.next_phase()  # go DAY
         await asyncio.sleep(DELAY_TIME)
