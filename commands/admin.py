@@ -11,7 +11,7 @@ import config
 
 def isAdmin(author):
     # Check if this user has 'Admin' right
-    admin_role = discord.utils.get(author.guild.roles, name="Admin")
+    admin_role = discord.utils.get(author.roles, name="Admin")
     if admin_role in author.guild.roles:
         return True
     else:
