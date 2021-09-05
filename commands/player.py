@@ -58,8 +58,9 @@ async def do_stop(game, message):
 
     if num_vote / num_players < 2/3: return
 
-    await game.stop()
     await message.channel.send("Game stop!")
+    await game.stop()
+
 
 
 async def do_generate_vote_status_table(channel, table):
