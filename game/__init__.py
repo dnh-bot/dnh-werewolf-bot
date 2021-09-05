@@ -39,20 +39,19 @@ class Game:
     def awake(self):
         pass
 
-    # TODO: Sher
     @staticmethod
     def generate_roles(interface, ids):
         ids = ids.copy()
         random.shuffle(ids)
-        r = dict()
         len_ids = len(ids)
-        werewolf = len_ids//4
-        seer = 1
-        guard = 1
-        r.update((id_, roles.Werewolf(interface, id_)) for id_ in ids[:werewolf])
-        r.update((id_, roles.Seer(interface, id_)) for id_ in ids[werewolf:werewolf+seer])
-        r.update((id_, roles.Guard(interface, id_)) for id_ in ids[werewolf+seer: werewolf+seer+guard])
-        r.update((id_, roles.Villager(interface, id_)) for id_ in ids[werewolf+seer+guard:])
+        werewolf = len_ids // 8 + 1
+        guard = 1 if len_ids > 5 else 0
+        seer = 1 if len_ids > 6 else 0
+        r = dict()
+        r.update((id_, roles.Werewolf(id_)) for id_ in ids[:werewolf])
+        r.update((id_, roles.Seer(id_)) for id_ in ids[werewolf:werewolf+seer])
+        r.update((id_, roles.Guard(id_)) for id_ in ids[werewolf+seer:werewolf+seer+guard])
+        r.update((id_, roles.Villager(id_)) for id_ in ids[werewolf+seer+guard:])
         print("Player list:", r)
         return r
 
@@ -128,13 +127,11 @@ class Game:
         return "\n".join((
             "======== Alive players: =======",
             "\n".join(
-                map(str,
-                [
-                    (player.player_id, player.__class__.__name__)
-                    for _id, player in self.players.items()
-                    if player.is_alive()
-                ]
-                )
+                map(str, [
+                        (player.player_id, player.__class__.__name__)
+                        for _id, player in self.players.items()
+                        if player.is_alive()
+                ])
             ),
             "\n"
         ))
@@ -183,7 +180,6 @@ class Game:
         # Print werewolf list:
         werewolf_list = ",".join([str(f"<@{_id}>") for _id, werewolf in self.players.items() if  isinstance(werewolf, roles.Werewolf)])
         await self.interface.send_text_to_channel("Werewolfs: "+werewolf_list, config.GAMEPLAY_CHANNEL)
-
         print("End start loop")
 
     def reset_game_state(self):
@@ -204,10 +200,10 @@ class Game:
         num_players = 0
         for _, player in self.players.items():
             if player.is_alive():
-                num_players +=1
+                num_players += 1
                 # FIXME: better use of type
                 if isinstance(player, roles.Werewolf):
-                    num_werewolf +=1
+                    num_werewolf += 1
         print("DEBUG: ", num_players, num_werewolf)
 
         if (num_werewolf/num_players >= 0.5) or (num_werewolf == 0):
@@ -215,18 +211,17 @@ class Game:
         else:
             return False
 
-
     @staticmethod
     def get_top_voted(list_id):
-        top_voted=Counter(list_id).most_common(2)
-        if len(top_voted)==1 or (len(top_voted)==2 and top_voted[0][1]>top_voted[1][1]):
+        top_voted = Counter(list_id).most_common(2)
+        if len(top_voted) == 1 or (len(top_voted) == 2 and top_voted[0][1] > top_voted[1][1]):
             return top_voted[0][0]
-        return None # have no vote or equal voted
+        return None  # have no vote or equal voted
 
     async def do_new_daytime_phase(self):
         self.day += 1
         alive_player = ", ".join(
-            f"<@{id_}>" for id_ in self.players if self.players[id_].is_alive()
+            f"<@{id_}>" for id_ in sorted(self.players) if self.players[id_].is_alive()
         )
         await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day, alive_player), config.GAMEPLAY_CHANNEL)
 
@@ -241,7 +236,7 @@ class Game:
 
     async def do_new_nighttime_phase(self):
         alive_player = ", ".join(
-            f"<@{id_}>" for id_ in self.players if self.players[id_].is_alive()
+            f"<@{id_}>" for id_ in sorted(self.players) if self.players[id_].is_alive()
         )
         await self.interface.send_text_to_channel(text_template.generate_night_phase_beginning_text(), config.GAMEPLAY_CHANNEL)
         # no need to mute, it's done in role.on_phase
@@ -250,7 +245,7 @@ class Game:
         # await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
 
     async def do_end_nighttime_phase(self):
-        #TODO: logic for other role as guard, hunter...?
+        # TODO: logic for other role as guard, hunter...?
         killed = Game.get_top_voted(self.killed_last_night.values())
         self.killed_last_night = dict()
         if killed:
@@ -349,10 +344,10 @@ class Game:
         self.add_player(3)
         self.add_player(4)
         players = {
-            1:roles.Werewolf(self.interface, 1),
-            2:roles.Seer(self.interface, 2),
-            3:roles.Villager(self.interface, 3),
-            4:roles.Villager(self.interface, 4),
+            1: roles.Werewolf(self.interface, 1),
+            2: roles.Seer(self.interface, 2),
+            3: roles.Villager(self.interface, 3),
+            4: roles.Villager(self.interface, 4),
         }
         await self.start(players)
         print(await self.vote(1, 2))
