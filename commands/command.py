@@ -29,11 +29,9 @@ async def parse_command(game, message):
         else:
             await message.reply("You are not in the game.")
     elif cmd == '!start':
-        await player.do_start(message)
-        await game.start()
+        await player.do_start(game, message)
     elif cmd == '!stop':
-        await player.do_stop(message)
-        await game.stop()
+        await player.do_stop(game, message)
     elif cmd == '!vote': # author: `!vote @target_user`
         author = message.author
         if len(message.mentions)<1:
