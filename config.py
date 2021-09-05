@@ -13,8 +13,8 @@ DISCORD_TESTING_USERS_ID = list(map(int, os.getenv('DISCORD_TESTING_USERS_ID').s
 
 BOT_PREFIX = '!'
 
-# each !next cmd have at least 15 seconds apart
-NEXT_CMD_DELAY = 15
+# each !next cmd have at least 60 seconds apart
+NEXT_CMD_DELAY = 60
 
 GAME_CATEGORY = "GAME"
 LOBBY_CHANNEL = "lobby"
