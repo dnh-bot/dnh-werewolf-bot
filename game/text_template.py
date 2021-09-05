@@ -8,6 +8,8 @@ def generate_join_text(user):
 def generate_start_text():
     return "Tất cả người chơi đã sẵn sàng. Hệ thống tiến hành phân vai và trò chơi sẽ bắt đầu ngay sau đây!"
 
+def generate_role_list_text(roles):
+    return f"Danh sách nhân vật trong game: {roles}"
 
 def generate_vote_user_text(voted_user, users_list, user_vote_number_list):
     return f"""Đã vote hành hình {voted_user}.\nDanh sách những kẻ có khả năng bị hành hình:""" +\
@@ -41,18 +43,23 @@ def generate_night_phase_beginning_text():
     return "Đêm đã tới. Cảnh vật hóa tĩnh lặng, mọi người an giấc. Liệu đêm nay có xảy ra chuyện gì không?"
 
 
-def generate_before_voting_werewolf():
-    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập {config.BOT_PREFIX}choose user để lặng lẽ xử lý nạn nhân. " +\
-        "Các Werewolf hãy chọn đúng để giành lấy chiến thắng!"
+def generate_before_voting_werewolf(user_list):
+    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập {config.BOT_PREFIX}kill @user để lặng lẽ xử lý nạn nhân.\nDanh sách người chơi: {user_list}"
 
 
 def generate_after_voting_werewolf(user):
     return f"Đang tiến hành xử lý {user}. Mong là mọi việc thuận lợi, đi ngủ thôi."
 
 
+def generate_vote_text(author, user):
+    return f"{author} đã biểu quyết loại bỏ {user} khỏi làng"
+
+def generate_kill_text(werewolf, user):
+    return f"Sói {werewolf} muốn xử lý {user} trong đêm nay"
+
 def generate_before_voting_seer():
     return "Tiên tri muốn thấy gì, từ ai? " +\
-        f"Hãy làm phép bằng cách nhập {config.BOT_PREFIX}choose user để xem người chơi đó là ai."
+        f"Hãy làm phép bằng cách nhập {config.BOT_PREFIX}check user để xem người chơi đó là ai."
 
 
 def generate_after_voting_seer(user, is_werewolf):
@@ -61,7 +68,7 @@ def generate_after_voting_seer(user, is_werewolf):
 
 
 def generate_before_voting_guard():
-    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập {config.BOT_PREFIX}choose user để người đó qua đêm an bình. " +\
+    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập {config.BOT_PREFIX}guard user để người đó qua đêm an bình. " +\
         "Nhớ chú ý an toàn của bản thân!"
 
 
@@ -76,3 +83,11 @@ def generate_lynch_text(user):
 
 def generate_endgame_text(winner):
     return f"Trò chơi kết thúc, với chiến thắng thuộc về phe {winner}"
+
+def generate_table(header, data):
+    # This needs to be adjusted based on expected range of values or   calculated dynamically
+    for i in data:
+        header.append('   '.join([str(item) for item in data]))
+        # Joining up scores into a line
+    d = '```'+'\n'.join(header) + '```'
+    return d

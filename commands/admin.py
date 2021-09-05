@@ -11,7 +11,7 @@ import config
 
 def isAdmin(author):
     # Check if this user has 'Admin' right
-    admin_role = discord.utils.get(author.guild.roles, name="Admin")
+    admin_role = discord.utils.get(author.roles, name="Admin")
     if admin_role in author.guild.roles:
         return True
     else:
@@ -20,33 +20,56 @@ def isAdmin(author):
 def list_users(guild):
     print("Server member: ")
     for user in guild.members:
-        print("- ", user.name, user.id)
+        print("- ", user.display_name, user.id)
     print("-------------")
 
-async def create_channel(guild, author, channel_name):
+async def create_category(guild, author, category_name):
+    # Create a category with limited permissions
+    # Only the author and Admin roles can view this category
+    print("Try creating category_name=", category_name)
+    existing_category = discord.utils.get(guild.categories, name=category_name)
+    if not existing_category:
+        admin_role = discord.utils.get(guild.roles, name="Admin")
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(read_messages=True),
+            guild.me: discord.PermissionOverwrite(read_messages=True),
+            admin_role: discord.PermissionOverwrite(read_messages=True)
+        }
+        response = "{} created category {}".format(author.display_name, category_name)
+        print(response)
+        category = await guild.create_category(category_name, overwrites=overwrites)
+        return category
+    return None
+
+async def create_channel(guild, author, channel_name, category_name=config.GAME_CATEGORY, is_public=False):
     # Create text channel with limited permissions
     # Only the author and Admin roles can view this channel
     existing_channel = discord.utils.get(guild.channels, name=channel_name)
     if not existing_channel:
         admin_role = discord.utils.get(guild.roles, name="Admin")
         overwrites = {
-            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            guild.default_role: discord.PermissionOverwrite(read_messages=is_public),
             guild.me: discord.PermissionOverwrite(read_messages=True),
             admin_role: discord.PermissionOverwrite(read_messages=True)
         }
-        response = "{} created channel {}".format(author.name, channel_name)
+        response = "{} created channel {}".format(author.display_name, channel_name)
         print(response)
-        channel = await guild.create_text_channel(channel_name, overwrites=overwrites)
+        category = discord.utils.get(guild.categories, name=category_name)
+        logger.logger_debug(category)
+        channel = await guild.create_text_channel(channel_name, overwrites=overwrites, category=category)
+        await asyncio.sleep(1)
         await channel.send(response)
         return channel
+    return None
 
 async def delete_channel(guild, author, channel_name):
     # Delete text channel. Any Admin can delete it
     try:
         channel = discord.utils.get(guild.channels, name=channel_name)
-        response = "{} deleted channel {}".format(author.name, channel_name)
+        response = "{} deleted channel {}".format(author.display_name, channel_name)
+        assert isinstance(channel, discord.TextChannel)
         print(response)
-        await channel.send(response)
+        # await channel.send(response)
         await channel.delete()
     except Exception as e:
         print(e)
@@ -55,6 +78,7 @@ async def delete_channel(guild, author, channel_name):
 async def add_user_to_channel(guild, user, channel_name):
     # Add a user to specific channel
     print("===", user, channel_name)
+    # logger.logger_debug(guild.channels)
     channel = discord.utils.get(guild.channels, name=channel_name)
     await channel.set_permissions(user, read_messages=True, send_messages=True)
     print("Successfully added ", user, " to ", channel_name)

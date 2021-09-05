@@ -52,8 +52,8 @@ async def on_ready():
         game_list.add_game(guild.id,Game(guild, interface.DiscordInterface(guild, client)))
 
     ''' Uncomment to run test '''
-    # await test_bot(game_list.get_game(config.DISCORD_TESTING_SERVER_ID), client.get_guild(config.DISCORD_TESTING_SERVER_ID))  #Running test on Nhim's server
-    await test_bot(game_list.get_game(config.DISCORD_DEPLOY_SERVER_ID), client.get_guild(config.DISCORD_DEPLOY_SERVER_ID))  # Running test on DNH ma sói bot's server
+    await test_bot(game_list.get_game(config.DISCORD_TESTING_SERVER_ID), client.get_guild(config.DISCORD_TESTING_SERVER_ID))  # Running test on Nhim's server
+    # await test_bot(game_list.get_game(config.DISCORD_DEPLOY_SERVER_ID), client.get_guild(config.DISCORD_DEPLOY_SERVER_ID))  # Running test on DNH ma sói bot's server
 
 
 @client.event
