@@ -74,7 +74,7 @@ class Game:
             self.game_phase = GamePhase.DAY
             self.is_stopped = False
             self.task_game_loop = asyncio.create_task(self.start_game_loop())
-            print(self.task_game_loop)
+            # print(self.task_game_loop)
 
     async def create_channel(self):
         await asyncio.gather(

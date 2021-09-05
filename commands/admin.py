@@ -15,6 +15,7 @@ def isAdmin(author):
     if admin_role in author.guild.roles:
         return True
     else:
+        print(f"{author.display_name} is not Admin Role")
         return False
 
 def list_users(guild):
