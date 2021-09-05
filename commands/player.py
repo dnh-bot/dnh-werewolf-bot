@@ -35,6 +35,26 @@ async def do_stop(message):
     await message.channel.send("Game stop!")
 
 
+async def do_generate_vote_status_table(channel, table):
+    # Table format: {'u2': {'u1'}, 'u1': {'u3', 'u2'}}
+    # Player | Number of votes | Voters
+    #  u1             2           u2, u3
+    #  u2             1           u1
+    victim_list = []
+    voter_count = []
+    voter_list = []
+    for k, v in table.items():
+        victim_list.append(f"<@{k}>")
+        voter_count.append(f"   {str(len(v))}")
+        voter_list.append(",".join([f"<@{i}>" for i in v]))
+    # print("\n".join(victim_list))
+    # print("\n".join(voter_count))
+    # print("\n".join(voter_list))
+    embed = discord.Embed(title = 'Vote Results', description = None)
+    embed.add_field(name="Player",          value="\n".join(victim_list), inline=True)
+    embed.add_field(name="Votes",           value="\n".join(voter_count), inline=True)
+    embed.add_field(name="Voters",          value="\n".join(voter_list), inline=True)
+    await channel.send(embed=embed)
 
 async def test_player_command(guild):
     # TODO: 

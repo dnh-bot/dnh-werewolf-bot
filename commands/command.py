@@ -49,9 +49,7 @@ async def parse_command(game, message):
         msg = await game.kill(author.id, target_user.id)
         await admin.send_text_to_channel(message.guild, msg, message.channel.name)
     elif cmd == '!status':
-        d = game.get_vote_status()
-        embed = discord.Embed(title = 'Vote Results', description = d)
-        await message.channel.send(embed = embed)
+        await player.do_generate_vote_status_table(message.channel, game.get_vote_status())
 
 
     # Admin/Bot commands - User should not directly use these commands

@@ -139,25 +139,16 @@ class Game:
         ))
 
     def get_vote_status(self):
-        # From {1:{2,3,4}, 2{1}}
-        # to
-        # Player | Number of votes | Voters
-        # (1, count(2,3,4), (2,3,4))
-        # (2, count(1)    , (1) )
+        # From {'u1':'u2', 'u2':'u1', 'u3':'u1'}
+        # to {'u2': {'u1'}, 'u1': {'u3', 'u2'}}
         d = self.voter_dict
         table_dict =reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, d.items(), dict())
-        header = "Player  Num of votes   Voters\n"
-        data = []
-        # FIXME:
-        for v, k in table_dict.items():
-            voters = ",".join([f'<@{i}>' for i in k])
-            data.append(f'<@{v}>        {len(k)}       , {voters}')
-        strdata = "\n".join(data)
-        return header+strdata
-        # return text_template.generate_table(header, data)
+        print(table_dict)
+        return table_dict
 
 
     async def start_game_loop(self):
+        print("Starting game loop")
         for _id, player in self.players.items():
             if isinstance(player, roles.Werewolf):
                 print("Wolf: ", player)
