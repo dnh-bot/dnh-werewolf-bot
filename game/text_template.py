@@ -8,8 +8,10 @@ def generate_join_text(user):
 def generate_start_text():
     return "Tất cả người chơi đã sẵn sàng. Hệ thống tiến hành phân vai và trò chơi sẽ bắt đầu ngay sau đây!"
 
+
 def generate_role_list_text(roles):
     return f"Danh sách nhân vật trong game: {roles}"
+
 
 def generate_vote_user_text(voted_user, users_list, user_vote_number_list):
     return f"""Đã vote hành hình {voted_user}.\nDanh sách những kẻ có khả năng bị hành hình:""" +\
@@ -44,7 +46,8 @@ def generate_night_phase_beginning_text():
 
 
 def generate_before_voting_werewolf(user_list):
-    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập {config.BOT_PREFIX}kill @user để lặng lẽ xử lý nạn nhân.\nDanh sách người chơi: {user_list}"
+    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập {config.BOT_PREFIX}kill @user để lặng lẽ xử lý nạn nhân.\n" +\
+        f"Danh sách người chơi: {user_list}"
 
 
 def generate_after_voting_werewolf(user):
@@ -54,8 +57,10 @@ def generate_after_voting_werewolf(user):
 def generate_vote_text(author, user):
     return f"{author} đã biểu quyết loại bỏ {user} khỏi làng"
 
+
 def generate_kill_text(werewolf, user):
     return f"Sói {werewolf} muốn xử lý {user} trong đêm nay"
+
 
 def generate_before_voting_seer():
     return "Tiên tri muốn thấy gì, từ ai? " +\
@@ -75,19 +80,23 @@ def generate_before_voting_guard():
 def generate_after_voting_guard(user):
     return f"Đã bảo vệ thành công {user}"
 
+
 def generate_killed_text(user):
     return f"Đêm qua, {user} đã bị mất tích một cách bí ẩn"
+
 
 def generate_lynch_text(user):
     return f"Dân làng đã đồng lòng loại bỏ {user} khỏi làng"
 
+
 def generate_endgame_text(winner):
     return f"Trò chơi kết thúc, với chiến thắng thuộc về phe {winner}"
 
+
 def generate_table(header, data):
-    # This needs to be adjusted based on expected range of values or   calculated dynamically
+    # This needs to be adjusted based on expected range of values or calculated dynamically
     for i in data:
         header.append('   '.join([str(item) for item in data]))
-        # Joining up scores into a line
-    d = '```'+'\n'.join(header) + '```'
-    return d
+
+    # Joining up scores into a line
+    return '```'+'\n'.join(header) + '```'

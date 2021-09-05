@@ -3,7 +3,7 @@ import commands
 
 class ConsoleInterface:
     def __init__(self, guild=None):
-        self.guild = guild #Unused
+        self.guild = guild  # Unused
 
     async def send_text_to_channel(self, msg, channel_name):
         print("#{channel}: {msg}".format(channel=channel_name, msg=msg))
@@ -22,7 +22,6 @@ class ConsoleInterface:
 
     async def add_user_to_channel(self, player_id, channel_name):
         print(f"Added {player_id} to channel #{channel_name}")
-
 
 
 class DiscordInterface:
@@ -44,6 +43,3 @@ class DiscordInterface:
 
     async def add_user_to_channel(self, player_id, channel_name):
         await commands.admin.add_user_to_channel(self.guild, self.client.get_user(player_id), channel_name)
-
-
-

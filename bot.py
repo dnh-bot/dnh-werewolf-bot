@@ -29,7 +29,7 @@ async def test_bot(game, guild):
     # await command.test_commands(guild)
     # Test game commands
     await game.test_game()
-    # await game.test_game() # Rerun second time
+    # await game.test_game()  # Rerun second time
 
     print("------------ End bot testing ------------")
 
@@ -41,6 +41,7 @@ intents.members = True
 client = discord.Client(intents=intents)
 game_list = GameList()
 
+
 @client.event
 async def on_ready():
     ''' Log ready message, check server roles/channels setup '''
@@ -51,9 +52,8 @@ async def on_ready():
         game_list.add_game(guild.id,Game(guild, interface.DiscordInterface(guild, client)))
 
     ''' Uncomment to run test '''
-    await test_bot(game_list.get_game(config.DISCORD_TESTING_SERVER_ID), client.get_guild(config.DISCORD_TESTING_SERVER_ID)) #Running test on Nhim's server
-    # await test_bot(game_list.get_game(config.DISCORD_DEPLOY_SERVER_ID), client.get_guild(config.DISCORD_DEPLOY_SERVER_ID)) #Running test on DNH ma sói bot's server
-
+    await test_bot(game_list.get_game(config.DISCORD_TESTING_SERVER_ID), client.get_guild(config.DISCORD_TESTING_SERVER_ID))  # Running test on Nhim's server
+    # await test_bot(game_list.get_game(config.DISCORD_DEPLOY_SERVER_ID), client.get_guild(config.DISCORD_DEPLOY_SERVER_ID))  # Running test on DNH ma sói bot's server
 
 
 @client.event

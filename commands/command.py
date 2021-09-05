@@ -6,6 +6,7 @@ import time
 
 last_next = time.time()
 
+
 async def parse_command(game, message):
     cmd = message.content.strip().lower().split(' ')[0]
     parameters = ' '.join(message.content.strip().lower().split(' ')[1:])
@@ -54,20 +55,20 @@ async def parse_command(game, message):
 
     # Admin/Bot commands - User should not directly use these commands
     elif admin.isAdmin(message.author):
-        if cmd == '!create_channel': #Test only
+        if cmd == '!create_channel':  # Test only
             await admin.create_channel(message.guild, message.author, parameters)
-        elif cmd == '!delete_channel': #Test only
+        elif cmd == '!delete_channel':  # Test only
             await admin.delete_channel(message.guild, message.author, parameters)
         elif cmd == '!create':  # Create game channels
             await admin.create_category(message.guild, message.author, config.GAME_CATEGORY)
             await admin.create_channel(message.guild, message.author, config.LOBBY_CHANNEL, is_public=True)
             await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
-        elif cmd == '!add':  #!add @user1 channel_name
+        elif cmd == '!add':  # !add @user1 channel_name
             print(parameters)
             user = message.mentions[0]
             channel_name = parameters.split(' ')[1]
             await admin.add_user_to_channel(message.guild, user, channel_name)
-        elif cmd == '!remove': #!remove @user1 channel_name
+        elif cmd == '!remove':  # !remove @user1 channel_name
             print(parameters)
             user = message.mentions[0]
             channel_name = parameters.split(' ')[1]
