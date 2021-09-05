@@ -63,9 +63,8 @@ class Game:
         return r
 
     async def start(self, init_players=None):
-        if not self.is_stopped:
-            self.reset_game_state()
-            await self.interface.send_text_to_channel(text_template.generate_start_text(), config.GAMEPLAY_CHANNEL)
+        if self.is_stopped:
+            await self.interface.send_text_to_channel(text_template.generate_start_text(), config.LOBBY_CHANNEL)
             if not init_players:
                 self.players = self.generate_roles(self.guild, self.player_id)
             else:
@@ -73,31 +72,41 @@ class Game:
 
             role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
 
-            await self.interface.send_text_to_channel(text_template.generate_role_list_text(role_list), config.GAMEPLAY_CHANNEL)
+            await self.create_channel()
 
-            await self.interface.create_channel(config.LOBBY_CHANNEL)
-            await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
-            await self.interface.create_channel(config.WEREWOLF_CHANNEL)
+            await self.interface.send_text_to_channel(text_template.generate_role_list_text(role_list), config.GAMEPLAY_CHANNEL)
 
             self.start_time = datetime.datetime.now()
 
             self.game_phase = GamePhase.DAY
-
-            for player in self.players.values():
-                await player.create_personal_channel()
-
+            self.is_stopped = False
             self.task_game_loop = asyncio.create_task(self.start_game_loop())
             print(self.task_game_loop)
 
+    async def create_channel(self):
+        await asyncio.gather(
+                self.interface.create_channel(config.GAMEPLAY_CHANNEL),
+                self.interface.create_channel(config.WEREWOLF_CHANNEL),
+                *[player.create_personal_channel() for player in self.players.values()]
+        )
+
+
     async def stop(self):
         print("======= Game stopped =======")
-        self.is_stopped = True
-        #self.reset_game_state()
+        await self.delete_channel()
+        self.reset_game_state()
         self.task_game_loop.cancel()
         try:
             await self.task_game_loop
         except asyncio.CancelledError:
             print("task_game_loop is cancelled now")
+
+    async def delete_channel(self):
+        await asyncio.gather(
+            self.interface.delete_channel(config.GAMEPLAY_CHANNEL),
+            self.interface.delete_channel(config.WEREWOLF_CHANNEL),
+            *[player.delete_personal_channel() for player in self.players.values()]
+        )
 
     def add_player(self, id_):
         print("Player", id_, "joined")
@@ -172,13 +181,22 @@ class Game:
             # End_phase
 
             print("End phase")
-            if await self.end_game():
-                break;
+            if self.is_end_game():
+                break
+
+        if any(werewolf.is_alive() for _,werewolf in self.players.items() if  isinstance(werewolf, roles.Werewolf)):
+            await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)
+        else:
+            await self.interface.send_text_to_channel(text_template.generate_endgame_text("Villager"), config.GAMEPLAY_CHANNEL)
+        # Print werewolf list:
+        werewolf_list = ",".join([str(f"<@{_id}>") for _id, werewolf in self.players.items() if  isinstance(werewolf, roles.Werewolf)])
+        await self.interface.send_text_to_channel("Werewolfs: "+werewolf_list, config.GAMEPLAY_CHANNEL)
+
         print("End start loop")
 
     def reset_game_state(self):
         # TODO: wrap these variables into a struct
-        self.is_stopped = False
+        self.is_stopped = True
         self.start_time = None
         self.players = {}  # id: Player
         self.player_id = []
@@ -187,7 +205,7 @@ class Game:
         self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1} . All items are ids.
         self.day = 0
 
-    async def end_game(self):
+    def is_end_game(self):
         num_werewolf = 0
         num_players = 0
         for _, player in self.players.items():
@@ -199,13 +217,6 @@ class Game:
         print("DEBUG: ", num_players, num_werewolf)
 
         if (num_werewolf/num_players >= 0.5) or (num_werewolf == 0):
-            if any(werewolf.is_alive() for _,werewolf in self.players.items() if  isinstance(werewolf, roles.Werewolf)):
-                await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)
-            else:
-                await self.interface.send_text_to_channel(text_template.generate_endgame_text("Villager"), config.GAMEPLAY_CHANNEL)
-            # Print werewolf list:
-            werewolf_list = ",".join([str(f"<@{_id}>") for _id, werewolf in self.players.items() if  isinstance(werewolf, roles.Werewolf)])
-            await self.interface.send_text_to_channel("Werewolfs: "+werewolf_list, config.GAMEPLAY_CHANNEL)
             return True
         else:
             return False
