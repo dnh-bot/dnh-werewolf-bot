@@ -4,6 +4,7 @@ from commands import admin, player
 import config
 import time
 
+timer_stopped = True
 
 async def parse_command(game, message):
     cmd = message.content.strip().lower().split(' ')[0]
@@ -55,6 +56,24 @@ async def parse_command(game, message):
     elif cmd == '!status':
         await player.do_generate_vote_status_table(message.channel, game.get_vote_status())
 
+    elif cmd == '!timer':
+        time = list(map(int, parameters.split(' ')))
+        if len(time)==0:
+            time.append(30) # default is 30 seconds
+        if len(time)==1:
+            time.append(10) # with 10 seconds period
+        global timer_stopped
+        timer_stopped = False
+        for count in range(time[0], 0, -1):
+            if timer_stopped: break
+            if count % time[1] == 0 or count<=5:
+                await message.channel.send(f'Timer: {count} seconds remain...')
+            await asyncio.sleep(1)
+        if not timer_stopped: await message.channel.send('TIMEUP!!!!')
+
+    elif cmd == '!timerstop':
+        timer_stopped = True
+        await message.channel.send("Timer stopped!")
 
     # Admin/Bot commands - User should not directly use these commands
     elif admin.isAdmin(message.author):
