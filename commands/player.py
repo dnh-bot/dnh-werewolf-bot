@@ -18,27 +18,34 @@ async def do_leave(guild, channel, user):
     await channel.send(response)
 
 # Require at least 2 players to start the game
-async def do_start(game, message):
+async def do_start(game, message, force=False):
     ''' Start game '''
-    if message.author.id not in game.players:
-        return await message.reply("You are not in the game.")
+    if not game.is_started():
+        if force:
+            await game.start()
+            return await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL} ! (Only Player can view)")
+        else:
+            if message.author.id not in game.player_id:
+                return await message.reply("You are not in the game.")
 
-    game.vote_start.add(message.author.id)
+            game.vote_start.add(message.author.id)
 
-    num_players = len(game.players)
-    num_vote = len(game.vote_start)
+            num_players = len(game.player_id)
+            num_vote = len(game.vote_start)
 
-    if num_players < 4:
-        return await message.reply("At least 4 players to start game.")
+            if num_players < 4:
+                return await message.reply("At least 4 players to start game.")
 
-    text = f"Player {message.author.display_name} votes for start the game. (vote rate {num_vote}/{num_players})"
-    print(text)
-    await message.channel.send(text)
+            text = f"Player {message.author.display_name} votes for start the game. (vote rate {num_vote}/{num_players})"
+            print(text)
+            await message.channel.send(text)
 
-    if num_vote / num_players < 2/3: return
+            if num_vote / num_players <= 0.5: return
 
-    await game.start()
-    await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL} ! (Only Player can view)")
+            await game.start()
+            return await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL} ! (Only Player can view)")
+    else:
+        return await message.reply("Game already started")
 
 # Player can call stop game when they want to finish game regardless current game state
 # Need 2/3 players type: `!stop` to end the game
