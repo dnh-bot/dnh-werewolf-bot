@@ -88,7 +88,7 @@ async def parse_command(game, message):
                 await admin.send_text_to_channel(message.guild, text, message.channel.name)
             else:
                 if not message.mentions:
-                    await admin.send_text_to_channel(message.guid, "Invalid Command.\nUsage: !fjoin @user1 @user2 ...", message.channel.name)
+                    await admin.send_text_to_channel(message.guild, "Invalid Command.\nUsage: !fjoin @user1 @user2 ...", message.channel.name)
                 else:
                     await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
                     for user in message.mentions:
@@ -100,13 +100,15 @@ async def parse_command(game, message):
                 await admin.send_text_to_channel(message.guild, "Game started. Please wait until next game!", message.channel.name)
             else:
                 if not message.mentions:
-                    await admin.send_text_to_channel(message.guid, "Invalid Command\nUsage: !fleave @user1 @user2 ...", message.channel.name)
+                    await admin.send_text_to_channel(message.guild, "Invalid Command\nUsage: !fleave @user1 @user2 ...", message.channel.name)
                 for user in message.mentions:
                     await player.do_leave(message.guild, message.channel, user)
                     game.remove_player(user.id)
                     await admin.remove_user_from_channel(message.guild, user, config.GAMEPLAY_CHANNEL)
         elif cmd == "!fstart":
             await player.do_start(game, message, force=True)
+    else:
+        await message.reply(f"{message.author} is not Admin role")
 
 
 async def test_commands(guild):
