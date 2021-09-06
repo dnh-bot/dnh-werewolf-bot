@@ -25,12 +25,12 @@ async def do_start(game, message, force=False):
             await game.start()
             return await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL} ! (Only Player can view)")
         else:
-            if message.author.id not in game.player_id:
+            if message.author.id not in game.players:
                 return await message.reply("You are not in the game.")
 
             game.vote_start.add(message.author.id)
 
-            num_players = len(game.player_id)
+            num_players = len(game.players)
             num_vote = len(game.vote_start)
 
             if num_players < 4:
@@ -51,22 +51,25 @@ async def do_start(game, message, force=False):
 # Need 2/3 players type: `!stop` to end the game
 async def do_stop(game, message):
     ''' Stop game '''
-    if message.author.id not in game.players:
-        return await message.reply("You are not in the game.")
+    if game.is_started():
+        if message.author.id not in game.players:
+            return await message.reply("You are not in the game.")
 
-    game.vote_stop.add(message.author.id)
+        game.vote_stop.add(message.author.id)
 
-    num_players = len(game.players)
-    num_vote = len(game.vote_stop)
+        num_players = len(game.players)
+        num_vote = len(game.vote_stop)
 
-    text = f"Player {message.author.display_name} votes for stop the game. (vote rate {num_vote}/{num_players})"
-    print(text)
-    await message.channel.send(text)
+        text = f"Player {message.author.display_name} votes for stop the game. (vote rate {num_vote}/{num_players})"
+        print(text)
+        await message.channel.send(text)
 
-    if num_vote / num_players < 2/3: return
+        if num_vote / num_players <= 0.5: return
 
-    await message.channel.send("Game stop!")
-    await game.stop()
+        await message.channel.send("Game stop!")
+        await game.stop()
+    else:
+        return await message.reply("Game has not started yet!")
 
 
 

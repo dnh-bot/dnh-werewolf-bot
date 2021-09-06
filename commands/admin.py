@@ -42,7 +42,7 @@ async def create_category(guild, author, category_name):
             category = await guild.create_category(category_name, overwrites=overwrites)
             return category
         except Exception as e:
-            print(e)
+            print(e);raise
     return existing_category
 
 async def create_channel(guild, author, channel_name, category_name=config.GAME_CATEGORY, is_public=False):
@@ -62,11 +62,10 @@ async def create_channel(guild, author, channel_name, category_name=config.GAME_
             category = discord.utils.get(guild.categories, name=category_name)
             logger.logger_debug(category)
             channel = await guild.create_text_channel(channel_name, overwrites=overwrites, category=category)
-            await asyncio.sleep(1)
             await channel.send(response)
             return channel
         except Exception as e:
-            print(e)
+            print(e);raise
     return existing_channel
 
 async def delete_channel(guild, author, channel_name):
@@ -79,20 +78,21 @@ async def delete_channel(guild, author, channel_name):
         # await channel.send(response)
         await channel.delete()
     except Exception as e:
-        print(e)
         print(channel_name, author)
+        logger.logger_debug(guild.channels)
+        print(e);raise
 
 async def add_user_to_channel(guild, user, channel_name):
     # Add a user to specific channel
-    print("===", user, channel_name)
-    # logger.logger_debug(guild.channels)
     channel = discord.utils.get(guild.channels, name=channel_name)
     try:
         await channel.set_permissions(user, read_messages=True, send_messages=True)
         print("Successfully added ", user, " to ", channel_name)
     except Exception as e:
-        print(e)
         print(channel_name, user)
+        logger.logger_debug(guild.channels)
+        print(e);raise
+
 
 async def remove_user_from_channel(guild, user, channel_name):
     # Add a user to specific channel
@@ -102,7 +102,7 @@ async def remove_user_from_channel(guild, user, channel_name):
         await channel.set_permissions(user, read_messages=False, send_messages=False)
         print("Successfully removed ", user, " from ", channel_name)
     except Exception as e:
-        print(e)
+        print(e);raise
         print(channel_name, user)
 
 
@@ -112,7 +112,7 @@ async def send_text_to_channel(guild, text, channel_name):
     try:
         await channel.send(text)
     except Exception as e:
-        print(e)
+        print(e);raise
         print(channel_name)
 
 

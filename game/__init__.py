@@ -26,7 +26,6 @@ class Game:
             config.WEREWOLF_CHANNEL,
             # Personal channel will goes into role class
         ]  # List of channels in game
-        self.task_game_loop = None
         self.reset_game_state()
         self.next_flag = asyncio.Event()
 
@@ -73,7 +72,7 @@ class Game:
 
             self.game_phase = GamePhase.DAY
             self.is_stopped = False
-            self.task_game_loop = asyncio.create_task(self.start_game_loop())
+            self.task_game_loop = asyncio.create_task(self.run_game_loop())
             # print(self.task_game_loop)
 
     async def create_channel(self):
@@ -85,14 +84,15 @@ class Game:
 
     async def stop(self):
         print("======= Game stopped =======")
+        self.is_stopped = True
+        try:
+            await self.task_game_loop
+        except asyncio.CancelledError:
+            print("task_game_loop is cancelled now")
+        except Exception as e:
+            print(e);raise
         await self.delete_channel()
         self.reset_game_state()
-        if self.task_game_loop:
-            self.task_game_loop.cancel()
-            try:
-                await self.task_game_loop
-            except asyncio.CancelledError:
-                print("task_game_loop is cancelled now")
 
     async def delete_channel(self):
         await asyncio.gather(
@@ -145,7 +145,7 @@ class Game:
         print(table_dict)
         return table_dict
 
-    async def start_game_loop(self):
+    async def run_game_loop(self):
         print("Starting game loop")
         for _id, player in self.players.items():
             if isinstance(player, roles.Werewolf):
@@ -153,6 +153,7 @@ class Game:
                 await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL)
                 await self.interface.send_text_to_channel(f"Hello werewolf <@{_id}>", config.WEREWOLF_CHANNEL)
 
+        await asyncio.sleep(0)  # This return CPU to main thread
         print("Started game loop")
         while not self.is_stopped:
             print("Phase:", self.game_phase)
@@ -160,7 +161,7 @@ class Game:
             # New phase
             await self.new_phase()
 
-            await asyncio.gather(*[role.on_phase(self.game_phase) for role in self.players.values()])
+            await asyncio.gather(*[role.on_phase(self.game_phase) for role in self.players.values() if role.is_alive()])
 
             # Wait for `!next` from Admin
             # or Next phase control from bot
@@ -172,6 +173,7 @@ class Game:
 
             print("End phase")
             if self.is_end_game():
+                self.is_stopped = True  # Need to update this value in case of end game.
                 break
 
         if any(a_player.is_alive() for a_player in self.players.values() if isinstance(a_player, roles.Werewolf)):
@@ -181,10 +183,10 @@ class Game:
         # Print werewolf list:
         werewolf_list = ", ".join([str(f"<@{_id}>") for _id, a_player in self.players.items() if isinstance(a_player, roles.Werewolf)])
         await self.interface.send_text_to_channel("Werewolves: "+werewolf_list, config.GAMEPLAY_CHANNEL)
-        print("End start loop")
+        print("End game loop")
 
     def reset_game_state(self):
-        # TODO: wrap these variables into a struct
+        print("reset_game_state")
         self.is_stopped = True
         self.start_time = None
         self.players = {}  # id: Player
@@ -194,6 +196,7 @@ class Game:
         self.vote_start = set()
         self.vote_stop = set()
         self.day = 0
+        self.task_game_loop = None
 
     def is_end_game(self):
         num_werewolf = 0
