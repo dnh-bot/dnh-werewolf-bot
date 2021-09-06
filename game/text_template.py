@@ -21,14 +21,8 @@ def generate_vote_user_text(voted_user, users_list, user_vote_number_list):
         )
 
 
-def generate_execution_text(users_list, user_vote_number_list):
-    highest_vote_number = max(user_vote_number_list)
-    if user_vote_number_list.count(highest_vote_number) == 1:
-        voted_user = [
-            user
-            for user, user_vote_number in zip(users_list, user_vote_number_list)
-            if user_vote_number == highest_vote_number
-        ][0]
+def generate_execution_text(voted_user, highest_vote_number):
+    if highest_vote_number > 0:
         return "Thời gian quyết định đã hết. " +\
             f"Người chơi {voted_user} đã bị đưa lên máy chém với số phiếu bầu là {highest_vote_number}. " +\
             "Hy vọng tình thế của làng có thể thay đôi sau quyết định này."

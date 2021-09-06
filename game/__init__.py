@@ -221,7 +221,7 @@ class Game:
     def get_top_voted(list_id):
         top_voted = Counter(list_id).most_common(2)
         if len(top_voted) == 1 or (len(top_voted) == 2 and top_voted[0][1] > top_voted[1][1]):
-            return top_voted[0][0]
+            return top_voted[0][0], top_voted[0][1]
         return None  # have no vote or equal voted
 
     async def do_new_daytime_phase(self):
@@ -232,13 +232,15 @@ class Game:
         await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day, alive_player), config.GAMEPLAY_CHANNEL)
 
     async def do_end_daytime_phase(self):
-        lynched = Game.get_top_voted(self.voter_dict.values())
+        lynched, votes = Game.get_top_voted(self.voter_dict.values())
         # lynched = Game.get_top_voted(a for a in self.voter_dict for _ in self.voter_dict[a])
         print("lynced list:", self.voter_dict)
         self.voter_dict = {}
         if lynched:
             self.players[lynched].get_killed()
-            await self.interface.send_text_to_channel(text_template.generate_lynch_text(f"<@{lynched}>"), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel(text_template.generate_execution_text(f"<@{lynched}>", votes), config.GAMEPLAY_CHANNEL)
+        else:
+            await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
 
     async def do_new_nighttime_phase(self):
         alive_player = ", ".join(
