@@ -108,7 +108,12 @@ async def parse_command(game, message):
         elif cmd == '!fstop':
             await player.do_next(game, message, force=True)
         elif cmd == "!fclean":
-            await admin.delete_all_personal_channel(message.guild)
+            try:
+                await admin.delete_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
+                await admin.delete_channel(message.guild, message.author, config.WEREWOLF_CHANNEL)
+                await admin.delete_all_personal_channel(message.guild)
+            except Exception as e:
+                print(e)
     else:
         await message.reply(f"{message.author} is not Admin role")
 
