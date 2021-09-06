@@ -58,25 +58,25 @@ async def parse_command(game, message):
 
     # Admin/Bot commands - User should not directly use these commands
     elif admin.isAdmin(message.author):
-        if cmd == '!create_channel':  # Test only
+        if cmd == '!fcreate_channel':  # Test only
             await admin.create_channel(message.guild, message.author, parameters)
-        elif cmd == '!delete_channel':  # Test only
+        elif cmd == '!fdelete_channel':  # Test only
             await admin.delete_channel(message.guild, message.author, parameters)
-        elif cmd == '!create':  # Create game channels
+        elif cmd == '!fcreate':  # Create game channels
             await admin.create_category(message.guild, message.author, config.GAME_CATEGORY)
             await admin.create_channel(message.guild, message.author, config.LOBBY_CHANNEL, is_public=True)
             await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
-        elif cmd == '!add':  # !add @user1 channel_name
+        elif cmd == '!fadd':  # !add @user1 channel_name
             print(parameters)
             user = message.mentions[0]
             channel_name = parameters.split(' ')[1]
             await admin.add_user_to_channel(message.guild, user, channel_name)
-        elif cmd == '!remove':  # !remove @user1 channel_name
+        elif cmd == '!fremove':  # !remove @user1 channel_name
             print(parameters)
             user = message.mentions[0]
             channel_name = parameters.split(' ')[1]
             await admin.remove_user_from_channel(message.guild, user, channel_name)
-        elif cmd == '!end':
+        elif cmd == '!fend':
             await game.stop()
         elif cmd == "!fjoin":
             if game.is_started():
@@ -104,6 +104,8 @@ async def parse_command(game, message):
         elif cmd == "!fstart":
             await player.do_start(game, message, force=True)
         elif cmd == '!fnext':  # Next phase
+            await player.do_next(game, message, force=True)
+        elif cmd == '!fstop':
             await player.do_next(game, message, force=True)
         elif cmd == "!fclean":
             await admin.delete_all_personal_channel(message.guild)

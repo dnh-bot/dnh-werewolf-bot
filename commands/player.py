@@ -2,6 +2,7 @@
 This provides APIs for Player role
 '''
 import time
+import math
 import discord
 import config
 from game import text_template as tt
@@ -13,7 +14,7 @@ def check_vote_valid(num_votes, num_players, task_name):
         return False, f"At least 4 players to {task_name} game."
 
     if num_votes / num_players <= config.VOTE_RATE:
-        return False, f"Player {message.author.display_name} votes for start the game. (vote rate {num_votes}/{num_players}). Need at least {-(-num_players//2)} votes"
+        return False, f"(vote rate {num_votes}/{num_players}). Need at least {math.floor(num_players * config.VOTE_RATE) + 1} votes"
     else:
         return True, f"Enough votes to proceed `{task_name}`"  # Should never see it :D
 
@@ -47,7 +48,7 @@ async def do_start(game, message, force=False):
                     await game.start()
                     await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL} ! (Only Player can view)")
                 else:
-                    await message.reply(text)
+                    await message.reply(f"Player {message.author.display_name} votes for start game. {text}")
     else:
         await message.reply("Game already started")
 
@@ -69,7 +70,7 @@ async def do_next(game, message, force=False):
                     if valid:
                         await game.next_phase()
                     else:
-                        await message.reply(text)
+                        await message.reply(f"Player {message.author.display_name} votes for next phase. {text}")
         else:
             await message.reply(f"Run `!next` command too quick, please wait for {config.NEXT_CMD_DELAY - time.time() + last_next:.1f} seconds")
     else:
@@ -94,7 +95,7 @@ async def do_stop(game, message, force=False):
                     await message.reply("Game stops!")
                     await game.stop()
                 else:
-                    await message.reply(text)
+                    await message.reply(f"Player {message.author.display_name} votes for stop game. {text}")
     else:
         await message.reply("Game has not started yet!")
 

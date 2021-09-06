@@ -289,12 +289,15 @@ class Game:
             return "You must be alive ingame to vote!"
 
         victim = self.players.get(player_id)
-        if victim and victim.is_alive():
+        if victim is None:
+            return "Invalid target user. Target user is not a player"
+
+        if victim.is_alive():
             # Vote for victim
             self.voter_dict[author_id] = player_id
             return text_template.generate_vote_text(f"<@{author_id}>", f"<@{player_id}>")
         else:
-            return "Invalid target user. You can only vote for alive players"
+            return "Target user is dead. Don't vote him/her again. You can only vote for an alive player"
 
     async def kill(self, author_id, player_id):
         assert self.players is not None
