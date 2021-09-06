@@ -9,11 +9,12 @@ class CharacterStatus(Enum):
 
 
 class Character:
-    def __init__(self, interface, player_id):
+    def __init__(self, interface, player_id, player_name):
         self.interface = interface
         self.player_id = player_id
         self.status = CharacterStatus.ALIVE
-        self.channel_name = f"personal-{self.player_id}"
+        self.player_name = player_name
+        self.channel_name = f"personal-{player_name.lower().replace('#', '-')}"  # channel_name MUST BE lowercase!
 
     def is_alive(self):
         return self.status == CharacterStatus.ALIVE
@@ -28,6 +29,7 @@ class Character:
         await self.interface.create_channel(self.channel_name)
         await self.interface.add_user_to_channel(self.player_id, self.channel_name)
         await self.interface.send_text_to_channel(f"Welcome <@{self.player_id}> to the game!\nYour role is {self.__class__.__name__}", self.channel_name)
+        print("Created channel", self.channel_name)
 
     async def send_to_personal_channel(self, text):
         await self.interface.send_text_to_channel(text, self.channel_name)

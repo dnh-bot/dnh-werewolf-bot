@@ -16,6 +16,7 @@ BOT_PREFIX = '!'
 
 # each !next cmd have at least 60 seconds apart
 NEXT_CMD_DELAY = 60
+VOTE_RATE = 0.5
 
 GAME_CATEGORY = "GAME"
 LOBBY_CHANNEL = "lobby"
