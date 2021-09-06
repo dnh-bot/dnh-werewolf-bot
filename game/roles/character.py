@@ -9,11 +9,12 @@ class CharacterStatus(Enum):
 
 
 class Character:
-    def __init__(self, interface, player_id):
+    def __init__(self, interface, player_id, player_name):
         self.interface = interface
         self.player_id = player_id
         self.status = CharacterStatus.ALIVE
-        self.channel_name = f"personal-{self.player_id}"
+        self.player_name = player_name
+        self.channel_name = f"personal-{player_name.lower().replace('#', '-')}"  # channel_name MUST BE lowercase!
 
     def is_alive(self):
         return self.status == CharacterStatus.ALIVE

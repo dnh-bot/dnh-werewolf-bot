@@ -15,7 +15,7 @@ async def parse_command(game, message):
         if game.is_started():
             text = "Game started. Please wait until next game!"
             await admin.send_text_to_channel(message.guild, text, message.channel.name)
-        elif game.add_player(message.author.id):
+        elif game.add_player(message.author.id, message.author.name):
             await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
             await player.do_join(message.guild, message.channel, message.author)
             await admin.add_user_to_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
@@ -93,7 +93,7 @@ async def parse_command(game, message):
                     await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
                     for user in message.mentions:
                         await player.do_join(message.guild, message.channel, user)
-                        game.add_player(user.id)
+                        game.add_player(user.id, user.name)
                         await admin.add_user_to_channel(message.guild, user, config.GAMEPLAY_CHANNEL)
         elif cmd == "!fleave":
             if game.is_started():

@@ -39,7 +39,7 @@ class Game:
         pass
 
     @staticmethod
-    def generate_roles(interface, ids):
+    def generate_roles(interface, ids, names_dict):
         ids = ids.copy()
         random.shuffle(ids)
         len_ids = len(ids)
@@ -47,10 +47,10 @@ class Game:
         guard = 1 if len_ids > 5 else 0
         seer = 1 if len_ids > 6 else 0
         r = dict()
-        r.update((id_, roles.Werewolf(interface, id_)) for id_ in ids[:werewolf])
-        r.update((id_, roles.Seer(interface, id_)) for id_ in ids[werewolf:werewolf+seer])
-        r.update((id_, roles.Guard(interface, id_)) for id_ in ids[werewolf+seer:werewolf+seer+guard])
-        r.update((id_, roles.Villager(interface, id_)) for id_ in ids[werewolf+seer+guard:])
+        r.update((id_, roles.Werewolf(interface, id_, names_dict[id_])) for id_ in ids[:werewolf])
+        r.update((id_, roles.Seer(interface, id_, names_dict[id_])) for id_ in ids[werewolf:werewolf+seer])
+        r.update((id_, roles.Guard(interface, id_, names_dict[id_])) for id_ in ids[werewolf+seer:werewolf+seer+guard])
+        r.update((id_, roles.Villager(interface, id_, names_dict[id_])) for id_ in ids[werewolf+seer+guard:])
         print("Player list:", r)
         return r
 
@@ -58,7 +58,7 @@ class Game:
         if self.is_stopped:
             await self.interface.send_text_to_channel(text_template.generate_start_text(), config.LOBBY_CHANNEL)
             if not init_players:
-                self.players = self.generate_roles(self.interface, self.players.keys())
+                self.players = self.generate_roles(self.interface, list(self.players.keys()), self.playersname)  # Must use list(dict_keys) in python >= 3.3
             else:
                 self.players = init_players
 
@@ -101,12 +101,13 @@ class Game:
             *[player.delete_personal_channel() for player in self.players.values()]
         )
 
-    def add_player(self, id_):
+    def add_player(self, id_, player_name):
         if id_ in self.players:
             return False
 
         print("Player", id_, "joined")
         self.players[id_] = None
+        self.playersname[id_] = player_name
         return True
 
     def remove_player(self, id_):
@@ -115,6 +116,7 @@ class Game:
 
         print("Player", id_, "left")
         del self.players[id_]
+        del self.playersname[id_]
         return True
 
     def get_alive_players(self):
@@ -190,6 +192,7 @@ class Game:
         self.is_stopped = True
         self.start_time = None
         self.players = {}  # id: Player
+        self.playersname = {}  # id: username
         self.game_phase = GamePhase.NEW_GAME
         self.killed_last_night = dict()  # dict[wolf] -> player
         self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1}. All items are ids.
@@ -307,15 +310,15 @@ class Game:
         print("====== Begin test case =====")
         DELAY_TIME = 3
         real_id = dict((i+1, x) for i, x in enumerate(config.DISCORD_TESTING_USERS_ID))
-        self.add_player(real_id[1])
-        self.add_player(real_id[2])
-        self.add_player(real_id[3])
-        self.add_player(real_id[4])
+        self.add_player(real_id[1], "w")
+        self.add_player(real_id[2], "s")
+        self.add_player(real_id[3], "v1")
+        self.add_player(real_id[4], "v2")
         players = {
-            real_id[1]: roles.Werewolf(self.interface, real_id[1]),
-            real_id[2]: roles.Seer(self.interface, real_id[2]),
-            real_id[3]: roles.Villager(self.interface, real_id[3]),
-            real_id[4]: roles.Villager(self.interface, real_id[4]),
+            real_id[1]: roles.Werewolf(self.interface, real_id[1], "w"),
+            real_id[2]: roles.Seer(self.interface,     real_id[2], "s"),
+            real_id[3]: roles.Villager(self.interface, real_id[3], "v1"),
+            real_id[4]: roles.Villager(self.interface, real_id[4], "v2"),
         }
         await self.start(players)
         print(await self.vote(real_id[1], real_id[2]))
@@ -323,29 +326,30 @@ class Game:
         print(await self.vote(real_id[4], real_id[1]))
 
         await self.next_phase()  # go NIGHT
-        await asyncio.sleep(DELAY_TIME)
+        time.sleep(DELAY_TIME)
         print(await self.kill(real_id[1], real_id[3]))
 
         await self.next_phase()  # go DAY
-        await asyncio.sleep(DELAY_TIME)
+        time.sleep(DELAY_TIME)
 
         await self.next_phase()
-        await asyncio.sleep(DELAY_TIME)
+        time.sleep(DELAY_TIME)
         await self.stop()
+        time.sleep(DELAY_TIME)
         print("====== End test case =====")
 
     async def test_case_simulated_players(self):
         print("====== Begin test case =====")
         DELAY_TIME = 3
-        self.add_player(1)
-        self.add_player(2)
-        self.add_player(3)
-        self.add_player(4)
+        self.add_player(1, "W")
+        self.add_player(2, "S")
+        self.add_player(3, "V1")
+        self.add_player(4, "V2")
         players = {
-            1: roles.Werewolf(self.interface, 1),
-            2: roles.Seer(self.interface, 2),
-            3: roles.Villager(self.interface, 3),
-            4: roles.Villager(self.interface, 4),
+            1: roles.Werewolf(self.interface, 1, "W"),
+            2: roles.Seer(self.interface,     2, "S"),
+            3: roles.Villager(self.interface, 3, "V1"),
+            4: roles.Villager(self.interface, 4, "V2"),
         }
         await self.start(players)
         print(await self.vote(1, 2))
@@ -353,15 +357,16 @@ class Game:
         print(await self.vote(4, 1))
 
         await self.next_phase()  # go NIGHT
-        await asyncio.sleep(DELAY_TIME)
+        time.sleep(DELAY_TIME)
         print(await self.kill(1, 3))
 
         await self.next_phase()  # go DAY
-        await asyncio.sleep(DELAY_TIME)
+        time.sleep(DELAY_TIME)
 
         await self.next_phase()
-        await asyncio.sleep(DELAY_TIME)
+        time.sleep(DELAY_TIME)
         await self.stop()
+        time.sleep(DELAY_TIME)
         print("====== End test case =====")
 
 
