@@ -51,12 +51,12 @@ async def do_start(game, message, force=False):
 # Need 2/3 players type: `!stop` to end the game
 async def do_stop(game, message):
     ''' Stop game '''
-    if message.author.id not in game.player_id:
+    if message.author.id not in game.players:
         return await message.reply("You are not in the game.")
 
     game.vote_stop.add(message.author.id)
 
-    num_players = len(game.player_id)
+    num_players = len(game.players)
     num_vote = len(game.vote_stop)
 
     text = f"Player {message.author.display_name} votes for stop the game. (vote rate {num_vote}/{num_players})"
