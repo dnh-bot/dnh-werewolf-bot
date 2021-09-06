@@ -103,6 +103,7 @@ class Game:
     async def stop(self):
         print("======= Game stopped =======")
         self.is_stopped = True
+        self.next_flag.clear()
         try:
             await self.task_game_loop
         except asyncio.CancelledError:
@@ -111,7 +112,8 @@ class Game:
             print(e)
             if not self.task_game_loop:
                 print("EMPTY GAME LOOP")
-        await self.delete_channel()
+        if self.players:
+            await self.delete_channel()
         self.reset_game_state()
 
     async def delete_channel(self):
@@ -228,9 +230,10 @@ class Game:
     @staticmethod
     def get_top_voted(list_id):
         top_voted = Counter(list_id).most_common(2)
+        print("get_top_voted", top_voted)
         if len(top_voted) == 1 or (len(top_voted) == 2 and top_voted[0][1] > top_voted[1][1]):
             return top_voted[0][0], top_voted[0][1]
-        return None  # have no vote or equal voted
+        return None, 0  # have no vote or equal voted
 
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
