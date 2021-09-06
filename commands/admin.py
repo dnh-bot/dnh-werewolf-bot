@@ -117,9 +117,8 @@ async def send_text_to_channel(guild, text, channel_name):
 
 
 async def delete_all_personal_channel(guild):
-    for c in guild.channels:
-        if c.name.startswith("personal"):
-            await c.delete()
+    # TODO: Only delete personal channels under GAME category
+    await asyncio.gather(*[c.delete() for c in guild.channels if c.name.startswith("personal")])
 
 
 async def test_admin_command(guild):

@@ -25,9 +25,11 @@ def generate_execution_text(voted_user, highest_vote_number):
     if highest_vote_number > 0:
         return "Thời gian quyết định đã hết. " +\
             f"Người chơi {voted_user} đã bị đưa lên máy chém với số phiếu bầu là {highest_vote_number}. " +\
-            "Hy vọng tình thế của làng có thể thay đôi sau quyết định này."
+            "Hy vọng tình thế của làng có thể thay đôi sau quyết định này.\n" +\
+            "==========================================================================="
     else:
-        return "Không có ai bị hành hình. Trò chơi sẽ tiếp tục. Hãy cẩn thân để sống sót!"
+        return "Không có ai bị hành hình. Trò chơi sẽ tiếp tục. Hãy cẩn thân để sống sót!\n" +\
+            "==========================================================================="
 
 
 def generate_day_phase_beginning_text(day, role_member_alive):
@@ -76,7 +78,12 @@ def generate_after_voting_guard(user):
 
 
 def generate_killed_text(user):
-    return f"Đêm qua, {user} đã bị mất tích một cách bí ẩn"
+    if user:
+        return f"Đêm qua, {user} đã bị mất tích một cách bí ẩn.\n" +\
+            "==========================================================================="
+    else:
+        return f"Đêm qua, mọi người đều bình an.\n" +\
+            "==========================================================================="
 
 
 def generate_lynch_text(user):

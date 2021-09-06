@@ -57,22 +57,23 @@ async def do_next(game, message, force=False):
     ''' Next phase '''
     if game.is_started():
         global last_next
-        if time.time() - last_next > config.NEXT_CMD_DELAY:  # User needs to wait at least 60s for next phase
-            if force:
-                last_next = time.time()
-                await game.next_phase()
-            else:
+        if force:
+            last_next = time.time()
+            await game.next_phase()
+        else:
+            if time.time() - last_next > config.NEXT_CMD_DELAY:  # User needs to wait at least 60s for next phase
                 if message.author.id not in game.players:
                     await message.reply("You are not in the game.")
                 else:
                     game.vote_next.add(message.author.id)
                     valid, text = check_vote_valid(len(game.vote_next), len(game.players), "next")
                     if valid:
+                        last_next = time.time()
                         await game.next_phase()
                     else:
                         await message.reply(f"Player {message.author.display_name} votes for next phase. {text}")
-        else:
-            await message.reply(f"Run `!next` command too quick, please wait for {config.NEXT_CMD_DELAY - time.time() + last_next:.1f} seconds")
+            else:
+                await message.reply(f"Run `!next` command too quick, please wait for {config.NEXT_CMD_DELAY - time.time() + last_next:.1f} seconds")
     else:
         await message.reply("Game has not started yet!")
 
