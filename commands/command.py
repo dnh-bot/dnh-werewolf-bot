@@ -107,6 +107,8 @@ async def parse_command(game, message):
                     await admin.remove_user_from_channel(message.guild, user, config.GAMEPLAY_CHANNEL)
         elif cmd == "!fstart":
             await player.do_start(game, message, force=True)
+        elif cmd == "!fclean":
+            await admin.delete_all_personal_channel(message.guild)
     else:
         await message.reply(f"{message.author} is not Admin role")
 

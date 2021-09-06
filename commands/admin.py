@@ -116,6 +116,12 @@ async def send_text_to_channel(guild, text, channel_name):
         print(channel_name)
 
 
+async def delete_all_personal_channel(guild):
+    for c in guild.channels:
+        if c.name.startswith("personal"):
+            await c.delete()
+
+
 async def test_admin_command(guild):
     print("-- Testing admin command --")
     user_id = config.DISCORD_TESTING_USER1_ID 
