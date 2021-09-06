@@ -41,14 +41,17 @@ async def parse_command(game, message):
             await admin.send_text_to_channel(message.guild, f"Command in invalid channel. Please use in #{config.GAMEPLAY_CHANNEL}", message.channel.name)
         else:
             msg = await game.vote(author.id, message.mentions[0].id)
-            await admin.send_text_to_channel(message.guild, msg, message.channel.name)
+            await message.reply(msg)
     elif cmd == '!kill': # author: `!kill @target_user`
         if message.channel.name != config.WEREWOLF_CHANNEL:
             await admin.send_text_to_channel(message.guild, f"Command {config.BOT_PREFIX}kill only available in #{config.WEREWOLF_CHANNEL}", message.channel.name)
         author = message.author
         target_user = message.mentions[0]
-        msg = await game.kill(author.id, target_user.id)
-        await admin.send_text_to_channel(message.guild, msg, message.channel.name)
+        if target_user:
+            msg = await game.kill(author.id, target_user.id)
+            await message.reply(msg)
+        else:
+            await message.reply("Invalid command. Use: `!kill @target_user`")
     elif cmd == '!status':
         await player.do_generate_vote_status_table(message.channel, game.get_vote_status())
 

@@ -90,7 +90,9 @@ class Game:
         except asyncio.CancelledError:
             print("task_game_loop is cancelled now")
         except Exception as e:
-            print(e);raise
+            print(e)
+            if not self.task_game_loop:
+                print("EMPTY GAME LOOP")
         await self.delete_channel()
         self.reset_game_state()
 
@@ -285,10 +287,13 @@ class Game:
         if author is None or not author.is_alive():
             return "You must be alive ingame to vote!"
 
-        # Vote for victim
-        self.voter_dict[author_id] = player_id
-
-        return text_template.generate_vote_text(f"<@{author_id}>", f"<@{player_id}>")
+        victim = self.players.get(player_id)
+        if victim and victim.is_alive():
+            # Vote for victim
+            self.voter_dict[author_id] = player_id
+            return text_template.generate_vote_text(f"<@{author_id}>", f"<@{player_id}>")
+        else:
+            return "Invalid target user. You can only vote for alive players"
 
     async def kill(self, author_id, player_id):
         assert self.players is not None
@@ -296,8 +301,12 @@ class Game:
         author = self.players.get(author_id, None)
         if author is None or not author.is_alive() or not isinstance(author, roles.Werewolf):
             return "You must be an alive werewolf to kill!"
-        self.killed_last_night[author_id] = player_id
-        return text_template.generate_kill_text(f"<@{author_id}>", f"<@{player_id}>")
+        victim = self.players.get(player_id)
+        if victim and victim.is_alive():
+            self.killed_last_night[author_id] = player_id
+            return text_template.generate_kill_text(f"<@{author_id}>", f"<@{player_id}>")
+        else:
+            return "Invalid target user. You can only kill alive players"
 
     async def test_game(self):
         print("====== Begin test game =====")
