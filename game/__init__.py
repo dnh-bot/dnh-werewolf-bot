@@ -199,6 +199,7 @@ class Game:
         self.killed_last_night = dict()  # dict[wolf] -> player
         self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1}. All items are ids.
         self.vote_start = set()
+        self.vote_next = set()
         self.vote_stop = set()
         self.day = 0
         self.task_game_loop = None

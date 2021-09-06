@@ -4,8 +4,6 @@ from commands import admin, player
 import config
 import time
 
-last_next = time.time()
-
 
 async def parse_command(game, message):
     cmd = message.content.strip().lower().split(' ')[0]
@@ -30,9 +28,11 @@ async def parse_command(game, message):
         else:
             await message.reply("You are not in the game.")
     elif cmd == '!start':
-        await player.do_start(game, message)
+        await player.do_start(game, message, force=False)
+    elif cmd == '!next':  # Next phase
+        await player.do_next(game, message, force=False)
     elif cmd == '!stop':
-        await player.do_stop(game, message)
+        await player.do_stop(game, message, force=False)
     elif cmd == '!vote': # author: `!vote @target_user`
         author = message.author
         if len(message.mentions)<1:
@@ -76,13 +76,6 @@ async def parse_command(game, message):
             user = message.mentions[0]
             channel_name = parameters.split(' ')[1]
             await admin.remove_user_from_channel(message.guild, user, channel_name)
-        elif cmd == '!next':  # Next phase
-            global last_next
-            if time.time() - last_next > config.NEXT_CMD_DELAY:
-                last_next = time.time()
-                await game.next_phase()
-            else:
-                await admin.send_text_to_channel(message.guild, f"Run !next command too quick, please wait for {config.NEXT_CMD_DELAY - time.time() + last_next:.1f} seconds", message.channel.name)
         elif cmd == '!end':
             await game.stop()
         elif cmd == "!fjoin":
@@ -110,6 +103,8 @@ async def parse_command(game, message):
                     await admin.remove_user_from_channel(message.guild, user, config.GAMEPLAY_CHANNEL)
         elif cmd == "!fstart":
             await player.do_start(game, message, force=True)
+        elif cmd == '!fnext':  # Next phase
+            await player.do_next(game, message, force=True)
         elif cmd == "!fclean":
             await admin.delete_all_personal_channel(message.guild)
     else:
