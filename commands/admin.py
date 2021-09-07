@@ -37,7 +37,7 @@ async def create_category(guild, author, category_name):
                 guild.me: discord.PermissionOverwrite(read_messages=True),
                 admin_role: discord.PermissionOverwrite(read_messages=True)
             }
-            response = "{} created category {}".format(author.name, category_name)
+            response = f"{author.name} created category {category_name}"
             print(response)
             category = await guild.create_category(category_name, overwrites=overwrites)
             return category
@@ -72,7 +72,7 @@ async def delete_channel(guild, author, channel_name):
     # Delete text channel. Any Admin can delete it
     try:
         channel = discord.utils.get(guild.channels, name=channel_name)
-        response = "{} deleted channel {}".format(author.display_name, channel_name)
+        response = f"{author.display_name} deleted channel {channel_name}"
         assert isinstance(channel, discord.TextChannel)
         print(response)
         # await channel.send(response)

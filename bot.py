@@ -20,6 +20,7 @@ def verify_ok(user):
     # TODO: Check valid user in valid channel
     return True
 
+
 # ============ Test Discord server =======
 async def test_bot(game, guild):
     print("\n\n\n=====================================")
@@ -49,11 +50,12 @@ async def on_ready():
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id)
         # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
-        game_list.add_game(guild.id,Game(guild, interface.DiscordInterface(guild, client)))
+        game_list.add_game(guild.id, Game(guild, interface.DiscordInterface(guild, client)))
 
     ''' Uncomment to run test '''
-    await test_bot(game_list.get_game(config.DISCORD_TESTING_SERVER_ID), client.get_guild(config.DISCORD_TESTING_SERVER_ID))  # Running test on Nhim's server
-    # await test_bot(game_list.get_game(config.DISCORD_DEPLOY_SERVER_ID), client.get_guild(config.DISCORD_DEPLOY_SERVER_ID))  # Running test on DNH ma sói bot's server
+    server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
+    # server_id = config.DISCORD_DEPLOY_SERVER_ID  # Running test on DNH ma sói bot's server
+    await test_bot(game_list.get_game(server_id), client.get_guild(server_id))
 
 
 @client.event
