@@ -49,7 +49,7 @@ class Game:
         self.next_flag.clear()
         self.last_nextcmd_time = time.time()
         self.timer_stopped = True
-        self.run_timer_phase_task = None
+        self.task_run_timer_phase = None
 
 
     def get_last_nextcmd_time(self):
@@ -100,7 +100,7 @@ class Game:
 
             self.game_phase = GamePhase.DAY
             self.is_stopped = False
-            self.task_game_loop = asyncio.create_task(self.run_game_loop())
+            self.task_game_loop = asyncio.create_task(self.run_game_loop(), name="task_game_loop")
             # print(self.task_game_loop)
 
     async def create_channel(self):
@@ -114,7 +114,7 @@ class Game:
         print("======= Game stopped =======")
         self.is_stopped = True
         self.next_flag.clear()
-        await self.canncel_running_task(self.run_timer_phase_task)
+        await self.canncel_running_task(self.task_run_timer_phase)
         await self.canncel_running_task(self.task_game_loop)
 
         if self.players:
@@ -302,8 +302,8 @@ class Game:
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
         print(self.display_alive_player())
-        await self.canncel_running_task(self.run_timer_phase_task)
-        self.run_timer_phase_task = asyncio.create_task(self.run_timer_phase())
+        await self.canncel_running_task(self.task_run_timer_phase)
+        self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
 
         if self.game_phase == GamePhase.DAY:
             await self.do_new_daytime_phase()
@@ -344,7 +344,7 @@ class Game:
 
     async def next_phase_cmd(self):  # This is called from `!next`
         # Cancel running timer phase to prevent multiple task instances
-        await self.canncel_running_task(self.run_timer_phase_task)
+        await self.canncel_running_task(self.task_run_timer_phase)
         await self.next_phase()
 
 

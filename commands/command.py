@@ -131,7 +131,8 @@ async def parse_command(game, message):
             except Exception as e:
                 print(e)
         elif cmd == "!debug":
-            print(asyncio.all_tasks())
+            # print(asyncio.all_tasks())
+            exec(" ".join(parameters))
     else:
         await message.reply(f"{message.author} is not Admin role")
 
