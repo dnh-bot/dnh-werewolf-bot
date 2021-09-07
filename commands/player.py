@@ -7,7 +7,7 @@ import discord
 import config
 from game import text_template as tt
 
-last_next = time.time()
+
 
 def check_vote_valid(num_votes, num_players, task_name):
     if num_players < 4:
@@ -56,19 +56,16 @@ async def do_start(game, message, force=False):
 async def do_next(game, message, force=False):
     ''' Next phase '''
     if game.is_started():
-        global last_next
         if force:
-            last_next = time.time()
             await game.next_phase()
         else:
-            if time.time() - last_next > config.NEXT_CMD_DELAY:  # User needs to wait at least 60s for next phase
+            if time.time() - game.get_last_nextcmd_time() > config.NEXT_CMD_DELAY:  # User needs to wait at least 60s for next phase
                 if message.author.id not in game.players:
                     await message.reply("You are not in the game.")
                 else:
                     game.vote_next.add(message.author.id)
                     valid, text = check_vote_valid(len(game.vote_next), len(game.players), "next")
                     if valid:
-                        last_next = time.time()
                         await game.next_phase()
                     else:
                         await message.reply(f"Player {message.author.display_name} votes for next phase. {text}")

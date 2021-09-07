@@ -27,7 +27,9 @@ class Game:
             # Personal channel will goes into role class
         ]  # List of channels in game
         self.next_flag = asyncio.Event()
-        self.reset_game_state()
+        self.timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
+
+        self.reset_game_state()  # Init other game variables every end game.
 
 
     def reset_game_state(self):
@@ -45,6 +47,12 @@ class Game:
         self.day = 0
         self.task_game_loop = None
         self.next_flag.clear()
+        self.last_nextcmd_time = time.time()
+        self.timer_stopped = True
+
+
+    def get_last_nextcmd_time(self):
+        return self.last_nextcmd_time
 
 
     def get_guild(self):
@@ -74,6 +82,7 @@ class Game:
 
     async def start(self, init_players=None):
         if self.is_stopped:
+            self.last_nextcmd_time = time.time()
             await self.interface.send_text_to_channel(text_template.generate_start_text(), config.LOBBY_CHANNEL)
             if not init_players:
                 self.players = self.generate_roles(self.interface, list(self.players.keys()), self.playersname)  # Must use list(dict_keys) in python >= 3.3
@@ -224,8 +233,8 @@ class Game:
                 if isinstance(player, roles.Werewolf):
                     num_werewolf += 1
         print("DEBUG: ", num_players, num_werewolf)
-
         return num_werewolf == 0 or num_werewolf * 2 >= num_players
+
 
     @staticmethod
     def get_top_voted(list_id):
@@ -234,6 +243,7 @@ class Game:
         if len(top_voted) == 1 or (len(top_voted) == 2 and top_voted[0][1] > top_voted[1][1]):
             return top_voted[0][0], top_voted[0][1]
         return None, 0  # have no vote or equal voted
+
 
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
@@ -258,6 +268,7 @@ class Game:
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
         else:
             await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
+
 
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
@@ -286,11 +297,14 @@ class Game:
 
 
     async def new_phase(self):
+        self.last_nextcmd_time = time.time()
         print(self.display_alive_player())
+        await self.run_timer_phase()
         if self.game_phase == GamePhase.DAY:
             await self.do_new_daytime_phase()
         elif self.game_phase == GamePhase.NIGHT:
             await self.do_new_nighttime_phase()
+
 
     async def end_phase(self):
         assert self.game_phase != GamePhase.NEW_GAME
@@ -306,10 +320,36 @@ class Game:
         else:
             print("Incorrect game flow")
 
+
     async def next_phase(self):
         print("Next phase")
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
         print("Done Next phase flag")
+
+
+    async def set_timer_phase(self, timer_phase_list):
+        self.timer_phase = timer_phase_list
+
+
+    async def run_timer_phase(self):
+        print("run_timer_phase")
+        self.timer_stopped = False
+        daytime , nighttime, period = self.timer_phase
+        timecount = daytime
+        if self.game_phase == GamePhase.NIGHT:
+            timecount = nighttime
+
+        for count in range(timecount, 0, -1):
+            if self.timer_stopped: break
+            if count % period == 0 or count<=5:
+                print(f"{count} remaining")
+                await self.interface.send_text_to_channel(f'Timer: {count} seconds remain...', config.GAMEPLAY_CHANNEL)
+            await asyncio.sleep(1)
+        if not self.timer_stopped:
+            print("stop timer")
+            await self.interface.send_text_to_channel(f'TIMEUP!!!!', config.GAMEPLAY_CHANNEL)
+            await self.next_phase()
+
 
     async def vote(self, author_id, player_id):
         author = self.players.get(author_id, None)

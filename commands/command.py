@@ -4,11 +4,10 @@ from commands import admin, player
 import config
 import time
 
-timer_stopped = True
 
 async def parse_command(game, message):
     cmd = message.content.strip().lower().split(' ')[0]
-    parameters = ' '.join(message.content.strip().lower().split(' ')[1:])
+    parameters = message.content.strip().lower().split(' ')[1:]
     # Game commands
     if cmd == '!join':
         if game.is_started():
@@ -57,23 +56,22 @@ async def parse_command(game, message):
         await player.do_generate_vote_status_table(message.channel, game.get_vote_status())
 
     elif cmd == '!timer':
-        time = list(map(int, parameters.split(' ')))
-        if len(time)==0:
-            time.append(30) # default is 30 seconds
-        if len(time)==1:
-            time.append(10) # with 10 seconds period
-        global timer_stopped
-        timer_stopped = False
-        for count in range(time[0], 0, -1):
-            if timer_stopped: break
-            if count % time[1] == 0 or count<=5:
-                await message.channel.send(f'Timer: {count} seconds remain...')
-            await asyncio.sleep(1)
-        if not timer_stopped: await message.channel.send('TIMEUP!!!!')
+        ''' Usage: 
+            `!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
+        '''
+        if len(parameters) < 3:
+            timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
+            await message.reply(f"Use default setting: dayphase=60s, nightphase=30s, alertperiod=20s")
+        else:
+            timer_phase = list(map(int, parameters))
+        game.set_timer_phase(timer_phase)
 
+    elif cmd == '!timerstart':
+        game.timer_stopped = False
+        await message.reply("Timer start!")
     elif cmd == '!timerstop':
-        timer_stopped = True
-        await message.channel.send("Timer stopped!")
+        game.timer_stopped = True
+        await message.reply("Timer stopped!")
 
     # Admin/Bot commands - User should not directly use these commands
     elif admin.isAdmin(message.author):
@@ -125,7 +123,7 @@ async def parse_command(game, message):
         elif cmd == '!fnext':  # Next phase
             await player.do_next(game, message, force=True)
         elif cmd == '!fstop':
-            await player.do_next(game, message, force=True)
+            await player.do_stop(game, message, force=True)
         elif cmd == "!fclean":
             try:
                 await admin.delete_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
