@@ -371,7 +371,7 @@ class Game:
                 if self.timer_stopped: break
                 if count % period == 0 or count<=5:
                     print(f"{count} remaining")
-                    await self.interface.send_text_to_channel(f'Timer: {count} seconds remain...', config.GAMEPLAY_CHANNEL)
+                    await self.interface.send_text_to_channel(f'Phase Timer: {count} seconds remain...', config.GAMEPLAY_CHANNEL)
                 await asyncio.sleep(1)
             if not self.timer_stopped:
                 print("stop timer")

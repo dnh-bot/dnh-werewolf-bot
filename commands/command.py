@@ -2,7 +2,6 @@ import discord
 import asyncio
 from commands import admin, player
 import config
-import time
 
 
 async def parse_command(game, message):
@@ -131,6 +130,8 @@ async def parse_command(game, message):
                 await admin.delete_all_personal_channel(message.guild)
             except Exception as e:
                 print(e)
+        elif cmd == "!debug":
+            print(asyncio.all_tasks())
     else:
         await message.reply(f"{message.author} is not Admin role")
 
