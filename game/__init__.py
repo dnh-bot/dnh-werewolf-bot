@@ -124,11 +124,14 @@ class Game:
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
 
     async def delete_channel(self):
-        await asyncio.gather(
-            self.interface.delete_channel(config.GAMEPLAY_CHANNEL),
-            self.interface.delete_channel(config.WEREWOLF_CHANNEL),
-            *[player.delete_personal_channel() for player in self.players.values()]
-        )
+        try:
+            await asyncio.gather(
+                self.interface.delete_channel(config.GAMEPLAY_CHANNEL),
+                self.interface.delete_channel(config.WEREWOLF_CHANNEL),
+                *[player.delete_personal_channel() for player in self.players.values()]
+            )
+        except Exception as e:
+            print(e)
 
     def add_player(self, id_, player_name):
         if id_ in self.players:
@@ -181,8 +184,10 @@ class Game:
         for _id, player in self.players.items():
             if isinstance(player, roles.Werewolf):
                 print("Wolf: ", player)
-                await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL)
+                await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
                 await self.interface.send_text_to_channel(f"Hello werewolf <@{_id}>", config.WEREWOLF_CHANNEL)
+            # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNE including Admin player
+            #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
 
         await asyncio.sleep(0)  # This return CPU to main thread
         print("Started game loop")

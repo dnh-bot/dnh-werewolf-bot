@@ -15,7 +15,7 @@ async def parse_command(game, message):
         elif game.add_player(message.author.id, message.author.name):
             # await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
             await player.do_join(message.guild, message.channel, message.author)
-            await admin.add_user_to_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
+            await admin.add_user_to_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
         else:
             await message.reply("You have already joined.")
     elif cmd == 'leave':
@@ -87,7 +87,7 @@ async def parse_command(game, message):
             print(parameters)
             user = message.mentions[0]
             channel_name = parameters.split(' ')[1]
-            await admin.add_user_to_channel(message.guild, user, channel_name)
+            await admin.add_user_to_channel(message.guild, user, channel_name, is_read=True, is_send=True)
         elif cmd == 'fremove':  # !remove @user1 channel_name
             print(parameters)
             user = message.mentions[0]
@@ -107,7 +107,7 @@ async def parse_command(game, message):
                     for user in message.mentions:
                         await player.do_join(message.guild, message.channel, user)
                         game.add_player(user.id, user.name)
-                        await admin.add_user_to_channel(message.guild, user, config.GAMEPLAY_CHANNEL)
+                        await admin.add_user_to_channel(message.guild, user, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
 
         elif cmd == "fleave":
             if game.is_started():
