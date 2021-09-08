@@ -1,27 +1,25 @@
 import asyncio
 import commands
 
+
 class ConsoleInterface:
     def __init__(self, guild=None):
         self.guild = guild  # Unused
 
     async def send_text_to_channel(self, msg, channel_name):
-        print("#{channel}: {msg}".format(channel=channel_name, msg=msg))
-
+        print(f"#{channel_name}: {msg}")
 
     async def create_category(self, category_name):
-        print("#{category}: {msg}".format(category=category_name))
-
+        print(f"#{category_name} created!")
 
     async def create_channel(self, channel_name):
-        print("{channel} created!".format(channel=channel_name))
-
+        print(f"{channel_name} created!")
 
     async def delete_channel(self, channel_name):
         print(f"{channel_name} deleted!")
 
-    async def add_user_to_channel(self, player_id, channel_name):
-        print(f"Added {player_id} to channel #{channel_name}")
+    async def add_user_to_channel(self, player_id, channel_name, is_read=True, is_send=True):
+        print(f"Added {player_id} to channel #{channel_name} {is_read} {is_send}")
 
 
 class DiscordInterface:
@@ -44,5 +42,5 @@ class DiscordInterface:
     async def delete_channel(self, channel_name):
         await commands.admin.delete_channel(self.guild, self.client.user, channel_name)
 
-    async def add_user_to_channel(self, player_id, channel_name):
-        await commands.admin.add_user_to_channel(self.guild, self.client.get_user(player_id), channel_name)
+    async def add_user_to_channel(self, player_id, channel_name, is_read=True, is_send=True):
+        await commands.admin.add_user_to_channel(self.guild, self.client.get_user(player_id), channel_name, is_read, is_send)

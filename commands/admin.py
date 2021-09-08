@@ -39,7 +39,7 @@ async def create_category(guild, author, category_name):
                 guild.me: discord.PermissionOverwrite(read_messages=True),
                 admin_role: discord.PermissionOverwrite(read_messages=True)
             }
-            response = "{} created category {}".format(author.name, category_name)
+            response = f"{author.name} created category {category_name}"
             print(response)
             category = await guild.create_category(category_name, overwrites=overwrites)
             return category
@@ -76,7 +76,7 @@ async def delete_channel(guild, author, channel_name):
     # Delete text channel. Any Admin can delete it
     try:
         channel = discord.utils.get(guild.channels, name=channel_name)
-        response = "{} deleted channel {}".format(author.display_name, channel_name)
+        response = f"{author.display_name} deleted channel {channel_name}"
         assert isinstance(channel, discord.TextChannel)
         print(response)
         # await channel.send(response)
@@ -86,13 +86,12 @@ async def delete_channel(guild, author, channel_name):
         logger.logger_debug(guild.channels)
         print(e);raise
 
-
-async def add_user_to_channel(guild, user, channel_name):
+async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=True):
     # Add a user to specific channel
     channel = discord.utils.get(guild.channels, name=channel_name)
     try:
-        await channel.set_permissions(user, read_messages=True, send_messages=True)
-        print("Successfully added ", user, " to ", channel_name)
+        await channel.set_permissions(user, read_messages=is_read, send_messages=is_send)
+        print(f"Successfully added {user} to {channel_name} read={is_read} send={is_send}")
     except Exception as e:
         print(channel_name, user)
         logger.logger_debug(guild.channels)
@@ -162,7 +161,7 @@ async def test_admin_command(guild):
     assert channel is not None
 
     # TEST add/remove user to/from channel
-    await add_user_to_channel(guild, public_user, channel_name)
+    await add_user_to_channel(guild, public_user, channel_name, is_read=True, is_send=True)
     await asyncio.sleep(2)
     assert isinstance(discord.utils.get(channel.members, name=public_user.name), discord.Member)
     await asyncio.sleep(5)
