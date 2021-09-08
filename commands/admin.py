@@ -82,12 +82,12 @@ async def delete_channel(guild, author, channel_name):
         logger.logger_debug(guild.channels)
         print(e);raise
 
-async def add_user_to_channel(guild, user, channel_name):
+async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=True):
     # Add a user to specific channel
     channel = discord.utils.get(guild.channels, name=channel_name)
     try:
-        await channel.set_permissions(user, read_messages=True, send_messages=True)
-        print("Successfully added ", user, " to ", channel_name)
+        await channel.set_permissions(user, read_messages=is_read, send_messages=is_send)
+        print(f"Successfully added {user} to {channel_name} read={is_read} send={is_send}")
     except Exception as e:
         print(channel_name, user)
         logger.logger_debug(guild.channels)
@@ -144,7 +144,7 @@ async def test_admin_command(guild):
     assert channel is not None
 
     # TEST add/remove user to/from channel
-    await add_user_to_channel(guild, public_user, channel_name)
+    await add_user_to_channel(guild, public_user, channel_name, is_read=True, is_send=True)
     await asyncio.sleep(2)
     assert isinstance(discord.utils.get(channel.members, name=public_user.name), discord.Member)
     await asyncio.sleep(5)

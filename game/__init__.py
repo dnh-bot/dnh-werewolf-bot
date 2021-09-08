@@ -124,11 +124,14 @@ class Game:
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
 
     async def delete_channel(self):
-        await asyncio.gather(
-            self.interface.delete_channel(config.GAMEPLAY_CHANNEL),
-            self.interface.delete_channel(config.WEREWOLF_CHANNEL),
-            *[player.delete_personal_channel() for player in self.players.values()]
-        )
+        try:
+            await asyncio.gather(
+                self.interface.delete_channel(config.GAMEPLAY_CHANNEL),
+                self.interface.delete_channel(config.WEREWOLF_CHANNEL),
+                *[player.delete_personal_channel() for player in self.players.values()]
+            )
+        except Exception as e:
+            print(e)
 
     def add_player(self, id_, player_name):
         if id_ in self.players:
@@ -181,8 +184,10 @@ class Game:
         for _id, player in self.players.items():
             if isinstance(player, roles.Werewolf):
                 print("Wolf: ", player)
-                await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL)
+                await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
                 await self.interface.send_text_to_channel(f"Hello werewolf <@{_id}>", config.WEREWOLF_CHANNEL)
+            # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNE including Admin player
+            #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
 
         await asyncio.sleep(0)  # This return CPU to main thread
         print("Started game loop")
@@ -265,7 +270,7 @@ class Game:
             print("lynced list:", self.voter_dict)
             self.voter_dict = {}
             if lynched:
-                self.players[lynched].get_killed()
+                await self.players[lynched].get_killed()
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"<@{lynched}>", votes), config.GAMEPLAY_CHANNEL)
             else:
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
@@ -280,7 +285,7 @@ class Game:
                 f"<@{id_}>" for id_ in sorted(self.players) if self.players[id_].is_alive()
             )
             await self.interface.send_text_to_channel(text_template.generate_night_phase_beginning_text(), config.GAMEPLAY_CHANNEL)
-            # no need to mute, it's done in role.on_phase
+
             await self.interface.send_text_to_channel(text_template.generate_before_voting_werewolf(alive_player), config.WEREWOLF_CHANNEL)
             # TODO
             # await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
@@ -293,7 +298,7 @@ class Game:
             killed, _ = Game.get_top_voted(list(self.killed_last_night.values()))
             self.killed_last_night = {}
             if killed:
-                self.players[killed].get_killed()
+                await self.players[killed].get_killed()
                 await self.interface.send_text_to_channel(text_template.generate_killed_text(f"<@{killed}>"), config.GAMEPLAY_CHANNEL)
         else:
             await self.interface.send_text_to_channel(text_template.generate_killed_text(None), config.GAMEPLAY_CHANNEL)
