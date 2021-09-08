@@ -130,7 +130,7 @@ async def parse_command(game, message):
                 await admin.delete_all_personal_channel(message.guild)
             except Exception as e:
                 print(e)
-        elif cmd == "!debug":
+        elif cmd == "!fdebug":
             # print(asyncio.all_tasks())
             exec(" ".join(parameters))
     else:
