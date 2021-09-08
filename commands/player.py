@@ -27,7 +27,7 @@ async def do_join(guild, channel, user):
 
 async def do_leave(guild, channel, user):
     ''' Leave game '''
-    response = "Goodbye player {}".format(user.display_name)
+    response = f"Goodbye player {user.display_name}"
     await channel.send(response)
 
 
