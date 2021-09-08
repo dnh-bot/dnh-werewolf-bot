@@ -27,7 +27,9 @@ class Game:
             # Personal channel will goes into role class
         ]  # List of channels in game
         self.next_flag = asyncio.Event()
-        self.reset_game_state()
+        self.timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
+
+        self.reset_game_state()  # Init other game variables every end game.
 
 
     def reset_game_state(self):
@@ -45,6 +47,13 @@ class Game:
         self.day = 0
         self.task_game_loop = None
         self.next_flag.clear()
+        self.last_nextcmd_time = time.time()
+        self.timer_stopped = True
+        self.task_run_timer_phase = None
+
+
+    def get_last_nextcmd_time(self):
+        return self.last_nextcmd_time
 
 
     def get_guild(self):
@@ -74,6 +83,7 @@ class Game:
 
     async def start(self, init_players=None):
         if self.is_stopped:
+            self.last_nextcmd_time = time.time()
             await self.interface.send_text_to_channel(text_template.generate_start_text(), config.LOBBY_CHANNEL)
             if not init_players:
                 self.players = self.generate_roles(self.interface, list(self.players.keys()), self.playersname)  # Must use list(dict_keys) in python >= 3.3
@@ -90,7 +100,7 @@ class Game:
 
             self.game_phase = GamePhase.DAY
             self.is_stopped = False
-            self.task_game_loop = asyncio.create_task(self.run_game_loop())
+            self.task_game_loop = asyncio.create_task(self.run_game_loop(), name="task_game_loop")
             # print(self.task_game_loop)
 
     async def create_channel(self):
@@ -104,17 +114,14 @@ class Game:
         print("======= Game stopped =======")
         self.is_stopped = True
         self.next_flag.clear()
-        try:
-            await self.task_game_loop
-        except asyncio.CancelledError:
-            print("task_game_loop is cancelled now")
-        except Exception as e:
-            print(e)
-            if not self.task_game_loop:
-                print("EMPTY GAME LOOP")
+        await self.canncel_running_task(self.task_run_timer_phase)
+        await self.canncel_running_task(self.task_game_loop)
+
         if self.players:
             await self.delete_channel()
         self.reset_game_state()
+        await asyncio.sleep(1)
+        await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
 
     async def delete_channel(self):
         await asyncio.gather(
@@ -179,30 +186,35 @@ class Game:
 
         await asyncio.sleep(0)  # This return CPU to main thread
         print("Started game loop")
-        while not self.is_stopped:
-            print("Phase:", self.game_phase)
+        try:
+            while not self.is_stopped:
+                print("Phase:", self.game_phase)
 
-            # New phase
-            await self.new_phase()
+                # New phase
+                await self.new_phase()
 
-            await asyncio.gather(*[role.on_phase(self.game_phase) for role in self.players.values() if role.is_alive()])
+                await asyncio.gather(*[role.on_phase(self.game_phase) for role in self.players.values() if role.is_alive()])
 
-            print("After gather")
-            # Wait for `!next` from Admin
-            # or Next phase control from bot
+                print("After gather")
+                # Wait for `!next` from Admin
+                # or Next phase control from bot
 
-            await self.next_flag.wait()  # Blocking wait here
-            print("After wait")
-            self.next_flag.clear()
-            print("After clear")
+                await self.next_flag.wait()  # Blocking wait here
+                print("After wait")
+                self.next_flag.clear()
+                print("After clear")
 
-            await self.end_phase()
-            # End_phase
+                await self.end_phase()
+                # End_phase
 
-            print("End phase")
-            if self.is_end_game():
-                self.is_stopped = True  # Need to update this value in case of end game.
-                break
+                print("End phase")
+                if self.is_end_game():
+                    self.is_stopped = True  # Need to update this value in case of end game.
+                    break
+        except asyncio.CancelledError:
+            print('run_game_loop(): cancelled while doing task')
+        except:
+            print('run_game_loop(): stopped while doing task')
 
         if any(a_player.is_alive() for a_player in self.players.values() if isinstance(a_player, roles.Werewolf)):
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)
@@ -224,8 +236,8 @@ class Game:
                 if isinstance(player, roles.Werewolf):
                     num_werewolf += 1
         print("DEBUG: ", num_players, num_werewolf)
-
         return num_werewolf == 0 or num_werewolf * 2 >= num_players
+
 
     @staticmethod
     def get_top_voted(list_id):
@@ -234,6 +246,7 @@ class Game:
         if len(top_voted) == 1 or (len(top_voted) == 2 and top_voted[0][1] > top_voted[1][1]):
             return top_voted[0][0], top_voted[0][1]
         return None, 0  # have no vote or equal voted
+
 
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
@@ -258,6 +271,7 @@ class Game:
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
         else:
             await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
+
 
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
@@ -286,11 +300,16 @@ class Game:
 
 
     async def new_phase(self):
+        self.last_nextcmd_time = time.time()
         print(self.display_alive_player())
+        await self.canncel_running_task(self.task_run_timer_phase)
+        self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
+
         if self.game_phase == GamePhase.DAY:
             await self.do_new_daytime_phase()
         elif self.game_phase == GamePhase.NIGHT:
             await self.do_new_nighttime_phase()
+
 
     async def end_phase(self):
         assert self.game_phase != GamePhase.NEW_GAME
@@ -306,10 +325,63 @@ class Game:
         else:
             print("Incorrect game flow")
 
+
+    async def canncel_running_task(self, current_task):
+        # Cancel running timer phase to prevent multiple task instances
+        try:
+            print("Cancelling.... ", current_task)
+            current_task.cancel()
+            try:
+                await self.current_task
+            except asyncio.CancelledError:
+                print("... cancelled now")
+            except:
+                print("Cancelled task in canncel_running_task")
+        except Exception as e:
+            print(e)
+            print("Task not found")
+
+
+    async def next_phase_cmd(self):  # This is called from `!next`
+        # Cancel running timer phase to prevent multiple task instances
+        await self.canncel_running_task(self.task_run_timer_phase)
+        await self.next_phase()
+
+
     async def next_phase(self):
         print("Next phase")
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
         print("Done Next phase flag")
+
+
+    async def set_timer_phase(self, timer_phase_list):
+        self.timer_phase = timer_phase_list
+
+
+    async def run_timer_phase(self):
+        print("run_timer_phase")
+        try:
+            self.timer_stopped = False
+            daytime , nighttime, period = self.timer_phase
+            timecount = daytime
+            if self.game_phase == GamePhase.NIGHT:
+                timecount = nighttime
+
+            for count in range(timecount, 0, -1):
+                if self.timer_stopped: break
+                if count % period == 0 or count<=5:
+                    print(f"{count} remaining")
+                    await self.interface.send_text_to_channel(f'Phase Timer: {count} seconds remain...', config.GAMEPLAY_CHANNEL)
+                await asyncio.sleep(1)
+            if not self.timer_stopped:
+                print("stop timer")
+                await self.interface.send_text_to_channel(f'TIMEUP!!!!', config.GAMEPLAY_CHANNEL)
+                await self.next_phase()
+        except asyncio.CancelledError:
+            print('cancel_me(): cancel sleep')
+        except:
+            print("Unknown run_timer_phase")
+
 
     async def vote(self, author_id, player_id):
         author = self.players.get(author_id, None)

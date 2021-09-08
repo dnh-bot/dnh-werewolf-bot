@@ -2,20 +2,18 @@ import discord
 import asyncio
 from commands import admin, player
 import config
-import time
 
 
 async def parse_command(game, message):
     message_parts = message.content.strip().lower()[len(config.BOT_PREFIX):].split(" ")
-    cmd, parameters = message_parts[0], " ".join(message_parts[1:])
-
+    cmd, parameters = message_parts[0], message_parts[1:]
     # Game commands
     if cmd == 'join':
         if game.is_started():
             text = "Game started. Please wait until next game!"
             await admin.send_text_to_channel(message.guild, text, message.channel.name)
         elif game.add_player(message.author.id, message.author.name):
-            await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
+            # await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
             await player.do_join(message.guild, message.channel, message.author)
             await admin.add_user_to_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
         else:
@@ -57,6 +55,23 @@ async def parse_command(game, message):
     elif cmd == 'status':
         await player.do_generate_vote_status_table(message.channel, game.get_vote_status())
 
+    elif cmd == 'timer':
+        ''' Usage: 
+            `!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
+        '''
+        if len(parameters) < 3:
+            timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
+            await message.reply(f"Use default setting: dayphase=60s, nightphase=30s, alertperiod=20s")
+        else:
+            timer_phase = list(map(int, parameters))
+        game.set_timer_phase(timer_phase)
+
+    elif cmd == 'timerstart':
+        game.timer_stopped = False
+        await message.reply("Timer start!")
+    elif cmd == 'timerstop':
+        game.timer_stopped = True
+        await message.reply("Timer stopped!")
 
     # Admin/Bot commands - User should not directly use these commands
     elif admin.isAdmin(message.author):
@@ -110,7 +125,7 @@ async def parse_command(game, message):
         elif cmd == 'fnext':  # Next phase
             await player.do_next(game, message, force=True)
         elif cmd == 'fstop':
-            await player.do_next(game, message, force=True)
+            await player.do_stop(game, message, force=True)
         elif cmd == "fclean":
             try:
                 await admin.delete_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
@@ -118,6 +133,9 @@ async def parse_command(game, message):
                 await admin.delete_all_personal_channel(message.guild)
             except Exception as e:
                 print(e)
+        elif cmd == "fdebug":
+            # print(asyncio.all_tasks())
+            exec(" ".join(parameters))
     else:
         await message.reply(f"{message.author} is not Admin role")
 
