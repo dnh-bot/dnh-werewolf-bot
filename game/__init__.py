@@ -270,7 +270,7 @@ class Game:
             print("lynced list:", self.voter_dict)
             self.voter_dict = {}
             if lynched:
-                self.players[lynched].get_killed()
+                await self.players[lynched].get_killed()
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"<@{lynched}>", votes), config.GAMEPLAY_CHANNEL)
             else:
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
@@ -285,7 +285,7 @@ class Game:
                 f"<@{id_}>" for id_ in sorted(self.players) if self.players[id_].is_alive()
             )
             await self.interface.send_text_to_channel(text_template.generate_night_phase_beginning_text(), config.GAMEPLAY_CHANNEL)
-            # no need to mute, it's done in role.on_phase
+
             await self.interface.send_text_to_channel(text_template.generate_before_voting_werewolf(alive_player), config.WEREWOLF_CHANNEL)
             # TODO
             # await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
@@ -298,7 +298,7 @@ class Game:
             killed, _ = Game.get_top_voted(list(self.killed_last_night.values()))
             self.killed_last_night = {}
             if killed:
-                self.players[killed].get_killed()
+                await self.players[killed].get_killed()
                 await self.interface.send_text_to_channel(text_template.generate_killed_text(f"<@{killed}>"), config.GAMEPLAY_CHANNEL)
         else:
             await self.interface.send_text_to_channel(text_template.generate_killed_text(None), config.GAMEPLAY_CHANNEL)

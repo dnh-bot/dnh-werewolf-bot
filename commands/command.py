@@ -10,8 +10,7 @@ async def parse_command(game, message):
     # Game commands
     if cmd == 'join':
         if game.is_started():
-            text = "Game started. Please wait until next game!"
-            await admin.send_text_to_channel(message.guild, text, message.channel.name)
+            await message.reply("Game started. Please wait until next game!")
         elif game.add_player(message.author.id, message.author.name):
             # await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
             await player.do_join(message.guild, message.channel, message.author)
@@ -20,7 +19,7 @@ async def parse_command(game, message):
             await message.reply("You have already joined.")
     elif cmd == 'leave':
         if game.is_started():
-            await admin.send_text_to_channel(message.guild, "Game started. Please wait until next game!", message.channel.name)
+            await message.reply("Game started. Please wait until end game!")
         elif game.remove_player(message.author.id):
             await player.do_leave(message.guild, message.channel, message.author)
             await admin.remove_user_from_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)

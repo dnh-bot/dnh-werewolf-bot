@@ -1,6 +1,7 @@
 from enum import Enum
 
 import game
+import config
 
 class CharacterStatus(Enum):
     ALIVE = 1
@@ -19,8 +20,11 @@ class Character:
     def is_alive(self):
         return self.status == CharacterStatus.ALIVE
 
-    def get_killed(self):
+    async def get_killed(self):
         self.status = CharacterStatus.KILLED
+        # Mute player in config.GAMEPLAY_CHANNEL
+        await self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
+
 
     def action(self):
         pass
@@ -39,15 +43,19 @@ class Character:
 
     async def on_phase(self, phase):
         if phase == game.GamePhase.DAY:
-            await self.on_day()
+            # Unmute all players in config.GAMEPLAY_CHANNEL
+            await self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
+            await self.on_day()  # Special skill here
         elif phase == game.GamePhase.NIGHT:
-            await self.on_night()
+            # Mute all players in config.GAMEPLAY_CHANNEL
+            await self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
+            await self.on_night()  # Special skill here
+
+
+    async def on_day(self):  # Will be overload in Child Class
         pass
 
-    async def on_day(self):
-        pass
-
-    async def on_night(self):
+    async def on_night(self):  # Will be overload in Child Class
         pass
 
     def vote(self):
