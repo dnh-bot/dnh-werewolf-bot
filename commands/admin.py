@@ -18,11 +18,13 @@ def isAdmin(author):
         print(f"{author.display_name} is not Admin Role")
         return False
 
+
 def list_users(guild):
     print("Server member: ")
     for user in guild.members:
         print("- ", user.display_name, user.id)
     print("-------------")
+
 
 async def create_category(guild, author, category_name):
     # Create a category with limited permissions
@@ -44,6 +46,7 @@ async def create_category(guild, author, category_name):
         except Exception as e:
             print(e);raise
     return existing_category
+
 
 async def create_channel(guild, author, channel_name, category_name=config.GAME_CATEGORY, is_public=False):
     # Create text channel with limited permissions
@@ -68,6 +71,7 @@ async def create_channel(guild, author, channel_name, category_name=config.GAME_
             print(e);raise
     return existing_channel
 
+
 async def delete_channel(guild, author, channel_name):
     # Delete text channel. Any Admin can delete it
     try:
@@ -81,6 +85,7 @@ async def delete_channel(guild, author, channel_name):
         print(channel_name, author)
         logger.logger_debug(guild.channels)
         print(e);raise
+
 
 async def add_user_to_channel(guild, user, channel_name):
     # Add a user to specific channel
@@ -102,8 +107,9 @@ async def remove_user_from_channel(guild, user, channel_name):
         await channel.set_permissions(user, read_messages=False, send_messages=False)
         print("Successfully removed ", user, " from ", channel_name)
     except Exception as e:
-        print(e);raise
-        print(channel_name, user)
+        print(e)
+        # print(channel_name, user)
+        raise
 
 
 async def send_text_to_channel(guild, text, channel_name):
@@ -112,8 +118,20 @@ async def send_text_to_channel(guild, text, channel_name):
     try:
         await channel.send(text)
     except Exception as e:
-        print(e);raise
-        print(channel_name)
+        print(e)
+        # print(channel_name)
+        raise
+
+
+async def send_embed_to_channel(guild, embed_text, channel_name):
+    '''Send an embed message to a channel'''
+    channel = discord.utils.get(guild.channels, name=channel_name)
+    try:
+        await channel.send(embed=embed_text)
+    except Exception as e:
+        print(e)
+        # print(channel_name)
+        raise
 
 
 async def delete_all_personal_channel(guild):

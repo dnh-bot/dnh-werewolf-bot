@@ -35,23 +35,31 @@ async def parse_command(game, message):
         await player.do_stop(game, message, force=False)
     elif cmd == '!vote': # author: `!vote @target_user`
         author = message.author
-        if len(message.mentions)<1:
-            await admin.send_text_to_channel(message.guild, "Invalid command", message.channel.name)
-        elif message.channel.name != config.GAMEPLAY_CHANNEL:
+        if message.channel.name != config.GAMEPLAY_CHANNEL:
             await admin.send_text_to_channel(message.guild, f"Command in invalid channel. Please use in #{config.GAMEPLAY_CHANNEL}", message.channel.name)
-        else:
+        elif len(message.mentions) == 1:
             msg = await game.vote(author.id, message.mentions[0].id)
             await message.reply(msg)
-    elif cmd == '!kill': # author: `!kill @target_user`
+        else:
+            await admin.send_text_to_channel(message.guild, "Invalid command", message.channel.name)
+
+    elif cmd == '!kill': # author: `!kill player_id`
         if message.channel.name != config.WEREWOLF_CHANNEL:
             await admin.send_text_to_channel(message.guild, f"Command {config.BOT_PREFIX}kill only available in #{config.WEREWOLF_CHANNEL}", message.channel.name)
         author = message.author
-        target_user = message.mentions[0]
-        if target_user:
-            msg = await game.kill(author.id, target_user.id)
-            await message.reply(msg)
-        else:
-            await message.reply("Invalid command. Use: `!kill @target_user`")
+        is_valid = False
+        if parameters.isdigit():
+            target_index = int(parameters) - 1
+            alive_players = game.get_alive_players()
+            if 0 <= target_index < len(alive_players):
+                is_valid = True
+                target_user = alive_players[target_index]
+                msg = await game.kill(author.id, target_user.player_id)
+                await message.reply(msg)
+
+        if not is_valid:
+            await message.reply("Invalid command. Use: `!kill player_id`")
+
     elif cmd == '!status':
         await player.do_generate_vote_status_table(message.channel, game.get_vote_status())
 

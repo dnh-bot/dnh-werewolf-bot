@@ -142,11 +142,10 @@ class Game:
         return True
 
     def get_alive_players(self):
-        return [
-            player
-            for player in self.players.values()
-            if player.is_alive()
-        ]
+        return sorted(
+            [player for player in self.players.values() if player.is_alive()],
+            key=lambda player: player.id
+        )
 
     def display_alive_player(self):
         return "\n".join((
@@ -213,7 +212,6 @@ class Game:
         await self.interface.send_text_to_channel("Werewolves: "+werewolf_list, config.GAMEPLAY_CHANNEL)
         print("End game loop")
 
-
     def is_end_game(self):
         num_werewolf = 0
         num_players = 0
@@ -244,7 +242,6 @@ class Game:
             )
             await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day, alive_player), config.GAMEPLAY_CHANNEL)
 
-
     async def do_end_daytime_phase(self):
         print("do_end_daytime_phase")
         if self.voter_dict:
@@ -268,9 +265,26 @@ class Game:
             await self.interface.send_text_to_channel(text_template.generate_night_phase_beginning_text(), config.GAMEPLAY_CHANNEL)
             # no need to mute, it's done in role.on_phase
             await self.interface.send_text_to_channel(text_template.generate_before_voting_werewolf(alive_player), config.WEREWOLF_CHANNEL)
-            # TODO
             # await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
+            await self.interface.send_embed_to_channel(self.generate_player_table_embed_msg(), config.GAMEPLAY_CHANNEL)
 
+    async def generate_player_table_embed_msg(self):
+        ids = []
+        mention_list = []
+        for row_id, user in enumerate(self.get_alive_players(), 1):
+            ids.append(str(row_id))
+            mention_list.append(f"<@{user.id}>")
+
+        table_content = [
+            ("ID", ids),
+            ("Player", mention_list)
+        ]
+        import discord  # FIXME: do I need to import it here?
+        embed = discord.Embed(title="Player list", description="Please select a number to vote.")
+        for field_name, field_value in table_content:
+            embed.add_field(name=field_name, value="\n".join(field_value), inline=True)
+
+        return embed
 
     async def do_end_nighttime_phase(self):
         print("do_end_nighttime_phase")
@@ -283,7 +297,6 @@ class Game:
                 await self.interface.send_text_to_channel(text_template.generate_killed_text(f"<@{killed}>"), config.GAMEPLAY_CHANNEL)
         else:
             await self.interface.send_text_to_channel(text_template.generate_killed_text(None), config.GAMEPLAY_CHANNEL)
-
 
     async def new_phase(self):
         print(self.display_alive_player())

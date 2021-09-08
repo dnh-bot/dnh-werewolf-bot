@@ -32,6 +32,9 @@ class DiscordInterface:
     async def send_text_to_channel(self, msg, channel_name):
         await commands.admin.send_text_to_channel(self.guild, msg, channel_name)
 
+    async def send_embed_to_channel(self, embed_msg, channel_name):
+        await commands.admin.send_embed_to_channel(self.guild, embed_msg, channel_name)
+
     async def create_category(self, category_name):
         await commands.admin.create_category(self.guild, self.client.user, category_name)
 
