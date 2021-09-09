@@ -8,7 +8,6 @@ import config
 from game import text_template as tt
 
 
-
 def check_vote_valid(num_votes, num_players, task_name):
     if num_players < 4:
         return False, f"At least 4 players to {task_name} game."
