@@ -9,7 +9,7 @@ from utils import logger
 import config
 
 
-def isAdmin(author):
+def is_admin(author):
     # Check if this user has 'Admin' right
     admin_role = discord.utils.get(author.roles, name="Admin")
     if admin_role in author.guild.roles:
@@ -86,6 +86,7 @@ async def delete_channel(guild, author, channel_name):
         logger.logger_debug(guild.channels)
         print(e);raise
 
+
 async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=True):
     # Add a user to specific channel
     channel = discord.utils.get(guild.channels, name=channel_name)
@@ -122,11 +123,15 @@ async def send_text_to_channel(guild, text, channel_name):
         raise
 
 
-async def send_embed_to_channel(guild, embed_text, channel_name):
+async def send_embed_to_channel(guild, embed_data, channel_name):
     '''Send an embed message to a channel'''
     channel = discord.utils.get(guild.channels, name=channel_name)
+    embed = discord.Embed(title=embed_data["title"], description=embed_data.get("description"))
+    for field_name, field_value in embed_data["content"]:
+        embed.add_field(name=field_name, value="\n".join(field_value), inline=True)
+
     try:
-        await channel.send(embed=embed_text)
+        await channel.send(embed=embed)
     except Exception as e:
         print(e)
         # print(channel_name)

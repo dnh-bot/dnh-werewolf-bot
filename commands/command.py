@@ -31,34 +31,35 @@ async def parse_command(game, message):
         await player.do_next(game, message, force=False)
     elif cmd == 'stop':
         await player.do_stop(game, message, force=False)
-    elif cmd == '!vote': # author: `!vote @target_user`
-        author = message.author
+    elif cmd == 'vote':  # author: `vote @target_user`
         if message.channel.name != config.GAMEPLAY_CHANNEL:
             await admin.send_text_to_channel(message.guild, f"Command in invalid channel. Please use in #{config.GAMEPLAY_CHANNEL}", message.channel.name)
         elif len(message.mentions) == 1:
+            author = message.author
             msg = await game.vote(author.id, message.mentions[0].id)
             await message.reply(msg)
         else:
             await admin.send_text_to_channel(message.guild, "Invalid command", message.channel.name)
 
-    elif cmd == '!kill': # author: `!kill player_id`
+    elif cmd == 'kill':  # author: `kill player_id`
         if message.channel.name != config.WEREWOLF_CHANNEL:
             await admin.send_text_to_channel(message.guild, f"Command {config.BOT_PREFIX}kill only available in #{config.WEREWOLF_CHANNEL}", message.channel.name)
-        author = message.author
-        is_valid = False
-        if parameters.isdigit():
-            target_index = int(parameters) - 1
-            alive_players = game.get_alive_players()
-            if 0 <= target_index < len(alive_players):
-                is_valid = True
-                target_user = alive_players[target_index]
-                msg = await game.kill(author.id, target_user.player_id)
-                await message.reply(msg)
+        else:
+            author = message.author
+            is_valid = False
+            if len(parameters) == 1 and parameters[0].isdigit():
+                target_index = int(parameters[0]) - 1
+                alive_players = game.get_alive_players()
+                if 0 <= target_index < len(alive_players):
+                    is_valid = True
+                    target_user = alive_players[target_index]
+                    msg = await game.kill(author.id, target_user.player_id)
+                    await message.reply(msg)
 
-        if not is_valid:
-            await message.reply("Invalid command. Use: `!kill player_id`")
+            if not is_valid:
+                await message.reply(f"Invalid command. Use: `{config.BOT_PREFIX}kill player_id`")
 
-    elif cmd == '!status':
+    elif cmd == 'status':
         await player.do_generate_vote_status_table(message.channel, game.get_vote_status())
 
     elif cmd == 'timer':
@@ -80,7 +81,7 @@ async def parse_command(game, message):
         await message.reply("Timer stopped!")
 
     # Admin/Bot commands - User should not directly use these commands
-    elif admin.isAdmin(message.author):
+    elif admin.is_admin(message.author):
         if cmd == 'fcreate_channel':  # Test only
             await admin.create_channel(message.guild, message.author, parameters)
         elif cmd == 'fdelete_channel':  # Test only

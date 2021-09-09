@@ -1,3 +1,6 @@
+import config
+from game import roles, text_template
+
 import datetime
 import random
 import time
@@ -5,9 +8,6 @@ from enum import Enum
 import asyncio
 from collections import Counter
 from functools import reduce
-
-import config
-from game import roles, text_template
 
 
 class GamePhase(Enum):
@@ -31,7 +31,6 @@ class Game:
 
         self.reset_game_state()  # Init other game variables every end game.
 
-
     def reset_game_state(self):
         print("reset_game_state")
         self.is_stopped = True
@@ -51,10 +50,8 @@ class Game:
         self.timer_stopped = True
         self.task_run_timer_phase = None
 
-
     def get_last_nextcmd_time(self):
         return self.last_nextcmd_time
-
 
     def get_guild(self):
         return self.guild
@@ -86,7 +83,8 @@ class Game:
             self.last_nextcmd_time = time.time()
             await self.interface.send_text_to_channel(text_template.generate_start_text(), config.LOBBY_CHANNEL)
             if not init_players:
-                self.players = self.generate_roles(self.interface, list(self.players.keys()), self.playersname)  # Must use list(dict_keys) in python >= 3.3
+                self.players = self.generate_roles(self.interface, list(self.players.keys()), self.playersname)
+                # Must use list(dict_keys) in python >= 3.3
             else:
                 self.players = init_players
 
@@ -114,8 +112,8 @@ class Game:
         print("======= Game stopped =======")
         self.is_stopped = True
         self.next_flag.clear()
-        await self.canncel_running_task(self.task_run_timer_phase)
-        await self.canncel_running_task(self.task_game_loop)
+        await self.cancel_running_task(self.task_run_timer_phase)
+        await self.cancel_running_task(self.task_game_loop)
 
         if self.players:
             await self.delete_channel()
@@ -154,7 +152,7 @@ class Game:
     def get_alive_players(self):
         return sorted(
             [player for player in self.players.values() if player.is_alive()],
-            key=lambda player: player.id
+            key=lambda player: player.player_id
         )
 
     def display_alive_player(self):
@@ -185,7 +183,7 @@ class Game:
                 print("Wolf: ", player)
                 await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
                 await self.interface.send_text_to_channel(f"Hello werewolf <@{_id}>", config.WEREWOLF_CHANNEL)
-            # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNE including Admin player
+            # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
 
         await asyncio.sleep(0)  # This return CPU to main thread
@@ -197,7 +195,7 @@ class Game:
                 # New phase
                 await self.new_phase()
 
-                await asyncio.gather(*[role.on_phase(self.game_phase) for role in self.players.values() if role.is_alive()])
+                await asyncio.gather(*[role.on_phase(self.game_phase) for role in self.get_alive_players()])
 
                 print("After gather")
                 # Wait for `!next` from Admin
@@ -241,7 +239,6 @@ class Game:
         print("DEBUG: ", num_players, num_werewolf)
         return num_werewolf == 0 or num_werewolf * 2 >= num_players
 
-
     @staticmethod
     def get_top_voted(list_id):
         top_voted = Counter(list_id).most_common(2)
@@ -249,7 +246,6 @@ class Game:
         if len(top_voted) == 1 or (len(top_voted) == 2 and top_voted[0][1] > top_voted[1][1]):
             return top_voted[0][0], top_voted[0][1]
         return None, 0  # have no vote or equal voted
-
 
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
@@ -274,36 +270,32 @@ class Game:
         else:
             await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
 
-
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
-        if self.players:
-            alive_player = ", ".join(
-                f"<@{id_}>" for id_ in sorted(self.players) if self.players[id_].is_alive()
-            )
-            await self.interface.send_text_to_channel(text_template.generate_night_phase_beginning_text(), config.GAMEPLAY_CHANNEL)
-
-            await self.interface.send_text_to_channel(text_template.generate_before_voting_werewolf(alive_player), config.WEREWOLF_CHANNEL)
-            # await self.interface.send_text_to_channel("List of alive player to poll", config.WEREWOLF_CHANNEL)
-            await self.interface.send_embed_to_channel(self.generate_player_table_embed_msg(), config.GAMEPLAY_CHANNEL)
-
-    async def generate_player_table_embed_msg(self):
         ids = []
-        mention_list = []
+        alive_players = []
         for row_id, user in enumerate(self.get_alive_players(), 1):
             ids.append(str(row_id))
-            mention_list.append(f"<@{user.id}>")
+            alive_players.append(f"<@{user.player_id}>")
 
-        table_content = [
-            ("ID", ids),
-            ("Player", mention_list)
-        ]
-        import discord  # FIXME: do I need to import it here?
-        embed = discord.Embed(title="Player list", description="Please select a number to vote.")
-        for field_name, field_value in table_content:
-            embed.add_field(name=field_name, value="\n".join(field_value), inline=True)
-
-        return embed
+        if alive_players:
+            await self.interface.send_text_to_channel(
+                text_template.generate_night_phase_beginning_text(),
+                config.GAMEPLAY_CHANNEL
+            )
+            await self.interface.send_text_to_channel(
+                text_template.generate_before_voting_werewolf(", ".join(alive_players)),
+                config.WEREWOLF_CHANNEL
+            )
+            embed_data = {
+                "title": "Player list",
+                "description": "Please select a number to vote.",
+                "content": [
+                    ("ID", ids),
+                    ("Player", alive_players)
+                ]
+            }
+            await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
 
     async def do_end_nighttime_phase(self):
         print("do_end_nighttime_phase")
@@ -320,14 +312,13 @@ class Game:
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
         print(self.display_alive_player())
-        await self.canncel_running_task(self.task_run_timer_phase)
+        await self.cancel_running_task(self.task_run_timer_phase)
         self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
 
         if self.game_phase == GamePhase.DAY:
             await self.do_new_daytime_phase()
         elif self.game_phase == GamePhase.NIGHT:
             await self.do_new_nighttime_phase()
-
 
     async def end_phase(self):
         assert self.game_phase != GamePhase.NEW_GAME
@@ -343,8 +334,7 @@ class Game:
         else:
             print("Incorrect game flow")
 
-
-    async def canncel_running_task(self, current_task):
+    async def cancel_running_task(self, current_task):
         # Cancel running timer phase to prevent multiple task instances
         try:
             print("Cancelling.... ", current_task)
@@ -354,40 +344,37 @@ class Game:
             except asyncio.CancelledError:
                 print("... cancelled now")
             except:
-                print("Cancelled task in canncel_running_task")
+                print("Cancelled task in cancel_running_task")
         except Exception as e:
             print(e)
             print("Task not found")
 
-
     async def next_phase_cmd(self):  # This is called from `!next`
         # Cancel running timer phase to prevent multiple task instances
-        await self.canncel_running_task(self.task_run_timer_phase)
+        await self.cancel_running_task(self.task_run_timer_phase)
         await self.next_phase()
-
 
     async def next_phase(self):
         print("Next phase")
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
         print("Done Next phase flag")
 
-
     async def set_timer_phase(self, timer_phase_list):
         self.timer_phase = timer_phase_list
-
 
     async def run_timer_phase(self):
         print("run_timer_phase")
         try:
             self.timer_stopped = False
-            daytime , nighttime, period = self.timer_phase
+            daytime, nighttime, period = self.timer_phase
             timecount = daytime
             if self.game_phase == GamePhase.NIGHT:
                 timecount = nighttime
 
             for count in range(timecount, 0, -1):
-                if self.timer_stopped: break
-                if count % period == 0 or count<=5:
+                if self.timer_stopped:
+                    break
+                if count % period == 0 or count <= 5:
                     print(f"{count} remaining")
                     await self.interface.send_text_to_channel(f'Phase Timer: {count} seconds remain...', config.GAMEPLAY_CHANNEL)
                 await asyncio.sleep(1)
@@ -399,7 +386,6 @@ class Game:
             print('cancel_me(): cancel sleep')
         except:
             print("Unknown run_timer_phase")
-
 
     async def vote(self, author_id, player_id):
         author = self.players.get(author_id, None)
