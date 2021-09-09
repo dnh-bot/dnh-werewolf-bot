@@ -8,7 +8,6 @@ import config
 from game import text_template as tt
 
 
-
 def check_vote_valid(num_votes, num_players, task_name):
     if num_players < 4:
         return False, f"At least 4 players to {task_name} game."
@@ -98,7 +97,6 @@ async def do_stop(game, message, force=False):
         await message.reply("Game has not started yet!")
 
 
-
 async def do_generate_vote_status_table(channel, table):
     # Table format: {'u2': {'u1'}, 'u1': {'u3', 'u2'}}
     # Player | Number of votes | Voters
@@ -112,16 +110,17 @@ async def do_generate_vote_status_table(channel, table):
     voter_list = []
     for k, v in table.items():
         victim_list.append(f"<@{k}>")
-        voter_count.append(f"   {str(len(v))}")
+        voter_count.append(f"   {len(v)}")
         voter_list.append(",".join([f"<@{i}>" for i in v]))
     # print("\n".join(victim_list))
     # print("\n".join(voter_count))
     # print("\n".join(voter_list))
-    embed = discord.Embed(title = 'Vote Results', description = None)
+    embed = discord.Embed(title='Vote Results', description=None)
     embed.add_field(name="Player",          value="\n".join(victim_list), inline=True)
     embed.add_field(name="Votes",           value="\n".join(voter_count), inline=True)
     embed.add_field(name="Voters",          value="\n".join(voter_list), inline=True)
     await channel.send(embed=embed)
+
 
 async def test_player_command(guild):
     # TODO: 

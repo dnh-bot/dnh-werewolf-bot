@@ -3,6 +3,7 @@ from enum import Enum
 import game
 import config
 
+
 class CharacterStatus(Enum):
     ALIVE = 1
     KILLED = 2
@@ -25,14 +26,15 @@ class Character:
         # Mute player in config.GAMEPLAY_CHANNEL
         await self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
 
-
     def action(self):
         pass
 
     async def create_personal_channel(self):
         await self.interface.create_channel(self.channel_name)
         await self.interface.add_user_to_channel(self.player_id, self.channel_name, is_read=True, is_send=True)
-        await self.interface.send_text_to_channel(f"Welcome <@{self.player_id}> to the game!\nYour role is {self.__class__.__name__}", self.channel_name)
+        await self.interface.send_text_to_channel(
+            f"Welcome <@{self.player_id}> to the game!\nYour role is {self.__class__.__name__}", self.channel_name
+        )
         print("Created channel", self.channel_name)
 
     async def send_to_personal_channel(self, text):
@@ -44,13 +46,16 @@ class Character:
     async def on_phase(self, phase):
         if phase == game.GamePhase.DAY:
             # Unmute all players in config.GAMEPLAY_CHANNEL
-            await self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
+            await self.interface.add_user_to_channel(
+                self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True
+            )
             await self.on_day()  # Special skill here
         elif phase == game.GamePhase.NIGHT:
             # Mute all players in config.GAMEPLAY_CHANNEL
-            await self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
+            await self.interface.add_user_to_channel(
+                self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False
+            )
             await self.on_night()  # Special skill here
-
 
     async def on_day(self):  # Will be overload in Child Class
         pass

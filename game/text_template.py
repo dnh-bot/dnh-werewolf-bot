@@ -25,7 +25,7 @@ def generate_execution_text(voted_user, highest_vote_number):
     if highest_vote_number > 0:
         return "Thời gian quyết định đã hết. " +\
             f"Người chơi {voted_user} đã bị đưa lên máy chém với số phiếu bầu là {highest_vote_number}. " +\
-            "Hy vọng tình thế của làng có thể thay đôi sau quyết định này.\n" +\
+            "Hy vọng tình thế của làng có thể thay đổi sau quyết định này.\n" +\
             "==========================================================================="
     else:
         return "Không có ai bị hành hình. Trò chơi sẽ tiếp tục. Hãy cẩn thân để sống sót!\n" +\
@@ -33,8 +33,8 @@ def generate_execution_text(voted_user, highest_vote_number):
 
 
 def generate_day_phase_beginning_text(day, role_member_alive):
-    result = f"Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:\n- Các người chơi hiện tại: {role_member_alive}."
-    return result
+    return f"Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:\n" +\
+        f"- Các người chơi hiện tại: {role_member_alive}."
 
 
 def generate_night_phase_beginning_text():
@@ -69,8 +69,8 @@ def generate_after_voting_seer(user, is_werewolf):
 
 
 def generate_before_voting_guard():
-    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{config.BOT_PREFIX}guard @user` để người đó qua đêm an bình. " +\
-        "Nhớ chú ý an toàn của bản thân!"
+    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{config.BOT_PREFIX}guard @user` để người đó qua đêm an bình." +\
+        " Nhớ chú ý an toàn của bản thân!"
 
 
 def generate_after_voting_guard(user):
