@@ -72,6 +72,22 @@ async def parse_command(game, message):
             if not is_valid:
                 await message.reply(f"Invalid command.\nUsage: `{config.BOT_PREFIX}kill player_id`")
 
+    elif cmd == 'guard':
+        author = message.author
+        is_valid = False
+        if len(parameters) == 1 and parameters[0].isdigit():
+            target_index = int(parameters[0]) - 1
+            alive_players = game.get_alive_players()
+            if 0 <= target_index < len(alive_players):
+                is_valid = True
+                target_user = alive_players[target_index]
+                msg = await game.guard(author.id, target_user.player_id)
+                await message.reply(msg)
+
+        if not is_valid:
+            await message.reply(f"Invalid command.\nUsage: `{config.BOT_PREFIX}guard player_id`")
+
+
     elif cmd == 'status':
         await player.do_generate_vote_status_table(message.channel, game.get_vote_status())
 

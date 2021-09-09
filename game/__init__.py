@@ -296,6 +296,9 @@ class Game:
                 ]
             }
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
+            await asyncio.gather(
+                *[player.on_action(embed_data) for player in self.get_alive_players()]
+            )
 
     async def do_end_nighttime_phase(self):
         print("do_end_nighttime_phase")
@@ -304,8 +307,8 @@ class Game:
             killed, _ = Game.get_top_voted(list(self.killed_last_night.values()))
             self.killed_last_night = {}
             if killed:
-                await self.players[killed].get_killed()
-                await self.interface.send_text_to_channel(text_template.generate_killed_text(f"<@{killed}>"), config.GAMEPLAY_CHANNEL)
+                if await self.players[killed].get_killed():
+                    await self.interface.send_text_to_channel(text_template.generate_killed_text(f"<@{killed}>"), config.GAMEPLAY_CHANNEL)
         else:
             await self.interface.send_text_to_channel(text_template.generate_killed_text(None), config.GAMEPLAY_CHANNEL)
 
@@ -403,18 +406,37 @@ class Game:
         else:
             return "Target user is dead. Don't vote him/her again. You can only vote for an alive player"
 
-    async def kill(self, author_id, player_id):
+    async def kill(self, author_id, target_id):
         assert self.players is not None
         print(self.players)
         author = self.players.get(author_id, None)
         if author is None or not author.is_alive() or not isinstance(author, roles.Werewolf):
             return "You must be an alive werewolf to kill!"
-        victim = self.players.get(player_id)
+        if self.game_phase != GamePhase.NIGHT:
+            return "You must wait to night!"
+        victim = self.players.get(target_id)
         if victim and victim.is_alive():
-            self.killed_last_night[author_id] = player_id
-            return text_template.generate_kill_text(f"<@{author_id}>", f"<@{player_id}>")
+            self.killed_last_night[author_id] = target_id
+            return text_template.generate_kill_text(f"<@{author_id}>", f"<@{target_id}>")
         else:
             return "Invalid target user. You can only kill alive players"
+
+    # TODO: Refactor kill, guard, seer
+    async def guard(self, author_id, target_id):
+        assert self.players is not None
+        print(self.players)
+        author = self.players.get(author_id, None)
+        if author is None or not author.is_alive() or not isinstance(author, roles.Guard):
+            return "You must be an alive to use skill!"
+        if self.game_phase != GamePhase.NIGHT:
+            return "You must wait to night!"
+        target = self.players.get(target_id)
+        if target and target.is_alive():
+            target.get_protected()
+            return text_template.generate_after_voting_guard(f"<@{target_id}>")
+        else:
+            return "Invalid target user. You can only use skill on alive players"
+
 
     async def test_game(self):
         print("====== Begin test game =====")
