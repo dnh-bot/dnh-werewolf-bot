@@ -3,6 +3,7 @@ from enum import Enum
 import game
 import config
 
+BANNED_CHARS = '`!@#$%^&*()\'\"#/\\<>[]()|{}?+=,.'
 
 class CharacterStatus(Enum):
     ALIVE = 1
@@ -16,7 +17,9 @@ class Character:
         self.player_id = player_id
         self.status = CharacterStatus.ALIVE
         self.player_name = player_name
-        self.channel_name = f"personal-{player_name.lower().replace('#', '-')}"  # channel_name MUST BE lowercase!
+        # channel_name MUST BE lowercase!
+        valid_channel_name = "".join(c for c in player_name if c not in BANNED_CHARS).lower()
+        self.channel_name = f"personal-{'-'.join(valid_channel_name.split())}"
 
     def is_alive(self):
         return self.status == CharacterStatus.ALIVE
