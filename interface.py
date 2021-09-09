@@ -9,6 +9,9 @@ class ConsoleInterface:
     async def send_text_to_channel(self, msg, channel_name):
         print(f"#{channel_name}: {msg}")
 
+    async def send_embed_to_channel(self, embed_msg, channel_name):
+        print(f"#{channel_name}: {embed_msg}")
+
     async def create_category(self, category_name):
         print(f"#{category_name} created!")
 
