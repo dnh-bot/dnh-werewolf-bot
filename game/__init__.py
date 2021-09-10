@@ -362,7 +362,7 @@ class Game:
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
         print("Done Next phase flag")
 
-    async def set_timer_phase(self, timer_phase_list):
+    def set_timer_phase(self, timer_phase_list):
         self.timer_phase = timer_phase_list
 
     async def run_timer_phase(self):
