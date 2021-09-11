@@ -69,7 +69,7 @@ async def do_next(game, message, force=False):
                     else:
                         await message.reply(f"Player {message.author.display_name} votes for next phase. {text}")
             else:
-                await message.reply(f"Run `!next` command too quick, please wait for {config.NEXT_CMD_DELAY - time.time() + game.get_last_nextcmd_time():.1f} seconds")
+                await message.reply(f"Run `{config.BOT_PREFIX}next` command too quick, please wait for {config.NEXT_CMD_DELAY - time.time() + game.get_last_nextcmd_time():.1f} seconds")
     else:
         await message.reply("Game has not started yet!")
 

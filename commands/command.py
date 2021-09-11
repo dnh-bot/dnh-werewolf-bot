@@ -98,7 +98,6 @@ async def parse_command(game, message):
         if not is_valid:
             await message.reply(f"Invalid command.\nUsage: `{config.BOT_PREFIX}guard player_id`")
 
-
     elif cmd == 'status':
         await player.do_generate_vote_status_table(message.channel, game.get_vote_status())
 

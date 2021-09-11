@@ -5,6 +5,7 @@ import config
 
 BANNED_CHARS = '`!@#$%^&*()\'\"#/\\<>[]()|{}?+=,.'
 
+
 class CharacterStatus(Enum):
     ALIVE = 1
     KILLED = 2
@@ -24,10 +25,8 @@ class Character:
             valid_channel_name = f'{valid_channel_name}{player_id}'
         self.channel_name = f"personal-{valid_channel_name}"
 
-
     def is_alive(self):
         return self.status != CharacterStatus.KILLED
-
 
     async def get_killed(self):
         if self.status == CharacterStatus.PROTECTED:
@@ -37,10 +36,8 @@ class Character:
         await self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
         return True
 
-
     def get_protected(self):
         self.status = CharacterStatus.PROTECTED
-
 
     async def create_personal_channel(self):
         await self.interface.create_channel(self.channel_name)
@@ -50,14 +47,11 @@ class Character:
         )
         print("Created channel", self.channel_name)
 
-
     async def send_to_personal_channel(self, text):
         await self.interface.send_text_to_channel(text, self.channel_name)
 
-
     async def delete_personal_channel(self):
         await self.interface.delete_channel(self.channel_name)
-
 
     async def on_phase(self, phase):
         self.status = CharacterStatus.ALIVE
@@ -74,21 +68,17 @@ class Character:
             )
             await self.on_night()  # Special skill here
 
-
     async def on_end_game(self):
         # Unmute all players in config.GAMEPLAY_CHANNEL
         await self.interface.add_user_to_channel(
             self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True
         )
 
-
     async def on_day(self):  # Will be overload in Child Class
         pass
-
 
     async def on_night(self):  # Will be overload in Child Class
         pass
 
-
-    async def on_action(self, embed_data): # Will be overload in Child Class
+    async def on_action(self, embed_data):  # Will be overload in Child Class
         pass
