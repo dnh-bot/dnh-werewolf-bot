@@ -53,12 +53,12 @@ def generate_player_list_embed(alive_player_list):
         ids.append(str(row_id))
         alive_players.append(f"<@{user.player_id}>")
     if alive_players:
+        id_player_list = [f"{i} -> {p}" for i, p in zip(ids, alive_players)]
         embed_data = {
             "title": "Player list",
             "description": "Please select a number to vote.",
             "content": [
-                ("ID", ids),
-                ("Player", alive_players)
+                ("ID -> Player", id_player_list)
             ]
         }
         return embed_data
@@ -66,7 +66,7 @@ def generate_player_list_embed(alive_player_list):
 
 
 def generate_before_voting_werewolf():
-    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{config.BOT_PREFIX}kill ID` hoặc `{config.BOT_PREFIX}kill @user` để lặng lẽ xử lý nạn nhân."
+    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{config.BOT_PREFIX}kill ID` để lặng lẽ xử lý nạn nhân.\nVí dụ: `{config.BOT_PREFIX}kill 2`\n"
 
 
 def generate_after_voting_werewolf(user):
@@ -83,7 +83,7 @@ def generate_kill_text(werewolf, user):
 
 def generate_before_voting_seer():
     return "Tiên tri muốn thấy gì, từ ai? " +\
-        f"Hãy làm phép bằng cách nhập `{config.BOT_PREFIX}check ID` để xem người chơi đó là ai."
+        f"Hãy làm phép bằng cách nhập `{config.BOT_PREFIX}seer ID` để xem người chơi đó là ai."
 
 
 def generate_after_voting_seer(user, is_werewolf):
@@ -92,7 +92,7 @@ def generate_after_voting_seer(user, is_werewolf):
 
 
 def generate_before_voting_guard():
-    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{config.BOT_PREFIX}guard ID` để người đó qua đêm an bình." +\
+    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{config.BOT_PREFIX}guard ID` để người đó qua đêm an bình.\nVí dụ: `{config.BOT_PREFIX}guard 2`\n" +\
         " Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm. Hãy cẩn trọng!"
 
 
