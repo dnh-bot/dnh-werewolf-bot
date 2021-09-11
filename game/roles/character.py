@@ -72,6 +72,13 @@ class Character:
             await self.on_night()  # Special skill here
 
 
+    async def on_end_game(self):
+        # Unmute all players in config.GAMEPLAY_CHANNEL
+        await self.interface.add_user_to_channel(
+            self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True
+        )
+
+
     async def on_day(self):  # Will be overload in Child Class
         pass
 
