@@ -99,26 +99,30 @@ async def do_stop(game, message, force=False):
 
 async def do_generate_vote_status_table(channel, table):
     # Table format: {'u2': {'u1'}, 'u1': {'u3', 'u2'}}
-    # Player | Number of votes | Voters
-    #  u1             2           u2, u3
-    #  u2             1           u1
+    # @user1:
+    # | Votes: 2
+    # | Voters: @user2, @user3
+    #
+    # @user2:
+    # | Votes: 1
+    # | Voters: @user1
+
     if not table:
         await channel.send("Nobody has voted yet")
         return
-    victim_list = []
-    voter_count = []
-    voter_list = []
+    embed = discord.Embed(title='Vote Results', description="")
     for k, v in table.items():
-        victim_list.append(f"<@{k}>")
-        voter_count.append(f"   {len(v)}")
-        voter_list.append(",".join([f"<@{i}>" for i in v]))
+        player = channel.guild.get_member(k).display_name
+        votes = len(v)
+        voters = ",".join([f"<@!{i}>" for i in v])
+        embed.add_field(name=f"{player}", value="\n".join((f"Votes: {votes}", f"Voters: {voters}")), inline=False)
+    # embed_data = zip(victim_list, tuple(zip(voter_count, voter_list)))
     # print("\n".join(victim_list))
     # print("\n".join(voter_count))
     # print("\n".join(voter_list))
-    embed = discord.Embed(title='Vote Results', description=None)
-    embed.add_field(name="Player",          value="\n".join(victim_list), inline=True)
-    embed.add_field(name="Votes",           value="\n".join(voter_count), inline=True)
-    embed.add_field(name="Voters",          value="\n".join(voter_list), inline=True)
+    
+    # for victim, field_value in embed_data:
+    #     embed.add_field(name=victim, value="\n".join(field_value), inline=False)
     await channel.send(embed=embed)
 
 
