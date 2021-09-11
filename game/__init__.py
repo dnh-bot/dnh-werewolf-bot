@@ -79,7 +79,9 @@ class Game:
         return r
 
     async def start(self, init_players=None):
-        if self.is_stopped:
+        if self.is_stopped and self.game_phase == GamePhase.NEW_GAME:
+            self.game_phase = GamePhase.DAY
+            self.is_stopped = False
             self.last_nextcmd_time = time.time()
             await self.interface.send_text_to_channel(text_template.generate_start_text(), config.LOBBY_CHANNEL)
             if not init_players:
@@ -96,8 +98,6 @@ class Game:
 
             self.start_time = datetime.datetime.now()
 
-            self.game_phase = GamePhase.DAY
-            self.is_stopped = False
             self.task_game_loop = asyncio.create_task(self.run_game_loop(), name="task_game_loop")
             # print(self.task_game_loop)
 
