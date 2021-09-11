@@ -87,7 +87,7 @@ async def do_stop(game, message, force=False):
                 await message.reply("You are not in the game.")
             else:
                 game.vote_stop.add(message.author.id)
-                valid, text = check_vote_valid(len(game.vote_stop), len(game.players),  "stop")
+                valid, text = check_vote_valid(len(game.vote_stop), 1,  "stop")
                 if valid:
                     await message.reply("Game stops!")
                     await game.stop()
