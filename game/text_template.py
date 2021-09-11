@@ -32,9 +32,8 @@ def generate_execution_text(voted_user, highest_vote_number):
             "==========================================================================="
 
 
-def generate_day_phase_beginning_text(day, role_member_alive):
+def generate_day_phase_beginning_text(day):
     return f"Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:\n" +\
-        f"- Các người chơi hiện tại: {role_member_alive}.\n" +\
         f"- Hãy nhập `{config.BOT_PREFIX}vote ID` hoặc `{config.BOT_PREFIX}vote @user` để bỏ phiếu cho người bạn nghi là Sói!\n" +\
         f"- Nhập `{config.BOT_PREFIX}status` để xem trạng thái bỏ phiếu hiện tại."
 
@@ -43,9 +42,31 @@ def generate_night_phase_beginning_text():
     return "Đêm đã tới. Cảnh vật hóa tĩnh lặng, mọi người an giấc. Liệu đêm nay có xảy ra chuyện gì không?"
 
 
-def generate_before_voting_werewolf(user_list):
-    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{config.BOT_PREFIX}kill ID` hoặc `{config.BOT_PREFIX}kill @user` để lặng lẽ xử lý nạn nhân.\n" +\
-        f"Danh sách người chơi: {user_list}"
+def generate_player_list_description_text():
+    return "Danh sách người chơi hiện tại:\n"
+
+
+def generate_player_list_embed(alive_player_list):
+    ids = []
+    alive_players = []
+    for row_id, user in enumerate(alive_player_list, 1):
+        ids.append(str(row_id))
+        alive_players.append(f"<@{user.player_id}>")
+    if alive_players:
+        embed_data = {
+            "title": "Player list",
+            "description": "Please select a number to vote.",
+            "content": [
+                ("ID", ids),
+                ("Player", alive_players)
+            ]
+        }
+        return embed_data
+    return None
+
+
+def generate_before_voting_werewolf():
+    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{config.BOT_PREFIX}kill ID` hoặc `{config.BOT_PREFIX}kill @user` để lặng lẽ xử lý nạn nhân.\n"
 
 
 def generate_after_voting_werewolf(user):
