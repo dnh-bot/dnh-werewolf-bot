@@ -88,16 +88,20 @@ def generate_before_voting_seer():
 
 def generate_after_voting_seer(user, is_werewolf):
     is_werewolf_text = "" if is_werewolf else "không phải "
-    return f"Ồ, {user} {is_werewolf_text}là sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."
+    return f"Ồ, {user} {is_werewolf_text}là Sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."
 
 
 def generate_before_voting_guard():
     return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{config.BOT_PREFIX}guard ID` để người đó qua đêm an bình." +\
-        " Nhớ chú ý an toàn của bản thân!"
+        " Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm. Hãy cẩn trọng!"
 
 
 def generate_after_voting_guard(user):
     return f"Đã bảo vệ thành công {user}"
+
+
+def generate_out_of_mana():
+    return f"Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm!"
 
 
 def generate_killed_text(user):
@@ -111,6 +115,18 @@ def generate_killed_text(user):
 
 def generate_lynch_text(user):
     return f"Dân làng đã đồng lòng loại bỏ {user} khỏi làng"
+
+
+def generate_invalid_target():
+    return f"Dùng kỹ năng đến đúng người bạn êy!"
+
+
+def generate_invalid_author():
+    return f"Hiện tại bạn không được phép dùng kỹ năng này!"
+
+
+def generate_invalid_nighttime():
+    return f"Ráng đợi tới đêm bạn êy!"
 
 
 def generate_endgame_text(winner):
