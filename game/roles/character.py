@@ -23,6 +23,7 @@ class Character:
         if len(valid_channel_name) <= 1:
             valid_channel_name = f'{valid_channel_name}{player_id}'
         self.channel_name = f"personal-{valid_channel_name}"
+        self.mana = 0
 
 
     def is_alive(self):
@@ -40,6 +41,14 @@ class Character:
 
     def get_protected(self):
         self.status = CharacterStatus.PROTECTED
+
+
+    def on_use_mana(self):
+        self.mana = 0
+
+
+    def get_mana(self):
+        return self.mana
 
 
     async def create_personal_channel(self):

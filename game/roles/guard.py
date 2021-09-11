@@ -5,9 +5,8 @@ class Guard(Villager):
     # Guard is basic Villager with ability to protect one person each night
 
     async def on_night(self):
-        # poll_id = client.show_poll(client.get_personal_channel(self.player_id), game.get_alive_players())
-        # await timeout() or get_poll_result(poll_id)
-        pass
+        # Regain mana
+        self.mana = 1
 
 
     async def on_action(self, embed_data):

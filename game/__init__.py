@@ -298,8 +298,11 @@ class Game:
             if killed:
                 if await self.players[killed].get_killed():
                     await self.interface.send_text_to_channel(text_template.generate_killed_text(f"<@{killed}>"), config.GAMEPLAY_CHANNEL)
-        else:
-            await self.interface.send_text_to_channel(text_template.generate_killed_text(None), config.GAMEPLAY_CHANNEL)
+                    return
+                else: # Player is protected by guard
+                    pass
+        await self.interface.send_text_to_channel(text_template.generate_killed_text(None), config.GAMEPLAY_CHANNEL)
+
 
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
@@ -395,36 +398,61 @@ class Game:
         else:
             return "Target user is dead. Don't vote him/her again. You can only vote for an alive player"
 
+
     async def kill(self, author_id, target_id):
         assert self.players is not None
-        print(self.players)
+        # print(self.players)
         author = self.players.get(author_id, None)
         if author is None or not author.is_alive() or not isinstance(author, roles.Werewolf):
-            return "You must be an alive werewolf to kill!"
+            return text_template.generate_invalid_author()
         if self.game_phase != GamePhase.NIGHT:
-            return "You must wait to night!"
+            return text_template.generate_invalid_nighttime()
         victim = self.players.get(target_id)
         if victim and victim.is_alive():
             self.killed_last_night[author_id] = target_id
             return text_template.generate_kill_text(f"<@{author_id}>", f"<@{target_id}>")
         else:
-            return "Invalid target user. You can only kill alive players"
+            return text_template.generate_invalid_target()
+
 
     # TODO: Refactor kill, guard, seer
     async def guard(self, author_id, target_id):
         assert self.players is not None
-        print(self.players)
+        # print(self.players)
         author = self.players.get(author_id, None)
         if author is None or not author.is_alive() or not isinstance(author, roles.Guard):
-            return "You must be an alive to use skill!"
+            return text_template.generate_invalid_author()
         if self.game_phase != GamePhase.NIGHT:
-            return "You must wait to night!"
+            return text_template.generate_invalid_nighttime()
+        if author.get_mana() == 0:
+            return text_template.generate_out_of_mana()
         target = self.players.get(target_id)
         if target and target.is_alive():
+            author.on_use_mana()
             target.get_protected()
             return text_template.generate_after_voting_guard(f"<@{target_id}>")
         else:
-            return "Invalid target user. You can only use skill on alive players"
+            return text_template.generate_invalid_target()
+
+
+    # TODO: Refactor kill, guard, seer
+    async def seer(self, author_id, target_id):
+        assert self.players is not None
+        # print(self.players)
+        author = self.players.get(author_id, None)
+        if author is None or not author.is_alive() or not isinstance(author, roles.Seer):
+            return text_template.generate_invalid_author()
+        if self.game_phase != GamePhase.NIGHT:
+            return text_template.generate_invalid_nighttime()
+        if author.get_mana() == 0:
+            return text_template.generate_out_of_mana()
+        target = self.players.get(target_id)
+        if target and target.is_alive():
+            author.on_use_mana()
+            is_werewolf = isinstance(target, roles.Werewolf)
+            return text_template.generate_after_voting_seer(f"<@{target_id}>", is_werewolf)
+        else:
+            return text_template.generate_invalid_target()
 
 
     async def test_game(self):
