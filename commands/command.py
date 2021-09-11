@@ -5,7 +5,7 @@ import config
 
 
 async def parse_command(game, message):
-    message_parts = message.content.strip().lower()[len(config.BOT_PREFIX):].split(" ")
+    message_parts = message.content.strip()[len(config.BOT_PREFIX):].split(" ")
     cmd, parameters = message_parts[0], message_parts[1:]
     # Game commands
     if cmd == 'join':
@@ -55,11 +55,9 @@ async def parse_command(game, message):
                 msg = await game.vote(author.id, target_user.player_id)
                 await message.reply(msg)
             else:
-                await message.reply(f"Invalid command.\nUsage: `{config.BOT_PREFIX}vote player_id`")
+                await message.reply(f"Invalid command.\nUsage: `{config.BOT_PREFIX}vote ID`")
         else:
-            await admin.send_text_to_channel(
-                message.guild, f"Invalid command.\nUsage: `{config.BOT_PREFIX}vote @user", message.channel.name
-            )
+            await message.reply(f"Invalid command.\nUsage: `{config.BOT_PREFIX}vote ID`")
 
     elif cmd == 'kill':  # author: `kill player_id`
         if message.channel.name != config.WEREWOLF_CHANNEL:
@@ -79,9 +77,36 @@ async def parse_command(game, message):
                     target_user = alive_players[target_index]
                     msg = await game.kill(author.id, target_user.player_id)
                     await message.reply(msg)
-
             if not is_valid:
-                await message.reply(f"Invalid command.\nUsage: `{config.BOT_PREFIX}kill player_id`")
+                await message.reply(f"Invalid command.\nUsage: `{config.BOT_PREFIX}kill ID`")
+
+    elif cmd == 'guard':
+        author = message.author
+        is_valid = False
+        if len(parameters) == 1 and parameters[0].isdigit():
+            target_index = int(parameters[0]) - 1
+            alive_players = game.get_alive_players()
+            if 0 <= target_index < len(alive_players):
+                is_valid = True
+                target_user = alive_players[target_index]
+                msg = await game.guard(author.id, target_user.player_id)
+                await message.reply(msg)
+        if not is_valid:
+            await message.reply(f"Invalid command.\nUsage: `{config.BOT_PREFIX}guard ID`")
+
+    elif cmd == 'seer':
+        author = message.author
+        is_valid = False
+        if len(parameters) == 1 and parameters[0].isdigit():
+            target_index = int(parameters[0]) - 1
+            alive_players = game.get_alive_players()
+            if 0 <= target_index < len(alive_players):
+                is_valid = True
+                target_user = alive_players[target_index]
+                msg = await game.seer(author.id, target_user.player_id)
+                await message.reply(msg)
+        if not is_valid:
+            await message.reply(f"Invalid command.\nUsage: `{config.BOT_PREFIX}seer ID`")
 
     elif cmd == 'status':
         await player.do_generate_vote_status_table(message.channel, game.get_vote_status())

@@ -9,7 +9,7 @@ from game import text_template as tt
 
 
 def check_vote_valid(num_votes, num_players, task_name):
-    if num_players < 4:
+    if task_name == "start" and num_players < 4:
         return False, f"At least 4 players to {task_name} game."
 
     if num_votes / num_players <= config.VOTE_RATE:
@@ -63,13 +63,13 @@ async def do_next(game, message, force=False):
                     await message.reply("You are not in the game.")
                 else:
                     game.vote_next.add(message.author.id)
-                    valid, text = check_vote_valid(len(game.vote_next), len(game.players), "next")
+                    valid, text = check_vote_valid(len(game.vote_next), len(game.get_alive_players()), "next")
                     if valid:
                         await game.next_phase()
                     else:
                         await message.reply(f"Player {message.author.display_name} votes for next phase. {text}")
             else:
-                await message.reply(f"Run `!next` command too quick, please wait for {config.NEXT_CMD_DELAY - time.time() + game.get_last_nextcmd_time():.1f} seconds")
+                await message.reply(f"Run `{config.BOT_PREFIX}next` command too quick, please wait for {config.NEXT_CMD_DELAY - time.time() + game.get_last_nextcmd_time():.1f} seconds")
     else:
         await message.reply("Game has not started yet!")
 
@@ -87,7 +87,7 @@ async def do_stop(game, message, force=False):
                 await message.reply("You are not in the game.")
             else:
                 game.vote_stop.add(message.author.id)
-                valid, text = check_vote_valid(len(game.vote_stop), len(game.players),  "stop")
+                valid, text = check_vote_valid(len(game.vote_stop), 1,  "stop")
                 if valid:
                     await message.reply("Game stops!")
                     await game.stop()

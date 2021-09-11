@@ -212,6 +212,7 @@ class Game:
                 print("End phase")
                 if self.is_end_game():
                     self.is_stopped = True  # Need to update this value in case of end game.
+                    await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
                     break
         except asyncio.CancelledError:
             print('run_game_loop(): cancelled while doing task')
@@ -249,12 +250,12 @@ class Game:
 
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
+        self.day += 1
         if self.players:
-            self.day += 1
-            alive_player = ", ".join(
-                f"<@{id_}>" for id_ in sorted(self.players) if self.players[id_].is_alive()
-            )
-            await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day, alive_player), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day), config.GAMEPLAY_CHANNEL)
+            embed_data = text_template.generate_player_list_embed(self.get_alive_players())
+            await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
+
 
     async def do_end_daytime_phase(self):
         print("do_end_daytime_phase")
@@ -270,32 +271,23 @@ class Game:
         else:
             await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
 
+
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
-        ids = []
-        alive_players = []
-        for row_id, user in enumerate(self.get_alive_players(), 1):
-            ids.append(str(row_id))
-            alive_players.append(f"<@{user.player_id}>")
-
-        if alive_players:
+        if self.players:
             await self.interface.send_text_to_channel(
                 text_template.generate_night_phase_beginning_text(),
                 config.GAMEPLAY_CHANNEL
             )
             await self.interface.send_text_to_channel(
-                text_template.generate_before_voting_werewolf(", ".join(alive_players)),
+                text_template.generate_before_voting_werewolf(),
                 config.WEREWOLF_CHANNEL
             )
-            embed_data = {
-                "title": "Player list",
-                "description": "Please select a number to vote.",
-                "content": [
-                    ("ID", ids),
-                    ("Player", alive_players)
-                ]
-            }
+            embed_data = text_template.generate_player_list_embed(self.get_alive_players())
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
+            # Send alive player list to all skilled characters (guard, seer, etc.)
+            await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players()])
+
 
     async def do_end_nighttime_phase(self):
         print("do_end_nighttime_phase")
@@ -304,10 +296,13 @@ class Game:
             killed, _ = Game.get_top_voted(list(self.killed_last_night.values()))
             self.killed_last_night = {}
             if killed:
-                await self.players[killed].get_killed()
-                await self.interface.send_text_to_channel(text_template.generate_killed_text(f"<@{killed}>"), config.GAMEPLAY_CHANNEL)
-        else:
-            await self.interface.send_text_to_channel(text_template.generate_killed_text(None), config.GAMEPLAY_CHANNEL)
+                if await self.players[killed].get_killed():
+                    await self.interface.send_text_to_channel(text_template.generate_killed_text(f"<@{killed}>"), config.GAMEPLAY_CHANNEL)
+                    return
+                else: # Player is protected by guard
+                    pass
+        await self.interface.send_text_to_channel(text_template.generate_killed_text(None), config.GAMEPLAY_CHANNEL)
+
 
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
@@ -359,7 +354,7 @@ class Game:
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
         print("Done Next phase flag")
 
-    async def set_timer_phase(self, timer_phase_list):
+    def set_timer_phase(self, timer_phase_list):
         self.timer_phase = timer_phase_list
 
     async def run_timer_phase(self):
@@ -403,18 +398,62 @@ class Game:
         else:
             return "Target user is dead. Don't vote him/her again. You can only vote for an alive player"
 
-    async def kill(self, author_id, player_id):
+
+    async def kill(self, author_id, target_id):
         assert self.players is not None
-        print(self.players)
+        # print(self.players)
         author = self.players.get(author_id, None)
         if author is None or not author.is_alive() or not isinstance(author, roles.Werewolf):
-            return "You must be an alive werewolf to kill!"
-        victim = self.players.get(player_id)
+            return text_template.generate_invalid_author()
+        if self.game_phase != GamePhase.NIGHT:
+            return text_template.generate_invalid_nighttime()
+        victim = self.players.get(target_id)
         if victim and victim.is_alive():
-            self.killed_last_night[author_id] = player_id
-            return text_template.generate_kill_text(f"<@{author_id}>", f"<@{player_id}>")
+            self.killed_last_night[author_id] = target_id
+            return text_template.generate_kill_text(f"<@{author_id}>", f"<@{target_id}>")
         else:
-            return "Invalid target user. You can only kill alive players"
+            return text_template.generate_invalid_target()
+
+
+    # TODO: Refactor kill, guard, seer
+    async def guard(self, author_id, target_id):
+        assert self.players is not None
+        # print(self.players)
+        author = self.players.get(author_id, None)
+        if author is None or not author.is_alive() or not isinstance(author, roles.Guard):
+            return text_template.generate_invalid_author()
+        if self.game_phase != GamePhase.NIGHT:
+            return text_template.generate_invalid_nighttime()
+        if author.get_mana() == 0:
+            return text_template.generate_out_of_mana()
+        target = self.players.get(target_id)
+        if target and target.is_alive():
+            author.on_use_mana()
+            target.get_protected()
+            return text_template.generate_after_voting_guard(f"<@{target_id}>")
+        else:
+            return text_template.generate_invalid_target()
+
+
+    # TODO: Refactor kill, guard, seer
+    async def seer(self, author_id, target_id):
+        assert self.players is not None
+        # print(self.players)
+        author = self.players.get(author_id, None)
+        if author is None or not author.is_alive() or not isinstance(author, roles.Seer):
+            return text_template.generate_invalid_author()
+        if self.game_phase != GamePhase.NIGHT:
+            return text_template.generate_invalid_nighttime()
+        if author.get_mana() == 0:
+            return text_template.generate_out_of_mana()
+        target = self.players.get(target_id)
+        if target and target.is_alive():
+            author.on_use_mana()
+            is_werewolf = isinstance(target, roles.Werewolf)
+            return text_template.generate_after_voting_seer(f"<@{target_id}>", is_werewolf)
+        else:
+            return text_template.generate_invalid_target()
+
 
     async def test_game(self):
         print("====== Begin test game =====")
