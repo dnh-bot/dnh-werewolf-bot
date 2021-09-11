@@ -34,7 +34,9 @@ def generate_execution_text(voted_user, highest_vote_number):
 
 def generate_day_phase_beginning_text(day, role_member_alive):
     return f"Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:\n" +\
-        f"- Các người chơi hiện tại: {role_member_alive}."
+        f"- Các người chơi hiện tại: {role_member_alive}.\n" +\
+        f"- Hãy nhập `{config.BOT_PREFIX}vote ID` hoặc `{config.BOT_PREFIX}vote @user` để bỏ phiếu cho người bạn nghi là Sói!\n" +\
+        f"- Nhập `{config.BOT_PREFIX}status` để xem trạng thái bỏ phiếu hiện tại."
 
 
 def generate_night_phase_beginning_text():
@@ -42,7 +44,7 @@ def generate_night_phase_beginning_text():
 
 
 def generate_before_voting_werewolf(user_list):
-    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{config.BOT_PREFIX}kill @user` để lặng lẽ xử lý nạn nhân.\n" +\
+    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{config.BOT_PREFIX}kill ID` hoặc `{config.BOT_PREFIX}kill @user` để lặng lẽ xử lý nạn nhân.\n" +\
         f"Danh sách người chơi: {user_list}"
 
 
@@ -60,7 +62,7 @@ def generate_kill_text(werewolf, user):
 
 def generate_before_voting_seer():
     return "Tiên tri muốn thấy gì, từ ai? " +\
-        f"Hãy làm phép bằng cách nhập `{config.BOT_PREFIX}check @user` để xem người chơi đó là ai."
+        f"Hãy làm phép bằng cách nhập `{config.BOT_PREFIX}check ID` để xem người chơi đó là ai."
 
 
 def generate_after_voting_seer(user, is_werewolf):
@@ -69,7 +71,7 @@ def generate_after_voting_seer(user, is_werewolf):
 
 
 def generate_before_voting_guard():
-    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{config.BOT_PREFIX}guard @user` để người đó qua đêm an bình." +\
+    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{config.BOT_PREFIX}guard ID` để người đó qua đêm an bình." +\
         " Nhớ chú ý an toàn của bản thân!"
 
 

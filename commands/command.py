@@ -35,6 +35,7 @@ async def parse_command(game, message):
     elif cmd == 'stop':
         await player.do_stop(game, message, force=False)
     elif cmd == 'vote':  # author: `vote @target_user`
+        author = message.author
         if message.channel.name != config.GAMEPLAY_CHANNEL:
             await admin.send_text_to_channel(
                 message.guild,
@@ -42,9 +43,19 @@ async def parse_command(game, message):
                 message.channel.name
             )
         elif len(message.mentions) == 1:
-            author = message.author
             msg = await game.vote(author.id, message.mentions[0].id)
             await message.reply(msg)
+        elif len(parameters) == 1 and parameters[0].isdigit():
+            # TODO: Refactor kill and vote
+            target_index = int(parameters[0]) - 1
+            alive_players = game.get_alive_players()
+            if 0 <= target_index < len(alive_players):
+                is_valid = True
+                target_user = alive_players[target_index]
+                msg = await game.vote(author.id, target_user.player_id)
+                await message.reply(msg)
+            else:
+                await message.reply(f"Invalid command.\nUsage: `{config.BOT_PREFIX}vote player_id`")
         else:
             await admin.send_text_to_channel(
                 message.guild, f"Invalid command.\nUsage: `{config.BOT_PREFIX}vote @user", message.channel.name

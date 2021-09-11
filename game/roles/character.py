@@ -19,7 +19,10 @@ class Character:
         self.player_name = player_name
         # channel_name MUST BE lowercase!
         valid_channel_name = "".join(c for c in player_name if c not in BANNED_CHARS).lower()
-        self.channel_name = f"personal-{'-'.join(valid_channel_name.split())}"
+        valid_channel_name = '-'.join(valid_channel_name.split())
+        if len(valid_channel_name) <= 1:
+            valid_channel_name = f'{valid_channel_name}{player_id}'
+        self.channel_name = f"personal-{valid_channel_name}"
 
 
     def is_alive(self):
