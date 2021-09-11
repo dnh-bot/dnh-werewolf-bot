@@ -55,7 +55,7 @@ async def on_ready():
     ''' Uncomment to run test '''
     server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
     # server_id = config.DISCORD_DEPLOY_SERVER_ID  # Running test on DNH ma sói bot's server
-    await test_bot(game_list.get_game(server_id), client.get_guild(server_id))
+    # await test_bot(game_list.get_game(server_id), client.get_guild(server_id))
 
 
 @client.event
