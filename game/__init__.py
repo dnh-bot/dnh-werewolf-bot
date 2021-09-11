@@ -212,6 +212,7 @@ class Game:
                 print("End phase")
                 if self.is_end_game():
                     self.is_stopped = True  # Need to update this value in case of end game.
+                    await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
                     break
         except asyncio.CancelledError:
             print('run_game_loop(): cancelled while doing task')
@@ -296,9 +297,8 @@ class Game:
                 ]
             }
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
-            await asyncio.gather(
-                *[player.on_action(embed_data) for player in self.get_alive_players()]
-            )
+            await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players()])
+
 
     async def do_end_nighttime_phase(self):
         print("do_end_nighttime_phase")

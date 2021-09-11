@@ -5,7 +5,7 @@ import config
 
 
 async def parse_command(game, message):
-    message_parts = message.content.strip().lower()[len(config.BOT_PREFIX):].split(" ")
+    message_parts = message.content.strip()[len(config.BOT_PREFIX):].split(" ")
     cmd, parameters = message_parts[0], message_parts[1:]
     # Game commands
     if cmd == 'join':

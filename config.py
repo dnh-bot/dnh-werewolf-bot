@@ -16,7 +16,7 @@ BOT_PREFIX = '!'
 
 ''' Configurable value '''
 # each !next cmd have at least 60 seconds apart
-NEXT_CMD_DELAY = 60
+NEXT_CMD_DELAY = 30
 VOTE_RATE = 0.5  # 50%
 DAYTIME = 60    # 60s
 NIGHTTIME = 30  # 30s
