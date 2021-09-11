@@ -35,7 +35,7 @@ def generate_execution_text(voted_user, highest_vote_number):
 def generate_day_phase_beginning_text(day, role_member_alive):
     return f"Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:\n" +\
         f"- Các người chơi hiện tại: {role_member_alive}.\n" +\
-        f"- Hãy nhập `{config.BOT_PREFIX}vote @user` để bỏ phiếu cho người bạn nghi là Sói!\n" +\
+        f"- Hãy nhập `{config.BOT_PREFIX}vote ID` hoặc `{config.BOT_PREFIX}vote @user` để bỏ phiếu cho người bạn nghi là Sói!\n" +\
         f"- Nhập `{config.BOT_PREFIX}status` để xem trạng thái bỏ phiếu hiện tại."
 
 
