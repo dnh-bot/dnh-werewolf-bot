@@ -118,11 +118,15 @@ async def parse_command(game, message):
         if len(parameters) < 3:
             timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
             await message.reply(
-                "Use default setting: " +
+                "Use default settings: " +
                 f"dayphase={config.DAYTIME}s, nightphase={config.NIGHTTIME}s, alertperiod={config.ALERT_PERIOD}s"
             )
         else:
             timer_phase = list(map(int, parameters))
+            await message.reply(
+                "New settings: " +
+                f"dayphase={timer_phase[0]}s, nightphase={timer_phase[1]}s, alertperiod={timer_phase[2]}s"
+            )
         game.set_timer_phase(timer_phase)
 
     elif cmd == 'timerstart':

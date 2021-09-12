@@ -66,7 +66,8 @@ def generate_player_list_embed(alive_player_list):
 
 
 def generate_before_voting_werewolf():
-    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{config.BOT_PREFIX}kill ID` để lặng lẽ xử lý nạn nhân.\nVí dụ: `{config.BOT_PREFIX}kill 2`\n"
+    return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{config.BOT_PREFIX}kill ID` để lặng lẽ xử lý nạn nhân.\n" +\
+        f"Ví dụ: `{config.BOT_PREFIX}kill 2`\n"
 
 
 def generate_after_voting_werewolf(user):
@@ -92,8 +93,9 @@ def generate_after_voting_seer(user, is_werewolf):
 
 
 def generate_before_voting_guard():
-    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{config.BOT_PREFIX}guard ID` để người đó qua đêm an bình.\nVí dụ: `{config.BOT_PREFIX}guard 2`\n" +\
-        " Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm. Hãy cẩn trọng!"
+    return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{config.BOT_PREFIX}guard ID` để người đó qua đêm an bình.\n" +\
+        f"Ví dụ: `{config.BOT_PREFIX}guard 2`\n" +\
+        "Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm. Hãy cẩn trọng!"
 
 
 def generate_after_voting_guard(user):

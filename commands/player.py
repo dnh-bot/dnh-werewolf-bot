@@ -36,16 +36,16 @@ async def do_start(game, message, force=False):
     if not game.is_started():
         if force:
             await game.start()
-            await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL} ! (Only Player can view)")
+            await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL}! (Only Player can view)")
         else:
             if message.author.id not in game.players:
                 await message.reply("You are not in the game.")
             else:
                 game.vote_start.add(message.author.id)
-                valid, text = check_vote_valid(len(game.vote_start), len(game.players),  "start")
+                valid, text = check_vote_valid(len(game.vote_start), len(game.players), "start")
                 if valid:
                     await game.start()
-                    await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL} ! (Only Player can view)")
+                    await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL}! (Only Player can view)")
                 else:
                     await message.reply(f"Player {message.author.display_name} votes for start game. {text}")
     else:
