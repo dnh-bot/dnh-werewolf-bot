@@ -64,17 +64,47 @@ class Game:
 
     @staticmethod
     def generate_roles(interface, ids, names_dict):
-        ids = ids.copy()
+        ids = list(ids)
+        import json
+
+        ROLE_CONFIG_FILE="role_config.json"
+        try:
+            # Load the file everytime to ensure admin can change config while the bot is already running
+            with open(ROLE_CONFIG_FILE) as f:
+                role_config = json.load(f)
+        except:
+            # Default config
+            print(f"{ROLE_CONFIG_FILE} not found, using default config")
+            role_config = [
+                    ["Werewolf", "Seer"  , "Villager", "Villager"],
+                    ["Werewolf", "Seer"  , "Villager", "Lycan"],
+                    ["Werewolf", "Guard" , "Villager", "Villager"],
+                    ["Werewolf", "Seer"  , "Villager", "Villager", "Villager"],
+                    ["Werewolf", "Seer"  , "Villager", "Villager", "Lycan"],
+                    ["Werewolf", "Seer"  , "Villager", "Lycan"   , "Lycan"],
+                    ["Werewolf", "Guard" , "Villager", "Villager", "Villager"],
+                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Villager"],
+                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Lycan"],
+                    ["Werewolf", "Seer"  , "Guard"   , "Lycan"   , "Lycan"],
+                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Villager", "Villager"],
+                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Villager", "Lycan"],
+                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Lycan"   , "Lycan"],
+                    ["Werewolf", "Seer"  , "Guard"   , "Lycan"   , "Lycan"   , "Lycan"],
+                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Villager", "Villager", "Villager"],
+                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Villager", "Lycan"   , "Lycan"],
+                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Lycan"   , "Lycan"   , "Lycan"],
+                    ["Werewolf", "Seer"  , "Guard"   , "Lycan"   , "Lycan"   , "Lycan"   , "Lycan"]
+                ]
+
+        game_role = random.choice([role_list for role_list in role_config if len(role_list)==len(ids)])
+
         random.shuffle(ids)
         len_ids = len(ids)
         werewolf = len_ids // 8 + 1
         guard = 1 if len_ids > 5 else 0
         seer = 1 if len_ids > 6 else 0
-        r = {}
-        r.update((id_, roles.Werewolf(interface, id_, names_dict[id_])) for id_ in ids[:werewolf])
-        r.update((id_, roles.Seer(interface, id_, names_dict[id_])) for id_ in ids[werewolf:werewolf+seer])
-        r.update((id_, roles.Guard(interface, id_, names_dict[id_])) for id_ in ids[werewolf+seer:werewolf+seer+guard])
-        r.update((id_, roles.Villager(interface, id_, names_dict[id_])) for id_ in ids[werewolf+seer+guard:])
+        r = {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_,role_name in zip(ids, game_role)}
+
         print("Player list:", r)
         return r
 
@@ -449,8 +479,7 @@ class Game:
         target = self.players.get(target_id)
         if target and target.is_alive():
             author.on_use_mana()
-            is_werewolf = isinstance(target, roles.Werewolf)
-            return text_template.generate_after_voting_seer(f"<@{target_id}>", is_werewolf)
+            return text_template.generate_after_voting_seer(f"<@{target_id}>", target.is_werewolf())
         else:
             return text_template.generate_invalid_target()
 
