@@ -92,6 +92,7 @@ def generate_after_voting_seer(user, is_werewolf):
     return f"Ồ, {user} {is_werewolf_text}là Sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."
 
 
+# Guard
 def generate_before_voting_guard():
     return f"Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{config.BOT_PREFIX}guard ID` để người đó qua đêm an bình.\n" +\
         f"Ví dụ: `{config.BOT_PREFIX}guard 2`\n" +\
@@ -106,6 +107,11 @@ def generate_invalid_guard_selfprotection():
     return f"Ai lại chơi tự bảo vệ mình :rage:"
 
 
+def generate_invalid_guard_yesterdaytarget():
+    return f"Hôm qua bạn đã bảo vệ người này. Hãy đổi mục tiêu khác hôm nay!"
+
+
+# Common
 def generate_out_of_mana():
     return f"Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm!"
 

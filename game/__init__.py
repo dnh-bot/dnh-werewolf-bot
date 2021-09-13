@@ -68,8 +68,8 @@ class Game:
         random.shuffle(ids)
         len_ids = len(ids)
         werewolf = len_ids // 8 + 1
-        guard = 1 if len_ids > 5 else 0
-        seer = 1 if len_ids > 6 else 0
+        guard = 1 if len_ids >= 4 else 0
+        seer = 1 if len_ids >= 5 else 0
         r = {}
         r.update((id_, roles.Werewolf(interface, id_, names_dict[id_])) for id_ in ids[:werewolf])
         r.update((id_, roles.Seer(interface, id_, names_dict[id_])) for id_ in ids[werewolf:werewolf+seer])
@@ -428,9 +428,12 @@ class Game:
             return text_template.generate_invalid_guard_selfprotection()
         if author.get_mana() == 0:
             return text_template.generate_out_of_mana()
+        if author.is_yesterday_target(target_id):
+            return text_template.generate_invalid_guard_yesterdaytarget()
         target = self.players.get(target_id)
         if target and target.is_alive():
             author.on_use_mana()
+            author.set_guard_target(target_id)
             target.get_protected()
             return text_template.generate_after_voting_guard(f"<@{target_id}>")
         else:
