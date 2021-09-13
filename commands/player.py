@@ -5,7 +5,7 @@ import time
 import math
 import discord
 import config
-from game import text_template as tt
+from game import text_template
 
 
 def check_vote_valid(num_votes, num_players, task_name):
@@ -19,82 +19,83 @@ def check_vote_valid(num_votes, num_players, task_name):
 
 
 async def do_join(guild, channel, user):
-    ''' Join game '''
-    response = tt.generate_join_text(user.display_name)
+    """Join game"""
+    response = text_template.generate_join_text(user.display_name)
     await channel.send(response)
 
 
 async def do_leave(guild, channel, user):
-    ''' Leave game '''
+    """Leave game"""
     response = f"Goodbye player {user.display_name}"
     await channel.send(response)
 
 
 # Require at least 2 players to start the game
 async def do_start(game, message, force=False):
-    ''' Start game '''
+    """Start game"""
     if not game.is_started():
         if force:
             await game.start()
-            await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL}! (Only Player can view)")
+            await message.channel.send(text_template.generate_game_started_text())
         else:
             if message.author.id not in game.players:
-                await message.reply("You are not in the game.")
+                await message.reply(text_template.generate_not_in_game_text())
             else:
                 game.vote_start.add(message.author.id)
                 valid, text = check_vote_valid(len(game.vote_start), len(game.players), "start")
                 if valid:
                     await game.start()
-                    await message.channel.send(f"Game started in #{config.GAMEPLAY_CHANNEL}! (Only Player can view)")
+                    await message.channel.send(text_template.generate_game_started_text())
                 else:
-                    await message.reply(f"Player {message.author.display_name} votes for start game. {text}")
+                    await message.reply(text_template.generate_vote_for_game_text("start", message.author.display_name, text))
     else:
-        await message.reply("Game already started")
+        await message.reply(text_template.generate_game_already_started_text())
 
 
 async def do_next(game, message, force=False):
-    ''' Next phase '''
+    """Next phase"""
     if game.is_started():
         if force:
             await game.next_phase()
         else:
-            if time.time() - game.get_last_nextcmd_time() > config.NEXT_CMD_DELAY:  # User needs to wait at least 60s for next phase
+            if time.time() - game.get_last_nextcmd_time() > config.NEXT_CMD_DELAY:
+                # User needs to wait for next phase
                 if message.author.id not in game.players:
-                    await message.reply("You are not in the game.")
+                    await message.reply(text_template.generate_not_in_game_text())
                 else:
                     game.vote_next.add(message.author.id)
                     valid, text = check_vote_valid(len(game.vote_next), len(game.get_alive_players()), "next")
                     if valid:
                         await game.next_phase()
                     else:
-                        await message.reply(f"Player {message.author.display_name} votes for next phase. {text}")
+                        await message.reply(text_template.generate_vote_for_game_text("next", message.author.display_name, text))
             else:
                 await message.reply(f"Run `{config.BOT_PREFIX}next` command too quick, please wait for {config.NEXT_CMD_DELAY - time.time() + game.get_last_nextcmd_time():.1f} seconds")
     else:
-        await message.reply("Game has not started yet!")
+        await message.reply(text_template.generate_game_not_started_text())
 
 
 # Player can call stop game when they want to finish game regardless current game state
 # Need 2/3 players type: `!stop` to end the game
 async def do_stop(game, message, force=False):
-    ''' Stop game '''
+    """Stop game"""
     if game.is_started():
         if force:
-            await message.channel.send("Game stops!")
+            await message.channel.send(text_template.generate_game_stop_text())
             await game.stop()
         else:
             if message.author.id not in game.players:
-                await message.reply("You are not in the game.")
+                await message.reply(text_template.generate_not_in_game_text())
             else:
                 game.vote_stop.add(message.author.id)
-                valid, text = check_vote_valid(len(game.vote_stop), 1,  "stop")
+                valid, text = check_vote_valid(len(game.vote_stop), 1, "stop")
                 if valid:
-                    await message.reply("Game stops!")
                     await game.stop()
+                    await message.reply(text_template.generate_game_stop_text())
                 else:
-                    await message.reply(f"Player {message.author.display_name} votes for stop game. {text}")
+                    await message.reply(text_template.generate_vote_for_game_text("stop", message.author.display_name, text))
     else:
-        await message.reply("Game has not started yet!")
+        await message.reply(text_template.generate_game_not_started_text())
 
 
 async def do_generate_vote_status_table(channel, table):

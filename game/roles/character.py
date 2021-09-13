@@ -40,14 +40,11 @@ class Character:
     def get_protected(self):
         self.status = CharacterStatus.PROTECTED
 
-
     def on_use_mana(self):
         self.mana = 0
 
-
     def get_mana(self):
         return self.mana
-
 
     async def create_personal_channel(self):
         await self.interface.create_channel(self.channel_name)
@@ -84,11 +81,14 @@ class Character:
             self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True
         )
 
-    async def on_day(self):  # Will be overload in Child Class
+    async def on_day(self):
+        # Will be overloaded in Child Class
         pass
 
-    async def on_night(self):  # Will be overload in Child Class
+    async def on_night(self):
+        # Will be overloaded in Child Class
         pass
 
-    async def on_action(self, embed_data):  # Will be overload in Child Class
+    async def on_action(self, embed_data):
+        # Will be overloaded in Child Class
         pass
