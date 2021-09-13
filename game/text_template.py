@@ -1,8 +1,8 @@
 import config
 
 
-def generate_join_text(user):
-    return f"Người chơi {user} đã tham gia ván đấu."
+def generate_join_text(user, joined_players):
+    return f"Người chơi {user} đã tham gia ván đấu. Hiện có {joined_players} người chơi."
 
 
 def generate_start_text():
@@ -145,23 +145,27 @@ def generate_invalid_nighttime():
 
 
 def generate_game_started_text():
-    return f"Game started in #{config.GAMEPLAY_CHANNEL}! (Only Player can view)"
+    # return f"Game started in #{config.GAMEPLAY_CHANNEL}! (Only Player can view)"
+    return f"Trò chơi đã bắt đầu ở #{config.GAMEPLAY_CHANNEL}!"
 
 
 def generate_game_not_started_text():
-    return "Game has not started yet!"
+    # return "Game has not started yet!"
+    return f"Trò chơi chưa bắt đầu!"
 
 
 def generate_game_already_started_text():
-    return "Game already started"
+    #return "Game already started. Please wait until end game!"
+    return f"Trò chơi đã bắt đầu rồi. Xin đợi xíu bạn nha."
 
 
 def generate_game_stop_text():
-    return "Game stops!"
+    # return "Game stops!"
+    return f"Trò chơi kết thúc!"
 
 
 def generate_endgame_text(winner):
-    return f"Trò chơi kết thúc, với chiến thắng thuộc về phe {winner}"
+    return f"Trò chơi kết thúc với chiến thắng thuộc về phe {winner}"
 
 
 def generate_not_in_game_text():

@@ -11,18 +11,7 @@ async def parse_command(game, message):
     cmd, parameters = message_parts[0], message_parts[1:]
     # Game commands
     if cmd == 'join':
-        if game.is_started():
-            await message.reply("Game started. Please wait until next game!")
-        elif game.add_player(message.author.id, message.author.name):
-            # await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
-            await player.do_join(message.guild, message.channel, message.author)
-            await admin.add_user_to_channel(
-                message.guild, message.author, config.GAMEPLAY_CHANNEL,
-                is_read=True, is_send=True
-            )
-        else:
-            await message.reply(text_template.generate_already_in_game_text())
-
+        await player.do_join(game, message, force=False)
     elif cmd == 'leave':
         if game.is_started():
             await message.reply("Game started. Please wait until end game!")
@@ -129,26 +118,8 @@ async def parse_command(game, message):
         elif cmd == 'fend':
             await game.stop()
         elif cmd == "fjoin":
-            if game.is_started():
-                text = "Game started. Please wait until next game!"
-                await admin.send_text_to_channel(message.guild, text, message.channel.name)
-            else:
-                if not message.mentions:
-                    await admin.send_text_to_channel(
-                        message.guild,
-                        f"Invalid command.\nUsage: {config.BOT_PREFIX}fjoin @user1 @user2 ...",
-                        message.channel.name
-                    )
-                else:
-                    await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
-                    for user in message.mentions:
-                        await player.do_join(message.guild, message.channel, user)
-                        game.add_player(user.id, user.name)
-                        await admin.add_user_to_channel(
-                            message.guild, user, config.GAMEPLAY_CHANNEL,
-                            is_read=True, is_send=True
-                        )
-
+            await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
+            await player.do_join(game, message, force=True)
         elif cmd == "fleave":
             if game.is_started():
                 await admin.send_text_to_channel(

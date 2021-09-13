@@ -18,10 +18,27 @@ def check_vote_valid(num_votes, num_players, task_name):
         return True, f"Enough votes to proceed `{task_name}`"  # Should never see it :D
 
 
-async def do_join(guild, channel, user):
+async def do_join(game, message, force=False):
     """Join game"""
-    response = text_template.generate_join_text(user.display_name)
-    await channel.send(response)
+    if not game.is_started():
+        if force:
+            if not message.mentions:
+                await message.reply(f"Invalid command.\nUsage: {config.BOT_PREFIX}fjoin @user1 @user2 ...")
+            else:
+                for user in message.mentions:
+                    joined_players = await game.add_player(user.id, user.name)
+                    if joined_players:
+                        await message.channel.send(text_template.generate_join_text(message.author.display_name, joined_players))
+                    else:
+                        await message.channel.send(text_template.generate_already_in_game_text())
+        else:
+            joined_players = await game.add_player(message.author.id, message.author.name)
+            if joined_players:
+                await message.channel.send(text_template.generate_join_text(message.author.display_name))
+            else:
+                await message.channel.send(text_template.generate_already_in_game_text())
+    else:
+        await message.reply(text_template.generate_game_already_started_text())
 
 
 async def do_leave(guild, channel, user):
