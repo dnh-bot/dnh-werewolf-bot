@@ -9,3 +9,6 @@ class Villager(Character):
     async def on_night(self):
         # client.mute(self.player_id)  # mute Village on night
         pass
+
+    def is_werewolf(self):
+        return False

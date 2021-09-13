@@ -9,3 +9,6 @@ class Werewolf(Villager):
     async def on_night(self):
         # poll_result = self.vote()
         pass
+
+    def is_werewolf(self):
+        return True
