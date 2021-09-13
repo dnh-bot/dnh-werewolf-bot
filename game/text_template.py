@@ -102,6 +102,10 @@ def generate_after_voting_guard(user):
     return f"Đã bảo vệ thành công {user}"
 
 
+def generate_invalid_guard_selfprotection():
+    return f"Ai lại chơi tự bảo vệ mình :rage:"
+
+
 def generate_out_of_mana():
     return f"Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm!"
 
