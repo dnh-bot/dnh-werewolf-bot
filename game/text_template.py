@@ -78,6 +78,10 @@ def generate_vote_text(author, user):
     return f"{author} đã biểu quyết loại bỏ {user} khỏi làng"
 
 
+def generate_vote_for_game_text(command, author, text):
+    return f"Player {author} votes for {command} game. {text}"
+
+
 def generate_kill_text(werewolf, user):
     return f"Sói {werewolf} muốn xử lý {user} trong đêm nay"
 
@@ -119,6 +123,15 @@ def generate_lynch_text(user):
     return f"Dân làng đã đồng lòng loại bỏ {user} khỏi làng"
 
 
+def generate_dead_target_text():
+    return "Target user is dead. Don't vote him/her again. You can only vote for an alive player"
+
+
+def generate_invalid_channel_text(channel):
+    # f"Command {config.BOT_PREFIX}{command} only available in {channel}"
+    return f"Command in invalid channel. Please use in {channel}",
+
+
 def generate_invalid_target():
     return f"Dùng kỹ năng đến đúng người bạn êy!"
 
@@ -131,8 +144,47 @@ def generate_invalid_nighttime():
     return f"Ráng đợi tới đêm bạn êy!"
 
 
+def generate_game_started_text():
+    return f"Game started in #{config.GAMEPLAY_CHANNEL}! (Only Player can view)"
+
+
+def generate_game_not_started_text():
+    return "Game has not started yet!"
+
+
+def generate_game_already_started_text():
+    return "Game already started"
+
+
+def generate_game_stop_text():
+    return "Game stops!"
+
+
 def generate_endgame_text(winner):
     return f"Trò chơi kết thúc, với chiến thắng thuộc về phe {winner}"
+
+
+def generate_not_in_game_text():
+    return "You are not in the game."
+
+
+def generate_already_in_game_text():
+    return "You have already joined."
+
+
+def generate_invalid_command_text(command):
+    if command in ["kill", "guard", "seer", "vote"]:
+        return f"Invalid command.\nUsage: `{config.BOT_PREFIX}{command} ID`"
+    else:
+        return "Invalid command."
+
+
+def generate_timer_start_text():
+        return "Timer start!"
+
+
+def generate_timer_stop_text():
+        return "Timer stopped!"
 
 
 def generate_table(header, data):
