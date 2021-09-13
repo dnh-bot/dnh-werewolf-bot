@@ -22,6 +22,8 @@ DAYTIME = 60    # 60s
 NIGHTTIME = 30  # 30s
 ALERT_PERIOD = 20  # 20s
 
+GUARD_PREVENT_SELF_PROTECTION = False  # Use True if do not want guard use skill on himself
+
 ''' Non-configurable value '''
 GAME_CATEGORY = "GAME"
 LOBBY_CHANNEL = "lobby"

@@ -104,7 +104,6 @@ class Game:
         guard = 1 if len_ids > 5 else 0
         seer = 1 if len_ids > 6 else 0
         r = {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_,role_name in zip(ids, game_role)}
-
         print("Player list:", r)
         return r
 
@@ -452,16 +451,23 @@ class Game:
     async def guard(self, author, target):
         if self.game_phase != GamePhase.NIGHT:
             return text_template.generate_invalid_nighttime()
+         
+        if not isinstance(author, roles.Guard):
+            return text_template.generate_invalid_author()
 
         author_id = author.player_id
         target_id = target.player_id
 
-        if not isinstance(author, roles.Guard):
-            return text_template.generate_invalid_author()
         if author.get_mana() == 0:
             return text_template.generate_out_of_mana()
 
+        if config.GUARD_PREVENT_SELF_PROTECTION and author_id == target_id:
+            return text_template.generate_invalid_guard_selfprotection()
+        if author.is_yesterday_target(target_id):
+            return text_template.generate_invalid_guard_yesterdaytarget()
+
         author.on_use_mana()
+        author.set_guard_target(target_id)
         target.get_protected()
         return text_template.generate_after_voting_guard(f"<@{target_id}>")
 
