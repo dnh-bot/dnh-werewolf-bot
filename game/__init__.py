@@ -424,7 +424,7 @@ class Game:
             return text_template.generate_invalid_author()
         if self.game_phase != GamePhase.NIGHT:
             return text_template.generate_invalid_nighttime()
-        if author_id == target_id:
+        if config.GUARD_PREVENT_SELF_PROTECTION and author_id == target_id:
             return text_template.generate_invalid_guard_selfprotection()
         if author.get_mana() == 0:
             return text_template.generate_out_of_mana()
