@@ -160,23 +160,25 @@ class Game:
         except Exception as e:
             print(e)
 
-    def add_player(self, id_, player_name):
+    async def add_player(self, id_, player_name):
         if id_ in self.players:
-            return False
+            return -1
 
         print("Player", id_, "joined")
         self.players[id_] = None
         self.playersname[id_] = player_name
-        return True
+        await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
+        return len(self.players)  # Return number of current players
 
-    def remove_player(self, id_):
+    async def remove_player(self, id_):
         if id_ not in self.players:
-            return False
+            return -1
 
         print("Player", id_, "left")
         del self.players[id_]
         del self.playersname[id_]
-        return True
+        await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
+        return len(self.players)  # Return number of current players
 
     def get_alive_players(self):
         return sorted(
@@ -497,10 +499,10 @@ class Game:
         print("====== Begin test case =====")
         DELAY_TIME = 3
         real_id = dict((i+1, x) for i, x in enumerate(config.DISCORD_TESTING_USERS_ID))
-        self.add_player(real_id[1], "w")
-        self.add_player(real_id[2], "s")
-        self.add_player(real_id[3], "v1")
-        self.add_player(real_id[4], "v2")
+        await self.add_player(real_id[1], "w")
+        await self.add_player(real_id[2], "s")
+        await self.add_player(real_id[3], "v1")
+        await self.add_player(real_id[4], "v2")
         players = {
             real_id[1]: roles.Werewolf(self.interface, real_id[1], "w"),
             real_id[2]: roles.Seer(self.interface,     real_id[2], "s"),
@@ -528,10 +530,10 @@ class Game:
     async def test_case_simulated_players(self):
         print("====== Begin test case =====")
         DELAY_TIME = 3
-        self.add_player(1, "W")
-        self.add_player(2, "S")
-        self.add_player(3, "V1")
-        self.add_player(4, "V2")
+        await self.add_player(1, "W")
+        await self.add_player(2, "S")
+        await self.add_player(3, "V1")
+        await self.add_player(4, "V2")
         players = {
             1: roles.Werewolf(self.interface, 1, "W"),
             2: roles.Seer(self.interface,     2, "S"),
