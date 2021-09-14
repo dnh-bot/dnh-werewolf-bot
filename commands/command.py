@@ -7,7 +7,7 @@ import asyncio
 
 
 async def parse_command(game, message):
-    message_parts = message.content.lower().strip()[len(config.BOT_PREFIX):].split(" ")
+    message_parts = message.content.strip()[len(config.BOT_PREFIX):].split(" ")
     cmd, parameters = message_parts[0], message_parts[1:]
     # Game commands
     if cmd == 'join':
@@ -30,9 +30,9 @@ async def parse_command(game, message):
             author = message.author
             is_valid_command = False
             if len(parameters) == 1:
-                if len(message.mentions) == 1:
+                if len(message.raw_mentions) == 1:
                     is_valid_command = True
-                    msg = await game.do_player_action(cmd, author.id, message.mentions[0].id)
+                    msg = await game.do_player_action(cmd, author.id, message.raw_mentions[0])
                     await message.reply(msg)
 
                 elif parameters[0].isdigit():
@@ -48,7 +48,7 @@ async def parse_command(game, message):
                     await message.reply(text_template.generate_invalid_command_text(cmd))
 
             else:
-                await message.reply("You must select only 1 player!")
+                await message.reply(text_template.generate_not_vote_1_player_text())
         else:
             if cmd == 'vote':
                 real_channel = f"#{config.GAMEPLAY_CHANNEL}"

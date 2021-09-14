@@ -23,7 +23,7 @@ async def do_join(game, message, force=False):
     if not game.is_started():
         if force:
             if not message.mentions:
-                await message.reply(f"Invalid command.\nUsage: {config.BOT_PREFIX}fjoin @user1 @user2 ...")
+                await message.reply(text_template.generate_invalid_command_text("fjoin"))
             else:
                 for user in message.mentions:
                     joined_players = await game.add_player(user.id, user.name)
@@ -46,7 +46,7 @@ async def do_leave(game, message, force=False):
     if not game.is_started():
         if force:
             if not message.mentions:
-                await message.reply(f"Invalid command.\nUsage: {config.BOT_PREFIX}fjoin @user1 @user2 ...")
+                await message.reply(text_template.generate_invalid_command_text("fleave"))
             else:
                 for user in message.mentions:
                     joined_players = await game.remove_player(user.id)
@@ -104,7 +104,7 @@ async def do_next(game, message, force=False):
                     else:
                         await message.reply(text_template.generate_vote_for_game_text("next", message.author.display_name, text))
             else:
-                await message.reply(f"Run `{config.BOT_PREFIX}next` command too quick, please wait for {config.NEXT_CMD_DELAY - time.time() + game.get_last_nextcmd_time():.1f} seconds")
+                await message.reply(text_template.generate_too_quick(time.time(), game.get_last_nextcmd_time()))
     else:
         await message.reply(text_template.generate_game_not_started_text())
 
@@ -143,9 +143,9 @@ async def do_generate_vote_status_table(channel, table):
     # | Voters: @user1
 
     if not table:
-        await channel.send("Nobody has voted yet")
+        await channel.send(text_template.generate_nobody_voted_text())
         return
-    embed = discord.Embed(title='Vote Results', description="")
+    embed = discord.Embed(title='Vote Results', description="Danh sách những kẻ có khả năng bị hành hình")
     for k, v in table.items():
         player = channel.guild.get_member(k).display_name
         votes = len(v)

@@ -8,6 +8,7 @@ from enum import Enum
 import asyncio
 from collections import Counter
 from functools import reduce
+import json
 
 
 class GamePhase(Enum):
@@ -64,10 +65,7 @@ class Game:
 
     @staticmethod
     def generate_roles(interface, ids, names_dict):
-        ids = list(ids)
-        import json
-
-        ROLE_CONFIG_FILE="role_config.json"
+        ROLE_CONFIG_FILE = "role_config.json"
         try:
             # Load the file everytime to ensure admin can change config while the bot is already running
             with open(ROLE_CONFIG_FILE) as f:
@@ -96,6 +94,7 @@ class Game:
                     ["Werewolf", "Seer"  , "Guard"   , "Lycan"   , "Lycan"   , "Lycan"   , "Lycan"]
                 ]
 
+        ids = list(ids)
         game_role = random.choice([role_list for role_list in role_config if len(role_list)==len(ids)])
 
         random.shuffle(ids)
@@ -210,10 +209,10 @@ class Game:
     async def run_game_loop(self):
         print("Starting game loop")
         for _id, player in self.players.items():
-            if isinstance(player, roles.Werewolf):
+            if player.is_werewolf():
                 print("Wolf: ", player)
                 await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
-                await self.interface.send_text_to_channel(f"Hello werewolf <@{_id}>", config.WEREWOLF_CHANNEL)
+                await self.interface.send_text_to_channel(f"Chào sói <@{_id}>", config.WEREWOLF_CHANNEL)
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
 
@@ -256,7 +255,7 @@ class Game:
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Villager"), config.GAMEPLAY_CHANNEL)
         # Print werewolf list:
         werewolf_list = ", ".join([str(f"<@{_id}>") for _id, a_player in self.players.items() if isinstance(a_player, roles.Werewolf)])
-        await self.interface.send_text_to_channel(f"Werewolves: {werewolf_list}", config.GAMEPLAY_CHANNEL)
+        await self.interface.send_text_to_channel(f"{werewolf_list} là Sói.", config.GAMEPLAY_CHANNEL)
         print("End game loop")
 
     def is_end_game(self):
@@ -265,8 +264,7 @@ class Game:
         for _, player in self.players.items():
             if player.is_alive():
                 num_players += 1
-                # FIXME: better use of type
-                if isinstance(player, roles.Werewolf):
+                if player.is_werewolf():
                     num_werewolf += 1
         print("DEBUG: ", num_players, num_werewolf)
         return num_werewolf == 0 or num_werewolf * 2 >= num_players
@@ -398,11 +396,11 @@ class Game:
                     break
                 if count % period == 0 or count <= 5:
                     print(f"{count} remaining")
-                    await self.interface.send_text_to_channel(f'Phase Timer: {count} seconds remain...', config.GAMEPLAY_CHANNEL)
+                    await self.interface.send_text_to_channel(text_template.generate_timer_remaining_text(count), config.GAMEPLAY_CHANNEL)
                 await asyncio.sleep(1)
             if not self.timer_stopped:
                 print("stop timer")
-                await self.interface.send_text_to_channel(f'TIMEUP!!!!', config.GAMEPLAY_CHANNEL)
+                await self.interface.send_text_to_channel(text_template.generate_timer_up_text(), config.GAMEPLAY_CHANNEL)
                 await self.next_phase()
         except asyncio.CancelledError:
             print('cancel_me(): cancel sleep')
@@ -421,7 +419,7 @@ class Game:
             return "Invalid target user. Target user is not a player"
 
         if not target.is_alive():
-            return text_template.generate_dead_target_text() if cmd == "vote" else text_template.generate_invalid_target()
+            return text_template.generate_dead_target_text() if cmd=="vote" else text_template.generate_invalid_target()
 
         if cmd == "vote":
             return self.vote(author, target)
@@ -444,6 +442,9 @@ class Game:
         if self.game_phase != GamePhase.NIGHT:
             return text_template.generate_invalid_nighttime()
 
+        if author.is_werewolf():
+            return text_template.generate_invalid_author()
+
         author_id = author.player_id
         target_id = target.player_id
 
@@ -453,7 +454,7 @@ class Game:
     async def guard(self, author, target):
         if self.game_phase != GamePhase.NIGHT:
             return text_template.generate_invalid_nighttime()
-         
+
         if not isinstance(author, roles.Guard):
             return text_template.generate_invalid_author()
 
@@ -477,11 +478,12 @@ class Game:
         if self.game_phase != GamePhase.NIGHT:
             return text_template.generate_invalid_nighttime()
 
+        if not isinstance(author, roles.Seer):
+            return text_template.generate_invalid_author()
+
         author_id = author.player_id
         target_id = target.player_id
 
-        if not isinstance(author, roles.Seer):
-            return text_template.generate_invalid_author()
         if author.get_mana() == 0:
             return text_template.generate_out_of_mana()
 

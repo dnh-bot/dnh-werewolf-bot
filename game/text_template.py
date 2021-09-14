@@ -9,20 +9,17 @@ def generate_leave_text(user, joined_players):
     return f"Người chơi {user} đã rời ván đấu. Hiện có {joined_players} người chơi."
 
 
+def generate_too_quick(time_point, last_nextcmd_time):
+    return f"Run `{config.BOT_PREFIX}next` command too quick, " + \
+        f"please wait for {config.NEXT_CMD_DELAY - time_point + last_nextcmd_time:.1f} seconds"
+
+
 def generate_start_text():
     return "Tất cả người chơi đã sẵn sàng. Hệ thống tiến hành phân vai và trò chơi sẽ bắt đầu ngay sau đây!"
 
 
 def generate_role_list_text(roles):
     return f"Danh sách nhân vật trong game: {roles}"
-
-
-def generate_vote_user_text(voted_user, users_list, user_vote_number_list):
-    return f"""Đã vote hành hình {voted_user}.\nDanh sách những kẻ có khả năng bị hành hình:""" +\
-        "".join(
-            f"\n- {user}: {user_vote_number} số phiếu."
-            for user, user_vote_number in zip(users_list, user_vote_number_list)
-        )
 
 
 def generate_execution_text(voted_user, highest_vote_number):
@@ -138,12 +135,16 @@ def generate_lynch_text(user):
 
 
 def generate_dead_target_text():
-    return "Target user is dead. Don't vote him/her again. You can only vote for an alive player"
+    return "Người ta đã hẹo rồi, đừng có vote nữa. Vote người nào còn sống thôi :3"
+
+
+def generate_nobody_voted_text():
+    return "Vẫn chưa có ai vote cả :("
 
 
 def generate_invalid_channel_text(channel):
     # f"Command {config.BOT_PREFIX}{command} only available in {channel}"
-    return f"Command in invalid channel. Please use in {channel}",
+    return f"Xài sai chỗ rồi bạn ơi :( Xài trong channel {channel} ấy",
 
 
 def generate_invalid_target():
@@ -173,36 +174,53 @@ def generate_game_already_started_text():
     return f"Trò chơi đã bắt đầu rồi. Xin đợi xíu bạn nha."
 
 
+def generate_wait_next_game_text():
+    return "Tiếc quá, thôi đợi game sau bạn nhé :("
+
+
 def generate_game_stop_text():
-    # return "Game stops!"
-    return f"Trò chơi kết thúc!"
+    return "Trò chơi kết thúc!"
 
 
 def generate_endgame_text(winner):
-    return f"Trò chơi kết thúc với chiến thắng thuộc về phe {winner}"
+    return f"Trò chơi kết thúc với chiến thắng thuộc về phe {winner}."
 
 
 def generate_not_in_game_text():
-    return "You are not in the game."
+    return "Hiện bạn đang không ở trong game."
 
 
 def generate_already_in_game_text():
-    return "You have already joined."
+    return "Ơ kìa, bạn đã vào game rồi mà :v"
 
 
 def generate_invalid_command_text(command):
     if command in ["kill", "guard", "seer", "vote"]:
         return f"Invalid command.\nUsage: `{config.BOT_PREFIX}{command} ID`"
+    elif command in ["fjoin", "fleave"]:
+        return f"Invalid command.\nUsage: `{config.BOT_PREFIX}{command} @user1 @user2 ...`"
     else:
         return "Invalid command."
 
 
+def generate_not_vote_1_player_text():
+    return "Đừng có tham vậy chớ! Chỉ được chọn 1 người duy nhất thôi!"
+
+
 def generate_timer_start_text():
-        return "Timer start!"
+    return "Timer start!"
 
 
 def generate_timer_stop_text():
-        return "Timer stopped!"
+    return "Timer stopped!"
+
+
+def generate_timer_remaining_text(count):
+    return f'Bing boong! Còn {count} giây...'
+
+
+def generate_timer_up_text():
+    return f"HẾT GIỜ!!!!"
 
 
 def generate_table(header, data):

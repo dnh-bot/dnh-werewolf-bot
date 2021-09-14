@@ -50,7 +50,7 @@ class Character:
         await self.interface.create_channel(self.channel_name)
         await self.interface.add_user_to_channel(self.player_id, self.channel_name, is_read=True, is_send=True)
         await self.interface.send_text_to_channel(
-            f"Welcome <@{self.player_id}> to the game!\nYour role is {self.__class__.__name__}", self.channel_name
+            f"Chào mừng <@{self.player_id}> tham gia game!\nVai của bạn là {self.__class__.__name__}", self.channel_name
         )
         print("Created channel", self.channel_name)
 
