@@ -6,7 +6,7 @@ from game.roles.lycan import Lycan
 from game.roles.minion import Minion
 
 
-def get_role_type(cls, name):
+def get_role_type(name):
     for role in (Villager, Werewolf, Seer, Guard, Lycan, Minion):
         if role.__name__ == name:
             return role
