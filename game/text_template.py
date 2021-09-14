@@ -5,6 +5,10 @@ def generate_join_text(user, joined_players):
     return f"Người chơi {user} đã tham gia ván đấu. Hiện có {joined_players} người chơi."
 
 
+def generate_leave_text(user, joined_players):
+    return f"Người chơi {user} đã rời ván đấu. Hiện có {joined_players} người chơi."
+
+
 def generate_start_text():
     return "Tất cả người chơi đã sẵn sàng. Hệ thống tiến hành phân vai và trò chơi sẽ bắt đầu ngay sau đây!"
 

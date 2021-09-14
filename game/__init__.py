@@ -163,22 +163,23 @@ class Game:
 
     async def add_player(self, id_, player_name):
         if id_ in self.players:
-            return 0
+            return -1
 
         print("Player", id_, "joined")
         self.players[id_] = None
         self.playersname[id_] = player_name
         await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
-        return len(self.players)
+        return len(self.players)  # Return number of current players
 
-    def remove_player(self, id_):
+    async def remove_player(self, id_):
         if id_ not in self.players:
-            return False
+            return -1
 
         print("Player", id_, "left")
         del self.players[id_]
         del self.playersname[id_]
-        return True
+        await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
+        return len(self.players)  # Return number of current players
 
     def get_alive_players(self):
         return sorted(

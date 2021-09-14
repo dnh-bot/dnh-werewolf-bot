@@ -13,13 +13,7 @@ async def parse_command(game, message):
     if cmd == 'join':
         await player.do_join(game, message, force=False)
     elif cmd == 'leave':
-        if game.is_started():
-            await message.reply("Game started. Please wait until end game!")
-        elif game.remove_player(message.author.id):
-            await player.do_leave(message.guild, message.channel, message.author)
-            await admin.remove_user_from_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL)
-        else:
-            await message.reply(text_template.generate_not_in_game_text())
+        await player.do_leave(game, message, force=False)
     elif cmd == 'start':
         await player.do_start(game, message, force=False)
     elif cmd == 'next':  # Next phase
@@ -121,22 +115,7 @@ async def parse_command(game, message):
             await admin.create_channel(message.guild, message.author, config.GAMEPLAY_CHANNEL, is_public=False)
             await player.do_join(game, message, force=True)
         elif cmd == "fleave":
-            if game.is_started():
-                await admin.send_text_to_channel(
-                    message.guild, "Game started. Please wait until end game!", message.channel.name
-                )
-            else:
-                if not message.mentions:
-                    await admin.send_text_to_channel(
-                        message.guild,
-                        f"Invalid command\nUsage: {config.BOT_PREFIX}fleave @user1 @user2 ...",
-                        message.channel.name
-                    )
-                for user in message.mentions:
-                    await player.do_leave(message.guild, message.channel, user)
-                    game.remove_player(user.id)
-                    await admin.remove_user_from_channel(message.guild, user, config.GAMEPLAY_CHANNEL)
-
+            await player.do_leave(game, message, force=True)
         elif cmd == "fstart":
             await player.do_start(game, message, force=True)
         elif cmd == 'fnext':  # Next phase
