@@ -92,9 +92,9 @@ def generate_before_voting_seer():
         f"Hãy làm phép bằng cách nhập `{config.BOT_PREFIX}seer ID` để xem người chơi đó là ai."
 
 
-def generate_after_voting_seer(user, is_werewolf):
-    is_werewolf_text = "" if is_werewolf else "không phải "
-    return f"Ồ, {user} {is_werewolf_text}là Sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."
+def generate_after_voting_seer(user, seer_seen_as_werewolf):
+    seer_seen_as_werewolf_text = "" if seer_seen_as_werewolf else "không phải "
+    return f"Ồ, {user} {seer_seen_as_werewolf_text}là Sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."
 
 
 # Guard

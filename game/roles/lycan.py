@@ -7,5 +7,5 @@ class Lycan(Villager):
     async def on_night(self):
         pass
 
-    def is_werewolf(self):
+    def seer_seen_as_werewolf(self):
         return True

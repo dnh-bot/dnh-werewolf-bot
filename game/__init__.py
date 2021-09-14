@@ -209,7 +209,7 @@ class Game:
     async def run_game_loop(self):
         print("Starting game loop")
         for _id, player in self.players.items():
-            if player.is_werewolf():
+            if isinstance(player, roles.Werewolf):
                 print("Wolf: ", player)
                 await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
                 await self.interface.send_text_to_channel(f"Chào sói <@{_id}>", config.WEREWOLF_CHANNEL)
@@ -264,7 +264,7 @@ class Game:
         for _, player in self.players.items():
             if player.is_alive():
                 num_players += 1
-                if player.is_werewolf():
+                if isinstance(player, roles.Werewolf):
                     num_werewolf += 1
         print("DEBUG: ", num_players, num_werewolf)
         return num_werewolf == 0 or num_werewolf * 2 >= num_players
@@ -422,13 +422,13 @@ class Game:
             return text_template.generate_dead_target_text() if cmd=="vote" else text_template.generate_invalid_target()
 
         if cmd == "vote":
-            return self.vote(author, target)
+            return await self.vote(author, target)
         elif cmd == "kill":
-            return self.kill(author, target)
+            return await self.kill(author, target)
         elif cmd == "guard":
-            return self.guard(author, target)
+            return await self.guard(author, target)
         elif cmd == "seer":
-            return self.seer(author, target)
+            return await self.seer(author, target)
 
     async def vote(self, author, target):
         author_id = author.player_id
@@ -442,7 +442,7 @@ class Game:
         if self.game_phase != GamePhase.NIGHT:
             return text_template.generate_invalid_nighttime()
 
-        if author.is_werewolf():
+        if not isinstance(author, roles.Werewolf):
             return text_template.generate_invalid_author()
 
         author_id = author.player_id
@@ -488,7 +488,7 @@ class Game:
             return text_template.generate_out_of_mana()
 
         author.on_use_mana()
-        return text_template.generate_after_voting_seer(f"<@{target_id}>", target.is_werewolf())
+        return text_template.generate_after_voting_seer(f"<@{target_id}>", target.seer_seen_as_werewolf())
 
     async def test_game(self):
         print("====== Begin test game =====")
