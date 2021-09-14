@@ -10,5 +10,5 @@ class Villager(Character):
         # client.mute(self.player_id)  # mute Village on night
         pass
 
-    def is_werewolf(self):
+    def seer_seen_as_werewolf(self):
         return False

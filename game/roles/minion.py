@@ -8,5 +8,5 @@ class Minion(Werewolf):
         # poll_result = self.vote()
         pass
 
-    def is_werewolf(self):
+    def seer_seen_as_werewolf(self):
         return False
