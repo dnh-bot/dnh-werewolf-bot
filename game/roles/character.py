@@ -35,6 +35,7 @@ class Character:
         self.status = CharacterStatus.KILLED
         # Mute player in config.GAMEPLAY_CHANNEL
         await self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
+        await self.interface.add_user_to_channel(self.player_id, config.CEMETERY_CHANNEL, is_read=True, is_send=True)
         return True
 
     def get_protected(self):
@@ -80,6 +81,7 @@ class Character:
         await self.interface.add_user_to_channel(
             self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True
         )
+        await self.interface.send_text_to_channel(f"<@{self.player_id}> là {self.__class__.__name__}", config.GAMEPLAY_CHANNEL)
 
     async def on_day(self):
         # Will be overloaded in Child Class

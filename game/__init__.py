@@ -133,6 +133,7 @@ class Game:
         await asyncio.gather(
             self.interface.create_channel(config.GAMEPLAY_CHANNEL),
             self.interface.create_channel(config.WEREWOLF_CHANNEL),
+            self.interface.create_channel(config.CEMETERY_CHANNEL),
             *[player.create_personal_channel() for player in self.players.values()]
         )
 
@@ -154,6 +155,7 @@ class Game:
             await asyncio.gather(
                 self.interface.delete_channel(config.GAMEPLAY_CHANNEL),
                 self.interface.delete_channel(config.WEREWOLF_CHANNEL),
+                self.interface.delete_channel(config.CEMETERY_CHANNEL),
                 *[player.delete_personal_channel() for player in self.players.values()]
             )
         except Exception as e:
@@ -242,7 +244,6 @@ class Game:
                 print("End phase")
                 if self.is_end_game():
                     self.is_stopped = True  # Need to update this value in case of end game.
-                    await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
                     break
         except asyncio.CancelledError:
             print('run_game_loop(): cancelled while doing task')
@@ -253,6 +254,7 @@ class Game:
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)
         else:
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Villager"), config.GAMEPLAY_CHANNEL)
+        await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
         # Print werewolf list:
         werewolf_list = ", ".join([str(f"<@{_id}>") for _id, a_player in self.players.items() if isinstance(a_player, roles.Werewolf)])
         await self.interface.send_text_to_channel(f"{werewolf_list} là Sói.", config.GAMEPLAY_CHANNEL)
