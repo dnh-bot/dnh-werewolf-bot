@@ -24,6 +24,6 @@
     ["Minion"  , "Werewolf", "Seer"   , "Guard"   , "Villager", "Villager", "Villager", "Villager",  "Lycan"],
     ["Werewolf", "Werewolf", "Seer"   , "Guard"   , "Villager", "Villager", "Villager", "Villager", "Villager",  "Lycan"],
     ["Minion"  , "Werewolf", "Seer"   , "Guard"   , "Villager", "Villager", "Villager", "Villager", "Villager",  "Villager", "Lycan"],
-    ["Minion"  , "Werewolf", "Seer"   , "Guard"   , "Villager", "Villager", "Villager", "Villager", "Villager",  "Villager", "Villager", "Lycan"],
-    ["Minion"  , "Werewolf", "Seer"   , "Guard"   , "Villager", "Villager", "Villager", "Villager", "Villager",  "Villager", "Villager", "Villager", "Lycan"]
+    ["Minion"  , "Werewolf", "Seer"   , "Guard"   , "Villager", "Villager", "Villager", "Villager", "Villager",  "Villager", "Lycan", "Lycan"],
+    ["Minion"  , "Werewolf", "Seer"   , "Guard"   , "Werewolf", "Villager", "Villager", "Villager", "Villager",  "Villager", "Villager", "Villager", "Lycan"]
 ]
