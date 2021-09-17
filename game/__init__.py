@@ -140,8 +140,9 @@ class Game:
         print("======= Game stopped =======")
         self.is_stopped = True
         self.next_flag.clear()
-        await self.cancel_running_task(self.task_run_timer_phase)
         await self.cancel_running_task(self.task_game_loop)
+        await self.cancel_running_task(self.task_run_timer_phase)
+
 
         if self.players:
             await self.delete_channel()
