@@ -29,6 +29,7 @@ class Game:
         ]  # List of channels in game
         self.next_flag = asyncio.Event()
         self.timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
+        self.timer_enable = True
 
         self.reset_game_state()  # Init other game variables every end game.
 
@@ -335,8 +336,9 @@ class Game:
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
         print(self.display_alive_player())
-        await self.cancel_running_task(self.task_run_timer_phase)
-        self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
+        if self.timer_enable:
+            await self.cancel_running_task(self.task_run_timer_phase)
+            self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
 
         if self.game_phase == GamePhase.DAY:
             await self.do_new_daytime_phase()
