@@ -534,37 +534,6 @@ class Game:
         time.sleep(DELAY_TIME)
         print("====== End test case =====")
 
-    async def test_case_simulated_players(self):
-        print("====== Begin test case =====")
-        DELAY_TIME = 3
-        await self.add_player(1, "W")
-        await self.add_player(2, "S")
-        await self.add_player(3, "V1")
-        await self.add_player(4, "V2")
-        players = {
-            1: roles.Werewolf(self.interface, 1, "W"),
-            2: roles.Seer(self.interface,     2, "S"),
-            3: roles.Villager(self.interface, 3, "V1"),
-            4: roles.Villager(self.interface, 4, "V2"),
-        }
-        await self.start(players)
-        print(await self.vote(1, 2))
-        print(await self.vote(3, 2))
-        print(await self.vote(4, 1))
-
-        await self.next_phase()  # go NIGHT
-        time.sleep(DELAY_TIME)
-        print(await self.kill(1, 3))
-
-        await self.next_phase()  # go DAY
-        time.sleep(DELAY_TIME)
-
-        await self.next_phase()
-        time.sleep(DELAY_TIME)
-        await self.stop()
-        time.sleep(DELAY_TIME)
-        print("====== End test case =====")
-
 
 class GameList:
     def __init__(self):
