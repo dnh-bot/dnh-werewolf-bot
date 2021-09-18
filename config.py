@@ -12,7 +12,11 @@ DISCORD_TESTING_ADMIN1_ID = int(os.getenv('DISCORD_TESTING_ADMIN1_ID'))
 
 DISCORD_TESTING_USERS_ID = list(map(int, os.getenv('DISCORD_TESTING_USERS_ID').split(',')))
 
-BOT_PREFIX = '!'
+PREFIX = os.getenv('BOT_PREFIX')
+if PREFIX:
+    BOT_PREFIX = PREFIX
+else:
+    BOT_PREFIX = '!'
 
 ''' Configurable value '''
 # each !next cmd have at least 60 seconds apart
