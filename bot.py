@@ -1,5 +1,5 @@
 import discord
-from commands import command
+from commands import command, admin
 from game import *
 import config
 import interface
@@ -16,9 +16,14 @@ async def process_message(message):
         await command.parse_command(game, message)
 
 
-def verify_ok(user):
-    # TODO: Check valid user in valid channel
-    return True
+def verify_ok(message):
+    try:
+        if message.channel.category.name == config.GAME_CATEGORY:
+            return True
+        else:
+            return False
+    except:  # Command not in Category channel
+        return False
 
 
 # ============ Test Discord server =======
@@ -49,6 +54,7 @@ async def on_ready():
     print("=========================BOT STARTUP=========================")
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id)
+        await admin.create_category(guild, client.user, config.GAME_CATEGORY)  # Create GAME_CATEGORY if not existing
         # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
         game_list.add_game(guild.id, Game(guild, interface.DiscordInterface(guild, client)))
 
@@ -60,8 +66,8 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # Check valid author
-    if verify_ok(message.author):
+    # Bot only replies on the channels belong to config.GAME_CATEGORY
+    if verify_ok(message):
         await process_message(message)  # loop through all commands and do action on first command that match
 
 

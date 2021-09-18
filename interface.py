@@ -12,9 +12,6 @@ class ConsoleInterface:
     async def send_embed_to_channel(self, embed_msg, channel_name):
         print(f"#{channel_name}: {embed_msg}")
 
-    async def create_category(self, category_name):
-        print(f"#{category_name} created!")
-
     async def create_channel(self, channel_name):
         print(f"{channel_name} created!")
 
@@ -35,9 +32,6 @@ class DiscordInterface:
 
     async def send_embed_to_channel(self, embed_msg, channel_name):
         await commands.admin.send_embed_to_channel(self.guild, embed_msg, channel_name)
-
-    async def create_category(self, category_name):
-        await commands.admin.create_category(self.guild, self.client.user, category_name)
 
     async def create_channel(self, channel_name):
         await commands.admin.create_channel(self.guild, self.client.user, channel_name)
