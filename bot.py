@@ -55,6 +55,8 @@ async def on_ready():
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id)
         await admin.create_category(guild, client.user, config.GAME_CATEGORY)  # Create GAME_CATEGORY if not existing
+        await admin.create_channel(guild, client.user, config.LOBBY_CHANNEL, is_public=True)
+        await admin.create_channel(guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
         # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
         game_list.add_game(guild.id, Game(guild, interface.DiscordInterface(guild, client)))
 
