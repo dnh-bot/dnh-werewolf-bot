@@ -261,6 +261,7 @@ class Game:
         # Print werewolf list:
         werewolf_list = ", ".join([str(f"<@{_id}>") for _id, a_player in self.players.items() if isinstance(a_player, roles.Werewolf)])
         await self.interface.send_text_to_channel(f"{werewolf_list} là Sói.", config.GAMEPLAY_CHANNEL)
+        await self.cancel_running_task(self.task_run_timer_phase)
         print("End game loop")
 
     def is_end_game(self):
