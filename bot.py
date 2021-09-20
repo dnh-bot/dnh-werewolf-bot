@@ -18,13 +18,6 @@ async def process_message(client, message):
 
 def verify_ok(message):
     return True
-    try:
-        if message.channel.category.name == config.GAME_CATEGORY:
-            return True
-        else:
-            return False
-    except:  # Command not in Category channel
-        return False
 
 
 # ============ Test Discord server =======
@@ -69,7 +62,6 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # Bot only replies on the channels belong to config.GAME_CATEGORY
     if verify_ok(message):
         await process_message(client, message)  # loop through all commands and do action on first command that match
 
