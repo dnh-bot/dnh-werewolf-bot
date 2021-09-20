@@ -10,10 +10,7 @@ import config
 
 def is_valid_category(message):
     try:  # Channel may not belong to any category, make message.channel.category empty
-        if message.channel.category.name == config.GAME_CATEGORY:
-            return True
-        else:
-            return False
+        return message.channel.category.name == config.GAME_CATEGORY
     except:  # Command not in Category channel
         return False
 
