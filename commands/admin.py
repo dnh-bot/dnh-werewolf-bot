@@ -8,6 +8,15 @@ import asyncio
 from utils import logger
 import config
 
+def is_valid_category(message):
+    try:  # Channel may not belong to any category, make message.channel.category empty
+        if message.channel.category.name == config.GAME_CATEGORY:
+            return True
+        else:
+            return False
+    except:  # Command not in Category channel
+        return False
+
 
 def is_admin(author):
     # Check if this user has 'Admin' right
@@ -46,8 +55,24 @@ async def create_category(guild, author, category_name):
             await create_channel(guild, author, config.GAMEPLAY_CHANNEL, is_public=False)
             return category
         except Exception as e:
-            print(e);raise
+            print("Exception at #", category_name, author)
+            logger.logger_debug(guild.categories)
+            print(e)
     return existing_category
+
+
+async def delete_category(guild, author, category_name=config.GAME_CATEGORY):
+    # Delete category. Any Admin can delete it
+    try:
+        category = discord.utils.get(guild.categories, name=category_name)
+        assert isinstance(category, discord.CategoryChannel)
+        response = f"{author.display_name} deleted channel {category_name}"
+        print(response)
+        await category.delete()
+    except Exception as e:
+        print("Exception at #", category_name, author)
+        logger.logger_debug(guild.categories)
+        print(e)
 
 
 async def create_channel(guild, author, channel_name, is_public=False):
@@ -70,7 +95,9 @@ async def create_channel(guild, author, channel_name, is_public=False):
             await channel.send(response)
             return channel
         except Exception as e:
-            print(e);raise
+            print("Exception at #", channel_name, author)
+            logger.logger_debug(guild.channels)
+            print(e)
     return existing_channel
 
 
@@ -85,9 +112,9 @@ async def delete_channel(guild, author, channel_name):
         # await channel.send(response)
         await channel.delete()
     except Exception as e:
-        print(channel_name, author)
+        print("Exception at #", channel_name, author)
         logger.logger_debug(guild.channels)
-        print(e);raise
+        print(e)
 
 
 async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=True):

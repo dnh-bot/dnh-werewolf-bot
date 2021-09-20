@@ -10,13 +10,14 @@ if not config.DISCORD_TOKEN:
 # ============ Local functions ============
 
 
-async def process_message(message):
+async def process_message(client, message):
     if message.content.strip().startswith(config.BOT_PREFIX):
         game = game_list.get_game(message.guild.id)
-        await command.parse_command(game, message)
+        await command.parse_command(client, game, message)
 
 
 def verify_ok(message):
+    return True
     try:
         if message.channel.category.name == config.GAME_CATEGORY:
             return True
@@ -70,7 +71,7 @@ async def on_ready():
 async def on_message(message):
     # Bot only replies on the channels belong to config.GAME_CATEGORY
     if verify_ok(message):
-        await process_message(message)  # loop through all commands and do action on first command that match
+        await process_message(client, message)  # loop through all commands and do action on first command that match
 
 
 client.run(config.DISCORD_TOKEN)

@@ -22,9 +22,9 @@ else:
 # each !next cmd have at least 60 seconds apart
 NEXT_CMD_DELAY = 30
 VOTE_RATE = 0.5  # 50%
-DAYTIME = 60    # 60s
-NIGHTTIME = 30  # 30s
-ALERT_PERIOD = 20  # 20s
+DAYTIME = 240    # 60s
+NIGHTTIME = 60  # 30s
+ALERT_PERIOD = 30  # 20s
 
 GUARD_PREVENT_SELF_PROTECTION = False  # Use True if do not want guard use skill on himself
 
