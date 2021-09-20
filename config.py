@@ -4,6 +4,7 @@ load_dotenv()
 # ============ Configurations ===========
 # DISCORD_TOKEN in .env file
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
+DISCORD_BOT_NAME = os.getenv('DISCORD_BOT_NAME')
 DISCORD_TESTING_SERVER_ID = int(os.getenv('DISCORD_TESTING_SERVER_ID'))
 DISCORD_DEPLOY_SERVER_ID = int(os.getenv('DISCORD_DEPLOY_SERVER_ID'))
 DISCORD_TESTING_USER1_ID = int(os.getenv('DISCORD_TESTING_USER1_ID'))
@@ -29,7 +30,8 @@ ALERT_PERIOD = 30  # 20s
 GUARD_PREVENT_SELF_PROTECTION = False  # Use True if do not want guard use skill on himself
 
 ''' Non-configurable value '''
-GAME_CATEGORY = "GAME"
+GAME_CATEGORY = os.getenv('GAME_CATEGORY') if os.getenv('GAME_CATEGORY') else "GAME"
+
 LOBBY_CHANNEL = "lobby"
 GAMEPLAY_CHANNEL = "gameplay"
 WEREWOLF_CHANNEL = "werewolf"
