@@ -98,19 +98,29 @@ async def parse_command(client, game, message):
         elif cmd == 'fdelete_channel':  # Test only
             await admin.delete_channel(message.guild, client.user, parameters[0])
         elif cmd == 'fcreate':  # Create game channels
-            await admin.create_category(message.guild, client.user, config.GAME_CATEGORY)
-            await admin.create_channel(message.guild, client.user, config.LOBBY_CHANNEL, is_public=True)
-            await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
+            if len(message.mentions) == 1:
+                user = message.mentions[0]
+                if user.id == client.user.id:
+                    await admin.create_category(message.guild, client.user, config.GAME_CATEGORY)
+                    await admin.create_channel(message.guild, client.user, config.LOBBY_CHANNEL, is_public=True)
+                    await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
+            else:
+                await message.reply("Missing @bot_name")
         elif cmd == "fdelete":  # Delete all channels and category under config.GAME_CATEGORY
-            try:
-                await admin.delete_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL)
-                await admin.delete_channel(message.guild, client.user, config.WEREWOLF_CHANNEL)
-                await admin.delete_channel(message.guild, client.user, config.CEMETERY_CHANNEL)
-                await admin.delete_all_personal_channel(message.guild)
-                await admin.delete_channel(message.guild, client.user, config.LOBBY_CHANNEL)
-                await admin.delete_category(message.guild, client.user)
-            except Exception as e:
-                print(e)
+            if len(message.mentions) == 1:
+                user = message.mentions[0]
+                try:
+                    if user.id == client.user.id:
+                        await admin.delete_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL)
+                        await admin.delete_channel(message.guild, client.user, config.WEREWOLF_CHANNEL)
+                        await admin.delete_channel(message.guild, client.user, config.CEMETERY_CHANNEL)
+                        await admin.delete_all_personal_channel(message.guild)
+                        await admin.delete_channel(message.guild, client.user, config.LOBBY_CHANNEL)
+                        await admin.delete_category(message.guild, client.user)
+                except Exception as e:
+                    print(e)
+            else:
+                await message.reply("Missing @bot_name")
         elif cmd == 'fadd':  # !add @user1 channel_name
             print(parameters)
             user = message.mentions[0]
@@ -123,7 +133,7 @@ async def parse_command(client, game, message):
             await admin.remove_user_from_channel(message.guild, user, channel_name)
         elif cmd == 'fend':
             await game.stop()
-        if admin.is_valid_category(message):
+        elif admin.is_valid_category(message):
             if cmd == "fjoin":
                 await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
                 await player.do_join(game, message, force=True)
@@ -146,8 +156,8 @@ async def parse_command(client, game, message):
             elif cmd == "fdebug":
                 # print(asyncio.all_tasks())
                 exec(" ".join(parameters))
-    else:
-        await message.reply(f"{message.author} is not Admin role or Use invalid command.")
+        else:
+            await message.reply(f"{message.author} used invalid Admin command.")
 
 
 async def test_commands(guild):
