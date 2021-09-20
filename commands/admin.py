@@ -8,6 +8,12 @@ import asyncio
 from utils import logger
 import config
 
+def is_valid_category(message):
+    try:  # Channel may not belong to any category, make message.channel.category empty
+        return message.channel.category.name == config.GAME_CATEGORY
+    except:  # Command not in Category channel
+        return False
+
 
 def is_admin(author):
     # Check if this user has 'Admin' right
@@ -15,7 +21,7 @@ def is_admin(author):
     if admin_role in author.guild.roles:
         return True
     else:
-        print(f"{author.display_name} is not Admin Role")
+        # print(f"{author.display_name} is not Admin Role")
         return False
 
 
@@ -42,16 +48,35 @@ async def create_category(guild, author, category_name):
             response = f"{author.name} created category {category_name}"
             print(response)
             category = await guild.create_category(category_name, overwrites=overwrites)
+            await create_channel(guild, author, config.LOBBY_CHANNEL, is_public=True)
+            await create_channel(guild, author, config.GAMEPLAY_CHANNEL, is_public=False)
             return category
         except Exception as e:
-            print(e);raise
+            print("Exception at #", category_name, author)
+            logger.logger_debug(guild.categories)
+            print(e)
     return existing_category
 
 
-async def create_channel(guild, author, channel_name, category_name=config.GAME_CATEGORY, is_public=False):
+async def delete_category(guild, author, category_name=config.GAME_CATEGORY):
+    # Delete category. Any Admin can delete it
+    try:
+        category = discord.utils.get(guild.categories, name=category_name)
+        assert isinstance(category, discord.CategoryChannel)
+        response = f"{author.display_name} deleted channel {category_name}"
+        print(response)
+        await category.delete()
+    except Exception as e:
+        print("Exception at #", category_name, author)
+        logger.logger_debug(guild.categories)
+        print(e)
+
+
+async def create_channel(guild, author, channel_name, is_public=False):
     # Create text channel with limited permissions
     # Only the author and Admin roles can view this channel
-    existing_channel = discord.utils.get(guild.channels, name=channel_name)
+    category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+    existing_channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     if not existing_channel:
         try:
             admin_role = discord.utils.get(guild.roles, name="Admin")
@@ -62,70 +87,74 @@ async def create_channel(guild, author, channel_name, category_name=config.GAME_
             }
             response = "{} created channel {}".format(author.name, channel_name)
             print(response)
-            category = discord.utils.get(guild.categories, name=category_name)
-            logger.logger_debug(category)
+            # logger.logger_debug(category)
             channel = await guild.create_text_channel(channel_name, overwrites=overwrites, category=category)
             await channel.send(response)
             return channel
         except Exception as e:
-            print(e);raise
+            print("Exception at #", channel_name, author)
+            logger.logger_debug(guild.channels)
+            print(e)
     return existing_channel
 
 
 async def delete_channel(guild, author, channel_name):
     # Delete text channel. Any Admin can delete it
     try:
-        channel = discord.utils.get(guild.channels, name=channel_name)
+        category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+        channel = discord.utils.get(guild.channels, name=channel_name, category=category)
         response = f"{author.display_name} deleted channel {channel_name}"
         assert isinstance(channel, discord.TextChannel)
         print(response)
         # await channel.send(response)
         await channel.delete()
     except Exception as e:
-        print(channel_name, author)
+        print("Exception at #", channel_name, author)
         logger.logger_debug(guild.channels)
-        print(e);raise
+        print(e)
 
 
 async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=True):
     # Add a user to specific channel
-    channel = discord.utils.get(guild.channels, name=channel_name)
+    category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+    channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=is_read, send_messages=is_send)
         print(f"Successfully added {user} to {channel_name} read={is_read} send={is_send}")
     except Exception as e:
         print(channel_name, user)
         logger.logger_debug(guild.channels)
-        print(e);raise
+        print(e)
 
 
 async def remove_user_from_channel(guild, user, channel_name):
     # Add a user to specific channel
     print("===", user, channel_name)
-    channel = discord.utils.get(guild.channels, name=channel_name)
+    category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+    channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=False, send_messages=False)
         print("Successfully removed ", user, " from ", channel_name)
     except Exception as e:
         print(e)
-        # print(channel_name, user)
-        raise
+
 
 
 async def send_text_to_channel(guild, text, channel_name):
     ''' Send a message to a channel '''
-    channel = discord.utils.get(guild.channels, name=channel_name)
+    category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+    channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.send(text)
     except Exception as e:
         print(e)
-        # print(channel_name)
-        raise
+
 
 
 async def send_embed_to_channel(guild, embed_data, channel_name):
     '''Send an embed message to a channel'''
-    channel = discord.utils.get(guild.channels, name=channel_name)
+    category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+    channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     embed = discord.Embed(title=embed_data["title"], description=embed_data.get("description"))
     for field_name, field_value in embed_data["content"]:
         embed.add_field(name=field_name, value="\n".join(field_value), inline=True)
@@ -134,8 +163,7 @@ async def send_embed_to_channel(guild, embed_data, channel_name):
         await channel.send(embed=embed)
     except Exception as e:
         print(e)
-        # print(channel_name)
-        raise
+
 
 
 async def delete_all_personal_channel(guild):
@@ -157,12 +185,12 @@ async def test_admin_command(guild):
     assert category is not None
 
     channel_name = config.LOBBY_CHANNEL
-    channel = await create_channel(guild, admin_user, channel_name, category_name=config.GAME_CATEGORY, is_public=True)
+    channel = await create_channel(guild, admin_user, channel_name, is_public=True)
     assert channel is not None
     assert isinstance(channel, discord.TextChannel)
 
     channel_name = config.WEREWOLF_CHANNEL
-    channel = await create_channel(guild, admin_user, channel_name, category_name=config.GAME_CATEGORY, is_public=False)
+    channel = await create_channel(guild, admin_user, channel_name, is_public=False)
     assert channel is not None
 
     # TEST add/remove user to/from channel

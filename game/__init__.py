@@ -170,6 +170,7 @@ class Game:
         self.players[id_] = None
         self.playersname[id_] = player_name
         await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
+        await self.interface.send_text_to_channel(f"Chào <@{id_}>", config.GAMEPLAY_CHANNEL)
         return len(self.players)  # Return number of current players
 
     async def remove_player(self, id_):
@@ -179,6 +180,7 @@ class Game:
         print("Player", id_, "left")
         del self.players[id_]
         del self.playersname[id_]
+        await self.interface.send_text_to_channel(f"Bye <@{id_}>", config.GAMEPLAY_CHANNEL)
         await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
         return len(self.players)  # Return number of current players
 
@@ -259,6 +261,7 @@ class Game:
         # Print werewolf list:
         werewolf_list = ", ".join([str(f"<@{_id}>") for _id, a_player in self.players.items() if isinstance(a_player, roles.Werewolf)])
         await self.interface.send_text_to_channel(f"{werewolf_list} là Sói.", config.GAMEPLAY_CHANNEL)
+        await self.cancel_running_task(self.task_run_timer_phase)
         print("End game loop")
 
     def is_end_game(self):
