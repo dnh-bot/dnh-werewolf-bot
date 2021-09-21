@@ -73,8 +73,9 @@ forever_schedule = BlockingScheduler()
 
 
 @forever_schedule.scheduled_job('interval', minutes=15)
-def run_bot():
-    client.run(config.DISCORD_TOKEN)
+async def run_bot():
+    for guild in client.guilds:
+        await admin.send_text_to_channel(guild, "I woke up!", config.LOBBY_CHANNEL)
 
 
 client.run(config.DISCORD_TOKEN)
