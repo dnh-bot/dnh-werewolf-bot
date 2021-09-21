@@ -251,8 +251,9 @@ class Game:
                     break
         except asyncio.CancelledError:
             print('run_game_loop(): cancelled while doing task')
-        except:
+        except Exception as e:
             print('run_game_loop(): stopped while doing task')
+            print("Error: ", e)
 
         if any(a_player.is_alive() for a_player in self.players.values() if isinstance(a_player, roles.Werewolf)):
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)
@@ -337,7 +338,7 @@ class Game:
                 if await self.players[_id].get_killed():  # Guard can protect Fox from Seer kill
                     final_kill_list.append(_id)
 
-            kills = ", ".join([f"<@{_id}>"] for _id in final_kill_list)
+            kills = ", ".join([f"<@{_id}>" for _id in final_kill_list])
 
             await self.interface.send_text_to_channel(text_template.generate_killed_text(kills), config.GAMEPLAY_CHANNEL)
             self.night_pending_kill_list = []  # Reset killed list for next day
