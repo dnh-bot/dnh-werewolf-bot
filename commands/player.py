@@ -124,8 +124,8 @@ async def do_stop(game, message, force=False):
                 game.vote_stop.add(message.author.id)
                 valid, text = check_vote_valid(len(game.vote_stop), 1, "stop")
                 if valid:
-                    await game.stop()
                     await message.reply(text_template.generate_game_stop_text())
+                    await game.stop()
                 else:
                     await message.reply(text_template.generate_vote_for_game_text("stop", message.author.display_name, text))
     else:

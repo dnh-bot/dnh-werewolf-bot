@@ -1,5 +1,5 @@
 import discord
-from commands import command
+from commands import command, admin
 from game import *
 import config
 import interface
@@ -10,14 +10,13 @@ if not config.DISCORD_TOKEN:
 # ============ Local functions ============
 
 
-async def process_message(message):
+async def process_message(client, message):
     if message.content.strip().startswith(config.BOT_PREFIX):
         game = game_list.get_game(message.guild.id)
-        await command.parse_command(game, message)
+        await command.parse_command(client, game, message)
 
 
-def verify_ok(user):
-    # TODO: Check valid user in valid channel
+def verify_ok(message):
     return True
 
 
@@ -49,6 +48,9 @@ async def on_ready():
     print("=========================BOT STARTUP=========================")
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id)
+        await admin.create_category(guild, client.user, config.GAME_CATEGORY)  # Create GAME_CATEGORY if not existing
+        await admin.create_channel(guild, client.user, config.LOBBY_CHANNEL, is_public=True)
+        await admin.create_channel(guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
         # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
         game_list.add_game(guild.id, Game(guild, interface.DiscordInterface(guild, client)))
 
@@ -60,9 +62,8 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # Check valid author
-    if verify_ok(message.author):
-        await process_message(message)  # loop through all commands and do action on first command that match
+    if verify_ok(message):
+        await process_message(client, message)  # loop through all commands and do action on first command that match
 
 
 client.run(config.DISCORD_TOKEN)
