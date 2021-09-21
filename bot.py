@@ -1,9 +1,9 @@
 import discord
+from apscheduler.schedulers.blocking import BlockingScheduler
 from commands import command, admin
 from game import *
 import config
 import interface
-from live_forever import forever_schedule
 
 if not config.DISCORD_TOKEN:
     print("Use must setup DISCORD_TOKEN in .env file")
@@ -66,8 +66,6 @@ async def on_message(message):
     if verify_ok(message):
         await process_message(client, message)  # loop through all commands and do action on first command that match
 
-
-from apscheduler.schedulers.blocking import BlockingScheduler
 
 forever_schedule = BlockingScheduler()
 
