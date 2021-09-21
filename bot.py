@@ -77,4 +77,5 @@ def run_bot():
     client.run(config.DISCORD_TOKEN)
 
 
+client.run(config.DISCORD_TOKEN)
 forever_schedule.start()
