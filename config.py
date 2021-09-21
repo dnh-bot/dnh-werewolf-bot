@@ -27,6 +27,7 @@ NIGHTTIME = 30  # 30s
 ALERT_PERIOD = 20  # 20s
 
 GUARD_PREVENT_SELF_PROTECTION = False  # Use True if do not want guard use skill on himself
+SEER_CAN_KILL_FOX = True
 
 ''' Non-configurable value '''
 GAME_CATEGORY = "GAME"
