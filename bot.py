@@ -67,5 +67,14 @@ async def on_message(message):
         await process_message(client, message)  # loop through all commands and do action on first command that match
 
 
+from apscheduler.schedulers.blocking import BlockingScheduler
+
+forever_schedule = BlockingScheduler()
+
+
+@forever_schedule.scheduled_job('interval', minutes=15)
+def run_bot():
+    client.run(config.DISCORD_TOKEN)
+
+
 forever_schedule.start()
-client.run(config.DISCORD_TOKEN)
