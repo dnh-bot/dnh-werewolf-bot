@@ -16,44 +16,40 @@ async def vote(game, author_id, target_id):
     return await game.vote(author, target)
 
 
-async def test_case1(game):
+async def test_case(game, case_id):
+    test_case_data = None
+    with open(f"testcases/case{case_id}.json", "r") as fi:
+        test_case_data = json.load(fi)
+
+    assert test_case_data is not None
+
     print("====== Begin test case =====")
     DELAY_TIME = 0.1
     game.timer_enable = False  # MUST have
 
-    await game.add_player(1, "W")
-    await game.add_player(2, "S")
-    await game.add_player(3, "V1")
-    await game.add_player(4, "V2")
+    player_name_list = sorted(test_case_data["player_list"])  # NOTE: player_list must be a list to prevent out of order
+    for player_id, (player_name, player_role) in enumerate(player_name_list, 1):
+        print(player_id, player_name, player_role)
+        await game.add_player(player_id, player_name)
+
+    # FIXME
     players = {
-        1: roles.Werewolf(game.interface, 1, "W"),
-        2: roles.Seer(game.interface,     2, "S"),
-        3: roles.Villager(game.interface, 3, "V1"),
-        4: roles.Villager(game.interface, 4, "V2"),
+        player_id: roles.get_role_type(player_role)(game.interface, player_id, player_name)
+        for player_id, (player_name, player_role) in enumerate(player_name_list, 1)
     }
-
-
     await game.start(players)
-    await asyncio.sleep(DELAY_TIME)
-    assert assert_players(game, [1,2,3,4])
 
-    print(await game.do_player_action("vote", 1, 2))
-    print(await game.do_player_action("vote", 3, 2))
-    print(await game.do_player_action("vote", 4, 1))
-    await asyncio.sleep(DELAY_TIME)
+    timeline_action_list = test_case_data["timeline"]
+    for timeline_idx, action_data in enumerate(timeline_action_list):
+        await asyncio.sleep(DELAY_TIME)
 
-    await game.next_phase()  # go NIGHT
-    await asyncio.sleep(DELAY_TIME)
-    assert assert_players(game, [1,3,4])
+        assert assert_players(game, list(map(int, action_data["alive"])))
+        for action_str in action_data["action"]:
+            author_id, command, target_id = action_str.split()
+            print(await game.do_player_action(command, int(author_id), int(target_id)))
 
-    print(await game.do_player_action("kill", 1, 3))
-    await asyncio.sleep(DELAY_TIME)
+        await game.next_phase()
 
-    await game.next_phase()  # go DAY
-    await asyncio.sleep(DELAY_TIME)
-    assert assert_players(game, [1,4])
-
-    await game.next_phase()
     await asyncio.sleep(DELAY_TIME)
     assert game.is_end_game()
 
@@ -61,10 +57,10 @@ async def test_case1(game):
     print("====== End test case =====")
 
 
-
 async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
-    await test_case1(game)
+    await test_case(game, 1)
+
 
 async def main():
     task = asyncio.create_task(test_game())
@@ -72,6 +68,7 @@ async def main():
 
     if task in done:
         print("DONE")
+
 
 if __name__ == '__main__':
     asyncio.run(test_game())
