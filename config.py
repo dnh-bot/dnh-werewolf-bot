@@ -28,6 +28,7 @@ NIGHTTIME = 60  # 30s
 ALERT_PERIOD = 30  # 20s
 
 GUARD_PREVENT_SELF_PROTECTION = False  # Use True if do not want guard use skill on himself
+SEER_CAN_KILL_FOX = True
 
 ''' Non-configurable value '''
 GAME_CATEGORY = os.getenv('GAME_CATEGORY') if os.getenv('GAME_CATEGORY') else "GAME"

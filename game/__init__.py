@@ -39,7 +39,8 @@ class Game:
         self.players = {}  # id: Player
         self.playersname = {}  # id: username
         self.game_phase = GamePhase.NEW_GAME
-        self.killed_last_night = {}  # dict[wolf] -> player
+        self.wolf_kill_dict = {}  # dict[wolf] -> player
+        self.night_pending_kill_list = []
         self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1}. All items are ids.
         self.vote_start = set()
         self.vote_next = set()
@@ -250,11 +251,14 @@ class Game:
                     break
         except asyncio.CancelledError:
             print('run_game_loop(): cancelled while doing task')
-        except:
+        except Exception as e:
             print('run_game_loop(): stopped while doing task')
+            print("Error: ", e)
 
         if any(a_player.is_alive() for a_player in self.players.values() if isinstance(a_player, roles.Werewolf)):
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)
+        elif any(isinstance(player, roles.Fox) for player in self.players.values() if player.is_alive()):
+            await self.interface.send_text_to_channel(text_template.generate_endgame_text("Fox"), config.GAMEPLAY_CHANNEL)
         else:
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Villager"), config.GAMEPLAY_CHANNEL)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
@@ -323,16 +327,22 @@ class Game:
 
     async def do_end_nighttime_phase(self):
         print("do_end_nighttime_phase")
-        if self.killed_last_night:
-            # TODO: logic for other role as guard, hunter...?
-            killed, _ = Game.get_top_voted(list(self.killed_last_night.values()))
-            self.killed_last_night = {}
-            if killed:
-                if await self.players[killed].get_killed():
-                    await self.interface.send_text_to_channel(text_template.generate_killed_text(f"<@{killed}>"), config.GAMEPLAY_CHANNEL)
-                    return
-                else: # Player is protected by guard
-                    pass
+        if self.wolf_kill_dict:
+            killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
+            self.night_pending_kill_list.append(killed)
+            self.wolf_kill_dict = {}
+
+        if len(self.night_pending_kill_list):
+            final_kill_list = []
+            for _id in self.night_pending_kill_list:
+                if await self.players[_id].get_killed():  # Guard can protect Fox from Seer kill
+                    final_kill_list.append(_id)
+
+            kills = ", ".join([f"<@{_id}>" for _id in final_kill_list])
+
+            await self.interface.send_text_to_channel(text_template.generate_killed_text(kills), config.GAMEPLAY_CHANNEL)
+            self.night_pending_kill_list = []  # Reset killed list for next day
+            return
         await self.interface.send_text_to_channel(text_template.generate_killed_text(None), config.GAMEPLAY_CHANNEL)
 
     async def new_phase(self):
@@ -454,7 +464,7 @@ class Game:
         author_id = author.player_id
         target_id = target.player_id
 
-        self.killed_last_night[author_id] = target_id
+        self.wolf_kill_dict[author_id] = target_id
         return text_template.generate_kill_text(f"<@{author_id}>", f"<@{target_id}>")
 
     async def guard(self, author, target):
@@ -494,6 +504,9 @@ class Game:
             return text_template.generate_out_of_mana()
 
         author.on_use_mana()
+        if config.SEER_CAN_KILL_FOX and isinstance(target, roles.Fox):
+            self.night_pending_kill_list.append(target_id)
+
         return text_template.generate_after_voting_seer(f"<@{target_id}>", target.seer_seen_as_werewolf())
 
     async def test_game(self):
