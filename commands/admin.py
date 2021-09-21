@@ -1,4 +1,3 @@
-
 '''
 This provides APIs for Admin role and bot role
 '''
@@ -7,6 +6,7 @@ import discord
 import asyncio
 from utils import logger
 import config
+
 
 def is_valid_category(message):
     try:  # Channel may not belong to any category, make message.channel.category empty
@@ -139,7 +139,6 @@ async def remove_user_from_channel(guild, user, channel_name):
         print(e)
 
 
-
 async def send_text_to_channel(guild, text, channel_name):
     ''' Send a message to a channel '''
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
@@ -148,7 +147,6 @@ async def send_text_to_channel(guild, text, channel_name):
         await channel.send(text)
     except Exception as e:
         print(e)
-
 
 
 async def send_embed_to_channel(guild, embed_data, channel_name):
@@ -163,7 +161,6 @@ async def send_embed_to_channel(guild, embed_data, channel_name):
         await channel.send(embed=embed)
     except Exception as e:
         print(e)
-
 
 
 async def delete_all_personal_channel(guild):
