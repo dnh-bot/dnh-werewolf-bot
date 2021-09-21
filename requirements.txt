@@ -1,2 +1,3 @@
 discord.py==1.7.3
 python-dotenv
+APScheduler==3.0.0
