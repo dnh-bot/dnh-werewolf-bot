@@ -1,5 +1,6 @@
 import time
 import asyncio
+import os
 
 import interface
 from game import *
@@ -15,14 +16,15 @@ def assign_roles(interface, ids, names_dict, game_role):
     return {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_,role_name in zip(ids, game_role)}
 
 
-async def test_case(game, case_id):
+async def test_case(game, filepath):
     test_case_data = None
-    with open(f"testcases/case{case_id}.json", "r") as fi:
+    with open(filepath, "r") as fi:
         test_case_data = json.load(fi)
 
     assert test_case_data is not None
 
     print("====== Begin test case =====")
+    print(f"Test case: {test_case_data['name']}")
     DELAY_TIME = 0.1
     game.timer_enable = False  # MUST have
 
@@ -59,7 +61,13 @@ async def test_case(game, case_id):
 
 async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
-    await test_case(game, 1)
+    directory = "testcases"
+    for filename in os.listdir(directory):
+        if filename.endswith(".json"):
+            path = os.path.join(directory, filename)
+            await test_case(game, path)
+        else:
+            continue
 
 
 async def main():
