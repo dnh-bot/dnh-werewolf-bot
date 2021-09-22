@@ -4,16 +4,15 @@ import asyncio
 import interface
 from game import *
 
-def assert_players(game, alive_list):
+def assert_players(game, alive_list, playersname):
     p = [player.player_id for player in game.players.values() if player.is_alive()]
-    print("++++++++++++++++++++", p, alive_list)
+    # print("++++++++++++++++++++\nids: ", p, alive_list)
+    print("users: ", list(map(lambda x: playersname[x], p)), list(map(lambda x: playersname[x], alive_list)))
     return set(p) == set(alive_list)
 
 
-async def vote(game, author_id, target_id):
-    author = game.players.get(author_id)
-    target = game.players.get(target_id)
-    return await game.vote(author, target)
+def assign_roles(interface, ids, names_dict, game_role):
+    return {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_,role_name in zip(ids, game_role)}
 
 
 async def test_case(game, case_id):
@@ -27,27 +26,28 @@ async def test_case(game, case_id):
     DELAY_TIME = 0.1
     game.timer_enable = False  # MUST have
 
-    player_name_list = sorted(test_case_data["player_list"])  # NOTE: player_list must be a list to prevent out of order
-    for player_id, (player_name, player_role) in enumerate(player_name_list, 1):
-        print(player_id, player_name, player_role)
-        await game.add_player(player_id, player_name)
+    player_name_dict = test_case_data["player_list"]  # username: Role
+    playersname = {}  # id: username
+    game_role = []  # ["Werewolf", "Seer","Villager","Villager",]
+    for player_id, player_name in enumerate(player_name_dict):
+        playersname[player_id] = player_name
+        game_role.append(player_name_dict[player_name])
 
-    # FIXME
-    players = {
-        player_id: roles.get_role_type(player_role)(game.interface, player_id, player_name)
-        for player_id, (player_name, player_role) in enumerate(player_name_list, 1)
-    }
+    # Revert name -> ID map for reference
+    id_map = {v: k for k, v in playersname.items()}  # username: id
+
+    players = assign_roles(game.interface, list(playersname.keys()), playersname, game_role)
     await game.start(players)
 
     timeline_action_list = test_case_data["timeline"]
     for timeline_idx, action_data in enumerate(timeline_action_list):
         await asyncio.sleep(DELAY_TIME)
 
-        assert assert_players(game, list(map(int, action_data["alive"])))
+        assert assert_players(game, list(map(lambda x: id_map[x], action_data["alive"])), playersname)
         for action_str in action_data["action"]:
-            author_id, command, target_id = action_str.split()
-            print(await game.do_player_action(command, int(author_id), int(target_id)))
-
+            author_name, command, target_name = action_str.split()
+            print(await game.do_player_action(command, id_map[author_name], id_map[target_name]))
+        await asyncio.sleep(DELAY_TIME)
         await game.next_phase()
 
     await asyncio.sleep(DELAY_TIME)

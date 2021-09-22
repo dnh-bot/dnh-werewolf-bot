@@ -1,11 +1,11 @@
 {
     "name":"Simple test",
-    "player_list":[
-        ["W","Werewolf"],
-        ["S","Seer"],
-        ["V1","Villager"],
-        ["V2","Villager"]
-    ],
+    "player_list":{
+        "1":"Werewolf",
+        "2":"Seer",
+        "3":"Villager",
+        "4":"Villager"
+    },
     "timeline":[
         {
             "time":"day1",
