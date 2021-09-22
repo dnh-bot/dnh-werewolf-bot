@@ -32,7 +32,7 @@ async def test_case(game, filepath):
     playersname = {}  # id: username
     game_role = []  # ["Werewolf", "Seer","Villager","Villager",]
     for player_id, player_name in enumerate(player_name_dict):
-        playersname[player_id] = player_name
+        playersname[player_id+1] = player_name  # Offset by 1 to prevent player id = 0
         game_role.append(player_name_dict[player_name])
 
     # Revert name -> ID map for reference
@@ -55,12 +55,18 @@ async def test_case(game, filepath):
     await asyncio.sleep(DELAY_TIME)
     assert game.is_end_game()
 
+    await asyncio.sleep(DELAY_TIME)
     await game.stop()
     print("====== End test case =====")
 
 
 async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
+
+    # Run single test
+    # await test_case(game, "testcases/case6-5p-1day.json")
+
+    # Run all tests
     directory = "testcases"
     for filename in os.listdir(directory):
         if filename.endswith(".json"):
