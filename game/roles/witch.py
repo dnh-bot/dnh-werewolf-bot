@@ -14,8 +14,7 @@ class Witch(Villager):
         self.power = 0
 
     async def on_night(self):
-        # Regain mana
-        self.mana = 1
+        pass
 
     async def on_action(self, embed_data):
         await self.interface.send_text_to_channel(generate_before_voting_seer(), self.channel_name)

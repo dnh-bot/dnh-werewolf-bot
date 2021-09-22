@@ -18,7 +18,6 @@ class Werewolf(Villager):
  
 
     async def on_night(self):
-        # poll_result = self.vote()
         pass
 
     def seer_seen_as_werewolf(self):
