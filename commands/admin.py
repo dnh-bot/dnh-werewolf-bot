@@ -151,13 +151,13 @@ async def send_text_to_channel(guild, text, channel_name):
 
 async def send_embed_to_channel(guild, embed_data, channel_name):
     '''Send an embed message to a channel'''
+
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
-    embed = discord.Embed(title=embed_data["title"], description=embed_data.get("description"))
-    for field_name, field_value in embed_data["content"]:
-        embed.add_field(name=field_name, value="\n".join(field_value), inline=True)
-
     try:
+        embed = discord.Embed(title=embed_data["title"], description=embed_data.get("description"))
+        for field_name, field_value in embed_data["content"]:
+            embed.add_field(name=field_name, value="\n".join(field_value), inline=True)
         await channel.send(embed=embed)
     except Exception as e:
         print(e)
