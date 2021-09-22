@@ -29,6 +29,7 @@ class Game:
         ]  # List of channels in game
         self.next_flag = asyncio.Event()
         self.timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
+        self.timer_enable = True
 
         self.reset_game_state()  # Init other game variables every end game.
 
@@ -348,8 +349,9 @@ class Game:
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
         print(self.display_alive_player())
-        await self.cancel_running_task(self.task_run_timer_phase)
-        self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
+        if self.timer_enable:
+            await self.cancel_running_task(self.task_run_timer_phase)
+            self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
 
         if self.game_phase == GamePhase.DAY:
             await self.do_new_daytime_phase()
@@ -538,37 +540,6 @@ class Game:
         await self.next_phase()  # go NIGHT
         time.sleep(DELAY_TIME)
         print(await self.kill(real_id[1], real_id[3]))
-
-        await self.next_phase()  # go DAY
-        time.sleep(DELAY_TIME)
-
-        await self.next_phase()
-        time.sleep(DELAY_TIME)
-        await self.stop()
-        time.sleep(DELAY_TIME)
-        print("====== End test case =====")
-
-    async def test_case_simulated_players(self):
-        print("====== Begin test case =====")
-        DELAY_TIME = 3
-        await self.add_player(1, "W")
-        await self.add_player(2, "S")
-        await self.add_player(3, "V1")
-        await self.add_player(4, "V2")
-        players = {
-            1: roles.Werewolf(self.interface, 1, "W"),
-            2: roles.Seer(self.interface,     2, "S"),
-            3: roles.Villager(self.interface, 3, "V1"),
-            4: roles.Villager(self.interface, 4, "V2"),
-        }
-        await self.start(players)
-        print(await self.vote(1, 2))
-        print(await self.vote(3, 2))
-        print(await self.vote(4, 1))
-
-        await self.next_phase()  # go NIGHT
-        time.sleep(DELAY_TIME)
-        print(await self.kill(1, 3))
 
         await self.next_phase()  # go DAY
         time.sleep(DELAY_TIME)

@@ -10,4 +10,3 @@ def get_role_type(name):
     for role in (Villager, Werewolf, Seer, Guard, Lycan, Minion, Fox):
         if role.__name__ == name:
             return role
-

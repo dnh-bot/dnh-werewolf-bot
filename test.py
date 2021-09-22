@@ -1,64 +1,80 @@
 import time
 import asyncio
+import os
 
 import interface
 from game import *
 
-def assert_players(game, alive_list):
+def assert_players(game, alive_list, playersname):
     p = [player.player_id for player in game.players.values() if player.is_alive()]
-    print("++++++++++++++++++++", p, alive_list)
+    # print("++++++++++++++++++++\nids: ", p, alive_list)
+    print("users: ", list(map(lambda x: playersname[x], p)), list(map(lambda x: playersname[x], alive_list)))
     return set(p) == set(alive_list)
 
-async def test_case_simulated_players(game):
-        print("====== Begin test case =====")
-        DELAY_TIME = 3
-        await game.add_player(1, "W")
-        await game.add_player(2, "S")
-        await game.add_player(3, "V1")
-        await game.add_player(4, "V2")
-        players = {
-            1: roles.Werewolf(game.interface, 1, "W"),
-            2: roles.Seer(game.interface,     2, "S"),
-            3: roles.Villager(game.interface, 3, "V1"),
-            4: roles.Villager(game.interface, 4, "V2"),
-        }
-        game.set_timer_phase([1,1,1])
 
-        await game.start(players)
-        assert assert_players(game, [1,2,3,4])
-        
-        print(await game.do_player_action("vote", 1, 2))
-        print(await game.do_player_action("vote", 3, 2))
-        print(await game.do_player_action("vote", 4, 1))
+def assign_roles(interface, ids, names_dict, game_role):
+    return {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_,role_name in zip(ids, game_role)}
 
-        # await game.next_phase_cmd()  # go NIGHT
-        # await game.run_game_loop()
-        print("-=0-0------------------")
-        time.sleep(DELAY_TIME)
-        await game.next_phase_cmd()  # go NIGHT
-        # time.sleep(DELAY_TIME)
-        assert assert_players(game, [1,2])
-        # print(game.display_alive_player())
-        
-        print(await game.do_player_action("kill", 1, 3))
 
-        # await game.next_phase()  # go DAY
-        # time.sleep(DELAY_TIME)
+async def test_case(game, filepath):
+    test_case_data = None
+    with open(filepath, "r") as fi:
+        test_case_data = json.load(fi)
 
-        # await game.next_phase()
-        # time.sleep(DELAY_TIME)
-        await game.stop()
-        # time.sleep(DELAY_TIME)
-        print("====== End test case =====")
+    assert test_case_data is not None
 
-async def vote(game, author_id, target_id):
-    author = game.players.get(author_id)
-    target = game.players.get(target_id)
-    return await game.vote(author, target)
+    print(f"\n\n\n====== Begin test case at {filepath} =====")
+    print(f"Test case: {test_case_data['name']}")
+    DELAY_TIME = 0.1
+    game.timer_enable = False  # MUST have
+
+    player_name_dict = test_case_data["player_list"]  # username: Role
+    playersname = {}  # id: username
+    game_role = []  # ["Werewolf", "Seer","Villager","Villager",]
+    for player_id, player_name in enumerate(player_name_dict):
+        playersname[player_id+1] = player_name  # Offset by 1 to prevent player id = 0
+        game_role.append(player_name_dict[player_name])
+
+    # Revert name -> ID map for reference
+    id_map = {v: k for k, v in playersname.items()}  # username: id
+
+    players = assign_roles(game.interface, list(playersname.keys()), playersname, game_role)
+    await game.start(players)
+
+    timeline_action_list = test_case_data["timeline"]
+    for timeline_idx, action_data in enumerate(timeline_action_list):
+        await asyncio.sleep(DELAY_TIME)
+
+        assert assert_players(game, list(map(lambda x: id_map[x], action_data["alive"])), playersname)
+        for action_str in action_data["action"]:
+            author_name, command, target_name = action_str.split()
+            print(await game.do_player_action(command, id_map[author_name], id_map[target_name]))
+        await asyncio.sleep(DELAY_TIME)
+        await game.next_phase()
+
+    await asyncio.sleep(DELAY_TIME)
+    assert game.is_end_game()
+
+    await asyncio.sleep(DELAY_TIME)
+    await game.stop()
+    print("====== End test case =====")
+
 
 async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
-    await test_case_simulated_players(game)
+
+    # Run single test
+    # await test_case(game, "testcases/case6-5p-1day.json")
+
+    # Run all tests
+    directory = "testcases"
+    for filename in os.listdir(directory):
+        if filename.endswith(".json"):
+            path = os.path.join(directory, filename)
+            await test_case(game, path)
+        else:
+            continue
+
 
 async def main():
     task = asyncio.create_task(test_game())
@@ -67,14 +83,7 @@ async def main():
     if task in done:
         print("DONE")
 
+
 if __name__ == '__main__':
-    # asyncio.run(main())
-    # loop = asyncio.get_event_loop()
-    # loop.run_until_complete(main(loop))
-    # loop.close()
-    # task_game_loop = asyncio.create_task(test_game(), name="test_task")
     asyncio.run(test_game())
-    # loop = asyncio.get_event_loop()
-    # future = asyncio.run_coroutine_threadsafe(test_game(), loop)
-    # result = future.result()
     print("END=======")
