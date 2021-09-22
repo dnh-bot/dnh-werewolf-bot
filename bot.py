@@ -1,5 +1,4 @@
 import discord
-from apscheduler.schedulers.blocking import BlockingScheduler
 from commands import command, admin
 from game import *
 import config
@@ -66,15 +65,4 @@ async def on_message(message):
     if verify_ok(message):
         await process_message(client, message)  # loop through all commands and do action on first command that match
 
-
-forever_schedule = BlockingScheduler()
-
-
-@forever_schedule.scheduled_job('interval', minutes=15)
-async def run_bot():
-    for guild in client.guilds:
-        await admin.send_text_to_channel(guild, "I woke up!", config.LOBBY_CHANNEL)
-
-
 client.run(config.DISCORD_TOKEN)
-forever_schedule.start()
