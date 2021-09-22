@@ -25,7 +25,7 @@ async def test_case(game, filepath):
 
     print(f"\n\n\n====== Begin test case at {filepath} =====")
     print(f"Test case: {test_case_data['name']}")
-    DELAY_TIME = 0.1
+    DELAY_TIME = 0.01  # MUST greater than 0
     game.timer_enable = False  # MUST have
 
     player_name_dict = test_case_data["player_list"]  # username: Role
@@ -64,7 +64,7 @@ async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
 
     # Run single test
-    # await test_case(game, "testcases/case6-5p-1day.json")
+    # await test_case(game, "testcases/case-witch-simple.json")
 
     # Run all tests
     directory = "testcases"
