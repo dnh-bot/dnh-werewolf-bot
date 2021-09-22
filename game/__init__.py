@@ -331,7 +331,8 @@ class Game:
 
             embed_data = text_template.generate_player_list_embed(self.get_dead_players(), "Dead")
             # Send dead player list to Witch if Witch has not used skill
-            await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])
+            if embed_data:  # This table can be empty (Noone is dead)
+                await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if (isinstance(player, roles.Witch) and player.get_power())])
 
 
     async def do_end_nighttime_phase(self):
