@@ -189,6 +189,12 @@ class Game:
             key=lambda player: player.player_id
         )
 
+    def get_dead_players(self):
+        return sorted(
+            [player for player in self.players.values() if not player.is_alive()],
+            key=lambda player: player.player_id
+        )
+
     def display_alive_player(self):
         return "\n".join((
             "======== Alive players: =======",
@@ -290,7 +296,7 @@ class Game:
         self.day += 1
         if self.players:
             await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day), config.GAMEPLAY_CHANNEL)
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players())
+            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
     async def do_end_daytime_phase(self):
@@ -318,10 +324,15 @@ class Game:
                 text_template.generate_before_voting_werewolf(),
                 config.WEREWOLF_CHANNEL
             )
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players())
+            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
             # Send alive player list to all skilled characters (guard, seer, etc.)
-            await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players()])
+            await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if not isinstance(player, roles.Witch)])
+
+            embed_data = text_template.generate_player_list_embed(self.get_dead_players(), "Dead")
+            # Send dead player list to Witch
+            await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch)])
+
 
     async def do_end_nighttime_phase(self):
         print("do_end_nighttime_phase")

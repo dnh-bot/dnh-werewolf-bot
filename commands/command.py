@@ -38,10 +38,13 @@ async def parse_command(client, game, message):
 
                     elif parameters[0].isdigit():
                         target_index = int(parameters[0]) - 1
-                        alive_players = game.get_alive_players()
-                        if 0 <= target_index < len(alive_players):
+                        if cmd == 'reborn':
+                            id_players = game.get_dead_players()
+                        else:
+                            id_players = game.get_alive_players()
+                        if 0 <= target_index < len(id_players):
                             is_valid_command = True
-                            target_user = alive_players[target_index]
+                            target_user = id_players[target_index]
                             msg = await game.do_player_action(cmd, author.id, target_user.player_id)
                             await message.reply(msg)
 
