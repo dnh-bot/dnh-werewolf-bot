@@ -1,1 +1,1 @@
-worker: python3.8 bot.py
+trap '' SIGTERM; python3.8 bot.py & while true; do curl google.com; sleep 600; done & wait -n; kill -SIGTERM -$$; wait
