@@ -41,6 +41,7 @@ class Game:
         self.playersname = {}  # id: username
         self.game_phase = GamePhase.NEW_GAME
         self.wolf_kill_dict = {}  # dict[wolf] -> player
+        self.reborn_set = set()
         self.night_pending_kill_list = []
         self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1}. All items are ids.
         self.vote_start = set()
@@ -100,10 +101,6 @@ class Game:
         game_role = random.choice([role_list for role_list in role_config if len(role_list)==len(ids)])
 
         random.shuffle(ids)
-        len_ids = len(ids)
-        werewolf = len_ids // 8 + 1
-        guard = 1 if len_ids > 5 else 0
-        seer = 1 if len_ids > 6 else 0
         r = {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_,role_name in zip(ids, game_role)}
         print("Player list:", r)
         return r
@@ -328,6 +325,7 @@ class Game:
 
     async def do_end_nighttime_phase(self):
         print("do_end_nighttime_phase")
+        kills = None
         if self.wolf_kill_dict:
             killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
             self.night_pending_kill_list.append(killed)
@@ -340,11 +338,13 @@ class Game:
                     final_kill_list.append(_id)
 
             kills = ", ".join([f"<@{_id}>" for _id in final_kill_list])
-
-            await self.interface.send_text_to_channel(text_template.generate_killed_text(kills), config.GAMEPLAY_CHANNEL)
             self.night_pending_kill_list = []  # Reset killed list for next day
-            return
-        await self.interface.send_text_to_channel(text_template.generate_killed_text(None), config.GAMEPLAY_CHANNEL)
+
+        await self.interface.send_text_to_channel(text_template.generate_killed_text(kills), config.GAMEPLAY_CHANNEL)
+
+        for _id in self.reborn_set:
+            await self.players[_id].on_reborn()
+        self.reborn_set = set()
 
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
@@ -436,7 +436,7 @@ class Game:
         if target is None:
             return "Invalid target user. Target user is not a player"
 
-        if not target.is_alive():
+        if not target.is_alive() and cmd!="reborn":
             return text_template.generate_dead_target_text() if cmd=="vote" else text_template.generate_invalid_target()
 
         if cmd == "vote":
@@ -447,6 +447,8 @@ class Game:
             return await self.guard(author, target)
         elif cmd == "seer":
             return await self.seer(author, target)
+        elif cmd == "reborn":
+            return await self.reborn(author, target)
 
     async def vote(self, author, target):
         author_id = author.player_id
@@ -510,6 +512,27 @@ class Game:
             self.night_pending_kill_list.append(target_id)
 
         return text_template.generate_after_voting_seer(f"<@{target_id}>", target.seer_seen_as_werewolf())
+
+    async def reborn(self, author, target):
+        if self.game_phase != GamePhase.NIGHT:
+            return text_template.generate_invalid_nighttime()
+
+        if not isinstance(author, roles.Witch):
+            return text_template.generate_invalid_author()
+
+        author_id = author.player_id
+        target_id = target.player_id
+
+        if author.get_power() == 0:
+            return text_template.generate_out_of_power()
+
+        if target.is_alive():
+            return text_template.generate_invalid_player_alive(f"<@{target_id}>")
+
+        author.on_use_power()
+        self.reborn_set.add(target_id)
+
+        return text_template.generate_after_witch_reborn(f"<@{target_id}>")
 
     async def test_game(self):
         print("====== Begin test game =====")

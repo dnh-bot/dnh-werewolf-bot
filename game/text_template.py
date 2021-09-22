@@ -115,10 +115,22 @@ def generate_invalid_guard_selfprotection():
 def generate_invalid_guard_yesterdaytarget():
     return f"Hôm qua bạn đã bảo vệ người này. Hãy đổi mục tiêu khác hôm nay!"
 
+# Witch
+def generate_after_witch_reborn(user):
+    return f"Bạn đã phục sinh thành công {user}"
+
 
 # Common
 def generate_out_of_mana():
     return f"Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm!"
+
+
+def generate_out_of_power():
+    return f"Bạn chỉ sử dụng kỹ năng được 1 lần duy nhất!"
+
+
+def generate_invalid_player_alive(user):
+    return f"{user} còn sống mà bạn!"
 
 
 def generate_killed_text(user):
@@ -129,6 +141,8 @@ def generate_killed_text(user):
         return f"Đêm qua, mọi người đều bình an.\n" +\
             "==========================================================================="
 
+def generate_after_reborn(user):
+    return f"Chào mừng {user} đã trở lại cuộc đời! Hãy trân trọng cơ hội thứ 2 này!"
 
 def generate_lynch_text(user):
     return f"Dân làng đã đồng lòng loại bỏ {user} khỏi làng"
