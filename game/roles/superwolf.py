@@ -1,8 +1,8 @@
 from game.roles.werewolf import Werewolf
 
 
-class Minion(Werewolf):
-    # Minion is Werewolf but if check by Seer, will be reported as Villageri
+class Superwolf(Werewolf):
+    # Superwolf is Werewolf but if check by Seer, will be reported as Villager
 
     async def on_night(self):
         # poll_result = self.vote()
