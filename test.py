@@ -24,7 +24,7 @@ async def test_case(game, filepath):
     assert test_case_data is not None
 
     print(f"\n\n\n====== Begin test case at {filepath} =====")
-    print(f"Test case: {test_case_data["name"]}")
+    print(f"Test case: {test_case_data['name']}")
     DELAY_TIME = 0.01  # MUST greater than 0
     game.timer_enable = False  # MUST have
 
