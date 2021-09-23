@@ -69,7 +69,7 @@ class Game:
     @staticmethod
     def generate_roles(interface, ids, names_dict):
         def dict_to_list(config, number=0):
-            r=[name for name in config for _ in range(config[name])]
+            r = [name for name in config for _ in range(config[name])]
             r.extend('Werewolf' if i%4==0 else 'Villager' for i in range(number-len(r)))
             return r
 
@@ -81,32 +81,13 @@ class Game:
         except:
             # Default config
             print(f"{ROLE_CONFIG_FILE} not found, using default config")
-            role_config = [
-                    ["Werewolf", "Seer"  , "Villager", "Villager"],
-                    ["Werewolf", "Seer"  , "Villager", "Lycan"],
-                    ["Werewolf", "Guard" , "Villager", "Villager"],
-                    ["Werewolf", "Seer"  , "Villager", "Villager", "Villager"],
-                    ["Werewolf", "Seer"  , "Villager", "Villager", "Lycan"],
-                    ["Werewolf", "Seer"  , "Villager", "Lycan"   , "Lycan"],
-                    ["Werewolf", "Guard" , "Villager", "Villager", "Villager"],
-                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Villager"],
-                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Lycan"],
-                    ["Werewolf", "Seer"  , "Guard"   , "Lycan"   , "Lycan"],
-                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Villager", "Villager"],
-                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Villager", "Lycan"],
-                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Lycan"   , "Lycan"],
-                    ["Werewolf", "Seer"  , "Guard"   , "Lycan"   , "Lycan"   , "Lycan"],
-                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Villager", "Villager", "Villager"],
-                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Villager", "Lycan"   , "Lycan"],
-                    ["Werewolf", "Seer"  , "Guard"   , "Villager", "Lycan"   , "Lycan"   , "Lycan"],
-                    ["Werewolf", "Seer"  , "Guard"   , "Lycan"   , "Lycan"   , "Lycan"   , "Lycan"]
-                ]
+            role_config = config.DEFAULT_COUNT_CONFIG
 
         ids = list(ids)
         game_role = random.choice([role_list for role_list in role_config if len(role_list)==len(ids)])
 
         random.shuffle(ids)
-        r = {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_,role_name in zip(ids, game_role)}
+        r = {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
         print("Player list:", r)
         return r
 
