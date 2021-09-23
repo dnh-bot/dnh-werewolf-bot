@@ -68,11 +68,16 @@ class Game:
 
     @staticmethod
     def generate_roles(interface, ids, names_dict):
+        def dict_to_list(config, number=0):
+            r=[name for name in config for _ in range(config[name])]
+            r.extend('Werewolf' if i%4==0 else 'Villager' for i in range(number-len(r)))
+            return r
+
         ROLE_CONFIG_FILE = "role_config.json"
         try:
             # Load the file everytime to ensure admin can change config while the bot is already running
             with open(ROLE_CONFIG_FILE) as f:
-                role_config = json.load(f)
+                role_config = list(map(dict_to_list, json.load(f)))
         except:
             # Default config
             print(f"{ROLE_CONFIG_FILE} not found, using default config")
