@@ -11,20 +11,20 @@ async def parse_command(client, game, message):
     cmd, parameters = message_parts[0], message_parts[1:]
     # Game commands only valid under GAME CATEGORY:
     if admin.is_valid_category(message):
-        if cmd == 'join':
+        if cmd == "join":
             await player.do_join(game, message, force=False)
-        elif cmd == 'leave':
+        elif cmd == "leave":
             await player.do_leave(game, message, force=False)
-        elif cmd == 'start':
+        elif cmd == "start":
             await player.do_start(game, message, force=False)
-        elif cmd == 'next':  # Next phase
+        elif cmd == "next":  # Next phase
             await player.do_next(game, message, force=False)
-        elif cmd == 'stop':
+        elif cmd == "stop":
             await player.do_stop(game, message, force=False)
 
-        elif cmd in ['vote', 'kill', 'guard', 'seer', 'reborn']:
-            is_valid_channel = (cmd == 'vote' and message.channel.name == config.GAMEPLAY_CHANNEL) or\
-                (cmd == 'kill' and message.channel.name == config.WEREWOLF_CHANNEL) or True
+        elif cmd in ["vote", "kill", "guard", "seer", "reborn"]:
+            is_valid_channel = (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
+                (cmd == "kill" and message.channel.name == config.WEREWOLF_CHANNEL) or True
             # TODO: check if cmd guard/seer in the author's personal channel
 
             if is_valid_channel:
@@ -38,7 +38,7 @@ async def parse_command(client, game, message):
 
                     elif parameters[0].isdigit():
                         target_index = int(parameters[0]) - 1
-                        if cmd == 'reborn':
+                        if cmd == "reborn":
                             id_players = game.get_dead_players()
                         else:
                             id_players = game.get_alive_players()
@@ -54,9 +54,9 @@ async def parse_command(client, game, message):
                 else:
                     await message.reply(text_template.generate_not_vote_1_player_text())
             else:
-                if cmd == 'vote':
+                if cmd == "vote":
                     real_channel = f"#{config.GAMEPLAY_CHANNEL}"
-                elif cmd == 'kill':
+                elif cmd == "kill":
                     real_channel = f"#{config.WEREWOLF_CHANNEL}"
                 else:
                     real_channel = "your personal channel"
@@ -65,13 +65,13 @@ async def parse_command(client, game, message):
                     message.guild, text_template.generate_invalid_channel_text(real_channel), message.channel.name
                 )
 
-        elif cmd == 'status':
+        elif cmd == "status":
             await player.do_generate_vote_status_table(message.channel, game.get_vote_status())
 
-        elif cmd == 'timer':
-            ''' Usage: 
+        elif cmd == "timer":
+            """ Usage: 
                 `!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
-            '''
+            """
             if len(parameters) < 3:
                 timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
                 await message.reply(
@@ -86,10 +86,10 @@ async def parse_command(client, game, message):
                 )
             game.set_timer_phase(timer_phase)
 
-        elif cmd == 'timerstart':
+        elif cmd == "timerstart":
             game.timer_stopped = False
             await message.reply(text_template.generate_timer_start_text())
-        elif cmd == 'timerstop':
+        elif cmd == "timerstop":
             game.timer_stopped = True
             await message.reply(text_template.generate_timer_stop_text())
 
@@ -101,9 +101,9 @@ async def parse_command(client, game, message):
                 await player.do_leave(game, message, force=True)
             elif cmd == "fstart":
                 await player.do_start(game, message, force=True)
-            elif cmd == 'fnext':  # Next phase
+            elif cmd == "fnext":  # Next phase
                 await player.do_next(game, message, force=True)
-            elif cmd == 'fstop':
+            elif cmd == "fstop":
                 await player.do_stop(game, message, force=True)
             elif cmd == "fclean":  # Delete all private channels under config.GAME_CATEGORY
                 try:
@@ -121,7 +121,7 @@ async def parse_command(client, game, message):
 
     # Admin/Bot commands - User should not directly use these commands
     if admin.is_admin(message.author):
-        if cmd == 'fcreate':  # Create game channels
+        if cmd == "fcreate":  # Create game channels
             if len(message.mentions) == 1:
                 user = message.mentions[0]
                 if user.id == client.user.id:

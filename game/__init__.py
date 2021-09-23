@@ -137,12 +137,12 @@ class Game:
         )
 
     async def stop(self):
+        if self.is_stopped: return
         print("======= Game stopped =======")
         self.is_stopped = True
         self.next_flag.clear()
         await self.cancel_running_task(self.task_game_loop)
         await self.cancel_running_task(self.task_run_timer_phase)
-
 
         if self.players:
             await self.delete_channel()
@@ -209,8 +209,8 @@ class Game:
         ))
 
     def get_vote_status(self):
-        # From {'u1':'u2', 'u2':'u1', 'u3':'u1'}
-        # to {'u2': {'u1'}, 'u1': {'u3', 'u2'}}
+        # From {"u1":"u2", "u2":"u1", "u3":"u1"}
+        # to {"u2": {"u1"}, "u1": {"u3", "u2"}}
         d = self.voter_dict
         table_dict = reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, d.items(), dict())
         print(table_dict)
@@ -254,9 +254,9 @@ class Game:
                     self.is_stopped = True  # Need to update this value in case of end game.
                     break
         except asyncio.CancelledError:
-            print('run_game_loop(): cancelled while doing task')
+            print("run_game_loop(): cancelled while doing task")
         except Exception as e:
-            print('run_game_loop(): stopped while doing task')
+            print("run_game_loop(): stopped while doing task")
             print("Error: ", e)
 
         if any(a_player.is_alive() for a_player in self.players.values() if isinstance(a_player, roles.Werewolf)):
@@ -433,7 +433,7 @@ class Game:
                 await self.interface.send_text_to_channel(text_template.generate_timer_up_text(), config.GAMEPLAY_CHANNEL)
                 await self.next_phase()
         except asyncio.CancelledError:
-            print('cancel_me(): cancel sleep')
+            print("cancel_me(): cancel sleep")
         except:
             print("Unknown run_timer_phase")
 
@@ -597,5 +597,5 @@ class GameList:
         return self.game_list[guild_id]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     game_list = GameList()

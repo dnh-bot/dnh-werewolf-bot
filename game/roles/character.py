@@ -4,7 +4,7 @@ from game import text_template
 import game
 import config
 
-BANNED_CHARS = '`!@#$%^&*()\'\"#/\\<>[]()|{}?+=,.'
+BANNED_CHARS = "`!@#$%^&*()\'\"#/\\<>[]()|{}?+=,."
 
 
 class CharacterStatus(Enum):
@@ -21,9 +21,7 @@ class Character:
         self.player_name = player_name
         # channel_name MUST BE lowercase!
         valid_channel_name = "".join(c for c in player_name if c not in BANNED_CHARS).lower()
-        valid_channel_name = '-'.join(valid_channel_name.split())
-        if len(valid_channel_name) <= 1:
-            valid_channel_name = f'{valid_channel_name}{player_id}'
+        valid_channel_name = "-".join(valid_channel_name.split())
         self.channel_name = f"personal-{valid_channel_name}"
         self.mana = 0
 

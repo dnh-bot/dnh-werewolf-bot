@@ -1,6 +1,6 @@
-'''
+"""
 This provides APIs for Player role
-'''
+"""
 import time
 import math
 import discord
@@ -32,7 +32,7 @@ async def do_join(game, message, force=False):
                     else:
                         await message.channel.send(text_template.generate_already_in_game_text())
         else:
-            joined_players = await game.add_player(message.author.id, message.author.name)
+            joined_players = await game.add_player(message.author.id, f"{message.author.name}-{message.author.discriminator}")
             if joined_players > 0:
                 await message.channel.send(text_template.generate_join_text(message.author.display_name, joined_players))
             else:
@@ -133,7 +133,7 @@ async def do_stop(game, message, force=False):
 
 
 async def do_generate_vote_status_table(channel, table):
-    # Table format: {'u2': {'u1'}, 'u1': {'u3', 'u2'}}
+    # Table format: {"u2": {"u1"}, "u1": {"u3", "u2"}}
     # @user1:
     # | Votes: 2
     # | Voters: @user2, @user3
@@ -145,7 +145,7 @@ async def do_generate_vote_status_table(channel, table):
     if not table:
         await channel.send(text_template.generate_nobody_voted_text())
         return
-    embed = discord.Embed(title='Vote Results', description="Danh sách những kẻ có khả năng bị hành hình")
+    embed = discord.Embed(title="Vote Results", description="Danh sách những kẻ có khả năng bị hành hình")
     for k, v in table.items():
         player = channel.guild.get_member(k).display_name
         votes = len(v)

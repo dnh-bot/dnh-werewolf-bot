@@ -44,7 +44,7 @@ game_list = GameList()
 
 @client.event
 async def on_ready():
-    ''' Log ready message, check server roles/channels setup '''
+    """ Log ready message, check server roles/channels setup """
     print("=========================BOT STARTUP=========================")
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id)
@@ -54,7 +54,7 @@ async def on_ready():
         # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
         game_list.add_game(guild.id, Game(guild, interface.DiscordInterface(guild, client)))
 
-    ''' Uncomment to run test '''
+    """ Uncomment to run test """
     server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
     # server_id = config.DISCORD_DEPLOY_SERVER_ID  # Running test on DNH ma sói bot's server
     # await test_bot(game_list.get_game(server_id), client.get_guild(server_id))

@@ -1,6 +1,6 @@
-'''
+"""
 This provides APIs for Admin role and bot role
-'''
+"""
 
 import discord
 import asyncio
@@ -16,13 +16,8 @@ def is_valid_category(message):
 
 
 def is_admin(author):
-    # Check if this user has 'Admin' right
-    admin_role = discord.utils.get(author.roles, name="Admin")
-    if admin_role in author.guild.roles:
-        return True
-    else:
-        # print(f"{author.display_name} is not Admin Role")
-        return False
+    # Check if this user has "Admin" right
+    return discord.utils.get(author.roles, name="Admin") is not None
 
 
 def list_users(guild):
@@ -66,6 +61,7 @@ async def delete_category(guild, author, category_name=config.GAME_CATEGORY):
         response = f"{author.display_name} deleted channel {category_name}"
         print(response)
         await category.delete()
+        return True
     except Exception as e:
         print("Exception at #", category_name, author)
         logger.logger_debug(guild.categories)
@@ -108,6 +104,7 @@ async def delete_channel(guild, author, channel_name):
         print(response)
         # await channel.send(response)
         await channel.delete()
+        return True
     except Exception as e:
         print("Exception at #", channel_name, author)
         logger.logger_debug(guild.channels)
@@ -121,6 +118,7 @@ async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=T
     try:
         await channel.set_permissions(user, read_messages=is_read, send_messages=is_send)
         print(f"Successfully added {user} to {channel_name} read={is_read} send={is_send}")
+        return True
     except Exception as e:
         print(channel_name, user)
         logger.logger_debug(guild.channels)
@@ -135,22 +133,24 @@ async def remove_user_from_channel(guild, user, channel_name):
     try:
         await channel.set_permissions(user, read_messages=False, send_messages=False)
         print("Successfully removed ", user, " from ", channel_name)
+        return True
     except Exception as e:
         print(e)
 
 
 async def send_text_to_channel(guild, text, channel_name):
-    ''' Send a message to a channel '''
+    """ Send a message to a channel """
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.send(text)
+        return True
     except Exception as e:
         print(e)
 
 
 async def send_embed_to_channel(guild, embed_data, channel_name):
-    '''Send an embed message to a channel'''
+    """Send an embed message to a channel"""
 
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
@@ -159,6 +159,7 @@ async def send_embed_to_channel(guild, embed_data, channel_name):
         for field_name, field_value in embed_data["content"]:
             embed.add_field(name=field_name, value="\n".join(field_value), inline=True)
         await channel.send(embed=embed)
+        return True
     except Exception as e:
         print(e)
 
