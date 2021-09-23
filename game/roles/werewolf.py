@@ -10,12 +10,10 @@ class Werewolf(Villager):
         if await super(Werewolf, self).get_killed():
             await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
             return True
-        else:
-            return False
+        return False
 
     async def on_reborn(self):
         await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
- 
 
     async def on_night(self):
         pass
