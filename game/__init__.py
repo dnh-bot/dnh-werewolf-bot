@@ -137,7 +137,6 @@ class Game:
         )
 
     async def stop(self):
-        if self.is_stopped: return
         print("======= Game stopped =======")
         self.is_stopped = True
         self.next_flag.clear()
@@ -147,6 +146,8 @@ class Game:
         if self.players:
             await self.delete_channel()
         self.reset_game_state()
+
+        if self.is_stopped: return
         await asyncio.sleep(1)
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
 
