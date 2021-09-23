@@ -70,7 +70,7 @@ class Game:
     def generate_roles(interface, ids, names_dict):
         def dict_to_list(config, number=0):
             yield from (name for name in config for _ in range(config[name]))
-            yield from ('Werewolf' if i%4==0 else 'Villager' for i in range(number-len(r)))
+            yield from ('Werewolf' if i%4==0 else 'Villager' for i in range(number-sum(config.values())))
 
         ROLE_CONFIG_FILE = "role_config.json"
         try:
