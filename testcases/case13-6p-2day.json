@@ -1,39 +1,41 @@
 {
-	"name": "5 Players - test8",
+	"name": "6 Players - test13",
 	"player_list": {
 		"w1": "Werewolf",
-		"s1": "Villager",
 		"v1": "Villager",
 		"v2": "Villager",
-		"v3": "Villager"
+		"v3": "Villager",
+		"g1": "Guard"
 	},
 	"timeline": [
 		{
 			"time": "day1",
 			"alive": [
 				"w1",
-				"s1",
+				"g1",
 				"v1",
 				"v2",
 				"v3"
 			],
 			"action": [
-				"w1 vote s1",
-				"s1 vote w1",
-				"v1 vote s1",
-				"v2 vote s1"
+				"w1 vote v1",
+				"g1 vote v1",
+				"v1 vote v2",
+				"v2 vote g1",
+				"v3 vote v3"
 			]
 		},
 		{
 			"time": "night1",
 			"alive": [
 				"w1",
-				"v1",
+				"g1",
 				"v2",
 				"v3"
 			],
 			"action": [
-				"w1 kill v1"
+				"w1 kill v2",
+				"g1 guard w1"
 			]
 		},
 		{
@@ -41,12 +43,12 @@
 			"alive": [
 				"w1",
 				"v3",
-				"v2"
+				"g1"
 			],
 			"action": [
-				"w1 vote v2",
-				"v2 vote w1",
-				"v3 vote v2"
+				"w1 vote g1",
+				"g1 vote w1",
+				"v3 vote g1"
 			]
 		}
 	]

@@ -1,54 +1,54 @@
 {
-    "name": "5 Players - test11",
-    "player_list": {
-        "w1": "Werewolf",
-        "s1": "Seer",
-        "v1": "Villager",
-        "v2": "Villager",
-        "v3": "Villager"
-    },
-    "timeline": [
-        {
-            "time": "day1",
-            "alive": [
-                "w1",
-                "s1",
-                "v1",
-                "v2",
-                "v3"
-            ],
-            "action": [
-                "w1 vote v1",
-                "s1 vote v1",
-                "v1 vote v2",
-                "v2 vote s1",
-                "v3 vote v3"
-            ]
-        },
-        {
-            "time": "night1",
-            "alive": [
-                "w1",
-                "s1",
-                "v2",
-                "v3"
-            ],
-            "action": [
-                "w1 kill v2"
-            ]
-        },
-        {
-            "time": "day2",
-            "alive": [
-                "w1",
-                "v3",
-                "s1"
-            ],
-            "action": [
-                "w1 vote s1",
-                "s1 vote w1",
-                "v3 vote s1"
-            ]
-        }
-    ]
+	"name": "5 Players - test11",
+	"player_list": {
+		"w1": "Werewolf",
+		"s1": "Villager",
+		"v1": "Villager",
+		"v2": "Villager",
+		"v3": "Villager"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"s1",
+				"v1",
+				"v2",
+				"v3"
+			],
+			"action": [
+				"w1 vote v1",
+				"s1 vote v1",
+				"v1 vote v2",
+				"v2 vote s1",
+				"v3 vote v3"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"s1",
+				"v2",
+				"v3"
+			],
+			"action": [
+				"w1 kill v2"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"v3",
+				"s1"
+			],
+			"action": [
+				"w1 vote s1",
+				"s1 vote w1",
+				"v3 vote s1"
+			]
+		}
+	]
 }
