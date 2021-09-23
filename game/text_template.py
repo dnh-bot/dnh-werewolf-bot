@@ -18,6 +18,10 @@ def generate_start_text():
     return "Tất cả người chơi đã sẵn sàng. Hệ thống tiến hành phân vai và trò chơi sẽ bắt đầu ngay sau đây!"
 
 
+def generate_end_text():
+    return "Trò chơi đã kết thúc."
+
+
 def generate_role_list_text(roles):
     return f"Danh sách nhân vật trong game: {roles}"
 
@@ -147,8 +151,14 @@ def generate_killed_text(user):
         return f"Đêm qua, mọi người đều bình an.\n" +\
             "==========================================================================="
 
+
+def generate_after_death(user):
+    return f"Chào mừng {user} đến với nghĩa trang vui vẻ ^^"
+
+
 def generate_after_reborn(user):
     return f"Chào mừng {user} đã trở lại cuộc đời! Hãy trân trọng cơ hội thứ 2 này!"
+
 
 def generate_lynch_text(user):
     return f"Dân làng đã đồng lòng loại bỏ {user} khỏi làng"
@@ -190,7 +200,7 @@ def generate_game_not_started_text():
 
 
 def generate_game_already_started_text():
-    #return "Game already started. Please wait until end game!"
+    # return "Game already started. Please wait until end game!"
     return f"Trò chơi đã bắt đầu rồi. Xin đợi xíu bạn nha."
 
 

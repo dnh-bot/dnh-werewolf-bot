@@ -35,6 +35,7 @@ class Character:
         # Mute player in config.GAMEPLAY_CHANNEL
         await self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
         await self.interface.add_user_to_channel(self.player_id, config.CEMETERY_CHANNEL, is_read=True, is_send=True)
+        await self.interface.send_text_to_channel(text_template.generate_after_death(f"<@{self.player_id}>"), config.CEMETERY_CHANNEL)
         return True
 
     async def on_reborn(self):

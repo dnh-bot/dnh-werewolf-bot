@@ -149,6 +149,7 @@ class Game:
 
         if self.is_stopped: return
         await asyncio.sleep(1)
+        await self.interface.send_text_to_channel(text_template.generate_end_text(), config.LOBBY_CHANNEL)
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
 
     async def delete_channel(self):
