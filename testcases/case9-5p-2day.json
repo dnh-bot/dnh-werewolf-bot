@@ -1,5 +1,5 @@
 {
-	"name": "5 Players - test4",
+	"name": "5 Players - test9",
 	"player_list": {
 		"w1": "Werewolf",
 		"s1": "Villager",
@@ -49,5 +49,6 @@
 				"v3 vote w1"
 			]
 		}
-	]
+	],
+	"win": "Villager"
 }

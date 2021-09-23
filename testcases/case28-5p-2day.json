@@ -1,55 +1,61 @@
 {
-	"name": "5 Players - test11",
+	"name": "5 Players",
 	"player_list": {
 		"w1": "Werewolf",
-		"s1": "Villager",
 		"v1": "Villager",
-		"v2": "Villager",
-		"v3": "Villager"
+		"g1": "Guard",
+		"s1": "Seer",
+		"l1": "Lycan"
 	},
 	"timeline": [
 		{
 			"time": "day1",
 			"alive": [
 				"w1",
-				"s1",
 				"v1",
-				"v2",
-				"v3"
+				"g1",
+				"s1",
+				"l1"
 			],
 			"action": [
 				"w1 vote v1",
+				"v1 vote g1",
+				"g1 vote s1",
 				"s1 vote v1",
-				"v1 vote v2",
-				"v2 vote s1",
-				"v3 vote v3"
+				"l1 vote s1"
 			]
 		},
 		{
 			"time": "night1",
 			"alive": [
 				"w1",
+				"v1",
+				"g1",
 				"s1",
-				"v2",
-				"v3"
+				"l1"
 			],
 			"action": [
-				"w1 kill v2"
+				"w1 kill l1",
+				"g1 guard l1",
+				"s1 seer l1"
 			]
 		},
 		{
 			"time": "day2",
 			"alive": [
 				"w1",
-				"v3",
+				"l1",
+				"v1",
+				"g1",
 				"s1"
 			],
 			"action": [
-				"w1 vote s1",
-				"s1 vote w1",
-				"v3 vote s1"
+				"v1 vote w1",
+				"g1 vote w1",
+				"l1 vote w1",
+				"s1 vote g1"
 			]
 		}
 	],
-	"win": "Werewolf"
+	"win": "Villager"
 }
