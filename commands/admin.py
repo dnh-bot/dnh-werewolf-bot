@@ -1,6 +1,6 @@
-'''
+"""
 This provides APIs for Admin role and bot role
-'''
+"""
 
 import discord
 import asyncio
@@ -16,7 +16,7 @@ def is_valid_category(message):
 
 
 def is_admin(author):
-    # Check if this user has 'Admin' right
+    # Check if this user has "Admin" right
     admin_role = discord.utils.get(author.roles, name="Admin")
     if admin_role in author.guild.roles:
         return True
@@ -140,7 +140,7 @@ async def remove_user_from_channel(guild, user, channel_name):
 
 
 async def send_text_to_channel(guild, text, channel_name):
-    ''' Send a message to a channel '''
+    """ Send a message to a channel """
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
@@ -150,7 +150,7 @@ async def send_text_to_channel(guild, text, channel_name):
 
 
 async def send_embed_to_channel(guild, embed_data, channel_name):
-    '''Send an embed message to a channel'''
+    """Send an embed message to a channel"""
 
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)

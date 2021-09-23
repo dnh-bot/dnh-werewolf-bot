@@ -236,7 +236,7 @@ def generate_timer_stop_text():
 
 
 def generate_timer_remaining_text(count):
-    return f'Bing boong! Còn {count} giây...'
+    return f"Bing boong! Còn {count} giây..."
 
 
 def generate_timer_up_text():
@@ -246,7 +246,7 @@ def generate_timer_up_text():
 def generate_table(header, data):
     # This needs to be adjusted based on expected range of values or calculated dynamically
     for i in data:
-        header.append('   '.join([str(item) for item in data]))
+        header.append("   ".join([str(item) for item in data]))
 
     # Joining up scores into a line
-    return '```'+'\n'.join(header) + '```'
+    return "```"+"\n".join(header) + "```"
