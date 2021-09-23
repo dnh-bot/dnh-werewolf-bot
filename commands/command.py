@@ -22,10 +22,10 @@ async def parse_command(client, game, message):
         elif cmd == "stop":
             await player.do_stop(game, message, force=False)
 
-        elif cmd in ["vote", "kill", "guard", "seer", "reborn"]:
+        elif cmd in ("vote", "kill", "guard", "seer", "reborn"):
             is_valid_channel = (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
-                (cmd == "kill" and message.channel.name == config.WEREWOLF_CHANNEL) or True
-            # TODO: check if cmd guard/seer in the author's personal channel
+                               (cmd == "kill" and message.channel.name == config.WEREWOLF_CHANNEL) or\
+                               (cmd in ("guard", "seer", "reborn") and message.channel.name.strip().startswith("personal"))
 
             if is_valid_channel:
                 author = message.author
