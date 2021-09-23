@@ -17,12 +17,7 @@ def is_valid_category(message):
 
 def is_admin(author):
     # Check if this user has "Admin" right
-    admin_role = discord.utils.get(author.roles, name="Admin")
-    if admin_role in author.roles:
-        return True
-    else:
-        # print(f"{author.display_name} is not Admin Role")
-        return False
+    return discord.utils.get(author.roles, name="Admin") is not None
 
 
 def list_users(guild):

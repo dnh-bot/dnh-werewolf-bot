@@ -32,7 +32,7 @@ async def do_join(game, message, force=False):
                     else:
                         await message.channel.send(text_template.generate_already_in_game_text())
         else:
-            joined_players = await game.add_player(message.author.id, message.author.name)
+            joined_players = await game.add_player(message.author.id, f"{message.author.name}-{message.author.discriminator}")
             if joined_players > 0:
                 await message.channel.send(text_template.generate_join_text(message.author.display_name, joined_players))
             else:

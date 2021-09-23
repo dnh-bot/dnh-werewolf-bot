@@ -8,18 +8,23 @@ class ConsoleInterface:
 
     async def send_text_to_channel(self, msg, channel_name):
         print(f"#{channel_name}: {msg}")
+        return True
 
     async def send_embed_to_channel(self, embed_msg, channel_name):
         print(f"#{channel_name}: {embed_msg}")
+        return True
 
     async def create_channel(self, channel_name):
         print(f"{channel_name} created!")
+        return True
 
     async def delete_channel(self, channel_name):
         print(f"{channel_name} deleted!")
+        return True
 
     async def add_user_to_channel(self, player_id, channel_name, is_read=True, is_send=True):
         print(f"Added {player_id} to channel #{channel_name} {is_read} {is_send}")
+        return True
 
 
 class DiscordInterface:
