@@ -1,80 +1,80 @@
 {
-    "name": "6 Players - test20",
-    "player_list": {
-        "w1": "Werewolf",
-        "v1": "Villager",
-        "v2": "Villager",
+	"name": "6 Players - test20",
+	"player_list": {
+		"w1": "Werewolf",
+		"v1": "Villager",
+		"v2": "Villager",
 		"v3": "Villager",
-        "g1": "Guard"
-    },
-    "timeline": [
-        {
-            "time": "day1",
-            "alive": [
-                "w1",
-                "g1",
-                "v1",
-                "v2",
-                "v3"
-            ],
-            "action": [
-                "w1 vote v1",
-                "g1 vote v1",
-                "v1 vote v2",
-                "v2 vote g1",
-                "v3 vote v3"
-            ]
-        },
-        {
-            "time": "night1",
-            "alive": [
-                "w1",
-                "g1",
-                "v2",
-                "v3"
-            ],
-            "action": [
-                "w1 kill v2",
+		"g1": "Guard"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"g1",
+				"v1",
+				"v2",
+				"v3"
+			],
+			"action": [
+				"w1 vote v1",
+				"g1 vote v1",
+				"v1 vote v2",
+				"v2 vote g1",
+				"v3 vote v3"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"g1",
+				"v2",
+				"v3"
+			],
+			"action": [
+				"w1 kill v2",
 				"g1 guard g1"
-            ]
-        },
-        {
-            "time": "day2",
-            "alive": [
-                "w1",
-                "v3",
-                "g1"
-            ],
-            "action": [
-                "w1 vote v3",
-                "g1 vote w1",
-                "v3 vote g1"
-            ]
-        },
-        {
-            "time": "night2",
-            "alive": [
-                "w1",
-                "g1",
-                "v3"
-            ],
-            "action": [
-                "w1 kill v3",
-                "g1 guard v3"
-            ]
-        },
-        {
-            "time": "day3",
-            "alive": [
-                "w1",
-                "v3",
-                "g1"
-            ],
-            "action": [
-                "w1 vote g1",
-                "g1 vote w1",
-                "v3 vote w1"
-            ]
-        }
-    ]
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"v3",
+				"g1"
+			],
+			"action": [
+				"w1 vote v3",
+				"g1 vote w1",
+				"v3 vote g1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"g1",
+				"v3"
+			],
+			"action": [
+				"w1 kill v3",
+				"g1 guard v3"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"v3",
+				"g1"
+			],
+			"action": [
+				"w1 vote g1",
+				"g1 vote w1",
+				"v3 vote w1"
+			]
+		}
+	]
 }
