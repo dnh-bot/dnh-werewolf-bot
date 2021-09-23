@@ -129,7 +129,6 @@ class Game:
         await self.cancel_running_task(self.task_game_loop)
         await self.cancel_running_task(self.task_run_timer_phase)
 
-
         if self.players:
             await self.delete_channel()
         self.reset_game_state()
@@ -542,7 +541,7 @@ class Game:
     async def test_case_real_players(self):
         print("====== Begin test case =====")
         DELAY_TIME = 3
-        real_id = dict((i+1, x) for i, x in enumerate(config.DISCORD_TESTING_USERS_ID))
+        real_id = dict((i, x) for i, x in enumerate(config.DISCORD_TESTING_USERS_ID, 1))
         await self.add_player(real_id[1], "w")
         await self.add_player(real_id[2], "s")
         await self.add_player(real_id[3], "v1")
