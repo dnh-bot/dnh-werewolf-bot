@@ -2,7 +2,7 @@
     "name": "5 Players - test10",
     "player_list": {
         "w1": "Werewolf",
-        "s1": "Seer",
+        "s1": "Villager",
         "v1": "Villager",
         "v2": "Villager",
         "v3": "Villager"
@@ -33,8 +33,7 @@
                 "v3"
             ],
             "action": [
-                "w1 kill s1",
-				"s1 seer w1"
+                "w1 kill s1"
             ]
         },
         {
