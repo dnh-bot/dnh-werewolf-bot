@@ -83,7 +83,10 @@ class Game:
             role_config = config.DEFAULT_COUNT_CONFIG
 
         ids = list(ids)
-        game_role = random.choice([dict_to_list(role_dict) for role_dict in role_config if sum(role_dict.values())==len(ids)])
+        try:
+            game_role = random.choice([dict_to_list(role_dict) for role_dict in role_config if sum(role_dict.values())==len(ids)])
+        except IndexError:
+            game_role = dict_to_list(role_config[-1], len(ids))
 
         random.shuffle(ids)
         r = {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
