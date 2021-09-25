@@ -299,6 +299,16 @@ class Game:
             embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
+            # Unmute all alive players in config.GAMEPLAY_CHANNEL
+            await asyncio.gather(
+                *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True) 
+                  for _id, player in self.players.items() if player.is_alive()]
+                )
+        else:
+            print("Error no player in game.")
+            await self.stop()
+
+
     async def do_end_daytime_phase(self):
         print("do_end_daytime_phase")
         if self.voter_dict:
@@ -312,6 +322,13 @@ class Game:
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
         else:
             await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
+
+        # Mute all players in config.GAMEPLAY_CHANNEL
+        await asyncio.gather(
+            *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False) 
+                for _id, player in self.players.items() if player.is_alive()]
+            )
+
 
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
@@ -406,6 +423,7 @@ class Game:
 
     async def next_phase(self):
         print("Next phase")
+        self.vote_next = set()  # Reset to prevent accumulating next through phases
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
         print("Done Next phase flag")
 

@@ -68,18 +68,13 @@ class Character:
         await self.interface.delete_channel(self.channel_name)
 
     async def on_phase(self, phase):
-        self.status = CharacterStatus.ALIVE
+        # Reset Guard protection
+        if self.status == CharacterStatus.PROTECTED:
+            self.status = CharacterStatus.ALIVE
+
         if phase == game.GamePhase.DAY:
-            # Unmute all players in config.GAMEPLAY_CHANNEL
-            await self.interface.add_user_to_channel(
-                self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True
-            )
             await self.on_day()  # Special skill here
         elif phase == game.GamePhase.NIGHT:
-            # Mute all players in config.GAMEPLAY_CHANNEL
-            await self.interface.add_user_to_channel(
-                self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False
-            )
             await self.on_night()  # Special skill here
 
     async def on_end_game(self):
