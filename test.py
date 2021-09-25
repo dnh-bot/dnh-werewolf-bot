@@ -13,7 +13,7 @@ def assert_players(game, alive_list, playersname):
 
 
 def assign_roles(interface, ids, names_dict, game_role):
-    return {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_,role_name in zip(ids, game_role)}
+    return {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
 
 
 async def test_case(game, filepath):
@@ -25,14 +25,14 @@ async def test_case(game, filepath):
 
     print(f"\n\n\n====== Begin test case at {filepath} =====")
     print(f"Test case: {test_case_data['name']}")
-    DELAY_TIME = 0.01  # MUST greater than 0
+    DELAY_TIME = 0.1  # MUST greater than 0
     game.timer_enable = False  # MUST have
 
     player_name_dict = test_case_data["player_list"]  # username: Role
     playersname = {}  # id: username
     game_role = []  # ["Werewolf", "Seer","Villager","Villager",]
-    for player_id, player_name in enumerate(player_name_dict):
-        playersname[player_id+1] = player_name  # Offset by 1 to prevent player id = 0
+    for player_id, player_name in enumerate(player_name_dict, 1):
+        playersname[player_id] = player_name  # Offset by 1 to prevent player id = 0
         game_role.append(player_name_dict[player_name])
 
     # Revert name -> ID map for reference
