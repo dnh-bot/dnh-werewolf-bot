@@ -11,6 +11,7 @@ def assert_time_print(filepath, game, playersname):
     print(f"Test assert Error at {'#day' if {game.game_phase} else '#night'}{game.day}")
     p = [player.player_id for player in game.players.values() if player.is_alive()]
     print(f"Current alive player: {list(map(lambda x: playersname[x], p))}")
+    print(f"Winner: {game.get_winner()}")
     print("\n\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
 
 
@@ -25,8 +26,10 @@ def check_game_end(game, win):
     if not win:  # If test case does not define "win", then it must end.
         return game.is_end_game()
     else:
+        if win == "None":  # If test case has "win":"None", then it's a pending test case. We accept no winner.
+            return not game.is_end_game()
         return game.is_end_game() and game.get_winner() == win
-        # TODO: Process "None" case in json file
+
 
 def assign_roles(interface, ids, names_dict, game_role):
     return {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
@@ -87,7 +90,7 @@ async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
 
     # Run single test
-    # await test_case(game, "testcases/case-witch-simple.json")
+    await test_case(game, "./testcases/case-not-yet-winner.json")
 
     # Run all tests
     directory = "testcases"
