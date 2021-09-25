@@ -9,6 +9,7 @@ import asyncio
 from collections import Counter
 from functools import reduce
 import json
+import traceback
 
 
 class GamePhase(Enum):
@@ -260,6 +261,7 @@ class Game:
         except Exception as e:
             print("run_game_loop(): stopped while doing task")
             print("Error: ", e)
+            print(traceback.format_exc())
 
         if any(a_player.is_alive() for a_player in self.players.values() if isinstance(a_player, roles.Werewolf)):
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)

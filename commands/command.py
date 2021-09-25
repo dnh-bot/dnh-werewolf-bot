@@ -93,58 +93,64 @@ async def parse_command(client, game, message):
             game.timer_stopped = True
             await message.reply(text_template.generate_timer_stop_text())
 
-        elif admin.is_admin(message.author):
-            if cmd == "fjoin":
-                await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
-                await player.do_join(game, message, force=True)
-            elif cmd == "fleave":
-                await player.do_leave(game, message, force=True)
-            elif cmd == "fstart":
-                await player.do_start(game, message, force=True)
-            elif cmd == "fnext":  # Next phase
-                await player.do_next(game, message, force=True)
-            elif cmd == "fstop":
-                await player.do_stop(game, message, force=True)
-            elif cmd == "fclean":  # Delete all private channels under config.GAME_CATEGORY
-                try:
-                    await admin.delete_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL)
-                    await admin.delete_channel(message.guild, client.user, config.WEREWOLF_CHANNEL)
-                    await admin.delete_channel(message.guild, client.user, config.CEMETERY_CHANNEL)
-                    await admin.delete_all_personal_channel(message.guild)
-                    await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL,  is_public=False)
-                except Exception as e:
-                    print(e)
-            elif cmd == "fdebug":
-                # print(asyncio.all_tasks())
-                exec(" ".join(parameters))
-
-
-    # Admin/Bot commands - User should not directly use these commands
-    if admin.is_admin(message.author):
-        if cmd == "fcreate":  # Create game channels
-            if len(message.mentions) == 1:
-                user = message.mentions[0]
-                if user.id == client.user.id:
-                    await admin.create_category(message.guild, client.user, config.GAME_CATEGORY)
-                    await admin.create_channel(message.guild, client.user, config.LOBBY_CHANNEL, is_public=True)
+        elif cmd.startswith('f'):
+            if admin.is_admin(message.author):
+                if cmd == "fjoin":
                     await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
-            else:
-                await message.reply("Missing @bot_name")
-        elif cmd == "fdelete":  # Delete all channels and category under config.GAME_CATEGORY
-            if len(message.mentions) == 1:
-                user = message.mentions[0]
-                try:
-                    if user.id == client.user.id:
+                    await player.do_join(game, message, force=True)
+                elif cmd == "fleave":
+                    await player.do_leave(game, message, force=True)
+                elif cmd == "fstart":
+                    await player.do_start(game, message, force=True)
+                elif cmd == "fnext":  # Next phase
+                    await player.do_next(game, message, force=True)
+                elif cmd == "fstop":
+                    await player.do_stop(game, message, force=True)
+                elif cmd == "fclean":  # Delete all private channels under config.GAME_CATEGORY
+                    try:
                         await admin.delete_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL)
                         await admin.delete_channel(message.guild, client.user, config.WEREWOLF_CHANNEL)
                         await admin.delete_channel(message.guild, client.user, config.CEMETERY_CHANNEL)
                         await admin.delete_all_personal_channel(message.guild)
-                        await admin.delete_channel(message.guild, client.user, config.LOBBY_CHANNEL)
-                        await admin.delete_category(message.guild, client.user)
-                except Exception as e:
-                    print(e)
+                        await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL,  is_public=False)
+                    except Exception as e:
+                        print(e)
+                elif cmd == "fdebug":
+                    # print(asyncio.all_tasks())
+                    exec(" ".join(parameters))
             else:
-                await message.reply("Missing @bot_name")
+                await message.reply("You do not have Admin role.")
+
+
+    # Admin/Bot commands - User should not directly use these commands
+    if cmd.startswith('f'):
+        if admin.is_admin(message.author):
+            if cmd == "fcreate":  # Create game channels
+                if len(message.mentions) == 1:
+                    user = message.mentions[0]
+                    if user.id == client.user.id:
+                        await admin.create_category(message.guild, client.user, config.GAME_CATEGORY)
+                        await admin.create_channel(message.guild, client.user, config.LOBBY_CHANNEL, is_public=True)
+                        await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
+                else:
+                    await message.reply("Missing @bot_name")
+            elif cmd == "fdelete":  # Delete all channels and category under config.GAME_CATEGORY
+                if len(message.mentions) == 1:
+                    user = message.mentions[0]
+                    try:
+                        if user.id == client.user.id:
+                            await admin.delete_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL)
+                            await admin.delete_channel(message.guild, client.user, config.WEREWOLF_CHANNEL)
+                            await admin.delete_channel(message.guild, client.user, config.CEMETERY_CHANNEL)
+                            await admin.delete_all_personal_channel(message.guild)
+                            await admin.delete_channel(message.guild, client.user, config.LOBBY_CHANNEL)
+                            await admin.delete_category(message.guild, client.user)
+                    except Exception as e:
+                        print(e)
+                else:
+                    await message.reply("Missing @bot_name")
+        else:  # No need to reply because there are many bots
+            pass
 
 
 

@@ -31,10 +31,10 @@ def generate_execution_text(voted_user, highest_vote_number):
         return "Thời gian quyết định đã hết. " +\
             f"Người chơi {voted_user} đã bị đưa lên máy chém với số phiếu bầu là {highest_vote_number}. " +\
             "Hy vọng tình thế của làng có thể thay đổi sau quyết định này.\n" +\
-            "==========================================================================="
+            "===========================================================================\n"
     else:
         return "Không có ai bị hành hình. Trò chơi sẽ tiếp tục. Hãy cẩn thân để sống sót!\n" +\
-            "==========================================================================="
+            "===========================================================================\n"
 
 
 def generate_day_phase_beginning_text(day):
@@ -146,10 +146,10 @@ def generate_invalid_player_alive(user):
 def generate_killed_text(user):
     if user:
         return f"Đêm qua, {user} đã bị mất tích một cách bí ẩn.\n" +\
-            "==========================================================================="
+            "===========================================================================\n"
     else:
         return f"Đêm qua, mọi người đều bình an.\n" +\
-            "==========================================================================="
+            "===========================================================================\n"
 
 
 def generate_after_death(user):

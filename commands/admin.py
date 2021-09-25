@@ -120,7 +120,7 @@ async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=T
         print(f"Successfully added {user} to {channel_name} read={is_read} send={is_send}")
         return True
     except Exception as e:
-        print(channel_name, user)
+        print(f"Failed to add {user} into #{channel_name}, {is_read} {is_send}")
         logger.logger_debug(guild.channels)
         print(e)
 
