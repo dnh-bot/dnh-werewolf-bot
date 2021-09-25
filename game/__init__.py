@@ -9,6 +9,7 @@ import asyncio
 from collections import Counter
 from functools import reduce
 import json
+import traceback
 
 
 class GamePhase(Enum):
@@ -137,6 +138,7 @@ class Game:
 
         if self.is_stopped: return
         await asyncio.sleep(1)
+        await self.interface.send_text_to_channel(text_template.generate_end_text(), config.LOBBY_CHANNEL)
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
 
     async def delete_channel(self):
@@ -247,6 +249,7 @@ class Game:
         except Exception as e:
             print("run_game_loop(): stopped while doing task")
             print("Error: ", e)
+            print(traceback.format_exc())
 
         if any(a_player.is_alive() for a_player in self.players.values() if isinstance(a_player, roles.Werewolf)):
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)
@@ -255,9 +258,7 @@ class Game:
         else:
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Villager"), config.GAMEPLAY_CHANNEL)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
-        # Print werewolf list:
-        werewolf_list = ", ".join([str(f"<@{_id}>") for _id, a_player in self.players.items() if isinstance(a_player, roles.Werewolf)])
-        await self.interface.send_text_to_channel(f"{werewolf_list} là Sói.", config.GAMEPLAY_CHANNEL)
+
         await self.cancel_running_task(self.task_run_timer_phase)
         print("End game loop")
 
@@ -288,6 +289,16 @@ class Game:
             embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
+            # Unmute all alive players in config.GAMEPLAY_CHANNEL
+            await asyncio.gather(
+                *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True) 
+                  for _id, player in self.players.items() if player.is_alive()]
+                )
+        else:
+            print("Error no player in game.")
+            await self.stop()
+
+
     async def do_end_daytime_phase(self):
         print("do_end_daytime_phase")
         if self.voter_dict:
@@ -301,6 +312,13 @@ class Game:
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
         else:
             await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
+
+        # Mute all players in config.GAMEPLAY_CHANNEL
+        await asyncio.gather(
+            *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False) 
+                for _id, player in self.players.items() if player.is_alive()]
+            )
+
 
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
@@ -395,6 +413,7 @@ class Game:
 
     async def next_phase(self):
         print("Next phase")
+        self.vote_next = set()  # Reset to prevent accumulating next through phases
         asyncio.get_event_loop().call_soon_threadsafe(self.next_flag.set)
         print("Done Next phase flag")
 
