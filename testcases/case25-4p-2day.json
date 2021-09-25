@@ -1,10 +1,10 @@
 {
-	"name": "Werewolf Win at first night",
+	"name": "4 Players",
 	"player_list": {
 		"w1": "Werewolf",
-		"s1": "Villager",
+		"s1": "Seer",
 		"v1": "Villager",
-		"v2": "Villager"
+		"l1": "Lycan"
 	},
 	"timeline": [
 		{
@@ -13,13 +13,13 @@
 				"w1",
 				"s1",
 				"v1",
-				"v2"
+				"l1"
 			],
 			"action": [
 				"w1 vote s1",
 				"s1 vote w1",
 				"v1 vote s1",
-				"v2 vote s1"
+				"l1 vote s1"
 			]
 		},
 		{
@@ -27,12 +27,22 @@
 			"alive": [
 				"w1",
 				"v1",
-				"v2"
+				"l1"
+			],
+			"action": []
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"v1",
+				"l1"
 			],
 			"action": [
-				"w1 kill v1"
+				"v1 vote w1",
+				"l1 vote w1"
 			]
 		}
 	],
-	"win": "Werewolf"
+	"win": "Villager"
 }
