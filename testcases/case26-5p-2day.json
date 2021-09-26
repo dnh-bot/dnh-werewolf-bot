@@ -52,6 +52,17 @@
 				"l2 vote l2",
 				"s1 vote l2"
 			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"s1",
+				"v1"
+			],
+			"action": [
+				"w1 kill v1"
+			]
 		}
 	],
 	"win": "Werewolf"

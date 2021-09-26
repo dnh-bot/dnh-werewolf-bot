@@ -45,6 +45,7 @@
 			"alive": [
 				"w1",
 				"wi1",
+				"f1",
 				"g1"
 			],
 			"action": [
@@ -58,12 +59,13 @@
 			"alive": [
 				"w1",
 				"g1",
+				"f1",
 				"wi1"
 			],
 			"action": [
 				"w1 kill g1",
-				"wi1 reborn f1",
-				"g1 guard g1"
+				"wi1 reborn s1",
+				"g1 guard wi1"
 			]
 		},
 		{
@@ -71,7 +73,7 @@
 			"alive": [
 				"w1",
 				"f1",
-				"g1",
+				"s1",
 				"wi1"
 			],
 			"action": [
@@ -83,11 +85,11 @@
 			"time": "night3",
 			"alive": [
 				"w1",
-				"g1",
+				"s1",
 				"wi1"
 			],
 			"action": [
-				"w1 kill g1"
+				"w1 kill wi1"
 			]
 		}
 	],

@@ -35,8 +35,7 @@
 				"wi1"
 			],
 			"action": [
-				"w1 kill g1",
-				"g1 guard f1",
+				"w1 kill f1",
 				"s1 seer f1"
 			]
 		},
@@ -55,5 +54,5 @@
 			]
 		}
 	],
-	"win": "Village"
+	"win": "Villager"
 }

@@ -36,7 +36,7 @@
 			],
 			"action": [
 				"w1 kill f1",
-				"g1 guard f1",
+				"g1 guard s1",
 				"s1 seer f1"
 			]
 		},

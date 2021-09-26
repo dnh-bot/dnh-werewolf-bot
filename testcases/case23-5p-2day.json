@@ -49,10 +49,10 @@
 			],
 			"action": [
 				"v1 vote w1",
-				"v2 vote v2",
+				"v2 vote w1",
 				"s1 vote v2"
 			]
 		}
 	],
-	"win": "Werewolf"
+	"win": "Villager"
 }
