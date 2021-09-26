@@ -36,7 +36,6 @@
 			],
 			"action": [
 				"w1 kill f1",
-				"g1 guard f1",
 				"s1 seer f1"
 			]
 		},
@@ -51,6 +50,17 @@
 			"action": [
 				"g1 vote l1",
 				"l1 vote l1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"g1",
+				"s1"
+			],
+			"action": [
+				"w1 kill s1"
 			]
 		}
 	],
