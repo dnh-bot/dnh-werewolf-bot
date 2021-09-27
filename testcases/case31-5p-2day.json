@@ -1,0 +1,68 @@
+{
+	"name": "5 Players",
+	"player_list": {
+		"w1": "Werewolf",
+		"f1": "Fox",
+		"g1": "Guard",
+		"s1": "Seer",
+		"l1": "Lycan"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"f1",
+				"g1",
+				"s1",
+				"l1"
+			],
+			"action": [
+				"w1 vote w1",
+				"f1 vote f1",
+				"g1 vote s1",
+				"s1 vote f1",
+				"l1 vote s1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"f1",
+				"l1"
+			],
+			"action": [
+				"w1 kill f1",
+				"s1 seer f1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"s1",
+				"l1",
+				"g1"
+			],
+			"action": [
+				"g1 vote l1",
+				"l1 vote l1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"g1",
+				"s1"
+			],
+			"action": [
+				"w1 kill s1"
+			]
+		}
+	],
+	"win": "Werewolf"
+}
