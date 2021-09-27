@@ -32,6 +32,7 @@ def generate_usage_text_list(cmd, **kwargs):
 
 
 def generate_help_command_text(command=None):
+    # TODO: read info from command_info.json file
     help_embed_data = {
         "title": "Werewolf Bot Help",
         "description": f"Full command list. You can get more information on a command using `{config.BOT_PREFIX}help cmd <name of command>`",
@@ -39,10 +40,11 @@ def generate_help_command_text(command=None):
     }
     command = command.lower() if isinstance(command, str) else command
     if command is None:
-        for a_role in roles.get_all_roles():
-            help_embed_data["content"].append((a_role.__name__, [a_role.get_character_description()]))
+        help_embed_data["color"] = (255, 255, 255)
+        help_embed_data["content"] = [("All commands", [" | ".join(f"`{cmd}`" for cmd in ALL_COMMANDS)])]
 
     elif command in ALL_COMMANDS:
+        help_embed_data["color"] = (23, 161, 104)
         help_embed_data["title"] += f" for command `{command}`"
 
         usage_str = ["- " + usage_text for usage_text in generate_usage_text_list(command)]
@@ -61,11 +63,12 @@ def generate_help_command_text(command=None):
         elif command == "start":
             help_embed_data["description"] = "Start a game."
         elif command == "next":
-            help_embed_data["description"] = "Jump to next round."
+            help_embed_data["description"] = "Jump to next phase."
         elif command == "stop":
             help_embed_data["description"] = "Stop a game."
         elif command == "status":
-            help_embed_data["description"] = "Show voting status of current daytime."  # TODO: Show status of a game.
+            # TODO: Show status of current phase.
+            help_embed_data["description"] = "Show voting status of current daytime."
 
         else:
             if command == "vote":
@@ -83,6 +86,7 @@ def generate_help_command_text(command=None):
                 ("Example", ["- " + usage_text for usage_text in generate_usage_text_list(command, player_id=2)])
             )
     else:
+        help_embed_data["color"] = (220, 78, 78)
         help_embed_data["title"] = f"Invalid help for command `{command}`"
         help_embed_data["description"] = "A command with this name doesn't exist"
 
@@ -98,11 +102,13 @@ def generate_help_role_text(role=None):
     all_roles_name = [a_role.__name__ for a_role in roles.get_all_roles()]
     role = role.capitalize() if isinstance(role, str) else role
     if role is None:
+        help_embed_data["color"] = (255, 255, 255)
         for a_role in roles.get_all_roles():
             help_embed_data["content"].append((a_role.__name__, [a_role.get_character_description()]))
 
     elif role in all_roles_name:
         a_role = roles.get_role_type(role)
+        help_embed_data["color"] = (52, 152, 219)
         help_embed_data["title"] += f" for role `{role}`"
         help_embed_data["description"] = a_role.get_character_description()
         get_usage_text = lambda cmd: " hoặc ".join(generate_usage_text_list(cmd))
@@ -119,8 +125,37 @@ def generate_help_role_text(role=None):
             ),
         ]
     else:
+        help_embed_data["color"] = (220, 78, 78)
         help_embed_data["title"] = f"Invalid help for role `{role}`"
         help_embed_data["description"] = "A role with this name doesn't exist"
+
+    return help_embed_data
+
+
+def generate_help_text(*args):
+    if len(args) == 0:
+        help_embed_data = {
+            "color": (255, 255, 255),
+            "title": "Werewolf Bot Help",
+            "description": "Full list of things. You can get more information on " +\
+                           f"a command using `{config.BOT_PREFIX}help cmd <name of command>` or " +\
+                           f"a role using `{config.BOT_PREFIX}help role <name of role>`",
+            "content": [
+                ("All commands", [" | ".join(f"`{cmd}`" for cmd in ALL_COMMANDS)]),
+                ("All roles", [" | ".join(f"`{a_role.__name__}`" for a_role in roles.get_all_roles())])
+            ]
+        }
+    elif args[0] == "role":
+        help_embed_data = generate_help_role_text(None if len(args) == 1 else args[1])
+    elif args[0] == "cmd":
+        help_embed_data = generate_help_command_text(None if len(args) == 1 else args[1])
+    else:
+        help_embed_data = {
+            "color": (220, 78, 78),
+            "title": "Invalid help argument",
+            "description": f"Argument with name `{args[0]}` doesn't exist. Please type `{config.BOT_PREFIX}help`.",
+            "content": []
+        }
 
     return help_embed_data
 
@@ -131,27 +166,9 @@ async def parse_command(client, game, message):
     # Game commands only valid under GAME CATEGORY:
     if admin.is_valid_category(message):
         if cmd == "help":
-            if len(parameters) == 0:
-                await admin.send_embed_to_channel(
-                    message.guild, generate_help_command_text(), message.channel.name
-                )
-            elif parameters[0] == "role":
-                await admin.send_embed_to_channel(
-                    message.guild, generate_help_role_text(None if len(parameters) == 1 else parameters[1]), message.channel.name, False
-                )
-            elif parameters[0] == "cmd":
-                await admin.send_embed_to_channel(
-                    message.guild, generate_help_command_text(None if len(parameters) == 1 else parameters[1]), message.channel.name
-                )
-            else:
-                help_embed_data = {
-                    "title": "Invalid help argument",
-                    "description": f"Argument with name `{parameters[0]}` doesn't exist. Please type `{config.BOT_PREFIX}help`.",
-                    "content": []
-                }
-                await admin.send_embed_to_channel(
-                    message.guild, help_embed_data, message.channel.name
-                )
+            await admin.send_embed_to_channel(
+                message.guild, generate_help_text(*parameters), message.channel.name, False
+            )
 
         elif cmd == "join":
             await player.do_join(game, message, force=False)
@@ -165,9 +182,10 @@ async def parse_command(client, game, message):
             await player.do_stop(game, message, force=False)
 
         elif cmd in ("vote", "kill", "guard", "seer", "reborn"):
-            is_valid_channel = (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
-                               (cmd == "kill" and message.channel.name == config.WEREWOLF_CHANNEL) or\
-                               (cmd in ("guard", "seer", "reborn") and message.channel.name.strip().startswith("personal"))
+            is_valid_channel = \
+                (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
+                (cmd == "kill" and message.channel.name == config.WEREWOLF_CHANNEL) or\
+                (cmd in ("guard", "seer", "reborn") and message.channel.name.strip().startswith("personal"))
 
             if is_valid_channel:
                 author = message.author
