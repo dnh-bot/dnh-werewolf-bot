@@ -54,6 +54,10 @@ class Game:
         self.last_nextcmd_time = time.time()
         self.timer_stopped = True
         self.task_run_timer_phase = None
+        self.winner = None
+
+    def get_winner(self):
+        return self.winner
 
     def get_last_nextcmd_time(self):
         return self.last_nextcmd_time
@@ -252,10 +256,13 @@ class Game:
             print(traceback.format_exc())
 
         if any(a_player.is_alive() for a_player in self.players.values() if isinstance(a_player, roles.Werewolf)):
+            self.winner = "Werewolf"
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)
         elif any(isinstance(player, roles.Fox) for player in self.players.values() if player.is_alive()):
+            self.winner = "Fox"
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Fox"), config.GAMEPLAY_CHANNEL)
         else:
+            self.winner = "Villager"
             await self.interface.send_text_to_channel(text_template.generate_endgame_text("Villager"), config.GAMEPLAY_CHANNEL)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
