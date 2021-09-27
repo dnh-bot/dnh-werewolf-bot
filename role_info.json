@@ -74,7 +74,7 @@
     {
         "role": "Witch",
         "description": {
-          "vi": "Witch - Phù thuỷ. Có quyền hồi sinh một người đã chết.",
+          "vi": "Witch -  Phù thủy: Vào ban đêm, Phù thủy có 1 bình phép có thể phục sinh một người chơi đã chết. Chức năng này chỉ được sử dụng một lần duy nhất trong game.",
           "en": ""
         },
         "daytime_command": "vote",
