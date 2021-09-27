@@ -215,7 +215,7 @@ class Game:
         print("Starting game loop")
         for _id, player in self.players.items():
             if isinstance(player, roles.Werewolf):
-                print("Wolf:", player)
+                print("Wolf: ", player)
                 await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
                 await self.interface.send_text_to_channel(f"Chào sói <@{_id}>", config.WEREWOLF_CHANNEL)
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
@@ -252,7 +252,7 @@ class Game:
             print("run_game_loop(): cancelled while doing task")
         except Exception as e:
             print("run_game_loop(): stopped while doing task")
-            print("Error:", e)
+            print("Error: ", e)
             print(traceback.format_exc())
 
         if any(a_player.is_alive() for a_player in self.players.values() if isinstance(a_player, roles.Werewolf)):
@@ -277,7 +277,7 @@ class Game:
                 num_players += 1
                 if isinstance(player, roles.Werewolf):
                     num_werewolf += 1
-        print("DEBUG:", num_players, num_werewolf)
+        print("DEBUG: ", num_players, num_werewolf)
         return num_werewolf == 0 or num_werewolf * 2 >= num_players
 
     @staticmethod
