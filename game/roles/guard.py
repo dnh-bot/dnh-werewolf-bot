@@ -1,11 +1,16 @@
 from game.roles.villager import Villager
 from game.text_template import *
 
+
 class Guard(Villager):
     # Guard is basic Villager with ability to protect one person each night
     def __init__(self, interface, player_id, player_name):
         super().__init__(interface, player_id, player_name)
         self.yesterday_target = None
+
+    @classmethod
+    def get_character_description(cls):
+        return "Guard - Bảo vệ. Vẫn là một Villager bình thường nhưng vào buổi đêm có quyền bảo vệ một người nào đó."
 
     async def on_night(self):
         # Regain mana

@@ -6,6 +6,11 @@ from game.roles.character import CharacterStatus
 class Werewolf(Villager):
     # Werewolf is also a Villager at day, but has ability to vote at night
     # Do nothing actually, at night, a poll will be shown in #werewolf channel for all werewolves to vote there instead
+
+    @classmethod
+    def get_character_description(cls):
+        return "Werewolf - Sói. Có thể vote vào ban ngày như dân. Ban đêm chọn ra một người để giết."
+
     async def get_killed(self):
         if await super(Werewolf, self).get_killed():
             await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)

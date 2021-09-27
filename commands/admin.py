@@ -23,7 +23,7 @@ def is_admin(author):
 def list_users(guild):
     print("Server member: ")
     for user in guild.members:
-        print("- ", user.display_name, user.id)
+        print("-", user.display_name, user.id)
     print("-------------")
 
 
@@ -132,7 +132,7 @@ async def remove_user_from_channel(guild, user, channel_name):
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=False, send_messages=False)
-        print("Successfully removed ", user, " from ", channel_name)
+        print("Successfully removed", user, "from", channel_name)
         return True
     except Exception as e:
         print(e)
@@ -149,7 +149,7 @@ async def send_text_to_channel(guild, text, channel_name):
         print(e)
 
 
-async def send_embed_to_channel(guild, embed_data, channel_name):
+async def send_embed_to_channel(guild, embed_data, channel_name, inline=True):
     """Send an embed message to a channel"""
 
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
@@ -157,7 +157,7 @@ async def send_embed_to_channel(guild, embed_data, channel_name):
     try:
         embed = discord.Embed(title=embed_data["title"], description=embed_data.get("description"))
         for field_name, field_value in embed_data["content"]:
-            embed.add_field(name=field_name, value="\n".join(field_value), inline=True)
+            embed.add_field(name=field_name, value="\n".join(field_value), inline=inline)
         await channel.send(embed=embed)
         return True
     except Exception as e:

@@ -7,6 +7,11 @@ from game.roles.superwolf import Superwolf
 from game.roles.fox import Fox
 from game.roles.witch import Witch
 
+
+def get_all_roles():
+    return [Villager, Werewolf, Seer, Guard, Lycan, Superwolf, Fox, Witch]
+
+
 def get_role_type(name):
     for role in (Villager, Werewolf, Seer, Guard, Lycan, Superwolf, Fox, Witch):
         if role.__name__ == name:

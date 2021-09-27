@@ -1,8 +1,14 @@
 from game.roles.villager import Villager
 from game.text_template import *
 
+
 class Witch(Villager):
     # Witch can reborn a dead player 1 time in a game
+
+    @classmethod
+    def get_character_description(cls):
+        return "Witch - Phù thuỷ. Có quyền hồi sinh một người đã chết."
+
     def __init__(self, interface, player_id, player_name):
         super().__init__(interface, player_id, player_name)
         self.power = 1

@@ -8,7 +8,7 @@ from game import *
 def assert_players(game, alive_list, playersname):
     p = [player.player_id for player in game.players.values() if player.is_alive()]
     # print("++++++++++++++++++++\nids: ", p, alive_list)
-    print("users: ", list(map(lambda x: playersname[x], p)), list(map(lambda x: playersname[x], alive_list)))
+    print("users:", list(map(lambda x: playersname[x], p)), list(map(lambda x: playersname[x], alive_list)))
     return set(p) == set(alive_list)
 
 
