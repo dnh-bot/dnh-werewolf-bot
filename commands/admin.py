@@ -132,7 +132,7 @@ async def remove_user_from_channel(guild, user, channel_name):
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=False, send_messages=False)
-        print("Successfully removed", user, "from", channel_name)
+        print("Successfully removed ", user, " from ", channel_name)
         return True
     except Exception as e:
         print(e)

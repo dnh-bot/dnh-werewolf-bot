@@ -18,7 +18,7 @@ ALL_COMMANDS = (
 def generate_usage_text_list(cmd, **kwargs):
     if cmd in ("vote", "kill", "guard", "seer", "reborn"):
         player_id = kwargs.get("player_id", "player_id")
-        return [f"`{config.BOT_PREFIX}{cmd} {player_id}`", "`{config.BOT_PREFIX}{cmd} @user`"]
+        return [f"`{config.BOT_PREFIX}{cmd} {player_id}`", f"`{config.BOT_PREFIX}{cmd} @user`"]
     elif cmd == "timer":
         """Usage: 
         `!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
@@ -26,9 +26,9 @@ def generate_usage_text_list(cmd, **kwargs):
         dayphase = kwargs.get("dayphase", "dayphase")
         nightphase = kwargs.get("nightphase", "nightphase")
         alertperiod = kwargs.get("alertperiod", "alertperiod")
-        return [f"{config.BOT_PREFIX}{cmd} {dayphase} {nightphase} {alertperiod}"]
+        return [f"`{config.BOT_PREFIX}{cmd} {dayphase} {nightphase} {alertperiod}`"]
     else:
-        return [f"`{config.BOT_PREFIX}{cmd}"]
+        return [f"`{config.BOT_PREFIX}{cmd}`"]
 
 
 def generate_help_command_text(command=None):
