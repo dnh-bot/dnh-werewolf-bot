@@ -44,6 +44,7 @@ class Game:
         self.game_phase = GamePhase.NEW_GAME
         self.wolf_kill_dict = {}  # dict[wolf] -> player
         self.reborn_set = set()
+        self.cupid_dict = {} # dict[player1] -> player2, dict[player2] -> player1
         self.night_pending_kill_list = []
         self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1}. All items are ids.
         self.vote_start = set()
@@ -58,7 +59,9 @@ class Game:
         self.winner = None
 
     def get_winner(self):
-        return self.winner
+        if self.winner == None:
+            return "None"
+        return self.winner.__name__
 
     def get_last_nextcmd_time(self):
         return self.last_nextcmd_time
@@ -226,6 +229,9 @@ class Game:
         await asyncio.sleep(0)  # This return CPU to main thread
         print("Started game loop")
         try:
+            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
+            await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
+
             while not self.is_stopped:
                 print("Phase:", self.game_phase)
 
@@ -247,8 +253,11 @@ class Game:
                 # End_phase
 
                 print("End phase")
-                if self.is_end_game():
+
+                winner = self.get_winning_role()
+                if winner != None:
                     self.is_stopped = True  # Need to update this value in case of end game.
+                    self.winner = winner
                     break
         except asyncio.CancelledError:
             print("run_game_loop(): cancelled while doing task")
@@ -257,30 +266,40 @@ class Game:
             print("Error: ", e)
             print(traceback.format_exc())
 
-        if any(a_player.is_alive() for a_player in self.players.values() if isinstance(a_player, roles.Werewolf)):
-            self.winner = "Werewolf"
-            await self.interface.send_text_to_channel(text_template.generate_endgame_text("Werewolf"), config.GAMEPLAY_CHANNEL)
-        elif any(isinstance(player, roles.Fox) for player in self.players.values() if player.is_alive()):
-            self.winner = "Fox"
-            await self.interface.send_text_to_channel(text_template.generate_endgame_text("Fox"), config.GAMEPLAY_CHANNEL)
-        else:
-            self.winner = "Villager"
-            await self.interface.send_text_to_channel(text_template.generate_endgame_text("Villager"), config.GAMEPLAY_CHANNEL)
+        await self.interface.send_text_to_channel(text_template.generate_endgame_text(self.winner.__name__), config.GAMEPLAY_CHANNEL)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
         await self.cancel_running_task(self.task_run_timer_phase)
         print("End game loop")
 
-    def is_end_game(self):
-        num_werewolf = 0
-        num_players = 0
-        for _, player in self.players.items():
-            if player.is_alive():
-                num_players += 1
-                if isinstance(player, roles.Werewolf):
-                    num_werewolf += 1
+    def get_winning_role(self):
+        alives = [p for p in self.players.values() if p.is_alive()]
+        num_players = len(alives)
+        num_werewolf = sum([isinstance(p, roles.Werewolf) for p in alives])
+
         print("DEBUG: ", num_players, num_werewolf)
-        return num_werewolf == 0 or num_werewolf * 2 >= num_players
+
+        # check end game
+        if num_werewolf != 0 and num_werewolf * 2 < num_players:
+            return None
+
+        # check cupid
+        couple = [self.players[i] for i in self.cupid_dict.keys()]
+        if num_players == 2 and \
+           any([isinstance(p, roles.Werewolf) for p in couple]) and \
+           any([not isinstance(p, roles.Werewolf) for p in couple]) and \
+           all([c in alives for c in couple]):
+            return roles.Cupid
+
+        # werewolf still alive then werewolf win
+        if num_werewolf != 0:
+            return roles.Werewolf
+
+        # werewolf died and fox still alive
+        if any([isinstance(p, roles.Fox) for p in alives]):
+            return roles.Fox
+
+        return roles.Villager
 
     @staticmethod
     def get_top_voted(list_id):
@@ -318,6 +337,11 @@ class Game:
             if lynched:
                 await self.players[lynched].get_killed()
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"<@{lynched}>", votes), config.GAMEPLAY_CHANNEL)
+
+                cupid_couple = self.cupid_dict.get(lynched)
+                if cupid_couple != None:
+                    await self.players[cupid_couple].get_killed()
+                    await self.interface.send_text_to_channel(text_template.generate_couple_died(f"<@{lynched}>", f"<@{cupid_couple}>"), config.GAMEPLAY_CHANNEL)
             else:
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
         else:
@@ -359,16 +383,23 @@ class Game:
             self.night_pending_kill_list.append(killed)
             self.wolf_kill_dict = {}
 
+        cupid_couple = None
         if len(self.night_pending_kill_list):
             final_kill_list = []
             for _id in self.night_pending_kill_list:
                 if await self.players[_id].get_killed():  # Guard can protect Fox from Seer kill
                     final_kill_list.append(_id)
+                    if self.cupid_dict.get(_id):
+                        cupid_couple = self.cupid_dict[_id]
 
             kills = ", ".join([f"<@{_id}>" for _id in final_kill_list])
             self.night_pending_kill_list = []  # Reset killed list for next day
 
         await self.interface.send_text_to_channel(text_template.generate_killed_text(kills), config.GAMEPLAY_CHANNEL)
+
+        if cupid_couple != None:
+            await self.players[cupid_couple].get_killed()
+            await self.interface.send_text_to_channel(text_template.generate_couple_died(f"<@{self.cupid_dict[cupid_couple]}>", f"<@{cupid_couple}>", False), config.GAMEPLAY_CHANNEL)
 
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
@@ -454,30 +485,35 @@ class Game:
         except:
             print("Unknown run_timer_phase")
 
-    async def do_player_action(self, cmd, author_id, target_id):
+    async def do_player_action(self, cmd, author_id, *targets_id):
         assert self.players is not None
         # print(self.players)
         author = self.players.get(author_id)
         if author is None or not author.is_alive():
             return f"You must be alive ingame to {cmd}!"
 
-        target = self.players.get(target_id)
-        if target is None:
-            return "Invalid target user. Target user is not a player"
+        targets = []
+        for target_id in targets_id:
+            target = self.players.get(target_id)
+            if target is None:
+                return "Invalid target user. Target user is not a player"
+            targets.append(target)
 
-        if not target.is_alive() and cmd!="reborn":
+        if not targets[0].is_alive() and cmd != "reborn":
             return text_template.generate_dead_target_text() if cmd=="vote" else text_template.generate_invalid_target()
 
         if cmd == "vote":
-            return await self.vote(author, target)
+            return await self.vote(author, targets[0])
         elif cmd == "kill":
-            return await self.kill(author, target)
+            return await self.kill(author, targets[0])
         elif cmd == "guard":
-            return await self.guard(author, target)
+            return await self.guard(author, targets[0])
         elif cmd == "seer":
-            return await self.seer(author, target)
+            return await self.seer(author, targets[0])
         elif cmd == "reborn":
-            return await self.reborn(author, target)
+            return await self.reborn(author, targets[0])
+        elif cmd == "ship":
+            return await self.ship(author, *targets[:2])
 
     async def vote(self, author, target):
         author_id = author.player_id
@@ -562,6 +598,25 @@ class Game:
         self.reborn_set.add(target_id)
 
         return text_template.generate_after_witch_reborn(f"<@{target_id}>")
+
+    async def ship(self, author, target1, target2):
+        if not isinstance(author, roles.Cupid):
+            return text_template.generate_invalid_author()
+
+        if author.get_power() == 0:
+            return text_template.generate_out_of_power()
+
+        author_id = author.player_id
+        target1_id = target1.player_id
+        target2_id = target2.player_id
+
+        author.on_use_power()
+        self.cupid_dict[target1_id] = target2_id
+        self.cupid_dict[target2_id] = target1_id
+
+        await self.interface.send_text_to_channel(text_template.generate_shipped_with(f"<@{target2_id}>"), self.players[target1_id].channel_name)
+        await self.interface.send_text_to_channel(text_template.generate_shipped_with(f"<@{target1_id}>"), self.players[target2_id].channel_name)
+        return text_template.generate_after_cupid_ship(f"<@{target1_id}>", f"<@{target2_id}>")
 
     async def test_game(self):
         print("====== Begin test game =====")

@@ -181,16 +181,35 @@ async def parse_command(client, game, message):
         elif cmd == "stop":
             await player.do_stop(game, message, force=False)
 
-        elif cmd in ("vote", "kill", "guard", "seer", "reborn"):
+        elif cmd in ("vote", "kill", "guard", "seer", "reborn", "ship"):
             is_valid_channel = \
                 (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
                 (cmd == "kill" and message.channel.name == config.WEREWOLF_CHANNEL) or\
-                (cmd in ("guard", "seer", "reborn") and message.channel.name.strip().startswith("personal"))
+                (cmd in ("guard", "seer", "reborn", "ship") and message.channel.name.strip().startswith("personal"))
 
             if is_valid_channel:
                 author = message.author
                 is_valid_command = False
-                if len(parameters) == 1:
+
+                if cmd == "ship":
+                    if len(parameters) == 2:
+                        if len(message.raw_mentions) == 2:
+                            msg = await game.do_player_action(cmd, author.id, *message.raw_mentions)
+                            await message.reply(msg)
+                        elif parameters[0].isdigit() and parameters[1].isdigit():
+                            targets_index = [int(i) - 1 for i in parameters]
+                            id_players = game.get_alive_players()
+                            if all([0 <= i < len(id_players) for i in targets_index]):
+                                msg = await game.do_player_action(cmd, author.id, *[id_players[t].player_id for t in targets_index])
+                                await message.reply(msg)
+                            else:
+                                await message.reply(text_template.generate_invalid_command_text(cmd))
+                        else:
+                            await message.reply(text_template.generate_invalid_command_text(cmd))
+                    else:
+                        await message.reply(text_template.generate_not_vote_n_player_text(2))
+
+                elif len(parameters) == 1:
                     if len(message.raw_mentions) == 1:
                         is_valid_command = True
                         msg = await game.do_player_action(cmd, author.id, message.raw_mentions[0])

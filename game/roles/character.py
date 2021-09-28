@@ -89,6 +89,10 @@ class Character:
         )
         await self.interface.send_text_to_channel(f"<@{self.player_id}> là {self.__class__.__name__}", config.GAMEPLAY_CHANNEL)
 
+    async def on_start_game(self, embed_data):
+        # Will be overloaded in Child Class
+        pass
+
     async def on_day(self):
         # Will be overloaded in Child Class
         pass
