@@ -6,10 +6,11 @@ from game.roles.lycan import Lycan
 from game.roles.superwolf import Superwolf
 from game.roles.fox import Fox
 from game.roles.witch import Witch
+from game.roles.cupid import Cupid
 
 
 def get_all_roles():
-    return (Villager, Werewolf, Seer, Guard, Lycan, Superwolf, Fox, Witch)
+    return (Villager, Werewolf, Seer, Guard, Lycan, Superwolf, Fox, Witch, Cupid)
 
 
 def get_role_type(name):
