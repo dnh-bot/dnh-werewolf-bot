@@ -266,7 +266,7 @@ class Game:
             print("Error: ", e)
             print(traceback.format_exc())
 
-        await self.interface.send_text_to_channel(text_template.generate_endgame_text(self.winner.__name__), config.GAMEPLAY_CHANNEL)
+        await self.interface.send_text_to_channel(text_template.generate_endgame_text(self.get_winner()), config.GAMEPLAY_CHANNEL)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
         await self.cancel_running_task(self.task_run_timer_phase)
