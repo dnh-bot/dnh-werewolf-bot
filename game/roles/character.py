@@ -33,8 +33,8 @@ class Character:
     def is_alive(self):
         return self.status != CharacterStatus.KILLED
 
-    async def get_killed(self):
-        if self.status == CharacterStatus.PROTECTED:
+    async def get_killed(self, is_suicide = False):
+        if self.status == CharacterStatus.PROTECTED and not is_suicide:
             return False
         self.status = CharacterStatus.KILLED
         # Mute player in config.GAMEPLAY_CHANNEL

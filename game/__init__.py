@@ -340,7 +340,7 @@ class Game:
 
                 cupid_couple = self.cupid_dict.get(lynched)
                 if cupid_couple != None:
-                    await self.players[cupid_couple].get_killed()
+                    await self.players[cupid_couple].get_killed(True)
                     await self.interface.send_text_to_channel(text_template.generate_couple_died(f"<@{lynched}>", f"<@{cupid_couple}>"), config.GAMEPLAY_CHANNEL)
             else:
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"", 0), config.GAMEPLAY_CHANNEL)
@@ -398,7 +398,7 @@ class Game:
         await self.interface.send_text_to_channel(text_template.generate_killed_text(kills), config.GAMEPLAY_CHANNEL)
 
         if cupid_couple != None:
-            await self.players[cupid_couple].get_killed()
+            await self.players[cupid_couple].get_killed(True)
             await self.interface.send_text_to_channel(text_template.generate_couple_died(f"<@{self.cupid_dict[cupid_couple]}>", f"<@{cupid_couple}>", False), config.GAMEPLAY_CHANNEL)
 
         for _id in self.reborn_set:
