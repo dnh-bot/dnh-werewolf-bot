@@ -33,8 +33,8 @@ class Character:
     def is_alive(self):
         return self.status != CharacterStatus.KILLED
 
-    async def get_killed(self):
-        if self.status == CharacterStatus.PROTECTED:
+    async def get_killed(self, is_suicide = False):
+        if self.status == CharacterStatus.PROTECTED and not is_suicide:
             return False
         self.status = CharacterStatus.KILLED
         # Mute player in config.GAMEPLAY_CHANNEL
@@ -88,6 +88,10 @@ class Character:
             self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True
         )
         await self.interface.send_text_to_channel(f"<@{self.player_id}> là {self.__class__.__name__}", config.GAMEPLAY_CHANNEL)
+
+    async def on_start_game(self, embed_data):
+        # Will be overloaded in Child Class
+        pass
 
     async def on_day(self):
         # Will be overloaded in Child Class

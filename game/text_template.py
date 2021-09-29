@@ -130,6 +130,28 @@ def generate_after_witch_reborn(user):
     return f"Bạn đã phục sinh thành công {user}"
 
 
+# Cupid
+def generate_start_game_cupid():
+    return "Cupid muốn cho cặp đôi nào được đồng sinh cộng tử.\n" +\
+        f"Hay làm phép bằng cách nhập `{config.BOT_PREFIX}ship ID1 ID2` để ghép đôi."
+
+
+def generate_shipped_with(user):
+    return f"Bạn và {user} đã được thần tình yêu chọn làm cặp đôi đồng sinh cộng tử."
+
+
+def generate_after_cupid_ship(user1, user2):
+    return f"Bạn đã ghép đôi thành công {user1} và {user2}."
+
+
+def generate_couple_died(died_player, follow_player, on_day = True):
+    if on_day:
+        return f"Do {died_player} đã chết nên {follow_player} cũng đã treo cổ tự vẫn đi theo tình yêu của đời mình.\n" +\
+            "===========================================================================\n"
+    return f"{follow_player} đã dừng cuộc chơi và bước trên con đường tìm kiếm {died_player}.\n" +\
+            "===========================================================================\n"
+
+
 # Common
 def generate_out_of_mana():
     return f"Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm!"
@@ -235,6 +257,10 @@ def generate_invalid_command_text(command):
 
 def generate_not_vote_1_player_text():
     return "Đừng có tham vậy chớ! Chỉ được chọn 1 người duy nhất thôi!"
+
+
+def generate_not_vote_n_player_text(num):
+    return f"Bạn phải chọn {num} người chơi để thực hiện command."
 
 
 def generate_timer_start_text():
