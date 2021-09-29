@@ -271,6 +271,9 @@ async def parse_command(client, game, message):
         elif cmd == "timerstop":
             game.timer_stopped = True
             await message.reply(text_template.generate_timer_stop_text())
+        elif cmd == "setroles":
+            res = game.add_default_roles(parameters)
+            await message.reply(res)
 
         elif cmd.startswith('f'):
             if admin.is_admin(message.author):

@@ -12,6 +12,10 @@
     "description": "Stop the current timer."
   },
   {
+    "name": "setroles",
+    "description": "Set default player roles for a new game"
+  },
+  {
     "name": "join",
     "description": "Join a game."
   },
