@@ -72,9 +72,9 @@
     "nighttime_command": "kill"
   },
   {
-    "role": "Minion",
+    "role": "Betrayer",
     "description": {
-      "vi": "Minion - Kẻ phản bội: Là người nhưng bị mua chuộc theo phe sói. Minion biết ai là sói nhưng phe sói không biết ai là Minion.",
+      "vi": "Betrayer - Kẻ phản bội: Là người nhưng bị mua chuộc theo phe sói. Kẻ phản bội biết ai là sói nhưng phe sói không biết ai là Kẻ phản bội.",
       "en": ""
     },
     "daytime_command": "vote",

@@ -218,20 +218,25 @@ class Game:
 
     async def run_game_loop(self):
         print("Starting game loop")
+        werewolf_list = []
         for _id, player in self.players.items():
             if isinstance(player, roles.Werewolf):
                 print("Wolf: ", player)
                 await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
                 await self.interface.send_text_to_channel(f"Chào sói <@{_id}>", config.WEREWOLF_CHANNEL)
+                werewolf_list.append(_id)
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
+
+        embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
+        await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
+
+        info = text_template.generate_werewolf_list(werewolf_list)
+        await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
 
         await asyncio.sleep(0)  # This return CPU to main thread
         print("Started game loop")
         try:
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
-            await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
-
             while not self.is_stopped:
                 print("Phase:", self.game_phase)
 

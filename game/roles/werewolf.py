@@ -1,10 +1,9 @@
 import config
-from game.roles.villager import Villager
-from game.roles.character import CharacterStatus
+from game.roles.character import Character
 
 
-class Werewolf(Villager):
-    # Werewolf is also a Villager at day, but has ability to vote at night
+class Werewolf(Character):
+    # Werewolf is able to vote at day, but has ability to vote at night
     # Do nothing actually, at night, a poll will be shown in #werewolf channel for all werewolves to vote there instead
 
     @classmethod
