@@ -4,12 +4,13 @@ from game import roles, text_template
 import datetime
 import random
 import time
+import json
 from enum import Enum
-import asyncio
 from collections import Counter
 from functools import reduce
-import json
+import asyncio
 import traceback
+import discord
 
 
 class GamePhase(Enum):
@@ -89,7 +90,7 @@ class Game:
 
         ids = list(ids)
         try:
-            game_role = random.choice([dict_to_list(role_dict) for role_dict in role_config if sum(role_dict.values())==len(ids)])
+            game_role = random.choice([dict_to_list(role_dict) for role_dict in role_config if sum(role_dict.values()) == len(ids)])
         except IndexError:
             game_role = dict_to_list(role_config[-1], len(ids))
 
@@ -140,7 +141,8 @@ class Game:
             await self.delete_channel()
         self.reset_game_state()
 
-        if self.is_stopped: return
+        if self.is_stopped:
+            return
         await asyncio.sleep(1)
         await self.interface.send_text_to_channel(text_template.generate_end_text(), config.LOBBY_CHANNEL)
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
@@ -294,6 +296,7 @@ class Game:
         if self.players:
             await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day), config.GAMEPLAY_CHANNEL)
             embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
+            embed_data["color"] = (230, 126, 34)
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
@@ -326,7 +329,6 @@ class Game:
                 for _id, player in self.players.items() if player.is_alive()]
             )
 
-
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
         if self.players:
@@ -339,6 +341,7 @@ class Game:
                 config.WEREWOLF_CHANNEL
             )
             embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
+            embed_data["color"] = (230, 126, 34)
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
             # Send alive player list to all skilled characters (guard, seer, etc.)
             await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if not isinstance(player, roles.Witch)])
@@ -347,7 +350,6 @@ class Game:
             # Send dead player list to Witch if Witch has not used skill
             if embed_data:  # This table can be empty (Noone is dead)
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if (isinstance(player, roles.Witch) and player.get_power())])
-
 
     async def do_end_nighttime_phase(self):
         print("do_end_nighttime_phase")
@@ -401,7 +403,7 @@ class Game:
     async def cancel_running_task(self, current_task):
         # Cancel running timer phase to prevent multiple task instances
         try:
-            print("Cancelling.... ", current_task)
+            print("Cancelling....", current_task)
             current_task.cancel()
             try:
                 await self.current_task

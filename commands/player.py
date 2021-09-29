@@ -145,7 +145,10 @@ async def do_generate_vote_status_table(channel, table):
     if not table:
         await channel.send(text_template.generate_nobody_voted_text())
         return
-    embed = discord.Embed(title="Vote Results", description="Danh sách những kẻ có khả năng bị hành hình")
+    embed = discord.Embed(
+        title="Vote Results", description="Danh sách những kẻ có khả năng bị hành hình",
+        color=(250, 190, 78)
+    )
     for k, v in table.items():
         player = channel.guild.get_member(k).display_name
         votes = len(v)
