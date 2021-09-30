@@ -57,6 +57,7 @@ class Game:
         self.timer_stopped = True
         self.task_run_timer_phase = None
         self.winner = None
+        self.runtime_roles = None
 
     def get_winner(self):
         if self.winner == None:
@@ -75,21 +76,31 @@ class Game:
     def awake(self):
         pass
 
-    @staticmethod
-    def generate_roles(interface, ids, names_dict):
+    def add_default_roles(self, role_json_in_string):
+        try:
+            self.runtime_roles = json.loads("".join(role_json_in_string))
+            return f"Config loaded."
+        except:
+            self.runtime_roles = None
+            return f"Invalid json format."
+
+    def generate_roles(self, interface, ids, names_dict):
         def dict_to_list(config, number=0):
             yield from (name for name in config for _ in range(config[name]))
             yield from ('Werewolf' if i%4==0 else 'Villager' for i in range(number-sum(config.values())))
 
-        ROLE_CONFIG_FILE = "role_config.json"
-        try:
-            # Load the file everytime to ensure admin can change config while the bot is already running
-            with open(ROLE_CONFIG_FILE) as f:
-                role_config = json.load(f)
-        except:
-            # Default config
-            print(f"{ROLE_CONFIG_FILE} not found, using default config")
-            role_config = config.DEFAULT_COUNT_CONFIG
+        if self.runtime_roles:
+            role_config = self.runtime_roles
+        else:
+            ROLE_CONFIG_FILE = "role_config.json"
+            try:
+                # Load the file everytime to ensure admin can change config while the bot is already running
+                with open(ROLE_CONFIG_FILE) as f:
+                    role_config = json.load(f)
+            except:
+                # Default config
+                print(f"{ROLE_CONFIG_FILE} not found, using default config")
+                role_config = config.DEFAULT_COUNT_CONFIG
 
         ids = list(ids)
         try:
