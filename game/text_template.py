@@ -70,6 +70,11 @@ def generate_player_list_embed(player_list, alive_status):
     return None
 
 
+def generate_werewolf_list(werewolf_list):
+    str = ",".join([f"<@{_id}>" for _id in werewolf_list])
+    return f"Danh sách Sói: {str}"
+
+
 def generate_before_voting_werewolf():
     return f"Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{config.BOT_PREFIX}kill ID` để lặng lẽ xử lý nạn nhân.\n" +\
         f"Ví dụ: `{config.BOT_PREFIX}kill 2`\n"
