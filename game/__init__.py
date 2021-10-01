@@ -630,8 +630,8 @@ class Game:
         self.cupid_dict[target1_id] = target2_id
         self.cupid_dict[target2_id] = target1_id
 
-        await self.interface.send_text_to_channel(text_template.generate_shipped_with(f"<@{target2_id}>"), self.players[target1_id].channel_name)
-        await self.interface.send_text_to_channel(text_template.generate_shipped_with(f"<@{target1_id}>"), self.players[target2_id].channel_name)
+        await self.interface.send_text_to_channel(text_template.generate_shipped_with(f"<@{target2_id}> {target2.__class__.__name__}"), self.players[target1_id].channel_name)
+        await self.interface.send_text_to_channel(text_template.generate_shipped_with(f"<@{target1_id}> {target1.__class__.__name__}"), self.players[target2_id].channel_name)
         return text_template.generate_after_cupid_ship(f"<@{target1_id}>", f"<@{target2_id}>")
 
     async def test_game(self):
