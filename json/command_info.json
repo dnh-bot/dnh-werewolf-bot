@@ -45,18 +45,22 @@
   },
   {
     "name": "kill",
-    "description": "A command for role Werewolf to kill an user."
+    "description": "A command for a Werewolf to kill an user."
   },
   {
     "name": "guard",
-    "description": "A command for role Guard to guard an user."
+    "description": "A command for a Guard to guard an user."
   },
   {
     "name": "seer",
-    "description": "A command for role Seer to seer an user."
+    "description": "A command for a Seer to seer an user."
   },
   {
     "name": "reborn",
-    "description": "A command for role Witch to reborn an user."
+    "description": "A command for a Witch to reborn an user."
+  },
+  {
+    "name": "ship",
+    "description": "A command for a Cupid to ship 2 users."
   }
 ]
