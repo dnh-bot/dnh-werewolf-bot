@@ -397,7 +397,8 @@ class Game:
         kills = None
         if self.wolf_kill_dict:
             killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
-            self.night_pending_kill_list.append(killed)
+            if killed:
+                self.night_pending_kill_list.append(killed)
             self.wolf_kill_dict = {}
 
         cupid_couple = None
