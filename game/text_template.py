@@ -52,8 +52,8 @@ def generate_end_text():
     return "Trò chơi đã kết thúc."
 
 
-def generate_role_list_text(roles):
-    return f"Danh sách nhân vật trong game: {roles}"
+def generate_role_list_text(roles_data):
+    return f"Danh sách nhân vật trong game: {roles_data}"
 
 
 def generate_execution_text(voted_user, highest_vote_number):
@@ -101,8 +101,8 @@ def generate_player_list_embed(player_list, alive_status):
 
 
 def generate_werewolf_list(werewolf_list):
-    str = ",".join([f"<@{_id}>" for _id in werewolf_list])
-    return f"Danh sách Sói: {str}"
+    werewolf_str = ",".join([f"<@{_id}>" for _id in werewolf_list])
+    return f"Danh sách Sói: {werewolf_str}"
 
 
 def generate_before_voting_werewolf():
@@ -184,7 +184,7 @@ def generate_couple_died(died_player, follow_player, on_day=True):
         return f"Do {died_player} đã chết nên {follow_player} cũng đã treo cổ tự vẫn đi theo tình yêu của đời mình.\n" +\
             "===========================================================================\n"
     return f"{follow_player} đã dừng cuộc chơi và bước trên con đường tìm kiếm {died_player}.\n" +\
-            "===========================================================================\n"
+        "===========================================================================\n"
 
 
 # Common
@@ -231,7 +231,7 @@ def generate_nobody_voted_text():
 
 def generate_invalid_channel_text(channel):
     # f"Command {config.BOT_PREFIX}{command} only available in {channel}"
-    return f"Xài sai chỗ rồi bạn ơi :( Xài trong channel {channel} ấy",
+    return f"Xài sai chỗ rồi bạn ơi :( Xài trong channel {channel} ấy"
 
 
 def generate_invalid_target():
@@ -284,7 +284,7 @@ def generate_already_in_game_text():
 def generate_invalid_command_text(command):
     if command in ("kill", "guard", "seer", "vote", "reborn", "ship"):
         usage_text = "\n".join(generate_usage_text_list(command))
-        return f"Invalid command.\nUsage:\n`{usage_text}`"
+        return f"Invalid command.\nUsage:\n{usage_text}"
     elif command in ["fjoin", "fleave"]:
         return f"Invalid command.\nUsage: `{config.BOT_PREFIX}{command} @user1 @user2 ...`"
     else:

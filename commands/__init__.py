@@ -29,3 +29,10 @@ def get_command_description(command):
         return command_info[command]["description"][TEXT_LANGUAGE]
 
     return None
+
+
+def get_command_param_number(command):
+    if command in command_info:
+        return command_info[command]["required_param_number"]
+
+    return None

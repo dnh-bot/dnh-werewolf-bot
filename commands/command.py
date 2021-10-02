@@ -1,4 +1,5 @@
 from commands import admin, player
+import commands
 import config
 from game import text_template
 
@@ -43,7 +44,7 @@ async def parse_command(client, game, message):
 
             if is_valid_channel:
                 author = message.author
-                required_param_number = 2 if cmd == "ship" else 1
+                required_param_number = commands.get_command_param_number(cmd)
 
                 if len(message.raw_mentions) == required_param_number:
                     msg = await game.do_player_action(cmd, author.id, *message.raw_mentions)
