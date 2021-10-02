@@ -1,66 +1,114 @@
-[
-  {
-    "name": "timer",
-    "description": "Set the current timer."
+{
+  "timer": {
+    "description": {
+      "vi": "Thiết lập đồng hồ đếm ngược.",
+      "en": "Set the current timer."
+    },
+    "required_param_number": 3
   },
-  {
-    "name": "timerstart",
-    "description": "Start the current timer."
+  "timerstart": {
+    "description": {
+      "vi": "Chạy đồng hồ đếm ngược hiện tại.",
+      "en": "Start the current timer."
+    },
+    "required_param_number": 0
   },
-  {
-    "name": "timerstop",
-    "description": "Stop the current timer."
+  "timerstop": {
+    "description": {
+      "vi": "Dừng đồng hồ đếm ngược hiện tại.",
+      "en": "Stop the current timer."
+    },
+    "required_param_number": 0
   },
-  {
-    "name": "setroles",
-    "description": "Set default player roles for a new game"
+  "setroles": {
+    "description": {
+      "vi": "Thiết lập bảng phân vai mặc định cho trò chơi mới.",
+      "en": "Set default player roles for a new game"
+    },
+    "required_param_number": 0
   },
-  {
-    "name": "join",
-    "description": "Join a game."
+  "join": {
+    "description": {
+      "vi": "Tham gia vào một trò chơi.",
+      "en": "Join a game."
+    },
+    "required_param_number": 0
   },
-  {
-    "name": "leave",
-    "description": "Leave a game."
+  "leave": {
+    "description": {
+      "vi": "Rời khỏi một trò chơi.",
+      "en": "Leave a game."
+    },
+    "required_param_number": 0
   },
-  {
-    "name": "start",
-    "description": "Start a game."
+  "start": {
+    "description": {
+      "vi": "Bắt đầu một trò chơi (cần đủ số lượng vote).",
+      "en": "Start a game."
+    },
+    "required_param_number": 0
   },
-  {
-    "name": "next",
-    "description": "Jump to next phase."
+  "next": {
+    "description": {
+      "vi": "Nhảy đến phase sau (cần đủ số lượng vote).",
+      "en": "Jump to next phase."
+    },
+    "required_param_number": 0
   },
-  {
-    "name": "stop",
-    "description": "Stop a game."
+  "stop": {
+    "description": {
+      "vi": "Dừng trò chơi.",
+      "en": "Stop a game."
+    },
+    "required_param_number": 0
   },
-  {
-    "name": "status",
-    "description": "Show voting status of current daytime."
+  "status": {
+    "description": {
+      "vi": "Xem trạng thái bầu chọn của ngày hiện tại.",
+      "en": "Show voting status of current daytime."
+    },
+    "required_param_number": 0
   },
-  {
-    "name": "vote",
-    "description": "A command for everyone to vote an user."
+  "vote": {
+    "description": {
+      "vi": "Lựa chọn một người sẽ bị đưa lên máy chém.",
+      "en": "A command for everyone to vote an user."
+    },
+    "required_param_number": 1
   },
-  {
-    "name": "kill",
-    "description": "A command for a Werewolf to kill an user."
+  "kill": {
+    "description": {
+      "vi": "Lựa chọn một người sẽ bị ăn thịt trong đêm.",
+      "en": "A command for a Werewolf to kill an user."
+    },
+    "required_param_number": 1
   },
-  {
-    "name": "guard",
-    "description": "A command for a Guard to guard an user."
+  "guard": {
+    "description": {
+      "vi": "Bảo vệ một ai đó trong đêm.",
+      "en": "A command for a Guard to guard an user."
+    },
+    "required_param_number": 1
   },
-  {
-    "name": "seer",
-    "description": "A command for a Seer to seer an user."
+  "seer": {
+    "description": {
+      "vi": "Soi một người bất kỳ.",
+      "en": "A command for a Seer to seer an user."
+    },
+    "required_param_number": 1
   },
-  {
-    "name": "reborn",
-    "description": "A command for a Witch to reborn an user."
+  "reborn": {
+    "description": {
+      "vi": "Hồi sinh một người đã chết.",
+      "en": "A command for a Witch to reborn an user."
+    },
+    "required_param_number": 1
   },
-  {
-    "name": "ship",
-    "description": "A command for a Cupid to ship 2 users."
+  "ship": {
+    "description": {
+      "vi": "Ghép đôi 2 người.",
+      "en": "A command for a Cupid to ship 2 users."
+    },
+    "required_param_number": 2
   }
-]
+}

@@ -78,3 +78,5 @@ DEFAULT_COUNT_CONFIG = [
     {'Superwolf': 1, 'Werewolf': 2, 'Seer': 1, 'Guard': 1, 'Fox': 1, 'Witch': 1, 'Villager': 5, 'Lycan': 1},
     {'Superwolf': 1, 'Werewolf': 2, 'Seer': 1, 'Guard': 1, 'Witch': 1, 'Villager': 6, 'Lycan': 1, 'Fox': 1}
 ]
+
+TEXT_LANGUAGE = "vi"
