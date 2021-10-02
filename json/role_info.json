@@ -1,0 +1,92 @@
+{
+  "Villager": {
+    "name_vi": "Dân làng",
+    "description": {
+      "vi": "Không có chức năng đặc biệt.",
+      "en": ""
+    },
+    "daytime_command": "vote",
+    "nighttime_command": ""
+  },
+  "Werewolf": {
+    "name_vi": "Sói",
+    "description": {
+      "vi": "Chọn 1 người để giết mỗi đêm.",
+      "en": ""
+    },
+    "daytime_command": "vote",
+    "nighttime_command": "kill"
+  },
+  "Superwolf": {
+    "name_vi": "Sói già",
+    "description": {
+      "vi": "Chọn 1 người để giết mỗi đêm. Sói già có khả năng che giấu Tiên tri và không bị soi ra là sói.",
+      "en": ""
+    },
+    "daytime_command": "vote",
+    "nighttime_command": "kill"
+  },
+  "Guard": {
+    "name_vi": "Bảo vệ",
+    "description": {
+      "vi": "Bảo vệ được chọn 1 người khác nhau mỗi đêm trừ bản thân và người được chọn sẽ bất tử đêm đó.",
+      "en": ""
+    },
+    "daytime_command": "vote",
+    "nighttime_command": "guard"
+  },
+  "Lycan": {
+    "name_vi": "Người hóa sói",
+    "description": {
+      "vi": "Người hóa sói thuộc Phe dân làng, nhưng nếu được chỉ định bởi Tiên tri, thì sẽ bị thông báo là Sói.",
+      "en": ""
+    },
+    "daytime_command": "vote",
+    "nighttime_command": ""
+  },
+  "Seer": {
+    "name_vi": "Tiên tri",
+    "description": {
+      "vi": "Soi một người chơi có phải là sói hay không. Có thể giết chết Cáo nếu soi trúng Cáo.",
+      "en": ""
+    },
+    "daytime_command": "vote",
+    "nighttime_command": "seer"
+  },
+  "Betrayer": {
+    "name_vi": "Kẻ phản bội",
+    "description": {
+      "vi": "Là người nhưng bị mua chuộc theo phe sói. Kẻ phản bội biết ai là sói nhưng phe sói không biết ai là Kẻ phản bội.",
+      "en": ""
+    },
+    "daytime_command": "vote",
+    "nighttime_command": ""
+  },
+  "Fox": {
+    "name_vi": "Cáo",
+    "description": {
+      "vi": "Thuộc phe thứ ba, cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.",
+      "en": ""
+    },
+    "daytime_command": "vote",
+    "nighttime_command": ""
+  },
+  "Witch": {
+    "name_vi": "Phù thủy",
+    "description": {
+      "vi": "Vào ban đêm, Phù thủy có 1 bình phép có thể phục sinh một người chơi đã chết. Chức năng này chỉ được sử dụng một lần duy nhất trong game.",
+      "en": ""
+    },
+    "daytime_command": "vote",
+    "nighttime_command": "reborn"
+  },
+  "Cupid": {
+    "name_vi": "Thần tình yêu",
+    "description": {
+      "vi": "Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ thành phe thứ 3 với nhiệm vụ là hai người cuối cùng sống sót.",
+      "en": ""
+    },
+    "daytime_command": "vote",
+    "nighttime_command": "ship"
+  }
+}

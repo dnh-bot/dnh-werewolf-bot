@@ -25,15 +25,10 @@ class Character:
         self.channel_name = f"personal-{valid_channel_name}"
         self.mana = 0
 
-    @classmethod
-    def get_character_description(cls):
-        # for using in help command
-        return ""
-
     def is_alive(self):
         return self.status != CharacterStatus.KILLED
 
-    async def get_killed(self, is_suicide = False):
+    async def get_killed(self, is_suicide=False):
         if self.status == CharacterStatus.PROTECTED and not is_suicide:
             return False
         self.status = CharacterStatus.KILLED

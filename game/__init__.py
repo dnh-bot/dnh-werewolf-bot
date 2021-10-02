@@ -92,10 +92,11 @@ class Game:
         if self.runtime_roles:
             role_config = self.runtime_roles
         else:
-            ROLE_CONFIG_FILE = "role_config.json"
+            ROLE_CONFIG_FILE = "json/role_config.json"
             try:
                 # Load the file everytime to ensure admin can change config while the bot is already running
                 with open(ROLE_CONFIG_FILE) as f:
+                    print(f"successfully loaded {ROLE_CONFIG_FILE}")
                     role_config = json.load(f)
             except:
                 # Default config
@@ -331,7 +332,7 @@ class Game:
         if self.players:
             await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day), config.GAMEPLAY_CHANNEL)
             embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
-            embed_data["color"] = (230, 126, 34)
+            embed_data["color"] = 0xe67e22
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
@@ -381,7 +382,7 @@ class Game:
                 config.WEREWOLF_CHANNEL
             )
             embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
-            embed_data["color"] = (230, 126, 34)
+            embed_data["color"] = 0xe67e22
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
             # Send alive player list to all skilled characters (guard, seer, etc.)
             await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if not isinstance(player, roles.Witch)])

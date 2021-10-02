@@ -1,4 +1,34 @@
 import config
+from game import roles
+import commands
+
+
+def generate_usage_text_list(cmd, **kwargs):
+    if cmd in ("vote", "kill", "guard", "seer", "reborn"):
+        player_id = kwargs.get("player_id1", "player_id")
+        return [f"`{config.BOT_PREFIX}{cmd} {player_id}`", f"`{config.BOT_PREFIX}{cmd} @user`"]
+    elif cmd == "ship":
+        player_id1 = kwargs.get("player_id1", "player_id1")
+        player_id2 = kwargs.get("player_id2", "player_id2")
+        return [f"`{config.BOT_PREFIX}{cmd} {player_id1} {player_id2}`", f"`{config.BOT_PREFIX}{cmd} @user1 @user2`"]
+    elif cmd == "timer":
+        """Usage: 
+        `!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
+        """
+        dayphase = kwargs.get("dayphase", "dayphase")
+        nightphase = kwargs.get("nightphase", "nightphase")
+        alertperiod = kwargs.get("alertperiod", "alertperiod")
+        return [f"`{config.BOT_PREFIX}{cmd} {dayphase} {nightphase} {alertperiod}`"]
+    else:
+        return [f"`{config.BOT_PREFIX}{cmd}`"]
+
+
+def get_usage_text(cmd):
+    return " hoặc ".join(generate_usage_text_list(cmd))
+
+
+def get_full_cmd_description(cmd):
+    return commands.get_command_description(cmd) + f" Sử dụng command {get_usage_text(cmd)}."
 
 
 def generate_join_text(user, joined_players):
@@ -22,8 +52,8 @@ def generate_end_text():
     return "Trò chơi đã kết thúc."
 
 
-def generate_role_list_text(roles):
-    return f"Danh sách nhân vật trong game: {roles}"
+def generate_role_list_text(roles_data):
+    return f"Danh sách nhân vật trong game: {roles_data}"
 
 
 def generate_execution_text(voted_user, highest_vote_number):
@@ -39,7 +69,7 @@ def generate_execution_text(voted_user, highest_vote_number):
 
 def generate_day_phase_beginning_text(day):
     return f"Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:\n" +\
-        f"- Hãy nhập `{config.BOT_PREFIX}vote ID` hoặc `{config.BOT_PREFIX}vote @user` để bỏ phiếu cho người bạn nghi là Sói!\n" +\
+        f"- Hãy nhập {get_usage_text('vote')} để bỏ phiếu cho người bạn nghi là Sói!\n" +\
         f"- Nhập `{config.BOT_PREFIX}status` để xem trạng thái bỏ phiếu hiện tại."
 
 
@@ -71,8 +101,8 @@ def generate_player_list_embed(player_list, alive_status):
 
 
 def generate_werewolf_list(werewolf_list):
-    str = ",".join([f"<@{_id}>" for _id in werewolf_list])
-    return f"Danh sách Sói: {str}"
+    werewolf_str = ",".join([f"<@{_id}>" for _id in werewolf_list])
+    return f"Danh sách Sói: {werewolf_str}"
 
 
 def generate_before_voting_werewolf():
@@ -149,12 +179,12 @@ def generate_after_cupid_ship(user1, user2):
     return f"Bạn đã ghép đôi thành công {user1} và {user2}."
 
 
-def generate_couple_died(died_player, follow_player, on_day = True):
+def generate_couple_died(died_player, follow_player, on_day=True):
     if on_day:
         return f"Do {died_player} đã chết nên {follow_player} cũng đã treo cổ tự vẫn đi theo tình yêu của đời mình.\n" +\
             "===========================================================================\n"
     return f"{follow_player} đã dừng cuộc chơi và bước trên con đường tìm kiếm {died_player}.\n" +\
-            "===========================================================================\n"
+        "===========================================================================\n"
 
 
 # Common
@@ -201,7 +231,7 @@ def generate_nobody_voted_text():
 
 def generate_invalid_channel_text(channel):
     # f"Command {config.BOT_PREFIX}{command} only available in {channel}"
-    return f"Xài sai chỗ rồi bạn ơi :( Xài trong channel {channel} ấy",
+    return f"Xài sai chỗ rồi bạn ơi :( Xài trong channel {channel} ấy"
 
 
 def generate_invalid_target():
@@ -252,8 +282,9 @@ def generate_already_in_game_text():
 
 
 def generate_invalid_command_text(command):
-    if command in ["kill", "guard", "seer", "vote"]:
-        return f"Invalid command.\nUsage: `{config.BOT_PREFIX}{command} ID`"
+    if command in ("kill", "guard", "seer", "vote", "reborn", "ship"):
+        usage_text = "\n".join(generate_usage_text_list(command))
+        return f"Invalid command.\nUsage:\n{usage_text}"
     elif command in ["fjoin", "fleave"]:
         return f"Invalid command.\nUsage: `{config.BOT_PREFIX}{command} @user1 @user2 ...`"
     else:
@@ -276,12 +307,132 @@ def generate_timer_stop_text():
     return "Timer stopped!"
 
 
-def generate_timer_remaining_text(count):
-    return f"Bing boong! Còn {count} giây..."
+def generate_timer_remaining_text(seconds):
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    days, hours = divmod(hours, 24)
+    time_text = []
+    if days > 0:
+        time_text.append(f"{days} ngày")
+    if hours > 0:
+        time_text.append(f"{hours} giờ")
+    if minutes > 0:
+        time_text.append(f"{minutes} phút")
+    if seconds > 0 or days == hours == minutes == seconds == 0:
+        time_text.append(f"{seconds} giây")
+
+    return f"🔔 Bing boong! Còn {' '.join(time_text)}..."
 
 
 def generate_timer_up_text():
-    return f"HẾT GIỜ!!!!"
+    return f"⏰ HẾT GIỜ!!!!"
+
+
+def generate_help_command_text(command=None):
+    # TODO: read info from command_info.json file
+    help_embed_data = {
+        "title": "Werewolf Bot Help",
+        "description": f"Full command list. You can get more information on a command using `{config.BOT_PREFIX}help cmd <name of command>`",
+        "content": []
+    }
+    command = command.lower() if isinstance(command, str) else command
+    if command is None:
+        help_embed_data["color"] = 0xffffff
+        help_embed_data["content"] = [("All commands", [" | ".join(f"`{cmd}`" for cmd in commands.get_all_commands())])]
+        # TODO: cmd_description + (Dành cho tất cả mọi người.|Dành riêng cho {role}.)
+    else:
+        command_description = commands.get_command_description(command)
+        if command_description is not None:
+            help_embed_data["color"] = 0x17a168
+            help_embed_data["title"] += f" for command `{command}`"
+            help_embed_data["description"] = command_description
+
+            usage_str = ["- " + usage_text for usage_text in generate_usage_text_list(command)]
+            help_embed_data["content"] = [("Usage", usage_str)]
+
+            if command in ("vote", "kill", "guard", "seer", "reborn", "ship"):
+                help_embed_data["content"].append(
+                    ("Example", ["- " + usage_text for usage_text in generate_usage_text_list(command, player_id1=2, player_id2=3)])
+                )
+        else:
+            help_embed_data["color"] = 0xdc4e4e
+            help_embed_data["title"] = f"Invalid help for command `{command}`"
+            help_embed_data["description"] = "A command with this name doesn't exist"
+
+    return help_embed_data
+
+
+def generate_help_role_text(role=None):
+    help_embed_data = {
+        "title": "Werewolf Bot Help",
+        "description": f"Full role list. You can get more information on a role using `{config.BOT_PREFIX}help role <name of role>`",
+        "content": []
+    }
+    all_roles_name = [a_role.__name__ for a_role in roles.get_all_roles()]
+    role = role.capitalize() if isinstance(role, str) else role
+    if role is None:
+        help_embed_data["color"] = 0xffffff
+        for a_role in roles.get_all_roles():
+            name_in_this_language = roles.get_role_name_in_language(a_role.__name__, config.TEXT_LANGUAGE)
+            if name_in_this_language:
+                title = a_role.__name__ + " - " + name_in_this_language
+            else:
+                title = a_role.__name__
+
+            help_embed_data["content"].append((title, [roles.get_role_description(a_role.__name__)]))
+
+    elif role in all_roles_name:
+        help_embed_data["color"] = 0x3498db
+        help_embed_data["title"] += f" for role `{role}`"
+        name_in_this_language = roles.get_role_name_in_language(role, config.TEXT_LANGUAGE)
+        if name_in_this_language is not None:
+            help_embed_data["title"] += f" ({name_in_this_language})"
+
+        help_embed_data["description"] = roles.get_role_description(role)
+        nighttime_command = roles.get_role_nighttime_command(role)
+        if nighttime_command:
+            nighttime_action_description = get_full_cmd_description(nighttime_command)
+        else:
+            nighttime_action_description = "Chỉ việc đi ngủ thôi :joy:"
+
+        help_embed_data["content"] = [
+            ("Ban ngày", [get_full_cmd_description("vote")]),
+            ("Ban đêm", [nighttime_action_description]),
+        ]
+    else:
+        help_embed_data["color"] = 0xdc4e4e
+        help_embed_data["title"] = f"Invalid help for role `{role}`"
+        help_embed_data["description"] = "A role with this name doesn't exist"
+
+    return help_embed_data
+
+
+def generate_help_text(*args):
+    if len(args) == 0:
+        help_embed_data = {
+            "color": 0xffffff,
+            "title": "Werewolf Bot Help",
+            "description": "Full list of things. You can get more information on " +\
+                           f"a command using `{config.BOT_PREFIX}help cmd <name of command>` or " +\
+                           f"a role using `{config.BOT_PREFIX}help role <name of role>`",
+            "content": [
+                ("All commands", [" | ".join(f"`{cmd}`" for cmd in commands.get_all_commands())]),
+                ("All roles", [" | ".join(f"`{a_role.__name__}`" for a_role in roles.get_all_roles())])
+            ]
+        }
+    elif args[0] == "role":
+        help_embed_data = generate_help_role_text(None if len(args) == 1 else args[1])
+    elif args[0] == "cmd":
+        help_embed_data = generate_help_command_text(None if len(args) == 1 else args[1])
+    else:
+        help_embed_data = {
+            "color": 0xdc4e4e,
+            "title": "Invalid help argument",
+            "description": f"Argument with name `{args[0]}` doesn't exist. Please type `{config.BOT_PREFIX}help`.",
+            "content": []
+        }
+
+    return help_embed_data
 
 
 def generate_table(header, data):

@@ -147,7 +147,7 @@ async def do_generate_vote_status_table(channel, table):
         return
     embed = discord.Embed(
         title="Vote Results", description="Danh sách những kẻ có khả năng bị hành hình",
-        color=(250, 190, 78)
+        color=0xfabe4e
     )
     for k, v in table.items():
         player = channel.guild.get_member(k).display_name

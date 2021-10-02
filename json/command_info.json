@@ -1,0 +1,114 @@
+{
+  "timer": {
+    "description": {
+      "vi": "Thiết lập đồng hồ đếm ngược.",
+      "en": "Set the current timer."
+    },
+    "required_param_number": 3
+  },
+  "timerstart": {
+    "description": {
+      "vi": "Chạy đồng hồ đếm ngược hiện tại.",
+      "en": "Start the current timer."
+    },
+    "required_param_number": 0
+  },
+  "timerstop": {
+    "description": {
+      "vi": "Dừng đồng hồ đếm ngược hiện tại.",
+      "en": "Stop the current timer."
+    },
+    "required_param_number": 0
+  },
+  "setroles": {
+    "description": {
+      "vi": "Thiết lập bảng phân vai mặc định cho trò chơi mới.",
+      "en": "Set default player roles for a new game"
+    },
+    "required_param_number": 0
+  },
+  "join": {
+    "description": {
+      "vi": "Tham gia vào một trò chơi.",
+      "en": "Join a game."
+    },
+    "required_param_number": 0
+  },
+  "leave": {
+    "description": {
+      "vi": "Rời khỏi một trò chơi.",
+      "en": "Leave a game."
+    },
+    "required_param_number": 0
+  },
+  "start": {
+    "description": {
+      "vi": "Bắt đầu một trò chơi (cần đủ số lượng vote).",
+      "en": "Start a game."
+    },
+    "required_param_number": 0
+  },
+  "next": {
+    "description": {
+      "vi": "Nhảy đến phase sau (cần đủ số lượng vote).",
+      "en": "Jump to next phase."
+    },
+    "required_param_number": 0
+  },
+  "stop": {
+    "description": {
+      "vi": "Dừng trò chơi.",
+      "en": "Stop a game."
+    },
+    "required_param_number": 0
+  },
+  "status": {
+    "description": {
+      "vi": "Xem trạng thái bầu chọn của ngày hiện tại.",
+      "en": "Show voting status of current daytime."
+    },
+    "required_param_number": 0
+  },
+  "vote": {
+    "description": {
+      "vi": "Lựa chọn một người sẽ bị đưa lên máy chém.",
+      "en": "A command for everyone to vote an user."
+    },
+    "required_param_number": 1
+  },
+  "kill": {
+    "description": {
+      "vi": "Lựa chọn một người sẽ bị ăn thịt trong đêm.",
+      "en": "A command for a Werewolf to kill an user."
+    },
+    "required_param_number": 1
+  },
+  "guard": {
+    "description": {
+      "vi": "Bảo vệ một ai đó trong đêm.",
+      "en": "A command for a Guard to guard an user."
+    },
+    "required_param_number": 1
+  },
+  "seer": {
+    "description": {
+      "vi": "Soi một người bất kỳ.",
+      "en": "A command for a Seer to seer an user."
+    },
+    "required_param_number": 1
+  },
+  "reborn": {
+    "description": {
+      "vi": "Hồi sinh một người đã chết.",
+      "en": "A command for a Witch to reborn an user."
+    },
+    "required_param_number": 1
+  },
+  "ship": {
+    "description": {
+      "vi": "Ghép đôi 2 người.",
+      "en": "A command for a Cupid to ship 2 users."
+    },
+    "required_param_number": 2
+  }
+}

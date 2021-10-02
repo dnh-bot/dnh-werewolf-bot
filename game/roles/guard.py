@@ -8,10 +8,6 @@ class Guard(Villager):
         super().__init__(interface, player_id, player_name)
         self.yesterday_target = None
 
-    @classmethod
-    def get_character_description(cls):
-        return "Guard - Bảo vệ. Vẫn là một Villager bình thường nhưng vào buổi đêm có quyền bảo vệ một người nào đó."
-
     async def on_night(self):
         # Regain mana
         self.mana = 1

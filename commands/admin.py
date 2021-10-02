@@ -155,7 +155,7 @@ async def send_embed_to_channel(guild, embed_data, channel_name, inline=True):
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
-        color = discord.Color.from_rgb(*embed_data["color"]) if "color" in embed_data else 0
+        color = embed_data["color"] if "color" in embed_data else 0
         embed = discord.Embed(title=embed_data["title"], description=embed_data.get("description"), color=color)
         for field_name, field_value in embed_data["content"]:
             embed.add_field(name=field_name, value="\n".join(field_value), inline=inline)

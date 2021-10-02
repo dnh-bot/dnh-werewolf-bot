@@ -5,10 +5,6 @@ from game.text_template import *
 class Seer(Villager):
     # Seer can check 1 person each night to see if they are villager/werewolf
 
-    @classmethod
-    def get_character_description(cls):
-        return "Seer - Tiên tri. Soi một người chơi có phải là sói hay không. Có thể giết chết Cáo nếu soi trúng Cáo."
-
     async def on_night(self):
         # Regain mana
         self.mana = 1
