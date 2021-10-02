@@ -634,6 +634,10 @@ class Game:
 
         await self.interface.send_text_to_channel(text_template.generate_shipped_with(f"<@{target2_id}> {target2.__class__.__name__}"), self.players[target1_id].channel_name)
         await self.interface.send_text_to_channel(text_template.generate_shipped_with(f"<@{target1_id}> {target1.__class__.__name__}"), self.players[target2_id].channel_name)
+        await self.interface.create_channel(config.COUPLE_CHANNEL)
+        await self.interface.add_user_to_channel(target1_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+        await self.interface.add_user_to_channel(target2_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+
         return text_template.generate_after_cupid_ship(f"<@{target1_id}>", f"<@{target2_id}>")
 
     async def test_game(self):

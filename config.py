@@ -37,6 +37,7 @@ LOBBY_CHANNEL = "lobby"
 GAMEPLAY_CHANNEL = "gameplay"
 WEREWOLF_CHANNEL = "werewolf"
 CEMETERY_CHANNEL = "cemetery"
+COUPLE_CHANNEL = "couple"
 
 DEFAULT_COUNT_CONFIG = [
     {'Werewolf': 1, 'Seer': 1, 'Villager': 2},
