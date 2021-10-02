@@ -92,10 +92,11 @@ class Game:
         if self.runtime_roles:
             role_config = self.runtime_roles
         else:
-            ROLE_CONFIG_FILE = "role_config.json"
+            ROLE_CONFIG_FILE = "json/role_config.json"
             try:
                 # Load the file everytime to ensure admin can change config while the bot is already running
                 with open(ROLE_CONFIG_FILE) as f:
+                    print(f"successfully loaded {ROLE_CONFIG_FILE}")
                     role_config = json.load(f)
             except:
                 # Default config
