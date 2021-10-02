@@ -127,6 +127,7 @@ async def parse_command(client, game, message):
                         await admin.delete_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL)
                         await admin.delete_channel(message.guild, client.user, config.WEREWOLF_CHANNEL)
                         await admin.delete_channel(message.guild, client.user, config.CEMETERY_CHANNEL)
+                        await admin.delete_channel(message.guild, client.user, config.COUPLE_CHANNEL)
                         await admin.delete_all_personal_channel(message.guild)
                         await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
                     except Exception as e:

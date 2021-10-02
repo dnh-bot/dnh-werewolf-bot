@@ -6,8 +6,8 @@ class Werewolf(Character):
     # Werewolf is able to vote at day, but has ability to vote at night
     # Do nothing actually, at night, a poll will be shown in #werewolf channel for all werewolves to vote there instead
 
-    async def get_killed(self):
-        if await super(Werewolf, self).get_killed():
+    async def get_killed(self, is_suicide=False):
+        if await super(Werewolf, self).get_killed(is_suicide):
             await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
             return True
         return False

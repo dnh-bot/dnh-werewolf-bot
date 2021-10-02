@@ -147,20 +147,19 @@ class Game:
 
     async def stop(self):
         print("======= Game stopped =======")
-        self.is_stopped = True
+        if self.is_stopped:
+            return
+        self.reset_game_state()
         self.next_flag.clear()
         await self.cancel_running_task(self.task_game_loop)
         await self.cancel_running_task(self.task_run_timer_phase)
 
         if self.players:
             await self.delete_channel()
-        self.reset_game_state()
 
-        if self.is_stopped:
-            return
-        await asyncio.sleep(1)
         await self.interface.send_text_to_channel(text_template.generate_end_text(), config.LOBBY_CHANNEL)
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
+        await asyncio.sleep(0)
 
     async def delete_channel(self):
         try:
@@ -273,7 +272,6 @@ class Game:
 
                 winner = self.get_winning_role()
                 if winner != None:
-                    self.is_stopped = True  # Need to update this value in case of end game.
                     self.winner = winner
                     break
         except asyncio.CancelledError:
@@ -634,6 +632,10 @@ class Game:
 
         await self.interface.send_text_to_channel(text_template.generate_shipped_with(f"<@{target2_id}> {target2.__class__.__name__}"), self.players[target1_id].channel_name)
         await self.interface.send_text_to_channel(text_template.generate_shipped_with(f"<@{target1_id}> {target1.__class__.__name__}"), self.players[target2_id].channel_name)
+        await self.interface.create_channel(config.COUPLE_CHANNEL)
+        await self.interface.add_user_to_channel(target1_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+        await self.interface.add_user_to_channel(target2_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+
         return text_template.generate_after_cupid_ship(f"<@{target1_id}>", f"<@{target2_id}>")
 
     async def test_game(self):
