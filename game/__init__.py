@@ -149,14 +149,14 @@ class Game:
         print("======= Game stopped =======")
         if self.is_stopped:
             return
-        self.reset_game_state()
+
         self.next_flag.clear()
         await self.cancel_running_task(self.task_game_loop)
         await self.cancel_running_task(self.task_run_timer_phase)
 
         if self.players:
             await self.delete_channel()
-
+        self.reset_game_state()
         await self.interface.send_text_to_channel(text_template.generate_end_text(), config.LOBBY_CHANNEL)
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
         await asyncio.sleep(0)
@@ -167,6 +167,7 @@ class Game:
                 self.interface.delete_channel(config.GAMEPLAY_CHANNEL),
                 self.interface.delete_channel(config.WEREWOLF_CHANNEL),
                 self.interface.delete_channel(config.CEMETERY_CHANNEL),
+                self.interface.delete_channel(config.COUPLE_CHANNEL),
                 *[player.delete_personal_channel() for player in self.players.values()]
             )
         except Exception as e:
