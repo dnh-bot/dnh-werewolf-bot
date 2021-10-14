@@ -442,3 +442,10 @@ def generate_table(header, data):
 
     # Joining up scores into a line
     return "```"+"\n".join(header) + "```"
+
+
+def generate_modes(modes_dict):
+    return "===========================================================================\n"+\
+           f"Chế độ chơi: \n"+\
+           f" - Ẩn danh sách các nhân vật đầu game: {'Có' if modes_dict.get('hidden') else 'Không'}"+\
+           "===========================================================================\n"

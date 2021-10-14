@@ -133,6 +133,8 @@ class Game:
 
             await self.create_channel()
 
+            await self.interface.send_text_to_channel(text_template.generate_modes(self.modes), config.GAMEPLAY_CHANNEL)
+
             if not self.modes.get("hidden"):
                 await self.interface.send_text_to_channel(text_template.generate_role_list_text(role_list), config.GAMEPLAY_CHANNEL)
 
