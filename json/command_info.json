@@ -27,6 +27,13 @@
     },
     "required_param_number": 0
   },
+  "mode": {
+    "description": {
+      "vi": "Thiết lập chế độ chơi. `!mode hidden on`",
+      "en": "Enable/Disable game modes. Eg: `!mode hidden on`"
+    },
+    "required_param_number": 2
+  },
   "join": {
     "description": {
       "vi": "Tham gia vào một trò chơi.",
