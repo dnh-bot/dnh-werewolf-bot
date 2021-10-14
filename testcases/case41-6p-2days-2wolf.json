@@ -1,0 +1,59 @@
+{
+	"name": "6 Players",
+	"player_list": {
+		"w1": "Werewolf",
+		"s1": "Seer",
+		"f1": "Fox",
+		"g1": "Guard",
+		"sw1": "Superwolf",
+		"wi1": "Witch"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"f1",
+				"g1",
+				"sw1",
+				"wi1",
+				"s1"
+			],
+			"action": [
+				"w1 vote f1",
+				"f1 vote w1",
+				"g1 vote sw1",
+				"sw1 vote g1",
+				"wi1 vote sw1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"s1",
+				"f1",
+				"g1",
+				"wi1"
+			],
+			"action": [
+				"w1 kill s1",
+				"s1 seer f1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"g1",
+				"wi1"
+			],
+			"action": [
+				"w1 vote wi1",
+				"g1 vote w1",
+				"wi1 vote w1"
+			]
+		}
+	],
+	"win": "Villager"
+}
