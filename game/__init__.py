@@ -138,10 +138,10 @@ class Game:
             # print(self.task_game_loop)
 
     async def create_channel(self):
+        await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
+        await self.interface.create_channel(config.WEREWOLF_CHANNEL)
+        await self.interface.create_channel(config.CEMETERY_CHANNEL)
         await asyncio.gather(
-            self.interface.create_channel(config.GAMEPLAY_CHANNEL),
-            self.interface.create_channel(config.WEREWOLF_CHANNEL),
-            self.interface.create_channel(config.CEMETERY_CHANNEL),
             *[player.create_personal_channel() for player in self.players.values()]
         )
 

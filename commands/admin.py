@@ -2,6 +2,7 @@
 This provides APIs for Admin role and bot role
 """
 
+from time import sleep
 import discord
 import asyncio
 from utils import logger
@@ -115,6 +116,9 @@ async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=T
     # Add a user to specific channel
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
+    if not channel:
+        asyncio.sleep(1) # Wait 1s here to wait for channel is ready
+        channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=is_read, send_messages=is_send)
         print(f"Successfully added {user} to {channel_name} read={is_read} send={is_send}")
