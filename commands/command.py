@@ -108,6 +108,11 @@ async def parse_command(client, game, message):
         elif cmd == "setroles":
             res = game.add_default_roles(parameters)
             await message.reply(res)
+        elif cmd == "mode":
+            mode = parameters[0]
+            on = True if parameters[1] == 'on' else False
+            res = game.set_mode(mode, on)
+            await message.reply(res)
 
         elif cmd.startswith('f'):
             if admin.is_admin(message.author):

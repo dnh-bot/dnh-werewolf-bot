@@ -32,6 +32,7 @@ class Game:
         self.next_flag = asyncio.Event()
         self.timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
         self.timer_enable = True
+        self.modes = {}
 
         self.reset_game_state()  # Init other game variables every end game.
 
@@ -73,8 +74,10 @@ class Game:
     def is_started(self):
         return self.game_phase != GamePhase.NEW_GAME
 
-    def awake(self):
-        pass
+    def set_mode(self, mode_str, on):
+        self.modes[mode_str] = on
+        return f"Set mode '{mode_str}' is {on}"
+
 
     def add_default_roles(self, role_json_in_string):
         try:
@@ -130,7 +133,10 @@ class Game:
 
             await self.create_channel()
 
-            await self.interface.send_text_to_channel(text_template.generate_role_list_text(role_list), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel(text_template.generate_modes(self.modes), config.GAMEPLAY_CHANNEL)
+
+            if not self.modes.get("hidden"):
+                await self.interface.send_text_to_channel(text_template.generate_role_list_text(role_list), config.GAMEPLAY_CHANNEL)
 
             self.start_time = datetime.datetime.now()
 
