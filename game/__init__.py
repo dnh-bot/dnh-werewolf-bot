@@ -144,9 +144,12 @@ class Game:
             # print(self.task_game_loop)
 
     async def create_channel(self):
-        await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
-        await self.interface.create_channel(config.WEREWOLF_CHANNEL)
-        await self.interface.create_channel(config.CEMETERY_CHANNEL)
+        await asyncio.gather(
+            self.interface.create_channel(config.GAMEPLAY_CHANNEL),
+            self.interface.create_channel(config.WEREWOLF_CHANNEL),
+            self.interface.create_channel(config.CEMETERY_CHANNEL),
+            self.interface.create_channel(config.COUPLE_CHANNEL)
+        )
         await asyncio.gather(
             *[player.create_personal_channel() for player in self.players.values()]
         )
@@ -290,6 +293,9 @@ class Game:
 
         await self.interface.send_text_to_channel(text_template.generate_endgame_text(self.get_winner()), config.GAMEPLAY_CHANNEL)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
+
+        reveal_list = [(_id, player.__class__.__name__) for _id, player in self.players.items()]
+        await self.interface.send_text_to_channel(text_template.generate_reveal_list(reveal_list), config.GAMEPLAY_CHANNEL)
 
         await self.cancel_running_task(self.task_run_timer_phase)
         print("End game loop")
