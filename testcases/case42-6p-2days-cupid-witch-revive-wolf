@@ -65,32 +65,7 @@
 				"wi1"
 			],
 			"action": [
-				"wi1 reborn l1"
-			]
-		},
-		{
-			"time": "day3",
-			"alive": [
-				"w1",
-				"c1",
-				"wi1",
-				"l1"
-			],
-			"action": [
-				"w1 vote l1",
-				"c1 vote l1",
-				"wi1 vote w1"
-			]
-		},
-		{
-			"time": "night3",
-			"alive": [
-				"w1",
-				"c1",
-				"wi1"
-			],
-			"action": [
-				"w1 kill c1"
+				"wi1 reborn sw1"
 			]
 		}
 	],
