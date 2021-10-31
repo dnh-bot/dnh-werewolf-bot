@@ -88,7 +88,6 @@ class Character:
         await self.interface.add_user_to_channel(
             self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True
         )
-        await self.interface.send_text_to_channel(f"<@{self.player_id}> là {self.__class__.__name__}", config.GAMEPLAY_CHANNEL)
 
     async def on_start_game(self, embed_data):
         # Will be overloaded in Child Class

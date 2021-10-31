@@ -448,4 +448,7 @@ def generate_modes(modes_dict):
     return "===========================================================================\n"+\
            f"Chế độ chơi: \n"+\
            f" - Ẩn danh sách các nhân vật đầu game: {'Có' if modes_dict.get('hidden') else 'Không'}"+\
-           "===========================================================================\n"
+           "\n===========================================================================\n"
+
+def generate_reveal_list(reveal_list):
+    return "\n".join([f"<@{player_id}> là {role}" for player_id , role in reveal_list])
