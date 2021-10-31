@@ -1,5 +1,6 @@
 import config
 from game import roles, text_template
+from utils import common
 
 import datetime
 import random
@@ -10,7 +11,7 @@ from collections import Counter
 from functools import reduce
 import asyncio
 import traceback
-import discord
+
 
 
 class GamePhase(Enum):
@@ -95,16 +96,7 @@ class Game:
         if self.runtime_roles:
             role_config = self.runtime_roles
         else:
-            ROLE_CONFIG_FILE = "json/role_config.json"
-            try:
-                # Load the file everytime to ensure admin can change config while the bot is already running
-                with open(ROLE_CONFIG_FILE) as f:
-                    print(f"successfully loaded {ROLE_CONFIG_FILE}")
-                    role_config = json.load(f)
-            except:
-                # Default config
-                print(f"{ROLE_CONFIG_FILE} not found, using default config")
-                role_config = config.DEFAULT_COUNT_CONFIG
+            role_config = common.read_json_file("json/role_config.json")
 
         ids = list(ids)
         try:

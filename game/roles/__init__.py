@@ -11,21 +11,10 @@ from game.roles.superwolf import Superwolf
 from game.roles.fox import Fox
 from game.roles.witch import Witch
 from game.roles.cupid import Cupid
-
-ROLE_INFO_FILE = "json/role_info.json"
-
-
-def read_role_info_json():
-    try:
-        with open(ROLE_INFO_FILE, "r", encoding="utf8") as f:
-            print(f"successfully loaded {ROLE_INFO_FILE}")
-            return json.load(f)
-    except Exception as e:
-        print(e)
-        return {}
+from utils import common
 
 
-role_info = read_role_info_json()
+role_info = common.read_json_file("json/role_info.json")
 
 
 def get_all_roles():

@@ -4,7 +4,7 @@ import config
 from game import text_template
 
 import discord
-import asyncio
+import asyncio  # Do not remove this. This for debug command
 
 # TODO: generate content of command embed_data
 # e.g: Select a player to vote/kill/... by using command ...\nFor example: ...
