@@ -65,8 +65,9 @@ async def test_case(game, filepath):
 
             assert check_alive_players(game, list(map(lambda x: id_map[x], action_data["alive"])), playersname)
             for action_str in action_data["action"]:
-                author_name, command, target_name = action_str.split()
-                print(await game.do_player_action(command, id_map[author_name], id_map[target_name]))
+                author_name, command = action_str.split()[:2]
+                target_name = action_str.split()[2:]
+                print(await game.do_player_action(command, id_map[author_name], *[id_map[i] for i in target_name]))
             await asyncio.sleep(DELAY_TIME)
             await game.next_phase()
 
@@ -88,7 +89,8 @@ async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
 
     # Run single test
-    await test_case(game, "./testcases/case-not-yet-winner.json")
+    
+    await test_case(game, "./testcases/case-witch-reborn-wolf.json")
 
     # Run all tests
     directory = "testcases"

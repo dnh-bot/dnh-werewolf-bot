@@ -22,7 +22,7 @@
 			"action": [
 				"w1 vote l1",
 				"l1 vote w1",
-				"c1 ship 3 5",
+				"c1 ship l1 sw1",
 				"sw1 vote c1",
 				"wi1 vote sw1"
 			]
@@ -65,9 +65,23 @@
 				"wi1"
 			],
 			"action": [
-				"wi1 reborn sw1"
+				"wi1 reborn l1",
+				"w1 kill wi1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"c1",
+				"l1"
+			],
+			"action": [
+				"w1 vote w1",
+				"c1 vote w1",
+				"l1 vote w1"
 			]
 		}
 	],
-	"win": "Werewolf"
+	"win": "Villager"
 }
