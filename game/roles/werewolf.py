@@ -13,6 +13,7 @@ class Werewolf(Character):
         return False
 
     async def on_reborn(self):
+        await super(Werewolf, self).on_reborn()
         await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
 
     async def on_night(self):

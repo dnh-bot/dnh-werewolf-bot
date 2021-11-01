@@ -1,0 +1,87 @@
+{
+	"name": "6 Players",
+	"player_list": {
+		"w1": "Werewolf",
+		"s1": "Seer",
+		"l1": "Lycan",
+		"c1": "Cupid",
+		"sw1": "Superwolf",
+		"wi1": "Witch"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"l1",
+				"c1",
+				"sw1",
+				"wi1",
+				"s1"
+			],
+			"action": [
+				"w1 vote l1",
+				"l1 vote w1",
+				"c1 ship l1 sw1",
+				"sw1 vote c1",
+				"wi1 vote sw1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"s1",
+				"l1",
+				"c1",
+				"wi1",
+				"sw1"
+			],
+			"action": [
+				"w1 kill s1",
+				"s1 seer l1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"c1",
+				"wi1",
+				"l1",
+				"sw1"
+			],
+			"action": [
+				"w1 vote l1",
+				"c1 vote l1",
+				"wi1 vote w1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"c1",
+				"wi1"
+			],
+			"action": [
+				"wi1 reborn l1",
+				"w1 kill wi1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"c1",
+				"l1"
+			],
+			"action": [
+				"w1 vote w1",
+				"c1 vote w1",
+				"l1 vote w1"
+			]
+		}
+	],
+	"win": "Villager"
+}
