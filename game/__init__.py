@@ -1,6 +1,6 @@
 import config
 from game import roles, text_template
-from utils import common
+import utils
 
 import datetime
 import random
@@ -76,7 +76,7 @@ class Game:
         return self.game_phase != GamePhase.NEW_GAME
 
     def set_mode(self, mode_str, on):
-        self.modes[mode_str] = on
+        modes = utils.common.update_json_file("json/character_config.json", mode_str, "True"if on else "False")
         return f"Set mode '{mode_str}' is {on}"
 
 
@@ -96,7 +96,7 @@ class Game:
         if self.runtime_roles:
             role_config = self.runtime_roles
         else:
-            role_config = common.read_json_file("json/role_config.json")
+            role_config = utils.common.read_json_file("json/role_config.json")
 
         ids = list(ids)
         try:

@@ -4,7 +4,9 @@ import config
 from game import text_template
 
 import discord
-import asyncio  # Do not remove this. This for debug command
+import asyncio # Do not remove this. This for debug command
+
+import utils  
 
 # TODO: generate content of command embed_data
 # e.g: Select a player to vote/kill/... by using command ...\nFor example: ...
@@ -108,7 +110,10 @@ async def parse_command(client, game, message):
         elif cmd == "setroles":
             res = game.add_default_roles(parameters)
             await message.reply(res)
-        elif cmd == "mode":
+        elif cmd == "showmodes":
+            modes = utils.common.read_json_file("json/character_config.json")
+            await message.reply(text_template.generate_modes(modes))
+        elif cmd == "setmode":
             mode = parameters[0]
             on = True if parameters[1] == 'on' else False
             res = game.set_mode(mode, on)

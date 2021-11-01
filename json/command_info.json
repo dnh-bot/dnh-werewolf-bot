@@ -27,10 +27,17 @@
     },
     "required_param_number": 0
   },
-  "mode": {
+  "showmodes": {
     "description": {
-      "vi": "Thiết lập chế độ chơi. `!mode hidden on`",
-      "en": "Enable/Disable game modes. Eg: `!mode hidden on`"
+      "vi": "Hiển thị thiết lập các chế độ chơi",
+      "en": "Display mode setting"
+    },
+    "required_param_number": 2
+  },
+  "setmode": {
+    "description": {
+      "vi": "Thiết lập chế độ chơi. `!setmode 2 on`",
+      "en": "Enable/Disable game modes. Eg: `!setmode 2 on`"
     },
     "required_param_number": 2
   },

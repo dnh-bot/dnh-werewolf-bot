@@ -445,10 +445,13 @@ def generate_table(header, data):
 
 
 def generate_modes(modes_dict):
+    print(modes_dict)
     return "===========================================================================\n"+\
-           f"Chế độ chơi: \n"+\
-           f" - Ẩn danh sách các nhân vật đầu game: {'Có' if modes_dict.get('hidden') else 'Không'}\n"+\
-           f" - Phù thủy (Witch) có thể giết người: {'Có' if modes_dict.get('witchkill') else 'Không'}\n"+\
+        f"Chế độ chơi: \n"+\
+        f" - 1. Ẩn danh sách các nhân vật đầu game: {'Bật' if modes_dict.get('hidden_role') == 'True' else 'Tắt'}\n"+\
+        f" - 2. Phù thủy (Witch) có thể giết người: {'Bật' if modes_dict.get('witch_can_kill') == 'True'  else 'Tắt'}\n"+\
+        f" - 3. Tiên tri có thể giết Cáo: {'Bật' if modes_dict.get('seer_can_kill_fox') == 'True'  else 'Tắt'}\n"+\
+        f" - 4. Không cho phép Bảo vệ bản thân: {'Bật' if modes_dict.get('prevent_guard_self_protection') == 'True'  else 'Tắt'}\n"+\
            "\n===========================================================================\n"
 
 def generate_reveal_list(reveal_list):
