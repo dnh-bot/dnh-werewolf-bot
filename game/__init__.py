@@ -76,9 +76,15 @@ class Game:
         return self.game_phase != GamePhase.NEW_GAME
 
     def set_mode(self, mode_str, on):
-        modes = utils.common.update_json_file("json/character_config.json", mode_str, "True"if on else "False")
+        utils.common.update_json_file("json/character_config.json", mode_str, "True"if on else "False")
         return f"Set mode '{mode_str}' is {on}"
 
+    def read_modes(self):
+        modes = utils.common.read_json_file("json/character_config.json")
+        #  Read json dict into runtime dict modes
+        for k, v in modes.items():
+            if v == "True":
+                self.modes[k] = True
 
     def add_default_roles(self, role_json_in_string):
         try:
@@ -127,7 +133,7 @@ class Game:
 
             await self.interface.send_text_to_channel(text_template.generate_modes(self.modes), config.GAMEPLAY_CHANNEL)
 
-            if not self.modes.get("hidden"):
+            if not self.modes.get("hidden_role"):
                 await self.interface.send_text_to_channel(text_template.generate_role_list_text(role_list), config.GAMEPLAY_CHANNEL)
 
             self.start_time = datetime.datetime.now()
@@ -240,6 +246,8 @@ class Game:
                 werewolf_list.append(_id)
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
+
+        self.read_modes()  # Read json config mode into runtime dict
 
         embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
@@ -570,7 +578,7 @@ class Game:
         if author.get_mana() == 0:
             return text_template.generate_out_of_mana()
 
-        if config.GUARD_PREVENT_SELF_PROTECTION and author_id == target_id:
+        if self.modes.get("prevent_guard_self_protection") and author_id == target_id:
             return text_template.generate_invalid_guard_selfprotection()
         if author.is_yesterday_target(target_id):
             return text_template.generate_invalid_guard_yesterdaytarget()
@@ -594,7 +602,7 @@ class Game:
             return text_template.generate_out_of_mana()
 
         author.on_use_mana()
-        if config.SEER_CAN_KILL_FOX and isinstance(target, roles.Fox):
+        if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
             self.night_pending_kill_list.append(target_id)
 
         return text_template.generate_after_voting_seer(f"<@{target_id}>", target.seer_seen_as_werewolf())
