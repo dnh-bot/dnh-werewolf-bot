@@ -111,7 +111,7 @@ async def parse_command(client, game, message):
             res = game.add_default_roles(parameters)
             await message.reply(res)
         elif cmd == "showmodes":
-            modes = utils.common.read_json_file("json/character_config.json")
+            modes = utils.common.read_json_file("json/game_config.json")
             await message.reply(text_template.generate_modes(modes))
         elif cmd == "setmode":
             mode = parameters[0]

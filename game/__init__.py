@@ -76,11 +76,11 @@ class Game:
         return self.game_phase != GamePhase.NEW_GAME
 
     def set_mode(self, mode_str, on):
-        utils.common.update_json_file("json/character_config.json", mode_str, "True"if on else "False")
+        utils.common.update_json_file("json/game_config.json", mode_str, "True"if on else "False")
         return f"Set mode '{mode_str}' is {on}"
 
     def read_modes(self):
-        modes = utils.common.read_json_file("json/character_config.json")
+        modes = utils.common.read_json_file("json/game_config.json")
         #  Read json dict into runtime dict modes
         for k, v in modes.items():
             if v == "True":
