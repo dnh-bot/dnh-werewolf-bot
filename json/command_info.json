@@ -118,6 +118,13 @@
     },
     "required_param_number": 1
   },
+  "curse": {
+    "description": {
+      "vi": "Nguyền rủa 1 người.",
+      "en": "Curse another player."
+    },
+    "required_param_number": 1
+  },
   "ship": {
     "description": {
       "vi": "Ghép đôi 2 người.",

@@ -90,8 +90,8 @@ def generate_player_list_embed(player_list, alive_status):
     if username_list:
         id_player_list = [f"{i} -> {p}" for i, p in zip(ids, username_list)]
         embed_data = {
-            "title": f"{alive_status} player list",
-            "description": "Please select a number to vote.",
+            "title": f"Danh sách người chơi {'còn sống' if alive_status else 'đã chết'}",
+            "description": "Chọn một ID trong số người chơi bên dưới",
             "content": [
                 ("ID -> Player", id_player_list)
             ]
@@ -157,8 +157,9 @@ def generate_invalid_guard_yesterdaytarget():
 
 # Witch
 def generate_before_voting_witch():
-    return "Phù thủy muốn cứu ai? Bạn chỉ được dùng kỹ năng này 1 lần.\n" +\
-        f"Hãy làm phép bằng cách nhập `{config.BOT_PREFIX}reborn ID` cứu người đó."
+    return "Bạn có thể cứu 1 người và giết 1 người. Bạn chỉ được dùng mỗi kỹ năng 1 lần.\n" +\
+        f"Nhập `{config.BOT_PREFIX}reborn ID` để cứu người.\n" +\
+        f"Nhập `{config.BOT_PREFIX}curse ID` để nguyền rủa 1 người.\n"
 
 
 def generate_after_witch_reborn(user):
