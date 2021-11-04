@@ -90,8 +90,8 @@ def generate_player_list_embed(player_list, alive_status):
     if username_list:
         id_player_list = [f"{i} -> {p}" for i, p in zip(ids, username_list)]
         embed_data = {
-            "title": f"{alive_status} player list",
-            "description": "Please select a number to vote.",
+            "title": f"Danh sách người chơi {'còn sống' if alive_status else 'đã chết'}",
+            "description": "Chọn một ID trong số người chơi bên dưới",
             "content": [
                 ("ID -> Player", id_player_list)
             ]
@@ -157,12 +157,17 @@ def generate_invalid_guard_yesterdaytarget():
 
 # Witch
 def generate_before_voting_witch():
-    return "Phù thủy muốn cứu ai? Bạn chỉ được dùng kỹ năng này 1 lần.\n" +\
-        f"Hãy làm phép bằng cách nhập `{config.BOT_PREFIX}reborn ID` cứu người đó."
+    return "Bạn có thể cứu 1 người và giết 1 người. Bạn chỉ được dùng mỗi kỹ năng 1 lần.\n" +\
+        f"Nhập `{config.BOT_PREFIX}reborn ID` để cứu người.\n" +\
+        f"Nhập `{config.BOT_PREFIX}curse ID` để nguyền rủa 1 người.\n"
 
 
 def generate_after_witch_reborn(user):
     return f"Bạn đã phục sinh thành công {user}"
+
+
+def generate_after_witch_curse(user):
+    return f"Bạn đã nguyền rủa thành công {user}"
 
 
 # Cupid
@@ -445,10 +450,19 @@ def generate_table(header, data):
 
 
 def generate_modes(modes_dict):
+    print(modes_dict)
     return "===========================================================================\n"+\
-           f"Chế độ chơi: \n"+\
-           f" - Ẩn danh sách các nhân vật đầu game: {'Có' if modes_dict.get('hidden') else 'Không'}"+\
-           "\n===========================================================================\n"
+        f"Chế độ chơi: \n"+\
+        f" - 1. Ẩn danh sách các nhân vật đầu game: {'Bật' if modes_dict.get('hidden_role') == 'True' else 'Tắt'}\n"+\
+        f" - 2. Tiên tri có thể giết Cáo: {'Bật' if modes_dict.get('seer_can_kill_fox') == 'True'  else 'Tắt'}\n"+\
+        f" - 3. Không cho phép Bảo vệ bản thân: {'Bật' if modes_dict.get('prevent_guard_self_protection') == 'True'  else 'Tắt'}\n"+\
+        f" - 4. Phù thủy (Witch) có thể giết người: {'Bật' if modes_dict.get('witch_can_kill') == 'True'  else 'Tắt'}\n"+\
+        "\n===========================================================================\n"
+
+
+def generate_mode_disabled():
+    return f"Chế độ này chưa bật"
+
 
 def generate_reveal_list(reveal_list):
     return "\n".join([f"<@{player_id}> là {role}" for player_id , role in reveal_list])

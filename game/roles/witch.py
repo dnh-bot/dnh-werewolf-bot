@@ -8,12 +8,19 @@ class Witch(Villager):
     def __init__(self, interface, player_id, player_name):
         super().__init__(interface, player_id, player_name)
         self.power = 1
+        self.curse_power = 1
 
     def get_power(self):
         return self.power
     
     def on_use_power(self):
         self.power = 0
+
+    def get_curse_power(self):
+        return self.curse_power
+
+    def on_use_curse_power(self):
+        self.curse_power = 0
 
     async def on_night(self):
         pass

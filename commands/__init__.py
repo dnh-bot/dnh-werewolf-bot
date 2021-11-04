@@ -1,22 +1,9 @@
 """Add cmd decorator here for parsing command parameters"""
-import json
 
 from config import TEXT_LANGUAGE
+import utils
 
-COMMAND_INFO_FILE = "json/command_info.json"
-
-
-def read_command_info_json():
-    try:
-        with open(COMMAND_INFO_FILE, "r", encoding="utf8") as f:
-            print(f"successfully loaded {COMMAND_INFO_FILE}")
-            return json.load(f)
-    except Exception as e:
-        print(e)
-        return {}
-
-
-command_info = read_command_info_json()
+command_info = utils.common.read_json_file("json/command_info.json")
 
 
 def get_all_commands():

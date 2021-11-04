@@ -1,5 +1,6 @@
 import config
 from game import roles, text_template
+import utils
 
 import datetime
 import random
@@ -10,7 +11,7 @@ from collections import Counter
 from functools import reduce
 import asyncio
 import traceback
-import discord
+
 
 
 class GamePhase(Enum):
@@ -75,9 +76,15 @@ class Game:
         return self.game_phase != GamePhase.NEW_GAME
 
     def set_mode(self, mode_str, on):
-        self.modes[mode_str] = on
-        return f"Set mode '{mode_str}' is {on}"
+        utils.common.update_json_file("json/game_config.json", mode_str, "True"if on else "False")
+        return f"Set mode '{mode_str}' is {on}. Warning: This setting is permanant!"
 
+    def read_modes(self):
+        modes = utils.common.read_json_file("json/game_config.json")
+        #  Read json dict into runtime dict modes
+        for k, v in modes.items():
+            if v == "True":
+                self.modes[k] = True
 
     def add_default_roles(self, role_json_in_string):
         try:
@@ -95,16 +102,7 @@ class Game:
         if self.runtime_roles:
             role_config = self.runtime_roles
         else:
-            ROLE_CONFIG_FILE = "json/role_config.json"
-            try:
-                # Load the file everytime to ensure admin can change config while the bot is already running
-                with open(ROLE_CONFIG_FILE) as f:
-                    print(f"successfully loaded {ROLE_CONFIG_FILE}")
-                    role_config = json.load(f)
-            except:
-                # Default config
-                print(f"{ROLE_CONFIG_FILE} not found, using default config")
-                role_config = config.DEFAULT_COUNT_CONFIG
+            role_config = utils.common.read_json_file("json/role_config.json")
 
         ids = list(ids)
         try:
@@ -135,7 +133,7 @@ class Game:
 
             await self.interface.send_text_to_channel(text_template.generate_modes(self.modes), config.GAMEPLAY_CHANNEL)
 
-            if not self.modes.get("hidden"):
+            if not self.modes.get("hidden_role"):
                 await self.interface.send_text_to_channel(text_template.generate_role_list_text(role_list), config.GAMEPLAY_CHANNEL)
 
             self.start_time = datetime.datetime.now()
@@ -249,7 +247,9 @@ class Game:
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
 
-        embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
+        self.read_modes()  # Read json config mode into runtime dict
+
+        embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
 
         info = text_template.generate_werewolf_list(werewolf_list)
@@ -342,7 +342,7 @@ class Game:
         self.day += 1
         if self.players:
             await self.interface.send_text_to_channel(text_template.generate_day_phase_beginning_text(self.day), config.GAMEPLAY_CHANNEL)
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
+            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
             embed_data["color"] = 0xe67e22
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
@@ -392,13 +392,16 @@ class Game:
                 text_template.generate_before_voting_werewolf(),
                 config.WEREWOLF_CHANNEL
             )
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), "Alive")
+            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
             embed_data["color"] = 0xe67e22
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
             # Send alive player list to all skilled characters (guard, seer, etc.)
-            await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if not isinstance(player, roles.Witch)])
+            if self.modes.get("witch_can_kill"):
+                await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players()])
+            else:
+                await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if not isinstance(player, roles.Witch)])
 
-            embed_data = text_template.generate_player_list_embed(self.get_dead_players(), "Dead")
+            embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False)
             # Send dead player list to Witch if Witch has not used skill
             if embed_data:  # This table can be empty (Noone is dead)
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if (isinstance(player, roles.Witch) and player.get_power())])
@@ -541,6 +544,8 @@ class Game:
             return await self.seer(author, targets[0])
         elif cmd == "reborn":
             return await self.reborn(author, targets[0])
+        elif cmd == "curse":
+            return await self.curse(author, targets[0])
         elif cmd == "ship":
             return await self.ship(author, *targets[:2])
 
@@ -578,7 +583,7 @@ class Game:
         if author.get_mana() == 0:
             return text_template.generate_out_of_mana()
 
-        if config.GUARD_PREVENT_SELF_PROTECTION and author_id == target_id:
+        if self.modes.get("prevent_guard_self_protection") and author_id == target_id:
             return text_template.generate_invalid_guard_selfprotection()
         if author.is_yesterday_target(target_id):
             return text_template.generate_invalid_guard_yesterdaytarget()
@@ -602,7 +607,7 @@ class Game:
             return text_template.generate_out_of_mana()
 
         author.on_use_mana()
-        if config.SEER_CAN_KILL_FOX and isinstance(target, roles.Fox):
+        if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
             self.night_pending_kill_list.append(target_id)
 
         return text_template.generate_after_voting_seer(f"<@{target_id}>", target.seer_seen_as_werewolf())
@@ -627,6 +632,28 @@ class Game:
         self.reborn_set.add(target_id)
 
         return text_template.generate_after_witch_reborn(f"<@{target_id}>")
+
+    async def curse(self, author, target):
+        if not self.modes.get("witch_can_kill"):
+            return text_template.generate_mode_disabled()
+
+        if self.game_phase != GamePhase.NIGHT:
+            return text_template.generate_invalid_nighttime()
+
+        if not isinstance(author, roles.Witch):
+            return text_template.generate_invalid_author()
+
+        author_id = author.player_id
+        target_id = target.player_id
+
+        if author.get_curse_power() == 0:
+            return text_template.generate_out_of_power()
+
+        author.on_use_curse_power()
+        # Kill someone
+        self.night_pending_kill_list.append(target_id)
+
+        return text_template.generate_after_witch_curse(f"<@{target_id}>")
 
     async def ship(self, author, target1, target2):
         if not isinstance(author, roles.Cupid):

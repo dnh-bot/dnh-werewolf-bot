@@ -4,7 +4,9 @@ import config
 from game import text_template
 
 import discord
-import asyncio
+import asyncio # Do not remove this. This for debug command
+
+import utils  
 
 # TODO: generate content of command embed_data
 # e.g: Select a player to vote/kill/... by using command ...\nFor example: ...
@@ -31,7 +33,7 @@ async def parse_command(client, game, message):
         elif cmd == "stop":
             await player.do_stop(game, message, force=False)
 
-        elif cmd in ("vote", "kill", "guard", "seer", "reborn", "ship"):
+        elif cmd in ("vote", "kill", "guard", "seer", "reborn", "curse", "ship"):
             if not game.is_started():
                 # prevent user uses command before game starts
                 await message.reply(text_template.generate_game_not_started_text())
@@ -40,7 +42,7 @@ async def parse_command(client, game, message):
             is_valid_channel = \
                 (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
                 (cmd == "kill" and message.channel.name == config.WEREWOLF_CHANNEL) or\
-                (cmd in ("guard", "seer", "reborn", "ship") and message.channel.name.strip().startswith("personal"))
+                (cmd in ("guard", "seer", "reborn", "curse", "ship") and message.channel.name.strip().startswith("personal"))
 
             if is_valid_channel:
                 author = message.author
@@ -108,7 +110,10 @@ async def parse_command(client, game, message):
         elif cmd == "setroles":
             res = game.add_default_roles(parameters)
             await message.reply(res)
-        elif cmd == "mode":
+        elif cmd == "showmodes":
+            modes = utils.common.read_json_file("json/game_config.json")
+            await message.reply(text_template.generate_modes(modes))
+        elif cmd == "setmode":
             mode = parameters[0]
             on = True if parameters[1] == 'on' else False
             res = game.set_mode(mode, on)
