@@ -541,6 +541,8 @@ class Game:
             return await self.seer(author, targets[0])
         elif cmd == "reborn":
             return await self.reborn(author, targets[0])
+        elif cmd == "curse":
+            return await self.curse(author, targets[0])
         elif cmd == "ship":
             return await self.ship(author, *targets[:2])
 
@@ -627,6 +629,28 @@ class Game:
         self.reborn_set.add(target_id)
 
         return text_template.generate_after_witch_reborn(f"<@{target_id}>")
+
+    async def curse(self, author, target):
+        if not self.modes.get("witch_can_kill"):
+            return text_template.generate_mode_disabled()
+
+        if self.game_phase != GamePhase.NIGHT:
+            return text_template.generate_invalid_nighttime()
+
+        if not isinstance(author, roles.Witch):
+            return text_template.generate_invalid_author()
+
+        author_id = author.player_id
+        target_id = target.player_id
+
+        if author.get_curse_power() == 0:
+            return text_template.generate_out_of_power()
+
+        author.on_use_curse_power()
+        # Kill someone
+        self.night_pending_kill_list.append(target_id)
+
+        return text_template.generate_after_witch_curse(f"<@{target_id}>")
 
     async def ship(self, author, target1, target2):
         if not isinstance(author, roles.Cupid):

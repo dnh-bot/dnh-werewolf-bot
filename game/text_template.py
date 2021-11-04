@@ -165,6 +165,10 @@ def generate_after_witch_reborn(user):
     return f"Bạn đã phục sinh thành công {user}"
 
 
+def generate_after_witch_curse(user):
+    return f"Bạn đã nguyền rủa thành công {user}"
+
+
 # Cupid
 def generate_start_game_cupid():
     return "Cupid muốn cho cặp đôi nào được đồng sinh cộng tử.\n" +\
@@ -451,8 +455,12 @@ def generate_modes(modes_dict):
         f" - 1. Ẩn danh sách các nhân vật đầu game: {'Bật' if modes_dict.get('hidden_role') == 'True' else 'Tắt'}\n"+\
         f" - 2. Tiên tri có thể giết Cáo: {'Bật' if modes_dict.get('seer_can_kill_fox') == 'True'  else 'Tắt'}\n"+\
         f" - 3. Không cho phép Bảo vệ bản thân: {'Bật' if modes_dict.get('prevent_guard_self_protection') == 'True'  else 'Tắt'}\n"+\
+        f" - 4. Phù thủy (Witch) có thể giết người: {'Bật' if modes_dict.get('witch_can_kill') == 'True'  else 'Tắt'}\n"+\
         "\n===========================================================================\n"
-        #f" - 4. Phù thủy (Witch) có thể giết người: {'Bật' if modes_dict.get('witch_can_kill') == 'True'  else 'Tắt'}\n"
+
+
+def generate_mode_disabled():
+    return f"Chế độ này chưa bật"
 
 
 def generate_reveal_list(reveal_list):
