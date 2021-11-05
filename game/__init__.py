@@ -130,8 +130,8 @@ class Game:
             role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
 
             await self.create_channel()
-
-            await self.interface.send_text_to_channel(text_template.generate_modes(self.modes), config.GAMEPLAY_CHANNEL)
+            self.read_modes()  # Read json config mode into runtime dict
+            await self.interface.send_text_to_channel(text_template.generate_modes(dict(zip(self.modes, map(lambda x: "True", self.modes.values())))), config.GAMEPLAY_CHANNEL)
 
             if not self.modes.get("hidden_role"):
                 await self.interface.send_text_to_channel(text_template.generate_role_list_text(role_list), config.GAMEPLAY_CHANNEL)
@@ -246,8 +246,6 @@ class Game:
                 werewolf_list.append(_id)
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
-
-        self.read_modes()  # Read json config mode into runtime dict
 
         embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
