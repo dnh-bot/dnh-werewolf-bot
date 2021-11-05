@@ -1,0 +1,38 @@
+{
+    "name":"Simple test zombie",
+    "player_list":{
+        "w":"Werewolf",
+        "s":"Seer",
+        "z":"Zombie",
+        "v":"Villager"
+    },
+    "timeline":[
+        {
+            "time":"day1",
+            "alive":["w","s","z","v"],
+            "action": [
+                "w vote z",
+                "s vote z",
+                "v vote w"
+            ]
+        },
+        {
+            "time":"night1",
+            "alive":["w","s","v"],
+            "action": [
+                "z zombie",
+                "w kill v"
+            ]
+        },
+        {
+            "time":"day2",
+            "alive":["w","s","z"],
+            "action": [
+                "s vote w",
+                "z vote w",
+                "w vote z"
+            ]
+        }
+    ],
+    "win": "Villager"
+}

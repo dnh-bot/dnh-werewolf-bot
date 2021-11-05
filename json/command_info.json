@@ -125,6 +125,13 @@
     },
     "required_param_number": 1
   },
+  "zombie": {
+    "description": {
+      "vi": "Tự đội mồ sống dậy.",
+      "en": "Reborn yourself."
+    },
+    "required_param_number": 0
+  },
   "ship": {
     "description": {
       "vi": "Ghép đôi 2 người.",

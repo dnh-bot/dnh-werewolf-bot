@@ -80,6 +80,15 @@
     "daytime_command": "vote",
     "nighttime_command": "reborn"
   },
+  "Zombie": {
+    "name_vi": "Xác sống",
+    "description": {
+      "vi": "Có thể tự hồi sinh một lần duy nhất trong game.",
+      "en": ""
+    },
+    "daytime_command": "vote",
+    "nighttime_command": "zombie"
+  },
   "Cupid": {
     "name_vi": "Thần tình yêu",
     "description": {
