@@ -522,7 +522,8 @@ class Game:
         # print(self.players)
         author = self.players.get(author_id)
         if author is None or not author.is_alive():
-            return f"You must be alive ingame to {cmd}!"
+            if cmd != "zombie":  # Zombie can use skill after death
+                return f"You must be alive ingame to {cmd}!"
 
         targets = []
         for target_id in targets_id:
@@ -531,7 +532,7 @@ class Game:
                 return "Invalid target user. Target user is not a player"
             targets.append(target)
 
-        if not targets[0].is_alive() and cmd != "reborn":
+        if cmd != "zombie" and not targets[0].is_alive() and cmd != "reborn":
             return text_template.generate_dead_target_text() if cmd=="vote" else text_template.generate_invalid_target()
 
         if cmd == "vote":
@@ -546,6 +547,8 @@ class Game:
             return await self.reborn(author, targets[0])
         elif cmd == "curse":
             return await self.curse(author, targets[0])
+        elif cmd == "zombie":
+            return await self.zombie(author)
         elif cmd == "ship":
             return await self.ship(author, *targets[:2])
 
@@ -654,6 +657,23 @@ class Game:
         self.night_pending_kill_list.append(target_id)
 
         return text_template.generate_after_witch_curse(f"<@{target_id}>")
+
+    async def zombie(self, author):
+        if self.game_phase != GamePhase.NIGHT:
+            return text_template.generate_invalid_nighttime()
+
+        if not isinstance(author, roles.Zombie):
+            return text_template.generate_invalid_author()
+
+        author_id = author.player_id
+
+        if author.get_power() == 0:
+            return text_template.generate_out_of_power()
+
+        author.on_use_power()
+        self.reborn_set.add(author_id)
+
+        return text_template.generate_after_zombie_reborn()
 
     async def ship(self, author, target1, target2):
         if not isinstance(author, roles.Cupid):

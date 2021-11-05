@@ -4,7 +4,7 @@ import commands
 
 
 def generate_usage_text_list(cmd, **kwargs):
-    if cmd in ("vote", "kill", "guard", "seer", "reborn"):
+    if cmd in ("vote", "kill", "guard", "seer", "reborn", "curse"):
         player_id = kwargs.get("player_id1", "player_id")
         return [f"`{config.BOT_PREFIX}{cmd} {player_id}`", f"`{config.BOT_PREFIX}{cmd} @user`"]
     elif cmd == "ship":
@@ -168,6 +168,15 @@ def generate_after_witch_reborn(user):
 
 def generate_after_witch_curse(user):
     return f"Bạn đã nguyền rủa thành công {user}"
+
+
+# Zombie
+def generate_before_voting_zombie():
+    return "Bạn có thể đội mồ sống dậy! Bạn chỉ có thể sử dụng kỹ năng này 1 lần.\n" +\
+        f"Nhập `{config.BOT_PREFIX}zombie` để trở lại cuộc đời.\n"
+
+def generate_after_zombie_reborn():
+    return f"Bạn đã đội mồ thành công"
 
 
 # Cupid
