@@ -63,7 +63,7 @@ class Game:
         self.runtime_roles = None
 
     def get_winner(self):
-        if self.winner == None:
+        if self.winner is None:
             return "None"
         return self.winner.__name__
 
@@ -77,7 +77,7 @@ class Game:
         return self.game_phase != GamePhase.NEW_GAME
 
     def set_mode(self, mode_str, on):
-        utils.common.update_json_file("json/game_config.json", mode_str, "True"if on else "False")
+        utils.common.update_json_file("json/game_config.json", mode_str, "True" if on else "False")
         return f"Set mode '{mode_str}' is {on}. Warning: This setting is permanant!"
 
     def read_modes(self):
@@ -221,8 +221,7 @@ class Game:
             "\n".join(
                 map(str, [
                     (player_id, player.__class__.__name__)
-                    for player_id, player in self.players.items()
-                    if player.is_alive()
+                    for player_id, player in self.players.items() if player.is_alive()
                 ])
             ),
             "\n"
@@ -280,7 +279,7 @@ class Game:
                 print("End phase")
 
                 winner = self.get_winning_role()
-                if winner != None:
+                if winner is not None:
                     self.winner = winner
                     break
         except asyncio.CancelledError:
@@ -300,7 +299,7 @@ class Game:
         print("End game loop")
 
     def get_winning_role(self):
-        alives = [p for p in self.players.values() if p.is_alive()]
+        alives = self.get_alive_players()
         num_players = len(alives)
         num_werewolf = sum([isinstance(p, roles.Werewolf) for p in alives])
 
@@ -365,7 +364,7 @@ class Game:
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"<@{lynched}>", votes), config.GAMEPLAY_CHANNEL)
 
                 cupid_couple = self.cupid_dict.get(lynched)
-                if cupid_couple != None:
+                if cupid_couple is not None:
                     await self.players[cupid_couple].get_killed(True)
                     await self.interface.send_text_to_channel(text_template.generate_couple_died(f"<@{lynched}>", f"<@{cupid_couple}>"), config.GAMEPLAY_CHANNEL)
             else:
@@ -427,7 +426,7 @@ class Game:
 
         await self.interface.send_text_to_channel(text_template.generate_killed_text(kills), config.GAMEPLAY_CHANNEL)
 
-        if cupid_couple != None:
+        if cupid_couple is not None:
             await self.players[cupid_couple].get_killed(True)
             await self.interface.send_text_to_channel(text_template.generate_couple_died(f"<@{self.cupid_dict[cupid_couple]}>", f"<@{cupid_couple}>", False), config.GAMEPLAY_CHANNEL)
 
