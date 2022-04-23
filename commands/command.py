@@ -5,6 +5,7 @@ from game import text_template
 
 import discord
 import asyncio # Do not remove this. This for debug command
+from datetime import datetime, time
 
 import utils  
 
@@ -37,6 +38,10 @@ async def parse_command(client, game, message):
             if not game.is_started():
                 # prevent user uses command before game starts
                 await message.reply(text_template.generate_game_not_started_text())
+                return None
+
+            if not game.is_in_play_time():
+                await message.reply(text_template.generate_game_not_playing_text())
                 return None
 
             is_valid_channel = \
@@ -107,6 +112,34 @@ async def parse_command(client, game, message):
         elif cmd == "timerstop":
             game.timer_stopped = True
             await message.reply(text_template.generate_timer_stop_text())
+
+        elif cmd == "setplaytime":
+            """Usage:
+                `!setplaytime 10:00 21:00` -> start_time = 10:00, end_time = 21:00 
+            """
+            if len(parameters) >= 2:
+                try:
+                    start_time = datetime.strptime(parameters[0], "%H:%M").time()
+                    end_time = datetime.strptime(parameters[1], "%H:%M").time()
+                except ValueError:
+                    await message.reply(text_template.generate_invalid_command_text(cmd))
+                    start_time = None
+                    end_time = None
+
+                if start_time is not None and end_time is not None:
+                    game.set_play_time(start_time, end_time)
+                    msg = "Bạn sẽ được chơi "
+                    if start_time == end_time:
+                        msg += "cả ngày."
+                    else:
+                        msg += f"từ {start_time.strftime('%H:%M')} đến "
+                        if end_time == time(0, 0, 0):
+                            msg += f"hết ngày."
+                        else:
+                            msg += f"{end_time.strftime('%H:%M')}{'' if start_time < end_time else ' ngày hôm sau'}."
+
+                    await message.reply(msg)
+
         elif cmd == "setroles":
             res = game.add_default_roles(parameters)
             await message.reply(res)

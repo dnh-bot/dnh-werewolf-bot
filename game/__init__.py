@@ -13,7 +13,6 @@ import asyncio
 import traceback
 
 
-
 class GamePhase(Enum):
     NEW_GAME = 0
     DAY = 1
@@ -41,6 +40,8 @@ class Game:
         print("reset_game_state")
         self.is_stopped = True
         self.start_time = None
+        self.play_time_start = datetime.time(0, 0, 0)
+        self.play_time_end = datetime.time(0, 0, 0)
         self.players = {}  # id: Player
         self.playersname = {}  # id: username
         self.game_phase = GamePhase.NEW_GAME
@@ -353,7 +354,6 @@ class Game:
             print("Error no player in game.")
             await self.stop()
 
-
     async def do_end_daytime_phase(self):
         print("do_end_daytime_phase")
         if self.voter_dict:
@@ -514,6 +514,31 @@ class Game:
             print("cancel_me(): cancel sleep")
         except:
             print("Unknown run_timer_phase")
+
+    def set_play_time(self, time_start: datetime.time, time_end: datetime.time):
+        """
+        Arguments:
+            time_start: datetime.time
+            time_end: datetime.time
+        """
+        if isinstance(time_start, datetime.time) and isinstance(time_end, datetime.time):
+            self.play_time_start = time_start
+            self.play_time_end = time_end
+        else:
+            print("Invalid time_start or time_end format")
+
+    def is_in_play_time(self, time_point=datetime.datetime.now()):
+        if isinstance(time_point, datetime.datetime):
+            time_point = time_point.time()
+        elif not isinstance(time_point, datetime.time):
+            return False
+
+        if self.play_time_start < self.play_time_end:
+            return self.play_time_start <= time_point <= self.play_time_end
+        elif self.play_time_start > self.play_time_end:
+            return self.play_time_start <= time_point or time_point <= self.play_time_end
+        else:
+            return True  # a day
 
     async def do_player_action(self, cmd, author_id, *targets_id):
         assert self.players is not None
