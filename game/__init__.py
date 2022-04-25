@@ -306,11 +306,41 @@ class Game:
             print("Error: ", e)
             print(traceback.format_exc())
 
-        await self.interface.send_text_to_channel(text_template.generate_endgame_text(self.get_winner()), config.GAMEPLAY_CHANNEL)
+        game_winner = self.get_winner()
+        await self.interface.send_text_to_channel(text_template.generate_endgame_text(game_winner), config.GAMEPLAY_CHANNEL)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
         reveal_list = [(_id, player.__class__.__name__) for _id, player in self.players.items()]
         await self.interface.send_text_to_channel(text_template.generate_reveal_list(reveal_list), config.GAMEPLAY_CHANNEL)
+
+        # write to leaderboard
+        reveal_roles_filter = {}
+        for player_id, role in reveal_list:
+            if role not in reveal_roles_filter:
+                reveal_roles_filter[role] = []
+
+            reveal_roles_filter[role].append(player_id)
+
+        game_result = {
+            "color": 0xfabe4e,
+            "title": "Kết quả trò chơi",
+            "description": f"Trò chơi đã bắt đầu lúc {self.start_time.strftime('%H:%M:%S ngày %d-%m-%Y')}.",
+            "content": [
+                ("Số ngày đã trải qua", self.day),
+                ("🏆 Phe chiến thắng: " + game_winner, ", ".join(reveal_roles_filter[game_winner])),
+                (
+                    "📝 Danh sách role",
+                    [
+                        f"- {role}: {', '.join(f'<@{player_id}>' for player_id in player_id_lists)}"
+                        for role, player_id_lists in reveal_roles_filter
+                    ]
+                )
+            ]
+        }
+        if self.cupid_dict:
+            game_result["content"].append(("💘 Cặp đôi vàng", " x ".join(f"<@{player_id}>" for player_id in self.cupid_dict.keys())))
+
+        await self.interface.send_embed_to_channel(game_result, config.LEADERBOARD_CHANNEL)
 
         await self.cancel_running_task(self.task_run_timer_phase)
         print("End game loop")
