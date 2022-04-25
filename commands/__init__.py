@@ -18,6 +18,13 @@ def get_command_description(command):
     return None
 
 
+def get_command_exclusive_roles(command):
+    if command in command_info:
+        return command_info[command]["exclusive_roles"]
+
+    return None
+
+
 def get_command_param_number(command):
     if command in command_info:
         return command_info[command]["required_param_number"]

@@ -4,6 +4,7 @@
       "vi": "Thiết lập đồng hồ đếm ngược.",
       "en": "Set the current timer."
     },
+    "exclusive_roles": [],
     "required_param_number": 3
   },
   "timerstart": {
@@ -11,6 +12,7 @@
       "vi": "Chạy đồng hồ đếm ngược hiện tại.",
       "en": "Start the current timer."
     },
+    "exclusive_roles": [],
     "required_param_number": 0
   },
   "timerstop": {
@@ -18,13 +20,23 @@
       "vi": "Dừng đồng hồ đếm ngược hiện tại.",
       "en": "Stop the current timer."
     },
+    "exclusive_roles": [],
     "required_param_number": 0
+  },
+  "setplaytime": {
+    "description": {
+      "vi": "Thiết lập giờ chơi trong 1 ngày.",
+      "en": "Set the playing time in a day."
+    },
+    "exclusive_roles": [],
+    "required_param_number": 2
   },
   "setroles": {
     "description": {
       "vi": "Thiết lập bảng phân vai mặc định cho trò chơi mới.",
       "en": "Set default player roles for a new game"
     },
+    "exclusive_roles": [],
     "required_param_number": 0
   },
   "showmodes": {
@@ -32,6 +44,7 @@
       "vi": "Hiển thị thiết lập các chế độ chơi",
       "en": "Display mode setting"
     },
+    "exclusive_roles": [],
     "required_param_number": 2
   },
   "setmode": {
@@ -39,6 +52,7 @@
       "vi": "Thiết lập chế độ chơi. `!setmode 2 on`",
       "en": "Enable/Disable game modes. Eg: `!setmode 2 on`"
     },
+    "exclusive_roles": [],
     "required_param_number": 2
   },
   "join": {
@@ -46,6 +60,7 @@
       "vi": "Tham gia vào một trò chơi.",
       "en": "Join a game."
     },
+    "exclusive_roles": [],
     "required_param_number": 0
   },
   "leave": {
@@ -53,6 +68,7 @@
       "vi": "Rời khỏi một trò chơi.",
       "en": "Leave a game."
     },
+    "exclusive_roles": [],
     "required_param_number": 0
   },
   "start": {
@@ -60,6 +76,7 @@
       "vi": "Bắt đầu một trò chơi (cần đủ số lượng vote).",
       "en": "Start a game."
     },
+    "exclusive_roles": [],
     "required_param_number": 0
   },
   "next": {
@@ -67,6 +84,7 @@
       "vi": "Nhảy đến phase sau (cần đủ số lượng vote).",
       "en": "Jump to next phase."
     },
+    "exclusive_roles": [],
     "required_param_number": 0
   },
   "stop": {
@@ -74,13 +92,15 @@
       "vi": "Dừng trò chơi.",
       "en": "Stop a game."
     },
+    "exclusive_roles": [],
     "required_param_number": 0
   },
   "status": {
     "description": {
-      "vi": "Xem trạng thái bầu chọn của ngày hiện tại.",
-      "en": "Show voting status of current daytime."
+      "vi": "Xem trạng thái bầu chọn của buổi hiện tại.",
+      "en": "Show voting status of current time."
     },
+    "exclusive_roles": [],
     "required_param_number": 0
   },
   "vote": {
@@ -88,6 +108,7 @@
       "vi": "Lựa chọn một người sẽ bị đưa lên máy chém.",
       "en": "A command for everyone to vote an user."
     },
+    "exclusive_roles": [],
     "required_param_number": 1
   },
   "kill": {
@@ -95,6 +116,7 @@
       "vi": "Lựa chọn một người sẽ bị ăn thịt trong đêm.",
       "en": "A command for a Werewolf to kill an user."
     },
+    "exclusive_roles": ["Werewolf", "Superwolf"],
     "required_param_number": 1
   },
   "guard": {
@@ -102,6 +124,7 @@
       "vi": "Bảo vệ một ai đó trong đêm.",
       "en": "A command for a Guard to guard an user."
     },
+    "exclusive_roles": ["Guard"],
     "required_param_number": 1
   },
   "seer": {
@@ -109,6 +132,7 @@
       "vi": "Soi một người bất kỳ.",
       "en": "A command for a Seer to seer an user."
     },
+    "exclusive_roles": ["Seer"],
     "required_param_number": 1
   },
   "reborn": {
@@ -116,6 +140,7 @@
       "vi": "Hồi sinh một người đã chết.",
       "en": "A command for a Witch to reborn an user."
     },
+    "exclusive_roles": ["Witch"],
     "required_param_number": 1
   },
   "curse": {
@@ -123,6 +148,7 @@
       "vi": "Nguyền rủa 1 người.",
       "en": "Curse another player."
     },
+    "exclusive_roles": ["Witch"],
     "required_param_number": 1
   },
   "zombie": {
@@ -130,6 +156,7 @@
       "vi": "Tự đội mồ sống dậy.",
       "en": "Reborn yourself."
     },
+    "exclusive_roles": ["Zombie"],
     "required_param_number": 0
   },
   "ship": {
@@ -137,6 +164,7 @@
       "vi": "Ghép đôi 2 người.",
       "en": "A command for a Cupid to ship 2 users."
     },
+    "exclusive_roles": ["Cupid"],
     "required_param_number": 2
   }
 }

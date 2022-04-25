@@ -1,7 +1,7 @@
 import config
 from game import roles, text_template
-import utils
 
+import utils
 import datetime
 import random
 import time
@@ -9,9 +9,9 @@ import json
 from enum import Enum
 from collections import Counter
 from functools import reduce
-import asyncio
 import traceback
-
+import asyncio
+from tzlocal import get_localzone
 
 
 class GamePhase(Enum):
@@ -41,6 +41,8 @@ class Game:
         print("reset_game_state")
         self.is_stopped = True
         self.start_time = None
+        self.play_time_start = datetime.time(0, 0, 0)
+        self.play_time_end = datetime.time(0, 0, 0)
         self.players = {}  # id: Player
         self.playersname = {}  # id: username
         self.game_phase = GamePhase.NEW_GAME
@@ -62,7 +64,7 @@ class Game:
         self.runtime_roles = None
 
     def get_winner(self):
-        if self.winner == None:
+        if self.winner is None:
             return "None"
         return self.winner.__name__
 
@@ -76,7 +78,7 @@ class Game:
         return self.game_phase != GamePhase.NEW_GAME
 
     def set_mode(self, mode_str, on):
-        utils.common.update_json_file("json/game_config.json", mode_str, "True"if on else "False")
+        utils.common.update_json_file("json/game_config.json", mode_str, "True" if on else "False")
         return f"Set mode '{mode_str}' is {on}. Warning: This setting is permanant!"
 
     def read_modes(self):
@@ -220,18 +222,33 @@ class Game:
             "\n".join(
                 map(str, [
                     (player_id, player.__class__.__name__)
-                    for player_id, player in self.players.items()
-                    if player.is_alive()
+                    for player_id, player in self.players.items() if player.is_alive()
                 ])
             ),
             "\n"
         ))
 
-    def get_vote_status(self):
+    def get_game_status(self, player_id=None):
+        """
+        Return voter table (if any) with its description
+        """
+        if self.game_phase == GamePhase.DAY:
+            return self.get_vote_status(), "Danh sách những kẻ có khả năng bị hành hình"
+        elif self.game_phase == GamePhase.NIGHT:
+            if isinstance(self.players[player_id], roles.Werewolf):
+                return self.get_vote_status(self.wolf_kill_dict), "Danh sách những kẻ có khả năng bị ăn thịt"
+        elif self.game_phase == GamePhase.NEW_GAME:
+            # TODO
+            return {}, "to be continue..."
+        return {}, ""
+
+    def get_vote_status(self, voter_dict=None):
         # From {"u1":"u2", "u2":"u1", "u3":"u1"}
         # to {"u2": {"u1"}, "u1": {"u3", "u2"}}
-        d = self.voter_dict
-        table_dict = reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, d.items(), dict())
+        if voter_dict is None:
+            voter_dict = self.voter_dict
+
+        table_dict = reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, voter_dict.items(), dict())
         print(table_dict)
         return table_dict
 
@@ -279,7 +296,7 @@ class Game:
                 print("End phase")
 
                 winner = self.get_winning_role()
-                if winner != None:
+                if winner is not None:
                     self.winner = winner
                     break
         except asyncio.CancelledError:
@@ -299,7 +316,7 @@ class Game:
         print("End game loop")
 
     def get_winning_role(self):
-        alives = [p for p in self.players.values() if p.is_alive()]
+        alives = self.get_alive_players()
         num_players = len(alives)
         num_werewolf = sum([isinstance(p, roles.Werewolf) for p in alives])
 
@@ -353,7 +370,6 @@ class Game:
             print("Error no player in game.")
             await self.stop()
 
-
     async def do_end_daytime_phase(self):
         print("do_end_daytime_phase")
         if self.voter_dict:
@@ -365,7 +381,7 @@ class Game:
                 await self.interface.send_text_to_channel(text_template.generate_execution_text(f"<@{lynched}>", votes), config.GAMEPLAY_CHANNEL)
 
                 cupid_couple = self.cupid_dict.get(lynched)
-                if cupid_couple != None:
+                if cupid_couple is not None:
                     await self.players[cupid_couple].get_killed(True)
                     await self.interface.send_text_to_channel(text_template.generate_couple_died(f"<@{lynched}>", f"<@{cupid_couple}>"), config.GAMEPLAY_CHANNEL)
             else:
@@ -402,7 +418,7 @@ class Game:
             embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False)
             # Send dead player list to Witch if Witch has not used skill
             if embed_data:  # This table can be empty (Noone is dead)
-                await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if (isinstance(player, roles.Witch) and player.get_power())])
+                await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])
 
     async def do_end_nighttime_phase(self):
         print("do_end_nighttime_phase")
@@ -427,7 +443,7 @@ class Game:
 
         await self.interface.send_text_to_channel(text_template.generate_killed_text(kills), config.GAMEPLAY_CHANNEL)
 
-        if cupid_couple != None:
+        if cupid_couple is not None:
             await self.players[cupid_couple].get_killed(True)
             await self.interface.send_text_to_channel(text_template.generate_couple_died(f"<@{self.cupid_dict[cupid_couple]}>", f"<@{cupid_couple}>", False), config.GAMEPLAY_CHANNEL)
 
@@ -514,6 +530,29 @@ class Game:
             print("cancel_me(): cancel sleep")
         except:
             print("Unknown run_timer_phase")
+
+    def set_play_time(self, time_start: datetime.time, time_end: datetime.time):
+        """
+        Set play time range for a game.
+        Params:
+            time_start: time in UTC
+            time_end: time in UTC
+        """
+        if isinstance(time_start, datetime.time) and isinstance(time_end, datetime.time):
+            self.play_time_start = time_start
+            self.play_time_end = time_end
+        else:
+            print("Invalid time_start or time_end format")
+
+    def is_in_play_time(self):
+        time_point = datetime.datetime.utcnow().time()
+
+        if self.play_time_start < self.play_time_end:
+            return self.play_time_start <= time_point <= self.play_time_end
+        elif self.play_time_start > self.play_time_end:
+            return self.play_time_start <= time_point or time_point <= self.play_time_end
+        else:
+            return True  # a day
 
     async def do_player_action(self, cmd, author_id, *targets_id):
         assert self.players is not None

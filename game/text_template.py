@@ -19,6 +19,11 @@ def generate_usage_text_list(cmd, **kwargs):
         nightphase = kwargs.get("nightphase", "nightphase")
         alertperiod = kwargs.get("alertperiod", "alertperiod")
         return [f"`{config.BOT_PREFIX}{cmd} {dayphase} {nightphase} {alertperiod}`"]
+    elif cmd == "setplaytime":
+        # !setplaytime 10:00 21:00
+        time_start = kwargs.get("time_start", "time_start")
+        time_end = kwargs.get("time_end", "time_end")
+        return [f"`{config.BOT_PREFIX}{cmd} {time_start} {time_end}`"]
     else:
         return [f"`{config.BOT_PREFIX}{cmd}`"]
 
@@ -249,15 +254,15 @@ def generate_invalid_channel_text(channel):
 
 
 def generate_invalid_target():
-    return f"Dùng kỹ năng đến đúng người bạn êy!"
+    return "Dùng kỹ năng đến đúng người bạn êy!"
 
 
 def generate_invalid_author():
-    return f"Hiện tại bạn không được phép dùng kỹ năng này!"
+    return "Hiện tại bạn không được phép dùng kỹ năng này!"
 
 
 def generate_invalid_nighttime():
-    return f"Ráng đợi tới đêm bạn êy!"
+    return "Ráng đợi tới đêm bạn êy!"
 
 
 def generate_game_started_text():
@@ -267,12 +272,12 @@ def generate_game_started_text():
 
 def generate_game_not_started_text():
     # return "Game has not started yet!"
-    return f"Trò chơi chưa bắt đầu!"
+    return "Trò chơi chưa bắt đầu!"
 
 
 def generate_game_already_started_text():
     # return "Game already started. Please wait until end game!"
-    return f"Trò chơi đã bắt đầu rồi. Xin đợi xíu bạn nha."
+    return "Trò chơi đã bắt đầu rồi. Xin đợi xíu bạn nha."
 
 
 def generate_wait_next_game_text():
@@ -281,6 +286,10 @@ def generate_wait_next_game_text():
 
 def generate_game_stop_text():
     return "Trò chơi kết thúc!"
+
+
+def generate_game_not_playing_text():
+    return "Hiện chưa đến giờ chơi, tắt máy ra ngoài chơi đi bạn :v"
 
 
 def generate_endgame_text(winner):
@@ -299,8 +308,10 @@ def generate_invalid_command_text(command):
     if command in ("kill", "guard", "seer", "vote", "reborn", "ship"):
         usage_text = "\n".join(generate_usage_text_list(command))
         return f"Invalid command.\nUsage:\n{usage_text}"
-    elif command in ["fjoin", "fleave"]:
+    elif command in ("fjoin", "fleave"):
         return f"Invalid command.\nUsage: `{config.BOT_PREFIX}{command} @user1 @user2 ...`"
+    elif command == "setplaytime":
+        return "Invalid command. Start time and end time must be in HH:MM format."
     else:
         return "Invalid command."
 
@@ -343,7 +354,6 @@ def generate_timer_up_text():
 
 
 def generate_help_command_text(command=None):
-    # TODO: read info from command_info.json file
     help_embed_data = {
         "title": "Werewolf Bot Help",
         "description": f"Full command list. You can get more information on a command using `{config.BOT_PREFIX}help cmd <name of command>`",
@@ -353,10 +363,15 @@ def generate_help_command_text(command=None):
     if command is None:
         help_embed_data["color"] = 0xffffff
         help_embed_data["content"] = [("All commands", [" | ".join(f"`{cmd}`" for cmd in commands.get_all_commands())])]
-        # TODO: cmd_description + (Dành cho tất cả mọi người.|Dành riêng cho {role}.)
     else:
         command_description = commands.get_command_description(command)
         if command_description is not None:
+            command_exclusive_roles = commands.get_command_exclusive_roles(command)
+            if len(command_exclusive_roles) > 0:
+                command_description += f" Dành riêng cho {', '.join(command_exclusive_roles)}."
+            else:
+                command_description += f" Dành cho tất cả mọi người."
+
             help_embed_data["color"] = 0x17a168
             help_embed_data["title"] += f" for command `{command}`"
             help_embed_data["description"] = command_description
@@ -364,14 +379,20 @@ def generate_help_command_text(command=None):
             usage_str = ["- " + usage_text for usage_text in generate_usage_text_list(command)]
             help_embed_data["content"] = [("Usage", usage_str)]
 
+            example_args = {}
             if command in ("vote", "kill", "guard", "seer", "reborn", "ship"):
+                example_args = { "player_id1": 2, "player_id2": 3 }
+            elif command == "setplaytime":
+                example_args = { "time_start": "00:00", "time_end": "23:59" }
+
+            if len(example_args) > 0:
                 help_embed_data["content"].append(
-                    ("Example", ["- " + usage_text for usage_text in generate_usage_text_list(command, player_id1=2, player_id2=3)])
+                    ("Example", ["- " + usage_text for usage_text in generate_usage_text_list(command, **example_args)])
                 )
         else:
             help_embed_data["color"] = 0xdc4e4e
             help_embed_data["title"] = f"Invalid help for command `{command}`"
-            help_embed_data["description"] = "A command with this name doesn't exist"
+            help_embed_data["description"] = "A command with this name doesn't exist!"
 
     return help_embed_data
 
@@ -474,4 +495,4 @@ def generate_mode_disabled():
 
 
 def generate_reveal_list(reveal_list):
-    return "\n".join([f"<@{player_id}> là {role}" for player_id , role in reveal_list])
+    return "\n".join([f"<@{player_id}> là {role}" for player_id, role in reveal_list])
