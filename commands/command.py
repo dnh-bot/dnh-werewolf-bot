@@ -136,22 +136,21 @@ async def parse_command(client, game, message):
             if len(parameters) >= 2:
                 args_tz_str = str(tzlocal.get_localzone())
                 args_tz_sign, args_tz_hours, args_tz_min = "+", 0, 0
-                args_matches = []
-                if len(parameters) >= 3 and (args_matches := re.findall(r"^([+-])*(\d{1,2}|\d{1,2}\:?\d{2})$", parameters[2])):
+                if len(parameters) >= 3:
+                    args_matches = re.findall(r"^([+-])*(\d{1,2}|\d{1,2}:?\d{2})$", parameters[2])
                     is_args_tz_valid = True
-                    args_matches = args_matches[0]
-                    if args_matches[0].count("+") >= args_matches[0].count("-") or args_matches[0].count("-") % 2 == 0:
-                        args_tz_sign = "+"
-                    else:
-                        args_tz_sign = "-"
-
-                    args_tz_parts = args_matches[1].split(":")
-                    if len(args_tz_parts) == 2:  # \d+:\d+
-                        args_tz_hours, args_tz_min = args_tz_parts[0], args_tz_parts[1]
-                    elif len(args_tz_parts[0]) <= 2:  # \d | \d\d
-                        args_tz_hours, args_tz_min = args_tz_parts[0], 0
-                    elif len(args_tz_parts[0]) <= 4:  # (\d)(\d\d) | (\d\d)(\d\d)
-                        args_tz_hours, args_tz_min = args_tz_parts[0][:-2], args_tz_parts[0][-2:]
+                    if len(args_matches):
+                        args_matches = args_matches[0]
+                        args_tz_sign = "+" if args_matches[0].count("-") % 2 == 0 else "-"
+                        args_tz_parts = args_matches[1].split(":")
+                        if len(args_tz_parts) == 2:  # \d+:\d+
+                            args_tz_hours, args_tz_min = args_tz_parts[0], args_tz_parts[1]
+                        elif len(args_tz_parts[0]) <= 2:  # \d | \d\d
+                            args_tz_hours, args_tz_min = args_tz_parts[0], 0
+                        elif len(args_tz_parts[0]) <= 4:  # (\d)(\d\d) | (\d\d)(\d\d)
+                            args_tz_hours, args_tz_min = args_tz_parts[0][:-2], args_tz_parts[0][-2:]
+                        else:
+                            is_args_tz_valid = False
                     else:
                         is_args_tz_valid = False
                 else:
