@@ -1,7 +1,7 @@
 import config
 from game import roles, text_template
-import utils
 
+import utils
 import datetime
 import random
 import time
@@ -9,8 +9,9 @@ import json
 from enum import Enum
 from collections import Counter
 from functools import reduce
-import asyncio
 import traceback
+import asyncio
+from tzlocal import get_localzone
 
 
 class GamePhase(Enum):
@@ -227,11 +228,27 @@ class Game:
             "\n"
         ))
 
-    def get_vote_status(self):
+    def get_game_status(self, player_id=None):
+        """
+        Return voter table (if any) with its description
+        """
+        if self.game_phase == GamePhase.DAY:
+            return self.get_vote_status(), "Danh sách những kẻ có khả năng bị hành hình"
+        elif self.game_phase == GamePhase.NIGHT:
+            if isinstance(self.players[player_id], roles.Werewolf):
+                return self.get_vote_status(self.wolf_kill_dict), "Danh sách những kẻ có khả năng bị ăn thịt"
+        elif self.game_phase == GamePhase.NEW_GAME:
+            # TODO
+            return {}, "to be continue..."
+        return {}, ""
+
+    def get_vote_status(self, voter_dict=None):
         # From {"u1":"u2", "u2":"u1", "u3":"u1"}
         # to {"u2": {"u1"}, "u1": {"u3", "u2"}}
-        d = self.voter_dict
-        table_dict = reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, d.items(), dict())
+        if voter_dict is None:
+            voter_dict = self.voter_dict
+
+        table_dict = reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, voter_dict.items(), dict())
         print(table_dict)
         return table_dict
 
@@ -401,7 +418,7 @@ class Game:
             embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False)
             # Send dead player list to Witch if Witch has not used skill
             if embed_data:  # This table can be empty (Noone is dead)
-                await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if (isinstance(player, roles.Witch) and player.get_power())])
+                await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])
 
     async def do_end_nighttime_phase(self):
         print("do_end_nighttime_phase")
@@ -516,9 +533,10 @@ class Game:
 
     def set_play_time(self, time_start: datetime.time, time_end: datetime.time):
         """
-        Arguments:
-            time_start: datetime.time
-            time_end: datetime.time
+        Set play time range for a game.
+        Params:
+            time_start: time in UTC
+            time_end: time in UTC
         """
         if isinstance(time_start, datetime.time) and isinstance(time_end, datetime.time):
             self.play_time_start = time_start
@@ -526,11 +544,8 @@ class Game:
         else:
             print("Invalid time_start or time_end format")
 
-    def is_in_play_time(self, time_point=datetime.datetime.now()):
-        if isinstance(time_point, datetime.datetime):
-            time_point = time_point.time()
-        elif not isinstance(time_point, datetime.time):
-            return False
+    def is_in_play_time(self):
+        time_point = datetime.datetime.utcnow().time()
 
         if self.play_time_start < self.play_time_end:
             return self.play_time_start <= time_point <= self.play_time_end

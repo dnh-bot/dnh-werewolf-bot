@@ -97,8 +97,8 @@
   },
   "status": {
     "description": {
-      "vi": "Xem trạng thái bầu chọn của ngày hiện tại.",
-      "en": "Show voting status of current daytime."
+      "vi": "Xem trạng thái bầu chọn của buổi hiện tại.",
+      "en": "Show voting status of current time."
     },
     "exclusive_roles": [],
     "required_param_number": 0

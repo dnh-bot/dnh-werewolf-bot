@@ -132,7 +132,7 @@ async def do_stop(game, message, force=False):
         await message.reply(text_template.generate_game_not_started_text())
 
 
-async def do_generate_vote_status_table(channel, table):
+async def do_generate_vote_status_table(channel, table, table_description=""):
     # Table format: {"u2": {"u1"}, "u1": {"u3", "u2"}}
     # @user1:
     # | Votes: 2
@@ -142,13 +142,14 @@ async def do_generate_vote_status_table(channel, table):
     # | Votes: 1
     # | Voters: @user1
 
-    if not table:
+    if not table and not table_description:
         await channel.send(text_template.generate_nobody_voted_text())
         return
-    embed = discord.Embed(
-        title="Vote Results", description="Danh sách những kẻ có khả năng bị hành hình",
-        color=0xfabe4e
-    )
+    elif not table and table_description:
+        await channel.send(table_description)
+        return
+
+    embed = discord.Embed(title="Vote Results", description=table_description, color=0xfabe4e)
     for k, v in table.items():
         player = channel.guild.get_member(k).display_name
         votes = len(v)

@@ -4,13 +4,28 @@ import config
 from game import text_template
 
 import discord
-import asyncio # Do not remove this. This for debug command
-from datetime import datetime, time
+import asyncio   # Do not remove this. This for debug command
+import re
+from datetime import *
+import tzlocal
 
 import utils  
 
 # TODO: generate content of command embed_data
 # e.g: Select a player to vote/kill/... by using command ...\nFor example: ...
+
+
+def date_range_to_string(start_time, end_time):
+    if start_time == end_time:
+        result = "cả ngày"
+    else:
+        result = f"từ {start_time} đến "
+        if end_time == "00:00":
+            result += f"hết ngày"
+        else:
+            result += f"{end_time}{'' if start_time < end_time else ' ngày hôm sau'}"
+
+    return result
 
 
 async def parse_command(client, game, message):
@@ -86,7 +101,8 @@ async def parse_command(client, game, message):
                 )
 
         elif cmd == "status":
-            await player.do_generate_vote_status_table(message.channel, game.get_vote_status())
+            vote_table, vote_table_description = game.get_game_status()
+            await player.do_generate_vote_status_table(message.channel, vote_table, vote_table_description)
 
         elif cmd == "timer":
             """ Usage: 
@@ -118,9 +134,42 @@ async def parse_command(client, game, message):
                 `!setplaytime 10:00 21:00` -> start_time = 10:00, end_time = 21:00 
             """
             if len(parameters) >= 2:
+                args_tz_str = str(tzlocal.get_localzone())
+                args_tz_sign, args_tz_hours, args_tz_min = "+", 0, 0
+                args_matches = []
+                if len(parameters) >= 3 and (args_matches := re.findall(r"^([+-])*(\d{1,2}|\d{1,2}\:?\d{2})$", parameters[2])):
+                    is_args_tz_valid = True
+                    args_matches = args_matches[0]
+                    if args_matches[0].count("+") >= args_matches[0].count("-") or args_matches[0].count("-") % 2 == 0:
+                        args_tz_sign = "+"
+                    else:
+                        args_tz_sign = "-"
+
+                    args_tz_parts = args_matches[1].split(":")
+                    if len(args_tz_parts) == 2:  # \d+:\d+
+                        args_tz_hours, args_tz_min = args_tz_parts[0], args_tz_parts[1]
+                    elif len(args_tz_parts[0]) <= 2:  # \d | \d\d
+                        args_tz_hours, args_tz_min = args_tz_parts[0], 0
+                    elif len(args_tz_parts[0]) <= 4:  # (\d)(\d\d) | (\d\d)(\d\d)
+                        args_tz_hours, args_tz_min = args_tz_parts[0][:-2], args_tz_parts[0][-2:]
+                    else:
+                        is_args_tz_valid = False
+                else:
+                    is_args_tz_valid = False
+
                 try:
-                    start_time = datetime.strptime(parameters[0], "%H:%M").time()
-                    end_time = datetime.strptime(parameters[1], "%H:%M").time()
+                    if is_args_tz_valid:
+                        args_tz_str = f"{args_tz_sign}{args_tz_hours:0>2}{args_tz_min:0>2}"
+                        start_time = datetime.strptime(f"{parameters[0]} {args_tz_str}", "%H:%M %z")
+                        end_time = datetime.strptime(f"{parameters[1]} {args_tz_str}", "%H:%M %z")
+                    else:
+                        # use local timezone, can't remove datetime.combine(datetime.today(), ...) part
+                        start_time = datetime.combine(datetime.today(), datetime.strptime(parameters[0], "%H:%M").time())
+                        end_time = datetime.combine(datetime.today(), datetime.strptime(parameters[1], "%H:%M").time())
+
+                    start_time = start_time.astimezone(timezone.utc)
+                    end_time = end_time.astimezone(timezone.utc)
+
                 except ValueError:
                     await message.reply(text_template.generate_invalid_command_text(cmd))
                     start_time = None
@@ -128,16 +177,8 @@ async def parse_command(client, game, message):
 
                 if start_time is not None and end_time is not None:
                     game.set_play_time(start_time, end_time)
-                    msg = "Bạn sẽ được chơi "
-                    if start_time == end_time:
-                        msg += "cả ngày."
-                    else:
-                        msg += f"từ {start_time.strftime('%H:%M')} đến "
-                        if end_time == time(0, 0, 0):
-                            msg += f"hết ngày."
-                        else:
-                            msg += f"{end_time.strftime('%H:%M')}{'' if start_time < end_time else ' ngày hôm sau'}."
-
+                    msg = f"Bạn sẽ được chơi {date_range_to_string(parameters[0], parameters[1])} (theo múi giờ {args_tz_str})"
+                    msg += f", hay {date_range_to_string(start_time.strftime('%H:%M'), end_time.strftime('%H:%M'))} (giờ UTC)."
                     await message.reply(msg)
 
         elif cmd == "setroles":
