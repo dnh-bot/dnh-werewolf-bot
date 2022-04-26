@@ -72,9 +72,12 @@ async def test_case(game, filepath):
             await game.next_phase()
 
         await asyncio.sleep(DELAY_TIME)
+        
         assert check_game_end(game, test_case_data.get("win"))
-
-        await asyncio.sleep(DELAY_TIME)
+        if test_case_data.get("win") != "None":
+            await game.task_game_loop
+        else:
+            await asyncio.sleep(DELAY_TIME)
         await game.stop()
         print("====== End test case =====")
     except AssertionError as e:
@@ -90,7 +93,7 @@ async def test_game():
 
     # Run single test
     
-    await test_case(game, "./testcases/case-zombie-simple.json")
+    await test_case(game, "./testcases/case-cupid-win.json")
 
     # Run all tests
     directory = "testcases"
