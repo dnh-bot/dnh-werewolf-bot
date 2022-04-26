@@ -327,13 +327,10 @@ class Game:
             "description": f"Trò chơi đã bắt đầu lúc {self.start_time.strftime('%H:%M:%S ngày %d-%m-%Y')}.",
             "content": [
                 ("Số ngày đã trải qua", self.day),
-                ("🏆 Phe chiến thắng: " + game_winner, ", ".join(reveal_roles_filter[game_winner])),
+                ("🏆 Phe chiến thắng: " + game_winner),
                 (
                     "📝 Danh sách role",
-                    [
-                        f"- {role}: {', '.join(f'<@{player_id}>' for player_id in player_id_lists)}"
-                        for role, player_id_lists in reveal_roles_filter
-                    ]
+                    text_template.generate_reveal_list(reveal_list)
                 )
             ]
         }

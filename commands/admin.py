@@ -46,6 +46,7 @@ async def create_category(guild, author, category_name):
             category = await guild.create_category(category_name, overwrites=overwrites)
             await create_channel(guild, author, config.LOBBY_CHANNEL, is_public=True)
             await create_channel(guild, author, config.GAMEPLAY_CHANNEL, is_public=False)
+            await create_channel(guild, author, config.LEADERBOARD_CHANNEL, is_public=True)
             return category
         except Exception as e:
             print("Exception at #", category_name, author)
