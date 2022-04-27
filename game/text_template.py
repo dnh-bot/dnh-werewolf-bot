@@ -73,7 +73,7 @@ def generate_execution_text(voted_user, highest_vote_number):
             "Hy vọng tình thế của làng có thể thay đổi sau quyết định này.\n" +\
             "===========================================================================\n"
     else:
-        return "Không có ai bị hành hình. Trò chơi sẽ tiếp tục. Hãy cẩn thân để sống sót!\n" +\
+        return "Không có ai bị hành hình. Trò chơi sẽ tiếp tục. Hãy cẩn thận để sống sót!\n" +\
             "===========================================================================\n"
 
 
@@ -108,6 +108,31 @@ def generate_player_list_embed(player_list, alive_status):
         }
         return embed_data
     return None
+
+
+def generate_vote_table_embed(vote_table, table_description):
+    # Table format: {"u2": {"u1"}, "u1": {"u3", "u2"}}
+    # @user1:
+    # | Votes: 2
+    # | Voters: @user2, @user3
+    #
+    # @user2:
+    # | Votes: 1
+    # | Voters: @user1
+
+    embed_data = {}
+    if vote_table:
+        embed_data = {
+            "color": 0xff0000,
+            "title": "Vote Results",
+            "description": table_description,
+            "content": [
+                (f"{title}", [f"Votes: {len(votes)}", f"Voters: {', '.join([f'<@!{i}>' for i in votes])}"])
+                for title, votes in vote_table.items()
+            ]
+        }
+
+    return embed_data
 
 
 def generate_werewolf_list(werewolf_list):
