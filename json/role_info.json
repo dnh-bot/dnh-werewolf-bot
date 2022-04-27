@@ -6,7 +6,7 @@
       "en": ""
     },
     "daytime_command": "vote",
-    "nighttime_command": ""
+    "nighttime_commands": []
   },
   "Werewolf": {
     "name_vi": "Sói",
@@ -15,7 +15,7 @@
       "en": ""
     },
     "daytime_command": "vote",
-    "nighttime_command": "kill"
+    "nighttime_commands": ["kill"]
   },
   "Superwolf": {
     "name_vi": "Sói già",
@@ -24,7 +24,7 @@
       "en": ""
     },
     "daytime_command": "vote",
-    "nighttime_command": "kill"
+    "nighttime_commands": ["kill"]
   },
   "Guard": {
     "name_vi": "Bảo vệ",
@@ -33,7 +33,7 @@
       "en": ""
     },
     "daytime_command": "vote",
-    "nighttime_command": "guard"
+    "nighttime_commands": ["guard"]
   },
   "Lycan": {
     "name_vi": "Người hóa sói",
@@ -42,7 +42,7 @@
       "en": ""
     },
     "daytime_command": "vote",
-    "nighttime_command": ""
+    "nighttime_commands": []
   },
   "Seer": {
     "name_vi": "Tiên tri",
@@ -51,7 +51,7 @@
       "en": ""
     },
     "daytime_command": "vote",
-    "nighttime_command": "seer"
+    "nighttime_commands": ["seer"]
   },
   "Betrayer": {
     "name_vi": "Kẻ phản bội",
@@ -60,7 +60,7 @@
       "en": ""
     },
     "daytime_command": "vote",
-    "nighttime_command": ""
+    "nighttime_commands": []
   },
   "Fox": {
     "name_vi": "Cáo",
@@ -69,16 +69,16 @@
       "en": ""
     },
     "daytime_command": "vote",
-    "nighttime_command": ""
+    "nighttime_commands": []
   },
   "Witch": {
     "name_vi": "Phù thủy",
     "description": {
-      "vi": "Vào ban đêm, Phù thủy có 1 bình phép có thể phục sinh một người chơi đã chết. Chức năng này chỉ được sử dụng một lần duy nhất trong game.",
+      "vi": "Vào ban đêm, Phù thủy có 1 bình phép có thể phục sinh một người chơi đã chết, đôi khi cũng có thể nguyền rủa một người còn sống. Mỗi chức năng này chỉ được sử dụng một lần duy nhất trong game.",
       "en": ""
     },
     "daytime_command": "vote",
-    "nighttime_command": "reborn"
+    "nighttime_commands": ["reborn", "curse"]
   },
   "Zombie": {
     "name_vi": "Xác sống",
@@ -87,7 +87,7 @@
       "en": ""
     },
     "daytime_command": "vote",
-    "nighttime_command": "zombie"
+    "nighttime_commands": ["zombie"]
   },
   "Cupid": {
     "name_vi": "Thần tình yêu",
@@ -96,6 +96,6 @@
       "en": ""
     },
     "daytime_command": "vote",
-    "nighttime_command": "ship"
+    "nighttime_commands": ["ship"]
   }
 }

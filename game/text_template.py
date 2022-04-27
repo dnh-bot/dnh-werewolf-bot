@@ -19,6 +19,11 @@ def generate_usage_text_list(cmd, **kwargs):
         nightphase = kwargs.get("nightphase", "nightphase")
         alertperiod = kwargs.get("alertperiod", "alertperiod")
         return [f"`{config.BOT_PREFIX}{cmd} {dayphase} {nightphase} {alertperiod}`"]
+    elif cmd == "setmode":
+        # !setmode 2 on
+        mode_id = kwargs.get("mode_id", "mode_id")
+        on_str = kwargs.get("on_str", "on_str")
+        return [f"{config.BOT_PREFIX}{cmd} {mode_id} {on_str}"]
     elif cmd == "setplaytime":
         # !setplaytime 10:00 21:00
         time_start = kwargs.get("time_start", "time_start")
@@ -382,6 +387,8 @@ def generate_help_command_text(command=None):
             example_args = {}
             if command in ("vote", "kill", "guard", "seer", "reborn", "ship"):
                 example_args = { "player_id1": 2, "player_id2": 3 }
+            elif command == "setmode":
+                example_args = { "mode_id": "2", "on_str": "on" }
             elif command == "setplaytime":
                 example_args = { "time_start": "00:00", "time_end": "23:59" }
 
@@ -424,15 +431,15 @@ def generate_help_role_text(role=None):
             help_embed_data["title"] += f" ({name_in_this_language})"
 
         help_embed_data["description"] = roles.get_role_description(role)
-        nighttime_command = roles.get_role_nighttime_command(role)
-        if nighttime_command:
-            nighttime_action_description = get_full_cmd_description(nighttime_command)
+        nighttime_commands = roles.get_role_nighttime_commands(role)
+        if nighttime_commands:
+            nighttime_actions_description = ["- " + get_full_cmd_description(cmd) for cmd in nighttime_commands]
         else:
-            nighttime_action_description = "Chỉ việc đi ngủ thôi :joy:"
+            nighttime_actions_description = ["Chỉ việc đi ngủ thôi 😂"]
 
         help_embed_data["content"] = [
             ("Ban ngày", [get_full_cmd_description("vote")]),
-            ("Ban đêm", [nighttime_action_description]),
+            ("Ban đêm", nighttime_actions_description),
         ]
     else:
         help_embed_data["color"] = 0xdc4e4e
