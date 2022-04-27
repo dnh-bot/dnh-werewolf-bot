@@ -154,20 +154,21 @@ async def send_text_to_channel(guild, text, channel_name):
         print(e)
 
 
-async def send_embed_to_channel(guild, embed_data, channel_name, inline=True):
+async def send_embed_to_channel(guild, embed_data, channel_name, *args):
     """Send an embed message to a channel"""
 
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
+    print(channel, embed_data)
     try:
         color = embed_data["color"] if "color" in embed_data else 0
         embed = discord.Embed(title=embed_data["title"], description=embed_data.get("description"), color=color)
         for field_name, field_value in embed_data["content"]:
-            embed.add_field(name=field_name, value="\n".join(field_value), inline=inline)
+            embed.add_field(name=field_name, value="\n".join(field_value), inline=False)
         await channel.send(embed=embed)
         return True
     except Exception as e:
-        print(e)
+        print("send_embed_to_channel:", e)
 
 
 async def delete_all_personal_channel(guild):

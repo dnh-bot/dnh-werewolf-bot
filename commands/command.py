@@ -231,6 +231,7 @@ async def parse_command(client, game, message):
                         await admin.create_category(message.guild, client.user, config.GAME_CATEGORY)
                         await admin.create_channel(message.guild, client.user, config.LOBBY_CHANNEL, is_public=True)
                         await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
+                        await admin.create_channel(message.guild, client.user, config.LEADERBOARD_CHANNEL, is_public=True)
                 else:
                     await message.reply("Missing @bot_name")
             elif cmd == "fdelete":  # Delete all channels and category under config.GAME_CATEGORY
