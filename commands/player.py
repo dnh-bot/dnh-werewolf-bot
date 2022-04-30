@@ -5,6 +5,7 @@ import time
 import math
 import discord
 import config
+from commands import admin
 from game import text_template
 
 
@@ -142,27 +143,26 @@ async def do_generate_vote_status_table(channel, table, table_description=""):
     # | Votes: 1
     # | Voters: @user1
 
-    if not table and not table_description:
-        await channel.send(text_template.generate_nobody_voted_text())
-        return
-    elif not table and table_description:
-        await channel.send(table_description)
+    if not table:
+        if table is None and table_description:
+            await channel.send(table_description)
+        else:
+            await channel.send(text_template.generate_nobody_voted_text())
         return
 
-    embed = discord.Embed(title="Vote Results", description=table_description, color=0xfabe4e)
+    vote_table = {}
     for k, v in table.items():
-        player = channel.guild.get_member(k).display_name
-        votes = len(v)
-        voters = ",".join([f"<@!{i}>" for i in v])
-        embed.add_field(name=f"{player}", value="\n".join((f"Votes: {votes}", f"Voters: {voters}")), inline=False)
-    # embed_data = zip(victim_list, tuple(zip(voter_count, voter_list)))
-    # print("\n".join(victim_list))
-    # print("\n".join(voter_count))
-    # print("\n".join(voter_list))
-    
-    # for victim, field_value in embed_data:
-    #     embed.add_field(name=victim, value="\n".join(field_value), inline=False)
-    await channel.send(embed=embed)
+        member_k = channel.guild.get_member(k)
+        if member_k is not None:
+            name_field = member_k.display_name
+        else:
+            name_field = str(k)
+
+        vote_table[name_field] = v
+
+    await admin.send_embed_to_channel(
+        channel.guild, text_template.generate_vote_table_embed(vote_table, table_description), channel.name
+    )
 
 
 async def test_player_command(guild):

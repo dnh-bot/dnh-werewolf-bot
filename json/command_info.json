@@ -49,8 +49,8 @@
   },
   "setmode": {
     "description": {
-      "vi": "Thiết lập chế độ chơi. `!setmode 2 on`",
-      "en": "Enable/Disable game modes. Eg: `!setmode 2 on`"
+      "vi": "Thiết lập chế độ chơi.",
+      "en": "Enable/Disable game modes."
     },
     "exclusive_roles": [],
     "required_param_number": 2
@@ -145,7 +145,7 @@
   },
   "curse": {
     "description": {
-      "vi": "Nguyền rủa 1 người.",
+      "vi": "Nguyền rủa một người.",
       "en": "Curse another player."
     },
     "exclusive_roles": ["Witch"],

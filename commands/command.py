@@ -94,14 +94,14 @@ async def parse_command(client, game, message):
                 elif cmd == "kill":
                     real_channel = f"#{config.WEREWOLF_CHANNEL}"
                 else:
-                    real_channel = "your personal channel"
+                    real_channel = "riêng của bạn"
 
                 await admin.send_text_to_channel(
                     message.guild, text_template.generate_invalid_channel_text(real_channel), message.channel.name
                 )
 
         elif cmd == "status":
-            vote_table, vote_table_description = game.get_game_status()
+            vote_table, vote_table_description = game.get_game_status(message.channel.name, message.author.id)
             await player.do_generate_vote_status_table(message.channel, vote_table, vote_table_description)
 
         elif cmd == "timer":

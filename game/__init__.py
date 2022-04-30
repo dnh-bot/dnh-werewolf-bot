@@ -228,19 +228,27 @@ class Game:
             "\n"
         ))
 
-    def get_game_status(self, player_id=None):
+    def get_game_status(self, channel_name, author_id):
         """
         Return voter table (if any) with its description
         """
         if self.game_phase == GamePhase.DAY:
             return self.get_vote_status(), "Danh sách những kẻ có khả năng bị hành hình"
         elif self.game_phase == GamePhase.NIGHT:
-            if isinstance(self.players[player_id], roles.Werewolf):
-                return self.get_vote_status(self.wolf_kill_dict), "Danh sách những kẻ có khả năng bị ăn thịt"
+            author = self.players.get(author_id)
+            if author and author.is_alive():
+                if isinstance(author, roles.Werewolf) and (channel_name == config.WEREWOLF_CHANNEL or channel_name.startswith("personal")):
+                    return self.get_vote_status(self.wolf_kill_dict), "Danh sách những kẻ có khả năng bị ăn thịt"
+
+            return None, "Đêm rồi, đi ngủ đi :>"
+
         elif self.game_phase == GamePhase.NEW_GAME:
-            # TODO
-            return {}, "to be continue..."
-        return {}, ""
+            if self.players:
+                return {"👍": [*self.players.keys()]}, "Danh sách những người đang chờ vào game"
+            else:
+                return None, "Hiện không có ai đang chờ vào game."
+
+        return None, ""
 
     def get_vote_status(self, voter_dict=None):
         # From {"u1":"u2", "u2":"u1", "u3":"u1"}

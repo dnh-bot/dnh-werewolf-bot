@@ -19,6 +19,11 @@ def generate_usage_text_list(cmd, **kwargs):
         nightphase = kwargs.get("nightphase", "nightphase")
         alertperiod = kwargs.get("alertperiod", "alertperiod")
         return [f"`{config.BOT_PREFIX}{cmd} {dayphase} {nightphase} {alertperiod}`"]
+    elif cmd == "setmode":
+        # !setmode 2 on
+        mode_id = kwargs.get("mode_id", "mode_id")
+        on_str = kwargs.get("on_str", "on_str")
+        return [f"{config.BOT_PREFIX}{cmd} {mode_id} {on_str}"]
     elif cmd == "setplaytime":
         # !setplaytime 10:00 21:00
         time_start = kwargs.get("time_start", "time_start")
@@ -68,7 +73,7 @@ def generate_execution_text(voted_user, highest_vote_number):
             "Hy vọng tình thế của làng có thể thay đổi sau quyết định này.\n" +\
             "===========================================================================\n"
     else:
-        return "Không có ai bị hành hình. Trò chơi sẽ tiếp tục. Hãy cẩn thân để sống sót!\n" +\
+        return "Không có ai bị hành hình. Trò chơi sẽ tiếp tục. Hãy cẩn thận để sống sót!\n" +\
             "===========================================================================\n"
 
 
@@ -103,6 +108,31 @@ def generate_player_list_embed(player_list, alive_status):
         }
         return embed_data
     return None
+
+
+def generate_vote_table_embed(vote_table, table_description):
+    # Table format: {"u2": {"u1"}, "u1": {"u3", "u2"}}
+    # @user1:
+    # | Votes: 2
+    # | Voters: @user2, @user3
+    #
+    # @user2:
+    # | Votes: 1
+    # | Voters: @user1
+
+    embed_data = {}
+    if vote_table:
+        embed_data = {
+            "color": 0xff0000,
+            "title": "Vote Results",
+            "description": table_description,
+            "content": [
+                (f"{title}", [f"Votes: {len(votes)}", f"Voters: {', '.join([f'<@!{i}>' for i in votes])}"])
+                for title, votes in vote_table.items()
+            ]
+        }
+
+    return embed_data
 
 
 def generate_werewolf_list(werewolf_list):
@@ -382,6 +412,8 @@ def generate_help_command_text(command=None):
             example_args = {}
             if command in ("vote", "kill", "guard", "seer", "reborn", "ship"):
                 example_args = { "player_id1": 2, "player_id2": 3 }
+            elif command == "setmode":
+                example_args = { "mode_id": "2", "on_str": "on" }
             elif command == "setplaytime":
                 example_args = { "time_start": "00:00", "time_end": "23:59" }
 
@@ -424,15 +456,15 @@ def generate_help_role_text(role=None):
             help_embed_data["title"] += f" ({name_in_this_language})"
 
         help_embed_data["description"] = roles.get_role_description(role)
-        nighttime_command = roles.get_role_nighttime_command(role)
-        if nighttime_command:
-            nighttime_action_description = get_full_cmd_description(nighttime_command)
+        nighttime_commands = roles.get_role_nighttime_commands(role)
+        if nighttime_commands:
+            nighttime_actions_description = ["- " + get_full_cmd_description(cmd) for cmd in nighttime_commands]
         else:
-            nighttime_action_description = "Chỉ việc đi ngủ thôi :joy:"
+            nighttime_actions_description = ["Chỉ việc đi ngủ thôi 😂"]
 
         help_embed_data["content"] = [
             ("Ban ngày", [get_full_cmd_description("vote")]),
-            ("Ban đêm", [nighttime_action_description]),
+            ("Ban đêm", nighttime_actions_description),
         ]
     else:
         help_embed_data["color"] = 0xdc4e4e

@@ -43,9 +43,9 @@ def get_role_description(name):
     return None
 
 
-def get_role_nighttime_command(name):
+def get_role_nighttime_commands(name):
     name = name.capitalize()
     if name in role_info:
-        return role_info[name]["nighttime_command"]
+        return role_info[name]["nighttime_commands"]
 
-    return ""
+    return []
