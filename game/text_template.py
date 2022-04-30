@@ -49,6 +49,14 @@ def generate_leave_text(user, joined_players):
     return f"Người chơi {user} đã rời ván đấu. Hiện có {joined_players} người chơi."
 
 
+def generate_watch_text(user, watched_players):
+    return f"Người xem {user} đã xem ván đấu. Hiện có {watched_players} người xem."
+
+
+def generate_unwatch_text(user, watched_players):
+    return f"Người xem {user} đã bỏ xem ván đấu. Hiện có {watched_players} người xem."
+
+
 def generate_too_quick(time_point, last_nextcmd_time):
     return f"Run `{config.BOT_PREFIX}next` command too quick, " + \
         f"please wait for {config.NEXT_CMD_DELAY - time_point + last_nextcmd_time:.1f} seconds"
@@ -332,6 +340,14 @@ def generate_not_in_game_text():
 
 def generate_already_in_game_text():
     return "Ơ kìa, bạn đã vào game rồi mà :v"
+
+
+def generate_not_watched_game_text():
+    return "Hiện bạn đang không theo dõi game."
+
+
+def generate_already_watched_game_text():
+    return "Úi, bạn đã theo dõi game rồi mà <:drink:886755025211248641>"
 
 
 def generate_invalid_command_text(command):

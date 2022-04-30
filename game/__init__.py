@@ -45,6 +45,7 @@ class Game:
         self.play_time_end = datetime.time(0, 0, 0)
         self.players = {}  # id: Player
         self.playersname = {}  # id: username
+        self.watchers = set()  # set of id
         self.game_phase = GamePhase.NEW_GAME
         self.wolf_kill_dict = {}  # dict[wolf] -> player
         self.reborn_set = set()
@@ -186,7 +187,12 @@ class Game:
         if id_ in self.players:
             return -1
 
-        print("Player", id_, "joined")
+        if id_ in self.watchers:
+            print("Player", id_, "unwatched and joined")
+            self.watchers.remove(id_)
+        else:
+            print("Player", id_, "joined")
+
         self.players[id_] = None
         self.playersname[id_] = player_name
         await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
@@ -228,6 +234,30 @@ class Game:
             "\n"
         ))
 
+    async def add_watcher(self, id_):
+        if id_ in self.players:
+            return -2
+        if id_ in self.watchers:
+            return -1
+
+        print("Watcher", id_, "watched")
+        self.watchers.add(id_)
+        await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
+        await self.interface.send_text_to_channel(f"Người xem <@{id_}> đã theo dõi game.", config.GAMEPLAY_CHANNEL)
+        return len(self.watchers)  # Return number of current watchers
+
+    async def remove_watcher(self, id_):
+        if id_ in self.players:
+            return -2
+        if id_ not in self.watchers:
+            return -1
+
+        print("Watcher", id_, "unwatched")
+        self.watchers.remove(id_)
+        await self.interface.send_text_to_channel(f"Người xem <@{id_}> đã bỏ theo dõi game.", config.GAMEPLAY_CHANNEL)
+        await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
+        return len(self.watchers)  # Return number of current watchers
+
     def get_game_status(self, channel_name, author_id):
         """
         Return voter table (if any) with its description
@@ -243,8 +273,9 @@ class Game:
             return None, "Đêm rồi, đi ngủ đi :>"
 
         elif self.game_phase == GamePhase.NEW_GAME:
-            if self.players:
-                return {"👍": [*self.players.keys()]}, "Danh sách những người đang chờ vào game"
+            if self.players or self.watchers:
+                return {"👍 vào chơi": [*self.players.keys()], "👎 chỉ xem": [*self.watchers]},\
+                    "Danh sách những người đang chờ vào game"
             else:
                 return None, "Hiện không có ai đang chờ vào game."
 
