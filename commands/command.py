@@ -42,6 +42,10 @@ async def parse_command(client, game, message):
             await player.do_join(game, message, force=False)
         elif cmd == "leave":
             await player.do_leave(game, message, force=False)
+        elif cmd == "watch":
+            await player.do_watch(game, message)
+        elif cmd == "unwatch":
+            await player.do_unwatch(game, message)
         elif cmd == "start":
             await player.do_start(game, message, force=False)
         elif cmd == "next":  # Next phase

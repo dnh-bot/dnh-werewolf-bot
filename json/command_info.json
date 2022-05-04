@@ -71,6 +71,22 @@
     "exclusive_roles": [],
     "required_param_number": 0
   },
+  "watch": {
+    "description": {
+      "vi": "Theo dõi (nhưng không tham gia) vào một trò chơi.",
+      "en": "Watch a game."
+    },
+    "exclusive_roles": [],
+    "required_param_number": 0
+  },
+  "unwatch": {
+    "description": {
+      "vi": "Bỏ theo dõi một trò chơi.",
+      "en": "Unwatch a game."
+    },
+    "exclusive_roles": [],
+    "required_param_number": 0
+  },
   "start": {
     "description": {
       "vi": "Bắt đầu một trò chơi (cần đủ số lượng vote).",
