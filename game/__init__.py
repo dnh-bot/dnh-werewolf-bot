@@ -79,7 +79,7 @@ class Game:
         return self.game_phase != GamePhase.NEW_GAME
 
     def is_ended(self):
-        return self.get_winner() is not None
+        return self.winner is not None
 
     def set_mode(self, mode_str, on):
         utils.common.update_json_file("json/game_config.json", mode_str, "True" if on else "False")
