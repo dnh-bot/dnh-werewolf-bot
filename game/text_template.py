@@ -162,7 +162,7 @@ def generate_vote_text(author, user):
 
 
 def generate_vote_for_game_text(command, author, text):
-    return f"Player {author} votes for {command} game. {text}"
+    return f"Player {author} votes for {command} game {text}."
 
 
 def generate_kill_text(werewolf, user):

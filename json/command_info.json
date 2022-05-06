@@ -103,7 +103,7 @@
     "exclusive_roles": [],
     "required_param_number": 0
   },
-  "stop": {
+  "stopgame": {
     "description": {
       "vi": "Dừng trò chơi.",
       "en": "Stop a game."
