@@ -50,7 +50,7 @@ async def parse_command(client, game, message):
             await player.do_start(game, message, force=False)
         elif cmd == "next":  # Next phase
             await player.do_next(game, message, force=False)
-        elif cmd == "stop":
+        elif cmd == "stopgame":
             await player.do_stop(game, message, force=False)
 
         elif cmd in ("vote", "kill", "guard", "seer", "reborn", "curse", "zombie", "ship"):
@@ -207,7 +207,7 @@ async def parse_command(client, game, message):
                     await player.do_start(game, message, force=True)
                 elif cmd == "fnext":  # Next phase
                     await player.do_next(game, message, force=True)
-                elif cmd == "fstop":
+                elif cmd == "fstopgame":
                     await player.do_stop(game, message, force=True)
                 elif cmd == "fclean":  # Delete all private channels under config.GAME_CATEGORY
                     try:

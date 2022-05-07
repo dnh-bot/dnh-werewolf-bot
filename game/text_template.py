@@ -136,7 +136,7 @@ def generate_vote_table_embed(vote_table, table_description):
             "description": table_description,
             "content": [
                 (f"{title}", [f"Votes: {len(votes)}", f"Voters: {', '.join([f'<@!{i}>' for i in votes])}"])
-                for title, votes in vote_table.items()
+                for title, votes in sorted(vote_table.items(), key=lambda t: (-len(t[1]), t[0]))
             ]
         }
 

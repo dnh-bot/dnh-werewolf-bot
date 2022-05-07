@@ -78,6 +78,9 @@ class Game:
     def is_started(self):
         return self.game_phase != GamePhase.NEW_GAME
 
+    def is_ended(self):
+        return self.winner is not None
+
     def set_mode(self, mode_str, on):
         utils.common.update_json_file("json/game_config.json", mode_str, "True" if on else "False")
         return f"Set mode '{mode_str}' is {on}. Warning: This setting is permanant!"
@@ -274,8 +277,11 @@ class Game:
 
         elif self.game_phase == GamePhase.NEW_GAME:
             if self.players or self.watchers:
-                return {"👍 vào chơi": [*self.players.keys()], "👎 chỉ xem": [*self.watchers]},\
-                    "Danh sách những người đang chờ vào game"
+                status_table = {"👍 vào chơi": [*self.players.keys()], "👎 chỉ xem": [*self.watchers]}
+                if self.vote_start:
+                    status_table["👍 vote start"] = [*self.vote_start]
+
+                return status_table, "Danh sách những người đang chờ vào game"
             else:
                 return None, "Hiện không có ai đang chờ vào game."
 

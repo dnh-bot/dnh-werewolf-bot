@@ -133,7 +133,7 @@ async def do_next(game, message, force=False):
 
 
 # Player can call stop game when they want to finish game regardless current game state
-# Need 2/3 players type: `!stop` to end the game
+# Need 2/3 players type: `!stopgame` to end the game
 async def do_stop(game, message, force=False):
     """Stop game"""
     if game.is_started():
@@ -145,7 +145,7 @@ async def do_stop(game, message, force=False):
                 await message.reply(text_template.generate_not_in_game_text())
             else:
                 game.vote_stop.add(message.author.id)
-                valid, text = check_vote_valid(len(game.vote_stop), 1, "stop")
+                valid, text = check_vote_valid(len(game.vote_stop), 1 if game.is_ended() else 2, "stop")
                 if valid:
                     await message.reply(text_template.generate_game_stop_text())
                     await game.stop()
