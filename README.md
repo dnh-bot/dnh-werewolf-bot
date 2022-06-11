@@ -17,22 +17,32 @@ Vậy bên nào sẽ chiến thắng, Thường dân, Werewolf, hay là phe Ph�
 
 ## Các phe phái trong trò chơi
 
-### I. Phe dân: Chiến thắng nếu sông sót. Không thể nhận biết được người cùng phe.
+### I. Phe dân: Chiến thắng nếu sống sót và tiêu diệt được hết Sói và Cáo. Không thể nhận biết được người cùng phe.
 
-- [D] Dân làng: Không có chức năng đặc biệt.
-- [N] Tiên tri: Xác định vai trò của 1 người mỗi đêm.
-- [N] Bảo vệ: Bảo vệ được chọn 1 người khác nhau mỗi đêm trừ bản thân và người được chọn sẽ bất tử đêm đó.
+- [Villager] Dân làng: Không có chức năng đặc biệt.
+- [Seer] Tiên tri: Soi một người chơi có phải là sói hay không. Có thể giết chết Cáo nếu soi trúng Cáo.
+- [Guard] Bảo vệ: Bảo vệ được chọn 1 người khác nhau mỗi đêm trừ bản thân và người được chọn sẽ bất tử đêm đó.
+- [Lycan] Người hóa sói: Người hóa sói thuộc Phe dân làng, nhưng nếu được chỉ định bởi Tiên tri, thì sẽ bị thông báo là Sói.
 
-### II. Phe sói: Chiến thắng nếu giết hết dân làng. Nhận biết được người cùng phe.
+### II. Phe sói: Chiến thắng nếu giết hết dân làng. Nhận biết được **sói** cùng phe.
 
-- [N] Sói: Chọn 1 người để giết mỗi đêm.
+- [Werewolf] Sói: Chọn 1 người để giết mỗi đêm.
+- [Superwolf] Sói già: Chọn 1 người để giết mỗi đêm. Sói già có khả năng che giấu Tiên tri và không bị soi ra là sói.
+- [Minion] Kẻ phản bội: Là **người** nhưng bị mua chuộc theo phe sói. Minion biết ai là sói nhưng phe sói không biết ai là Minion.
 
 ### III. Phe thứ 3: Chiến thắng khi sống sót cuối cùng. Không thể nhận biết được người cùng phe.
+
+- [Fox] Cáo: Thuộc phe thứ ba, cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.
+- [Cupid] Thần tình yêu: Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ thành phe thứ 3 với nhiệm vụ là hai người cuối cùng sống sót.
+
+
+
 
 Hệ thống nhân vật này sẽ được cập nhật sau.
 
 ### Các vai trò sẽ được cập nhật:
 
+- [Diseased] Người bệnh: Nếu Người bệnh bị Sói cắn, con Sói đó sẽ không thể cắn người nào vào đêm tiếp theo do đã bị lây bệnh.
 - [D] Trường làng: Khi tiết lộ vai trò, Trưởng làng sẽ có 2 vote mỗi phase đến khi trò chơi kết thúc.
 - [N] Thám tử: Chọn 2 người bất kì mỗi đêm xem họ cùng phe hay không.
 - [N] Pháp sư câm: Chọn 1 người gây câm mỗi đêm. Người bị chọn sẽ không thể nói trong ngày hôm sau.
@@ -44,7 +54,7 @@ Hệ thống nhân vật này sẽ được cập nhật sau.
 - [N] Sói tiên tri: Mỗi đêm được chọn 1 người để xem vai trò.
 - [D] Thằng ngố: Chiến thắng nếu bị dân làng treo cổ.
 - [N] Sát nhân: Chọn 1 người để giết mỗi đêm. Không bị Sói giết.
-- [N] Thần Cupid: Chọn 1 cặp người chơi vào đêm đầu tiên. Cặp đó sẽ chết nếu 1 trong 2 bị giết.
+
 
 ## Số lượng vai trò
 
@@ -63,3 +73,5 @@ Hệ thống nhân vật này sẽ được cập nhật sau.
 | 14 | 5 | 3 | 1 | 1 | 1 thợ săn, 1 cupid, 1 phù thủy, 1 phản bội |
 | 15 | 6 | 4 | 1 | 1 | 1 thợ săn, 1 cupid, 1 phù thủy |
 | 16+ | 6 | 4 | 1 | 1 | 1 thợ săn, 1 cupid, 1 phù thủy, 1 già làng,... |
+
+Nhóm có tham khảo cách chơi tại: https://thuthuatchoi.com/danh-sach-cac-nhan-vat-trong-ma-soi-ultimate-ultimate-werewolf-deluxe-edition.html
