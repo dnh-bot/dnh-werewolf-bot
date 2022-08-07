@@ -56,6 +56,7 @@ class Game:
         self.vote_next = set()
         self.vote_stop = set()
         self.day = 0
+        self.timecounter = 0
         self.task_game_loop = None
         self.next_flag.clear()
         self.last_nextcmd_time = time.time()
@@ -574,17 +575,18 @@ class Game:
         try:
             self.timer_stopped = False
             daytime, nighttime, period = self.timer_phase
-            timecount = daytime
+            self.timecounter = daytime
             if self.game_phase == GamePhase.NIGHT:
-                timecount = nighttime
+                self.timecounter = nighttime
 
-            for count in range(timecount, 0, -1):
-                if self.timer_stopped:
-                    break
-                if count % period == 0 or count <= 5:
-                    print(f"{count} remaining")
-                    await self.interface.send_text_to_channel(text_template.generate_timer_remaining_text(count), config.GAMEPLAY_CHANNEL)
+            while self.timecounter > 0:
+                if not self.timer_stopped:
+                    if self.timecounter % period == 0 or self.timecounter <= 5:
+                        print(f"{self.timecounter} remaining")
+                        await self.interface.send_text_to_channel(text_template.generate_timer_remaining_text(self.timecounter), config.GAMEPLAY_CHANNEL)
+                    self.timecounter -= 1
                 await asyncio.sleep(1)
+
             if not self.timer_stopped:
                 print("stop timer")
                 await self.interface.send_text_to_channel(text_template.generate_timer_up_text(), config.GAMEPLAY_CHANNEL)

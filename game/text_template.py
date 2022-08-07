@@ -392,7 +392,7 @@ def generate_timer_remaining_text(seconds):
     if seconds > 0 or days == hours == minutes == seconds == 0:
         time_text.append(f"{seconds} giây")
 
-    return f"🔔 Bing boong! Còn {' '.join(time_text)}..."
+    return f"🔔 Bing boong! Còn {' '.join(time_text)}... "
 
 
 def generate_timer_up_text():

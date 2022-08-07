@@ -113,7 +113,7 @@ async def do_next(game, message, force=False):
     """Next phase"""
     if game.is_started():
         if force:
-            await game.next_phase()
+            await game.next_phase_cmd()
         else:
             if time.time() - game.get_last_nextcmd_time() > config.NEXT_CMD_DELAY:
                 # User needs to wait for next phase
@@ -123,7 +123,7 @@ async def do_next(game, message, force=False):
                     game.vote_next.add(message.author.id)
                     valid, text = check_vote_valid(len(game.vote_next), len(game.get_alive_players()), "next")
                     if valid:
-                        await game.next_phase()
+                        await game.next_phase_cmd()
                     else:
                         await message.reply(text_template.generate_vote_for_game_text("next", message.author.display_name, text))
             else:

@@ -126,6 +126,7 @@ async def parse_command(client, game, message):
         elif cmd == "status":
             vote_table, vote_table_description = game.get_game_status(message.channel.name, message.author.id)
             await player.do_generate_vote_status_table(message.channel, vote_table, vote_table_description)
+            await message.reply(text_template.generate_timer_remaining_text(game.timecounter))
 
         elif cmd == "timer":
             """ Usage: 
@@ -139,6 +140,10 @@ async def parse_command(client, game, message):
                 )
             else:
                 timer_phase = list(map(int, parameters))
+                # Check if any timer phase is too short (<= 5 seconds):
+                if (not timer_phase) or (any (map(lambda x:x<=5,timer_phase))):
+                    await message.reply("Config must greater than 5s")
+                    return None
                 await message.reply(
                     "New settings: " +
                     f"dayphase={timer_phase[0]}s, nightphase={timer_phase[1]}s, alertperiod={timer_phase[2]}s"
