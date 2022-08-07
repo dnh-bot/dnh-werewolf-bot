@@ -605,7 +605,7 @@ class Game:
             self.play_time_start = time_start
             self.play_time_end = time_end
         else:
-            print("Invalid time_start or time_end format")
+            print("Invalid time_start or time_end format", time_start, time_end)
 
     def is_in_play_time(self):
         time_point = datetime.datetime.utcnow().time()
