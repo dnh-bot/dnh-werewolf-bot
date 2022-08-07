@@ -484,7 +484,7 @@ class Game:
 
             embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False)
             # Send dead player list to Witch if Witch has not used skill
-            if embed_data:  # This table can be empty (Noone is dead)
+            if embed_data:  # This table can be empty (No one is dead)
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])
 
     async def do_end_nighttime_phase(self):
@@ -583,6 +583,8 @@ class Game:
                 self.timecounter = nighttime
 
             while self.timecounter > 0:
+                await self.do_process_with_play_time()
+
                 if not self.timer_stopped:
                     if self.timecounter % period == 0 or self.timecounter <= 5:
                         print(f"{self.timecounter} remaining")
@@ -621,6 +623,22 @@ class Game:
             return self.play_time_start <= time_point or time_point <= self.play_time_end
         else:
             return True  # a day
+
+    async def do_process_with_play_time(self):
+        if self.is_in_play_time():
+            if self.timer_stopped:
+                self.timer_stopped = False
+                await self.interface.send_text_to_channel(
+                    "Đã đến giờ chơi, trò chơi sẽ được tiếp tục!",
+                    config.GAMEPLAY_CHANNEL
+                )
+        else:
+            if not self.timer_stopped:
+                self.timer_stopped = True
+                await self.interface.send_text_to_channel(
+                    "Đã ngoài giờ chơi, trò chơi sẽ được dừng lại!",
+                    config.GAMEPLAY_CHANNEL
+                )
 
     async def do_player_action(self, cmd, author_id, *targets_id):
         assert self.players is not None
