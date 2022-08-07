@@ -8,6 +8,7 @@ import asyncio   # Do not remove this. This for debug command
 import re
 from datetime import *
 import tzlocal
+import subprocess, os
 
 import utils  
 
@@ -56,7 +57,10 @@ async def parse_command(client, game, message):
             await admin.send_embed_to_channel(
                 message.guild, text_template.generate_help_text(*parameters), message.channel.name, False
             )
-
+        elif cmd == "version":
+            tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
+            name = os.getenv("BOT_NAME")
+            await message.reply("-".join((name,tag)).rstrip('\n'))
         elif cmd == "join":
             await player.do_join(game, message, force=False)
         elif cmd == "leave":
