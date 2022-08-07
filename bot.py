@@ -54,6 +54,7 @@ async def on_ready():
         await admin.create_channel(guild, client.user, config.LEADERBOARD_CHANNEL, is_public=True)
         # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
         game_list.add_game(guild.id, Game(guild, interface.DiscordInterface(guild, client)))
+        await admin.send_text_to_channel(guild, "Bot started up", config.LOBBY_CHANNEL)
 
     """ Uncomment to run test """
     server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
