@@ -95,8 +95,11 @@ class Game:
 
     def add_default_roles(self, role_json_in_string):
         try:
-            self.runtime_roles = json.loads("".join(role_json_in_string))
-            return f"Config loaded."
+            user_roles = json.loads("".join(role_json_in_string))
+            if isinstance(user_roles, list) and all(map(lambda x: isinstance(x, dict), user_roles)):
+                self.runtime_roles = user_roles
+                return f"Config loaded."
+            return f"Invalid json format. Use list of dictionary. Eg in role_config.json"
         except:
             self.runtime_roles = None
             return f"Invalid json format."
