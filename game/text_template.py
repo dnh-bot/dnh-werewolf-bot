@@ -3,7 +3,8 @@ from game import roles
 import commands
 
 from datetime import *
-from dateutil import parser, tz
+from dateutil import tz
+
 
 def generate_usage_text_list(cmd, **kwargs):
     if cmd in ("vote", "kill", "guard", "seer", "reborn", "curse"):
@@ -28,9 +29,11 @@ def generate_usage_text_list(cmd, **kwargs):
         return [f"{config.BOT_PREFIX}{cmd} {mode_id} {on_str}"]
     elif cmd == "setplaytime":
         # !setplaytime 10:00 21:00
+        # !setplaytime 10:00 21:00 UTC+7
         time_start = kwargs.get("time_start", "time_start")
         time_end = kwargs.get("time_end", "time_end")
-        return [f"`{config.BOT_PREFIX}{cmd} {time_start} {time_end}`"]
+        time_zone = kwargs.get("time_zone", "[time_zone]")
+        return [f"`{config.BOT_PREFIX}{cmd} {time_start} {time_end} {time_zone}`".rstrip()]
     else:
         return [f"`{config.BOT_PREFIX}{cmd}`"]
 
@@ -427,17 +430,24 @@ def generate_help_command_text(command=None):
             usage_str = ["- " + usage_text for usage_text in generate_usage_text_list(command)]
             help_embed_data["content"] = [("Usage", usage_str)]
 
-            example_args = {}
+            example_args_list = []
             if command in ("vote", "kill", "guard", "seer", "reborn", "ship"):
-                example_args = { "player_id1": 2, "player_id2": 3 }
+                example_args_list = [{ "player_id1": 2, "player_id2": 3 }]
             elif command == "setmode":
-                example_args = { "mode_id": "2", "on_str": "on" }
+                example_args_list = [{ "mode_id": "2", "on_str": "on" }]
             elif command == "setplaytime":
-                example_args = { "time_start": "00:00", "time_end": "23:59" }
+                example_args_list = [
+                    { "time_start": "00:00", "time_end": "23:59", "time_zone": "" },
+                    { "time_start": "00:00", "time_end": "23:59", "time_zone": "UTC+7" }
+                ]
 
-            if len(example_args) > 0:
+            if len(example_args_list) > 0:
                 help_embed_data["content"].append(
-                    ("Example", ["- " + usage_text for usage_text in generate_usage_text_list(command, **example_args)])
+                    ("Example", [
+                        "- " + usage_text
+                        for example_args in example_args_list
+                        for usage_text in generate_usage_text_list(command, **example_args)
+                    ])
                 )
         else:
             help_embed_data["color"] = 0xdc4e4e
@@ -547,29 +557,35 @@ def generate_mode_disabled():
 def generate_reveal_list(reveal_list):
     return "\n".join([f"<@{player_id}> là {role}" for player_id, role in reveal_list])
 
+
 def date_range_to_string(start_time, end_time):
     if start_time == end_time:
         result = "cả ngày"
     else:
         result = f"từ {start_time} đến "
-        if str(end_time) == "00:00":
+        if str(end_time) == "00:00:00":
             result += f"hết ngày"
         else:
             result += f"{end_time}{'' if start_time < end_time else ' ngày hôm sau'}"
     return result
 
 
-def generate_play_time(start, end, zone):
-    start_time_utc = parser.parse(f"{start} {zone}")
-    end_time_utc = parser.parse(f"{end} {zone}")
+def generate_play_time_text(start_time_utc: datetime.time, end_time_utc: datetime.time, zone_str=""):
+    if zone_str:
+        _zone_str = zone_str
+        if zone_str.startswith("+") or zone_str.startswith("-"):
+            _zone_str = "UTC" + zone_str
+
+        zone = tz.gettz(_zone_str)
+    else:
+        zone = tz.gettz()
+        zone_str = str(zone.tzname(None))
 
     # Convert time zone
-    from_zone = tz.gettz('UTC')
-    to_zone = tz.gettz(zone)
-    start_time = start_time_utc.replace(tzinfo=to_zone).astimezone(from_zone)
-    end_time = end_time_utc.replace(tzinfo=to_zone).astimezone(from_zone)
+    start_time = start_time_utc.astimezone(zone)
+    end_time = end_time_utc.astimezone(zone)
 
-    msg = f"Bạn sẽ được chơi {date_range_to_string(start_time.time(), end_time.time())} (theo múi giờ {zone})"
-    msg += f", hay {date_range_to_string(start_time_utc.time(), end_time_utc.time())} (giờ UTC)."
+    msg = f"Bạn sẽ được chơi {date_range_to_string(start_time.time(), end_time.time())} (theo múi giờ {zone_str})"
+    msg += f", hay {date_range_to_string(start_time_utc, end_time_utc)} (giờ UTC)."
 
     return msg

@@ -157,22 +157,24 @@ async def parse_command(client, game, message):
                     zone = parameters[2]
 
                 try:
-                    start_time = parser.parse(f"{parameters[0]} {zone}")
-                    end_time = parser.parse(f"{parameters[1]} {zone}")
+                    if zone:
+                        preprocessed_zone = re.sub(r"(?:GMT|UTC)([+-]\d+)", r"\1", zone)
+                        start_time = parser.parse(f"{parameters[0]} {preprocessed_zone}")
+                        end_time = parser.parse(f"{parameters[1]} {preprocessed_zone}")
+                    else:
+                        start_time = parser.parse(f"{parameters[0]}")
+                        end_time = parser.parse(f"{parameters[1]}")
 
-                except ValueError:
+                except parser.ParserError:
                     await message.reply(text_template.generate_invalid_command_text(cmd))
                     start_time = None
                     end_time = None
 
                 if start_time is not None and end_time is not None:
-                    to_zone = tz.gettz("UTC")
-                    start_time_utc = start_time.astimezone(to_zone)
-                    end_time_utc = end_time.astimezone(to_zone)
-                    print(start_time_utc.time())  # TODO: REMOVE THIS
-                    print(start_time.time())  # TODO: REMOVE THIS
+                    start_time_utc = start_time.astimezone(tz.UTC)
+                    end_time_utc = end_time.astimezone(tz.UTC)
                     game.set_play_time(start_time_utc.time(), end_time_utc.time(), zone)
-                    msg = text_template.generate_play_time(start_time_utc.time(), end_time_utc.time(), zone)
+                    msg = text_template.generate_play_time_text(start_time_utc.time(), end_time_utc.time(), zone)
                     await message.reply(msg)
 
         elif cmd == "setroles":

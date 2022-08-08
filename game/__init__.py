@@ -35,8 +35,8 @@ class Game:
         self.timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
         self.timer_enable = True
         self.modes = {}
-        self.play_time_start = datetime.time(0, 0, 0)
-        self.play_time_end = datetime.time(0, 0, 0)
+        self.play_time_start = datetime.time(0, 0, 0)  # in UTC
+        self.play_time_end = datetime.time(0, 0, 0)  # in UTC
         self.play_zone = "UTC+7"
         self.reset_game_state()  # Init other game variables every end game.
 
@@ -322,7 +322,7 @@ class Game:
         info = text_template.generate_werewolf_list(werewolf_list)
         await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
 
-        await self.interface.send_text_to_channel(text_template.generate_play_time(self.play_time_start, self.play_time_end, self.play_zone), config.GAMEPLAY_CHANNEL)
+        await self.interface.send_text_to_channel(text_template.generate_play_time_text(self.play_time_start, self.play_time_end, self.play_zone), config.GAMEPLAY_CHANNEL)
 
         await asyncio.sleep(0)  # This return CPU to main thread
         print("Started game loop")
