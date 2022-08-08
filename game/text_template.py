@@ -3,7 +3,7 @@ from game import roles
 import commands
 
 from datetime import *
-from dateutil import tz
+from dateutil import parser, tz
 
 
 def generate_usage_text_list(cmd, **kwargs):
@@ -571,21 +571,16 @@ def date_range_to_string(start_time, end_time):
 
 
 def generate_play_time_text(start_time_utc: datetime.time, end_time_utc: datetime.time, zone_str=""):
-    if zone_str:
-        _zone_str = zone_str
-        if zone_str.startswith("+") or zone_str.startswith("-"):
-            _zone_str = "UTC" + zone_str
-
-        zone = tz.gettz(_zone_str)
-    else:
-        zone = tz.gettz()
-        zone_str = str(zone.tzname(None))
+    start_time_utc = parser.parse(f"{start_time_utc} {zone_str}")
+    end_time_utc = parser.parse(f"{end_time_utc} {zone_str}")
 
     # Convert time zone
-    start_time = start_time_utc.astimezone(zone)
-    end_time = end_time_utc.astimezone(zone)
+    to_zone = tz.gettz(zone_str) if zone_str else tz.gettz()
+    start_time = start_time_utc.replace(tzinfo=tz.UTC).astimezone(to_zone)
+    end_time = end_time_utc.replace(tzinfo=tz.UTC).astimezone(to_zone)
 
-    msg = f"Bạn sẽ được chơi {date_range_to_string(start_time.time(), end_time.time())} (theo múi giờ {zone_str})"
-    msg += f", hay {date_range_to_string(start_time_utc, end_time_utc)} (giờ UTC)."
+    zone = zone_str or str(to_zone.tzname(None))
+    msg = f"Bạn sẽ được chơi {date_range_to_string(start_time.time(), end_time.time())} (theo múi giờ {zone})"
+    msg += f", hay {date_range_to_string(start_time_utc.time(), end_time_utc.time())} (giờ UTC)."
 
     return msg

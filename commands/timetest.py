@@ -1,46 +1,34 @@
-from datetime import *
+import re
 from dateutil import parser, tz
-import tzlocal
+from game.text_template import generate_play_time_text
 
-def date_range_to_string(start_time, end_time):
 
-    if start_time == end_time:
-        result = "cả ngày"
-    else:
-        result = f"từ {start_time} đến "
-        if str(end_time) == "00:00":
-            result += f"hết ngày"
+def parse_play_time(start, end, zone=""):
+    try:
+        if zone:
+            preprocessed_zone = re.sub(r"(?:GMT|UTC)([+-]\d+)", r"\1", zone)
+            start_time = parser.parse(f"{start} {preprocessed_zone}")
+            end_time = parser.parse(f"{end} {preprocessed_zone}")
         else:
-            result += f"{end_time}{'' if start_time < end_time else ' ngày hôm sau'}"
+            start_time = parser.parse(f"{start}")
+            end_time = parser.parse(f"{end}")
 
-    return result
+        start_time_utc = start_time.astimezone(tz.UTC)
+        end_time_utc = end_time.astimezone(tz.UTC)
 
-def generate_play_time(start, end, zone):
-    start_time_utc = parser.parse(f"{start} {zone}")
-    end_time_utc = parser.parse(f"{end} {zone}")
+        print(generate_play_time_text(start_time_utc.time(), end_time_utc.time(), zone))
 
-    # Convert time zone
-    from_zone = tz.gettz('UTC')
-    to_zone = tz.gettz(zone)
-    start_time = start_time_utc.replace(tzinfo=to_zone).astimezone(from_zone)
-    end_time = end_time_utc.replace(tzinfo=to_zone).astimezone(from_zone)
+    except parser.ParserError:
+        start_time, end_time = None, None
+        print("Invalid format")
 
-    msg = f"Bạn sẽ được chơi {date_range_to_string(start_time.time(), end_time.time())} (theo múi giờ {zone})"
-    msg += f", hay {date_range_to_string(start, end)} (giờ UTC)."
+    return start_time, end_time
 
-    return msg
 
-parameters = ("20:00", "22:30") 
-zone = "UTC+8"
-
-start_time = parser.parse(f"{parameters[0]} {zone}")
-end_time = parser.parse(f"{parameters[1]} {zone}")
-
-to_zone = tz.gettz("UTC")
-start_time_utc = start_time.astimezone(to_zone)
-end_time_utc = end_time.astimezone(to_zone)
-print(start_time_utc.time())
-print(start_time.time())
-
-msg = generate_play_time(start_time_utc.time(), end_time_utc.time(), zone)
-print(msg)
+parse_play_time("20:00", "00:00")
+parse_play_time("20:00", "00:00", "+8")
+parse_play_time("20:00", "00:00", "+08")
+parse_play_time("20:00", "00:00", "UTC+8")
+parse_play_time("20:00", "00:00", "UTC+8:00")
+parse_play_time("20:00", "00:00", "UTC+08:00")
+parse_play_time("20:00", "00:00", "UTC+0800")
