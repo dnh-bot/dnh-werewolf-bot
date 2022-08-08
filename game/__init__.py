@@ -11,6 +11,7 @@ from collections import Counter
 from functools import reduce
 import traceback
 import asyncio
+import tzlocal
 
 
 class GamePhase(Enum):
@@ -64,6 +65,7 @@ class Game:
         self.task_run_timer_phase = None
         self.winner = None
         self.runtime_roles = None
+        self.prev_playtime = self.is_in_play_time()
 
     def get_winner(self):
         if self.winner is None:
@@ -303,6 +305,7 @@ class Game:
 
     async def run_game_loop(self):
         print("Starting game loop")
+        self.prev_playtime = self.is_in_play_time()
         werewolf_list = []
         for _id, player in self.players.items():
             if isinstance(player, roles.Werewolf):
@@ -318,6 +321,8 @@ class Game:
 
         info = text_template.generate_werewolf_list(werewolf_list)
         await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
+
+        await self.interface.send_text_to_channel(f"Playtime: From {self.play_time_start} to {self.play_time_end} {str(tzlocal.get_localzone())}", config.GAMEPLAY_CHANNEL)
 
         await asyncio.sleep(0)  # This return CPU to main thread
         print("Started game loop")
@@ -585,7 +590,7 @@ class Game:
             while self.timecounter > 0:
                 await self.do_process_with_play_time()
 
-                if not self.timer_stopped:
+                if not self.timer_stopped and self.is_in_play_time():
                     if self.timecounter % period == 0 or self.timecounter <= 5:
                         print(f"{self.timecounter} remaining")
                         await self.interface.send_text_to_channel(text_template.generate_timer_remaining_text(self.timecounter), config.GAMEPLAY_CHANNEL)
@@ -625,16 +630,14 @@ class Game:
             return True  # a day
 
     async def do_process_with_play_time(self):
-        if self.is_in_play_time():
-            if self.timer_stopped:
-                self.timer_stopped = False
+        self.curr_playtime = self.is_in_play_time()
+        if self.curr_playtime != self.prev_playtime:
+            if self.curr_playtime:
                 await self.interface.send_text_to_channel(
                     "Đã đến giờ chơi, trò chơi sẽ được tiếp tục!",
                     config.GAMEPLAY_CHANNEL
                 )
-        else:
-            if not self.timer_stopped:
-                self.timer_stopped = True
+            else:
                 await self.interface.send_text_to_channel(
                     "Đã ngoài giờ chơi, trò chơi sẽ được dừng lại!",
                     config.GAMEPLAY_CHANNEL
