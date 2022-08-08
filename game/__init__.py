@@ -35,15 +35,15 @@ class Game:
         self.timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
         self.timer_enable = True
         self.modes = {}
-
+        self.play_time_start = datetime.time(0, 0, 0)
+        self.play_time_end = datetime.time(0, 0, 0)
+        self.play_zone = "UTC+7"
         self.reset_game_state()  # Init other game variables every end game.
 
     def reset_game_state(self):
         print("reset_game_state")
         self.is_stopped = True
         self.start_time = None
-        self.play_time_start = datetime.time(0, 0, 0)
-        self.play_time_end = datetime.time(0, 0, 0)
         self.players = {}  # id: Player
         self.playersname = {}  # id: username
         self.watchers = set()  # set of id
@@ -322,7 +322,7 @@ class Game:
         info = text_template.generate_werewolf_list(werewolf_list)
         await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
 
-        await self.interface.send_text_to_channel(f"Playtime: From {self.play_time_start} to {self.play_time_end} {str(tzlocal.get_localzone())}", config.GAMEPLAY_CHANNEL)
+        await self.interface.send_text_to_channel(text_template.generate_play_time(self.play_time_start, self.play_time_end, self.play_zone), config.GAMEPLAY_CHANNEL)
 
         await asyncio.sleep(0)  # This return CPU to main thread
         print("Started game loop")
@@ -606,7 +606,7 @@ class Game:
         except:
             print("Unknown run_timer_phase")
 
-    def set_play_time(self, time_start: datetime.time, time_end: datetime.time):
+    def set_play_time(self, time_start: datetime.time, time_end: datetime.time, zone):
         """
         Set play time range for a game.
         Params:
@@ -616,6 +616,7 @@ class Game:
         if isinstance(time_start, datetime.time) and isinstance(time_end, datetime.time):
             self.play_time_start = time_start
             self.play_time_end = time_end
+            self.play_zone = zone
         else:
             print("Invalid time_start or time_end format", time_start, time_end)
 
@@ -632,6 +633,7 @@ class Game:
     async def do_process_with_play_time(self):
         self.curr_playtime = self.is_in_play_time()
         if self.curr_playtime != self.prev_playtime:
+            self.prev_playtime = self.curr_playtime
             if self.curr_playtime:
                 await self.interface.send_text_to_channel(
                     "Đã đến giờ chơi, trò chơi sẽ được tiếp tục!",

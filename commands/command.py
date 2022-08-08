@@ -9,27 +9,13 @@ import re
 from datetime import *
 import tzlocal
 import subprocess, os
+from dateutil import parser, tz
 
 import utils  
 
 # TODO: generate content of command embed_data
 # e.g: Select a player to vote/kill/... by using command ...\nFor example: ...
 
-
-def date_range_to_string(start_time: datetime, end_time: datetime):
-    start_time_str = start_time.strftime('%H:%M')
-    end_time_str = end_time.strftime('%H:%M')
-
-    if start_time_str == end_time_str:
-        result = "cả ngày"
-    else:
-        result = f"từ {start_time_str} đến "
-        if end_time_str == "00:00":
-            result += f"hết ngày"
-        else:
-            result += f"{end_time_str}{'' if start_time < end_time else ' ngày hôm sau'}"
-
-    return result
 
 
 def parse_time_str(time_str):
@@ -145,7 +131,7 @@ async def parse_command(client, game, message):
             else:
                 timer_phase = list(map(int, parameters))
                 # Check if any timer phase is too short (<= 5 seconds):
-                if (not timer_phase) or (any (map(lambda x:x<=5,timer_phase))):
+                if not timer_phase or any(map(lambda x: x<=5, timer_phase)):
                     await message.reply("Config must greater than 5s")
                     return None
                 await message.reply(
@@ -163,24 +149,16 @@ async def parse_command(client, game, message):
 
         elif cmd == "setplaytime":
             """Usage:
-                `!setplaytime 10:00 21:00` -> start_time = 10:00, end_time = 21:00 
+                `!setplaytime 10:00 21:00 UTC+7` -> start_time = 10:00, end_time = 21:00, zone=UTC+7
             """
             if len(parameters) >= 2:
-                args_tz_str = str(tzlocal.get_localzone())
-                parsed_tz = None
+                zone = "UTC+7"
                 if len(parameters) >= 3:
-                    parsed_tz = parse_time_str(parameters[2])
+                    zone = parameters[2]
 
                 try:
-                    if parsed_tz is not None:
-                        args_tz_sign, args_tz_hours, args_tz_min = parsed_tz
-                        args_tz_str = f"{args_tz_sign}{args_tz_hours:0>2}{args_tz_min:0>2}"
-                        start_time = datetime.strptime(f"{parameters[0]} {args_tz_str}", "%H:%M %z")
-                        end_time = datetime.strptime(f"{parameters[1]} {args_tz_str}", "%H:%M %z")
-                    else:
-                        # use local timezone, can't remove datetime.combine(datetime.today(), ...) part
-                        start_time = datetime.combine(datetime.today(), datetime.strptime(parameters[0], "%H:%M").time())
-                        end_time = datetime.combine(datetime.today(), datetime.strptime(parameters[1], "%H:%M").time())
+                    start_time = parser.parse(f"{parameters[0]} {zone}")
+                    end_time = parser.parse(f"{parameters[1]} {zone}")
 
                 except ValueError:
                     await message.reply(text_template.generate_invalid_command_text(cmd))
@@ -188,12 +166,13 @@ async def parse_command(client, game, message):
                     end_time = None
 
                 if start_time is not None and end_time is not None:
-                    start_time_utc = start_time.astimezone(timezone.utc)
-                    end_time_utc = end_time.astimezone(timezone.utc)
-
-                    game.set_play_time(start_time_utc.time(), end_time_utc.time())
-                    msg = f"Bạn sẽ được chơi {date_range_to_string(start_time, end_time)} (theo múi giờ {args_tz_str})"
-                    msg += f", hay {date_range_to_string(start_time_utc, end_time_utc)} (giờ UTC)."
+                    to_zone = tz.gettz("UTC")
+                    start_time_utc = start_time.astimezone(to_zone)
+                    end_time_utc = end_time.astimezone(to_zone)
+                    print(start_time_utc.time())  # TODO: REMOVE THIS
+                    print(start_time.time())  # TODO: REMOVE THIS
+                    game.set_play_time(start_time_utc.time(), end_time_utc.time(), zone)
+                    msg = text_template.generate_play_time(start_time_utc.time(), end_time_utc.time(), zone)
                     await message.reply(msg)
 
         elif cmd == "setroles":

@@ -2,6 +2,8 @@ import config
 from game import roles
 import commands
 
+from datetime import *
+from dateutil import parser, tz
 
 def generate_usage_text_list(cmd, **kwargs):
     if cmd in ("vote", "kill", "guard", "seer", "reborn", "curse"):
@@ -544,3 +546,30 @@ def generate_mode_disabled():
 
 def generate_reveal_list(reveal_list):
     return "\n".join([f"<@{player_id}> là {role}" for player_id, role in reveal_list])
+
+def date_range_to_string(start_time, end_time):
+    if start_time == end_time:
+        result = "cả ngày"
+    else:
+        result = f"từ {start_time} đến "
+        if str(end_time) == "00:00":
+            result += f"hết ngày"
+        else:
+            result += f"{end_time}{'' if start_time < end_time else ' ngày hôm sau'}"
+    return result
+
+
+def generate_play_time(start, end, zone):
+    start_time_utc = parser.parse(f"{start} {zone}")
+    end_time_utc = parser.parse(f"{end} {zone}")
+
+    # Convert time zone
+    from_zone = tz.gettz('UTC')
+    to_zone = tz.gettz(zone)
+    start_time = start_time_utc.replace(tzinfo=to_zone).astimezone(from_zone)
+    end_time = end_time_utc.replace(tzinfo=to_zone).astimezone(from_zone)
+
+    msg = f"Bạn sẽ được chơi {date_range_to_string(start_time.time(), end_time.time())} (theo múi giờ {zone})"
+    msg += f", hay {date_range_to_string(start_time_utc.time(), end_time_utc.time())} (giờ UTC)."
+
+    return msg
