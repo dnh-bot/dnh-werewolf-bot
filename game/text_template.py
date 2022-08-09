@@ -223,6 +223,7 @@ def generate_before_voting_zombie():
     return "Bạn có thể đội mồ sống dậy! Bạn chỉ có thể sử dụng kỹ năng này 1 lần.\n" +\
         f"Nhập `{config.BOT_PREFIX}zombie` để trở lại cuộc đời.\n"
 
+
 def generate_after_zombie_reborn():
     return f"Bạn đã đội mồ thành công"
 
@@ -432,13 +433,13 @@ def generate_help_command_text(command=None):
 
             example_args_list = []
             if command in ("vote", "kill", "guard", "seer", "reborn", "ship"):
-                example_args_list = [{ "player_id1": 2, "player_id2": 3 }]
+                example_args_list = [{"player_id1": 2, "player_id2": 3}]
             elif command == "setmode":
-                example_args_list = [{ "mode_id": "2", "on_str": "on" }]
+                example_args_list = [{"mode_id": "2", "on_str": "on"}]
             elif command == "setplaytime":
                 example_args_list = [
-                    { "time_start": "00:00", "time_end": "23:59", "time_zone": "" },
-                    { "time_start": "00:00", "time_end": "23:59", "time_zone": "UTC+7" }
+                    {"time_start": "00:00", "time_end": "23:59", "time_zone": ""},
+                    {"time_start": "00:00", "time_end": "23:59", "time_zone": "UTC+7"}
                 ]
 
             if len(example_args_list) > 0:
@@ -507,8 +508,8 @@ def generate_help_text(*args):
         help_embed_data = {
             "color": 0xffffff,
             "title": "Werewolf Bot Help",
-            "description": "Full list of things. You can get more information on " +\
-                           f"a command using `{config.BOT_PREFIX}help cmd <name of command>` or " +\
+            "description": "Full list of things. You can get more information on " +
+                           f"a command using `{config.BOT_PREFIX}help cmd <name of command>` or " +
                            f"a role using `{config.BOT_PREFIX}help role <name of role>`",
             "content": [
                 ("All commands", [" | ".join(f"`{cmd}`" for cmd in commands.get_all_commands())]),
@@ -541,12 +542,12 @@ def generate_table(header, data):
 
 def generate_modes(modes_dict):
     print(modes_dict)
-    return "===========================================================================\n"+\
-        f"Chế độ chơi: \n"+\
-        f" - 1. Ẩn danh sách các nhân vật đầu game: {'Bật' if modes_dict.get('hidden_role') == 'True' else 'Tắt'}\n"+\
-        f" - 2. Tiên tri có thể giết Cáo: {'Bật' if modes_dict.get('seer_can_kill_fox') == 'True'  else 'Tắt'}\n"+\
-        f" - 3. Không cho phép Bảo vệ bản thân: {'Bật' if modes_dict.get('prevent_guard_self_protection') == 'True'  else 'Tắt'}\n"+\
-        f" - 4. Phù thủy (Witch) có thể giết người: {'Bật' if modes_dict.get('witch_can_kill') == 'True'  else 'Tắt'}\n"+\
+    return "===========================================================================\n" +\
+        f"Chế độ chơi: \n" +\
+        f" - 1. Ẩn danh sách các nhân vật đầu game: {'Bật' if modes_dict.get('hidden_role') == 'True' else 'Tắt'}\n" +\
+        f" - 2. Tiên tri có thể giết Cáo: {'Bật' if modes_dict.get('seer_can_kill_fox') == 'True'  else 'Tắt'}\n" +\
+        f" - 3. Không cho phép Bảo vệ bản thân: {'Bật' if modes_dict.get('prevent_guard_self_protection') == 'True'  else 'Tắt'}\n" +\
+        f" - 4. Phù thủy (Witch) có thể giết người: {'Bật' if modes_dict.get('witch_can_kill') == 'True'  else 'Tắt'}\n" +\
         "\n===========================================================================\n"
 
 

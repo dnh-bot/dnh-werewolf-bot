@@ -1,6 +1,7 @@
 import json
 from collections import OrderedDict
 
+
 def read_json_file(filename):
     try:
         with open(filename, "r", encoding="utf8") as f:
@@ -10,8 +11,8 @@ def read_json_file(filename):
         print("read json failed.", e)
         return {}
 
-# Return 
-#  True if the key is existing else return False
+
+# Description: Return True if the key is existing else return False
 def update_json_file(filename, key, value):
     try:
         with open(filename, "r+", encoding="utf8") as f:
@@ -28,7 +29,3 @@ def update_json_file(filename, key, value):
     except Exception as e:
         print("update json failed.", e)
         return False
-    
-
-
-

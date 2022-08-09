@@ -2,6 +2,7 @@ from game.roles.villager import Villager
 from game.text_template import *
 from enum import Enum
 
+
 class Zombie(Villager):
     # Zombie can reborn himself 1 time in a game.
 
@@ -11,7 +12,7 @@ class Zombie(Villager):
 
     def get_power(self):
         return self.power
-    
+
     def on_use_power(self):
         self.power = 0
 

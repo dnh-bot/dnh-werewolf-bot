@@ -1,6 +1,7 @@
 from game.roles.villager import Villager
 from game.text_template import *
 
+
 class Cupid(Villager):
     def __init__(self, interface, player_id, player_name):
         super().__init__(interface, player_id, player_name)

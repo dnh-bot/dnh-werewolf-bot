@@ -34,7 +34,7 @@ async def test_bot(game, guild):
     print("------------ End bot testing ------------")
 
 # ============ Discord server ============
-# We need to enable intents to access guild.members list 
+# We need to enable intents to access guild.members list
 # details: https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
 intents = discord.Intents.default()
 intents.members = True
