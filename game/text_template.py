@@ -2,6 +2,9 @@ import config
 from game import roles
 import commands
 
+from datetime import *
+from dateutil import parser, tz
+
 
 def generate_usage_text_list(cmd, **kwargs):
     if cmd in ("vote", "kill", "guard", "seer", "reborn", "curse"):
@@ -26,9 +29,11 @@ def generate_usage_text_list(cmd, **kwargs):
         return [f"{config.BOT_PREFIX}{cmd} {mode_id} {on_str}"]
     elif cmd == "setplaytime":
         # !setplaytime 10:00 21:00
+        # !setplaytime 10:00 21:00 UTC+7
         time_start = kwargs.get("time_start", "time_start")
         time_end = kwargs.get("time_end", "time_end")
-        return [f"`{config.BOT_PREFIX}{cmd} {time_start} {time_end}`"]
+        time_zone = kwargs.get("time_zone", "[time_zone]")
+        return [f"`{config.BOT_PREFIX}{cmd} {time_start} {time_end} {time_zone}`".rstrip()]
     else:
         return [f"`{config.BOT_PREFIX}{cmd}`"]
 
@@ -392,7 +397,7 @@ def generate_timer_remaining_text(seconds):
     if seconds > 0 or days == hours == minutes == seconds == 0:
         time_text.append(f"{seconds} giây")
 
-    return f"🔔 Bing boong! Còn {' '.join(time_text)}..."
+    return f"🔔 Bing boong! Còn {' '.join(time_text)}... "
 
 
 def generate_timer_up_text():
@@ -425,17 +430,24 @@ def generate_help_command_text(command=None):
             usage_str = ["- " + usage_text for usage_text in generate_usage_text_list(command)]
             help_embed_data["content"] = [("Usage", usage_str)]
 
-            example_args = {}
+            example_args_list = []
             if command in ("vote", "kill", "guard", "seer", "reborn", "ship"):
-                example_args = { "player_id1": 2, "player_id2": 3 }
+                example_args_list = [{ "player_id1": 2, "player_id2": 3 }]
             elif command == "setmode":
-                example_args = { "mode_id": "2", "on_str": "on" }
+                example_args_list = [{ "mode_id": "2", "on_str": "on" }]
             elif command == "setplaytime":
-                example_args = { "time_start": "00:00", "time_end": "23:59" }
+                example_args_list = [
+                    { "time_start": "00:00", "time_end": "23:59", "time_zone": "" },
+                    { "time_start": "00:00", "time_end": "23:59", "time_zone": "UTC+7" }
+                ]
 
-            if len(example_args) > 0:
+            if len(example_args_list) > 0:
                 help_embed_data["content"].append(
-                    ("Example", ["- " + usage_text for usage_text in generate_usage_text_list(command, **example_args)])
+                    ("Example", [
+                        "- " + usage_text
+                        for example_args in example_args_list
+                        for usage_text in generate_usage_text_list(command, **example_args)
+                    ])
                 )
         else:
             help_embed_data["color"] = 0xdc4e4e
@@ -544,3 +556,31 @@ def generate_mode_disabled():
 
 def generate_reveal_list(reveal_list):
     return "\n".join([f"<@{player_id}> là {role}" for player_id, role in reveal_list])
+
+
+def date_range_to_string(start_time, end_time):
+    if start_time == end_time:
+        result = "cả ngày"
+    else:
+        result = f"từ {start_time} đến "
+        if str(end_time) == "00:00:00":
+            result += f"hết ngày"
+        else:
+            result += f"{end_time}{'' if start_time < end_time else ' ngày hôm sau'}"
+    return result
+
+
+def generate_play_time_text(start_time_utc: datetime.time, end_time_utc: datetime.time, zone_str=""):
+    start_time_utc = parser.parse(f"{start_time_utc} {zone_str}")
+    end_time_utc = parser.parse(f"{end_time_utc} {zone_str}")
+
+    # Convert time zone
+    to_zone = tz.gettz(zone_str) if zone_str else tz.gettz()
+    start_time = start_time_utc.replace(tzinfo=tz.UTC).astimezone(to_zone)
+    end_time = end_time_utc.replace(tzinfo=tz.UTC).astimezone(to_zone)
+
+    zone = zone_str or str(to_zone.tzname(None))
+    msg = f"Bạn sẽ được chơi {date_range_to_string(start_time.time(), end_time.time())} (theo múi giờ {zone})"
+    msg += f", hay {date_range_to_string(start_time_utc.time(), end_time_utc.time())} (giờ UTC)."
+
+    return msg

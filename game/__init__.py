@@ -11,6 +11,7 @@ from collections import Counter
 from functools import reduce
 import traceback
 import asyncio
+import tzlocal
 
 
 class GamePhase(Enum):
@@ -34,15 +35,15 @@ class Game:
         self.timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
         self.timer_enable = True
         self.modes = {}
-
+        self.play_time_start = datetime.time(0, 0, 0)  # in UTC
+        self.play_time_end = datetime.time(0, 0, 0)  # in UTC
+        self.play_zone = "UTC+7"
         self.reset_game_state()  # Init other game variables every end game.
 
     def reset_game_state(self):
         print("reset_game_state")
         self.is_stopped = True
         self.start_time = None
-        self.play_time_start = datetime.time(0, 0, 0)
-        self.play_time_end = datetime.time(0, 0, 0)
         self.players = {}  # id: Player
         self.playersname = {}  # id: username
         self.watchers = set()  # set of id
@@ -56,6 +57,7 @@ class Game:
         self.vote_next = set()
         self.vote_stop = set()
         self.day = 0
+        self.timecounter = 0
         self.task_game_loop = None
         self.next_flag.clear()
         self.last_nextcmd_time = time.time()
@@ -63,6 +65,7 @@ class Game:
         self.task_run_timer_phase = None
         self.winner = None
         self.runtime_roles = None
+        self.prev_playtime = self.is_in_play_time()
 
     def get_winner(self):
         if self.winner is None:
@@ -302,6 +305,7 @@ class Game:
 
     async def run_game_loop(self):
         print("Starting game loop")
+        self.prev_playtime = self.is_in_play_time()
         werewolf_list = []
         for _id, player in self.players.items():
             if isinstance(player, roles.Werewolf):
@@ -317,6 +321,8 @@ class Game:
 
         info = text_template.generate_werewolf_list(werewolf_list)
         await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
+
+        await self.interface.send_text_to_channel(text_template.generate_play_time_text(self.play_time_start, self.play_time_end, self.play_zone), config.GAMEPLAY_CHANNEL)
 
         await asyncio.sleep(0)  # This return CPU to main thread
         print("Started game loop")
@@ -483,7 +489,7 @@ class Game:
 
             embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False)
             # Send dead player list to Witch if Witch has not used skill
-            if embed_data:  # This table can be empty (Noone is dead)
+            if embed_data:  # This table can be empty (No one is dead)
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])
 
     async def do_end_nighttime_phase(self):
@@ -577,17 +583,20 @@ class Game:
         try:
             self.timer_stopped = False
             daytime, nighttime, period = self.timer_phase
-            timecount = daytime
+            self.timecounter = daytime
             if self.game_phase == GamePhase.NIGHT:
-                timecount = nighttime
+                self.timecounter = nighttime
 
-            for count in range(timecount, 0, -1):
-                if self.timer_stopped:
-                    break
-                if count % period == 0 or count <= 5:
-                    print(f"{count} remaining")
-                    await self.interface.send_text_to_channel(text_template.generate_timer_remaining_text(count), config.GAMEPLAY_CHANNEL)
+            while self.timecounter > 0:
+                await self.do_process_with_play_time()
+
+                if not self.timer_stopped and self.is_in_play_time():
+                    if self.timecounter % period == 0 or self.timecounter <= 5:
+                        print(f"{self.timecounter} remaining")
+                        await self.interface.send_text_to_channel(text_template.generate_timer_remaining_text(self.timecounter), config.GAMEPLAY_CHANNEL)
+                    self.timecounter -= 1
                 await asyncio.sleep(1)
+
             if not self.timer_stopped:
                 print("stop timer")
                 await self.interface.send_text_to_channel(text_template.generate_timer_up_text(), config.GAMEPLAY_CHANNEL)
@@ -597,7 +606,7 @@ class Game:
         except:
             print("Unknown run_timer_phase")
 
-    def set_play_time(self, time_start: datetime.time, time_end: datetime.time):
+    def set_play_time(self, time_start: datetime.time, time_end: datetime.time, zone):
         """
         Set play time range for a game.
         Params:
@@ -607,6 +616,7 @@ class Game:
         if isinstance(time_start, datetime.time) and isinstance(time_end, datetime.time):
             self.play_time_start = time_start
             self.play_time_end = time_end
+            self.play_zone = zone
         else:
             print("Invalid time_start or time_end format", time_start, time_end)
 
@@ -619,6 +629,21 @@ class Game:
             return self.play_time_start <= time_point or time_point <= self.play_time_end
         else:
             return True  # a day
+
+    async def do_process_with_play_time(self):
+        self.curr_playtime = self.is_in_play_time()
+        if self.curr_playtime != self.prev_playtime:
+            self.prev_playtime = self.curr_playtime
+            if self.curr_playtime:
+                await self.interface.send_text_to_channel(
+                    "Đã đến giờ chơi, trò chơi sẽ được tiếp tục!",
+                    config.GAMEPLAY_CHANNEL
+                )
+            else:
+                await self.interface.send_text_to_channel(
+                    "Đã ngoài giờ chơi, trò chơi sẽ được dừng lại!",
+                    config.GAMEPLAY_CHANNEL
+                )
 
     async def do_player_action(self, cmd, author_id, *targets_id):
         assert self.players is not None
