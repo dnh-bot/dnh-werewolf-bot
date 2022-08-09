@@ -8,14 +8,14 @@ import asyncio   # Do not remove this. This for debug command
 import re
 from datetime import *
 import tzlocal
-import subprocess, os
+import subprocess
+import os
 from dateutil import parser, tz
 
-import utils  
+import utils
 
 # TODO: generate content of command embed_data
 # e.g: Select a player to vote/kill/... by using command ...\nFor example: ...
-
 
 
 def parse_time_str(time_str):
@@ -46,7 +46,7 @@ async def parse_command(client, game, message):
         elif cmd == "version":
             tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
             name = os.getenv("BOT_NAME")
-            await message.reply("-".join((name,tag)).rstrip('\n'))
+            await message.reply("-".join((name, tag)).rstrip('\n'))
         elif cmd == "join":
             await player.do_join(game, message, force=False)
         elif cmd == "leave":
@@ -75,7 +75,8 @@ async def parse_command(client, game, message):
             is_valid_channel = \
                 (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
                 (cmd == "kill" and message.channel.name == config.WEREWOLF_CHANNEL) or\
-                (cmd in ("guard", "seer", "reborn", "curse", "zombie", "ship") and message.channel.name.strip().startswith("personal"))
+                (cmd in ("guard", "seer", "reborn", "curse", "zombie", "ship")
+                 and message.channel.name.strip().startswith("personal"))
 
             if is_valid_channel:
                 author = message.author
@@ -131,7 +132,7 @@ async def parse_command(client, game, message):
             else:
                 timer_phase = list(map(int, parameters))
                 # Check if any timer phase is too short (<= 5 seconds):
-                if not timer_phase or any(map(lambda x: x<=5, timer_phase)):
+                if not timer_phase or any(map(lambda x: x <= 5, timer_phase)):
                     await message.reply("Config must greater than 5s")
                     return None
                 await message.reply(

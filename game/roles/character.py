@@ -37,7 +37,8 @@ class Character:
         await asyncio.gather(
             self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False),
             self.interface.add_user_to_channel(self.player_id, config.CEMETERY_CHANNEL, is_read=True, is_send=True),
-            self.interface.send_text_to_channel(text_template.generate_after_death(f"<@{self.player_id}>"), config.CEMETERY_CHANNEL),
+            self.interface.send_text_to_channel(text_template.generate_after_death(
+                f"<@{self.player_id}>"), config.CEMETERY_CHANNEL),
             self.interface.add_user_to_channel(self.player_id, config.COUPLE_CHANNEL, is_read=False, is_send=False)
         )
         return True
@@ -47,7 +48,8 @@ class Character:
         await asyncio.gather(
             self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True),
             self.interface.add_user_to_channel(self.player_id, config.CEMETERY_CHANNEL, is_read=False, is_send=False),
-            self.interface.send_text_to_channel(text_template.generate_after_reborn(f"<@{self.player_id}>"), config.GAMEPLAY_CHANNEL)
+            self.interface.send_text_to_channel(text_template.generate_after_reborn(
+                f"<@{self.player_id}>"), config.GAMEPLAY_CHANNEL)
         )
 
     def get_protected(self):

@@ -50,7 +50,7 @@ class Game:
         self.game_phase = GamePhase.NEW_GAME
         self.wolf_kill_dict = {}  # dict[wolf] -> player
         self.reborn_set = set()
-        self.cupid_dict = {} # dict[player1] -> player2, dict[player2] -> player1
+        self.cupid_dict = {}  # dict[player1] -> player2, dict[player2] -> player1
         self.night_pending_kill_list = []
         self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1}. All items are ids.
         self.vote_start = set()
@@ -109,7 +109,7 @@ class Game:
     def generate_roles(self, interface, ids, names_dict):
         def dict_to_list(config, number=0):
             yield from (name for name in config for _ in range(config[name]))
-            yield from ('Werewolf' if i%4==0 else 'Villager' for i in range(number-sum(config.values())))
+            yield from ('Werewolf' if i % 4 == 0 else 'Villager' for i in range(number-sum(config.values())))
 
         if self.runtime_roles:
             role_config = self.runtime_roles
@@ -118,12 +118,14 @@ class Game:
 
         ids = list(ids)
         try:
-            game_role = random.choice([dict_to_list(role_dict) for role_dict in role_config if sum(role_dict.values()) == len(ids)])
+            game_role = random.choice([dict_to_list(role_dict)
+                                      for role_dict in role_config if sum(role_dict.values()) == len(ids)])
         except IndexError:
             game_role = dict_to_list(role_config[-1], len(ids))
 
         random.shuffle(ids)
-        r = {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
+        r = {id_: roles.get_role_type(role_name)(
+            interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
         print("Player list:", r)
         return r
 
@@ -380,7 +382,8 @@ class Game:
                 ]
             }
             if self.cupid_dict:
-                game_result["content"].append(("💘 Cặp đôi vàng", [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict.keys())]))
+                game_result["content"].append(("💘 Cặp đôi vàng", [" x ".join(
+                    f"<@{player_id}>" for player_id in self.cupid_dict.keys())]))
 
             await self.interface.send_embed_to_channel(game_result, config.LEADERBOARD_CHANNEL)
 
@@ -435,9 +438,9 @@ class Game:
 
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
             await asyncio.gather(
-                *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True) 
+                *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
                   for _id, player in self.players.items() if player.is_alive()]
-                )
+            )
         else:
             print("Error no player in game.")
             await self.stop()
@@ -463,9 +466,9 @@ class Game:
 
         # Mute all players in config.GAMEPLAY_CHANNEL
         await asyncio.gather(
-            *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False) 
+            *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
                 for _id, player in self.players.items() if player.is_alive()]
-            )
+        )
 
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
@@ -661,7 +664,7 @@ class Game:
             targets.append(target)
 
         if cmd != "zombie" and not targets[0].is_alive() and cmd != "reborn":
-            return text_template.generate_dead_target_text() if cmd=="vote" else text_template.generate_invalid_target()
+            return text_template.generate_dead_target_text() if cmd == "vote" else text_template.generate_invalid_target()
 
         if cmd == "vote":
             return await self.vote(author, targets[0])

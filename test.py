@@ -5,6 +5,7 @@ import os
 import interface
 from game import *
 
+
 def assert_time_print(filepath, game, playersname):
     print("\n\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     print(f"Failed at test case {filepath}\n")
@@ -18,7 +19,8 @@ def assert_time_print(filepath, game, playersname):
 def check_alive_players(game, alive_list, playersname):
     p = [player.player_id for player in game.players.values() if player.is_alive()]
     # print("++++++++++++++++++++\nids: ", p, alive_list)
-    print(f"\nAlive user list:\n game:     {list(map(lambda x: playersname[x], p))}\n expected: { list(map(lambda x: playersname[x], alive_list))}")
+    print(
+        f"\nAlive user list:\n game:     {list(map(lambda x: playersname[x], p))}\n expected: { list(map(lambda x: playersname[x], alive_list))}")
     return set(p) == set(alive_list)
 
 
@@ -72,7 +74,7 @@ async def test_case(game, filepath):
             await game.next_phase()
 
         await asyncio.sleep(DELAY_TIME)
-        
+
         assert check_game_end(game, test_case_data.get("win"))
         if test_case_data.get("win") != "None":
             await game.task_game_loop
@@ -92,7 +94,7 @@ async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
 
     # Run single test
-    
+
     await test_case(game, "./testcases/case-cupid-win.json")
 
     # Run all tests

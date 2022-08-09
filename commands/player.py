@@ -188,5 +188,5 @@ async def do_generate_vote_status_table(channel, table, table_description=""):
 
 
 async def test_player_command(guild):
-    # TODO: 
+    # TODO:
     pass
