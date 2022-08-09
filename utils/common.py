@@ -12,8 +12,10 @@ def read_json_file(filename):
         return {}
 
 
-# Description: Return True if the key is existing else return False
 def update_json_file(filename, key, value):
+    """
+    Check if the key exists.
+    """
     try:
         with open(filename, "r+", encoding="utf8") as f:
             print(f"successfully loaded {filename}")

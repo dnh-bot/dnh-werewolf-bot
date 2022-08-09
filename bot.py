@@ -67,4 +67,5 @@ async def on_message(message):
     if verify_ok(message):
         await process_message(client, message)  # loop through all commands and do action on first command that match
 
+
 client.run(config.DISCORD_TOKEN)
