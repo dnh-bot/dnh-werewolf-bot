@@ -123,6 +123,12 @@ class Game:
             game_role = dict_to_list(role_config[-1], len(ids))
 
         random.shuffle(ids)
+        if self.modes.get("couple_random"):
+            # Replace Cupid by Villager:
+            print("DEBUG----", game_role)
+            game_role = map(lambda role: role if role != 'Cupid' else 'Villager', game_role)
+            print("DEBUG----", game_role)
+
         r = {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
         print("Player list:", r)
         return r
@@ -323,6 +329,10 @@ class Game:
         await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
 
         await self.interface.send_text_to_channel(text_template.generate_play_time_text(self.play_time_start, self.play_time_end, self.play_zone), config.GAMEPLAY_CHANNEL)
+
+        if self.modes.get("couple_random"):
+            random_cupid_couple = random.sample(self.get_alive_players(), 2)
+            await self.ship(None, *random_cupid_couple)
 
         await asyncio.sleep(0)  # This return CPU to main thread
         print("Started game loop")
@@ -804,17 +814,18 @@ class Game:
         return text_template.generate_after_zombie_reborn()
 
     async def ship(self, author, target1, target2):
-        if not isinstance(author, roles.Cupid):
-            return text_template.generate_invalid_author()
+        if author is not None:  # quick adapt couple_random enable
+            if not isinstance(author, roles.Cupid):
+                return text_template.generate_invalid_author()
 
-        if author.get_power() == 0:
-            return text_template.generate_out_of_power()
+            if author.get_power() == 0:
+                return text_template.generate_out_of_power()
 
-        author_id = author.player_id
+            author.on_use_power()
+
         target1_id = target1.player_id
         target2_id = target2.player_id
 
-        author.on_use_power()
         self.cupid_dict[target1_id] = target2_id
         self.cupid_dict[target2_id] = target1_id
 
