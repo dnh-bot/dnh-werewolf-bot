@@ -148,6 +148,48 @@ def generate_vote_table_embed(vote_table, table_description):
     return embed_data
 
 
+def generate_vote_field(vote_table, table_description):
+    # vote_table format: {"u2": {"u1"}, "u1": {"u3", "u2"}}
+    # ->
+    # table_description
+    # - @user1: 2 phiếu (@user2, @user3)
+    # - @user2: 1 phiếu (@user1)
+
+    if isinstance(vote_table, dict) and table_description:
+        if vote_table:
+            return (table_description, [
+                f"- {title}: {len(votes)} phiếu ({', '.join([f'<@!{i}>' for i in votes])})"
+                for title, votes in sorted(vote_table.items(), key=lambda t: (-len(t[1]), t[0]))
+            ])
+        else:
+            return (table_description, [generate_nobody_text()])
+
+    return None
+
+
+def generate_status_embed(game_status, time_left, vote_table, table_description):
+    embed_content = []
+
+    if time_left is not None:
+        embed_content.append(("⏰ Thời gian còn lại", [generate_timer_remaining_text(time_left)]))
+
+    if table_description:
+        field_content = generate_vote_field(vote_table, table_description)
+        if field_content:
+            embed_content.append(field_content)
+        else:
+            embed_content.append(("Trạng thái của bạn", [table_description]))
+
+    embed_data = {
+        "color": 0xff0000,
+        "title": "Trạng thái trò chơi",
+        "description": game_status or "Không biết nữa :>",
+        "content": embed_content
+    }
+
+    return embed_data
+
+
 def generate_werewolf_list(werewolf_list):
     werewolf_str = ",".join([f"<@{_id}>" for _id in werewolf_list])
     return f"Danh sách Sói: {werewolf_str}"
@@ -292,6 +334,10 @@ def generate_nobody_voted_text():
     return "Vẫn chưa có ai vote cả :("
 
 
+def generate_nobody_text():
+    return "Vẫn chưa có ai cả :("
+
+
 def generate_invalid_channel_text(channel):
     # f"Command {config.BOT_PREFIX}{command} only available in {channel}"
     return f"Xài sai chỗ rồi bạn ơi :( Xài trong channel {channel} ấy"
@@ -398,7 +444,7 @@ def generate_timer_remaining_text(seconds):
     if seconds > 0 or days == hours == minutes == seconds == 0:
         time_text.append(f"{seconds} giây")
 
-    return f"🔔 Bing boong! Còn {' '.join(time_text)}... "
+    return f"Còn {' '.join(time_text)}... "
 
 
 def generate_timer_up_text():
