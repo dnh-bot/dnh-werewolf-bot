@@ -861,7 +861,7 @@ class Game:
         await self.interface.create_channel(config.COUPLE_CHANNEL)
         await self.interface.add_user_to_channel(target1_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
         await self.interface.add_user_to_channel(target2_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
-        await self.interface.send_text_to_channel(f"Thần tình yêu đã chú định <@{target1_id}> và <@{target2_id}> bên nhau", config.COUPLE_CHANNEL)
+        await self.interface.send_text_to_channel(text_template.generate_couple_welcome_text(f"<@{target1_id}>", f"<@{target2_id}>"), config.COUPLE_CHANNEL)
 
         return text_template.generate_after_cupid_ship(f"<@{target1_id}>", f"<@{target2_id}>")
 

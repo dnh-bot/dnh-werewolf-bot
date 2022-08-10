@@ -284,6 +284,10 @@ def generate_after_cupid_ship(user1, user2):
     return f"Bạn đã ghép đôi thành công {user1} và {user2}."
 
 
+def generate_couple_welcome_text(user1, user2):
+    return f"Chào mừng cặp đôi {user1} - {user2}!"
+
+
 def generate_couple_died(died_player, follow_player, on_day=True):
     if on_day:
         return f"Do {died_player} đã chết nên {follow_player} cũng đã treo cổ tự vẫn đi theo tình yêu của đời mình.\n" +\
