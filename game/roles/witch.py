@@ -12,7 +12,7 @@ class Witch(Villager):
 
     def get_power(self):
         return self.power
-    
+
     def on_use_power(self):
         self.power = 0
 

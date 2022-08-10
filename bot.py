@@ -34,7 +34,7 @@ async def test_bot(game, guild):
     print("------------ End bot testing ------------")
 
 # ============ Discord server ============
-# We need to enable intents to access guild.members list 
+# We need to enable intents to access guild.members list
 # details: https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
 intents = discord.Intents.default()
 intents.members = True
@@ -66,5 +66,6 @@ async def on_ready():
 async def on_message(message):
     if verify_ok(message):
         await process_message(client, message)  # loop through all commands and do action on first command that match
+
 
 client.run(config.DISCORD_TOKEN)

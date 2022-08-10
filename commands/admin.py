@@ -118,7 +118,7 @@ async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=T
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     if not channel:
-        await asyncio.sleep(1) # Wait 1s here to wait for channel is ready
+        await asyncio.sleep(1)  # Wait 1s here to wait for channel is ready
         channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=is_read, send_messages=is_send)
@@ -178,7 +178,7 @@ async def delete_all_personal_channel(guild):
 
 async def test_admin_command(guild):
     print("-- Testing admin command --")
-    user_id = config.DISCORD_TESTING_USER1_ID 
+    user_id = config.DISCORD_TESTING_USER1_ID
     public_user = guild.get_member(user_id)
     assert isinstance(public_user, discord.Member)
 
