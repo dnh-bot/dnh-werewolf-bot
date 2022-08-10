@@ -542,13 +542,13 @@ def generate_table(header, data):
 
 def generate_modes(modes_dict):
     print(modes_dict)
-    return "===========================================================================\n"+\
-        f"Chế độ chơi: \n"+\
-        f" - 1. Ẩn danh sách các nhân vật đầu game: {'Bật' if modes_dict.get('hidden_role') == 'True' else 'Tắt'}\n"+\
-        f" - 2. Tiên tri có thể giết Cáo: {'Bật' if modes_dict.get('seer_can_kill_fox') == 'True'  else 'Tắt'}\n"+\
-        f" - 3. Không cho phép Bảo vệ bản thân: {'Bật' if modes_dict.get('prevent_guard_self_protection') == 'True'  else 'Tắt'}\n"+\
-        f" - 4. Phù thủy (Witch) có thể giết người: {'Bật' if modes_dict.get('witch_can_kill') == 'True'  else 'Tắt'}\n"+\
-        f" - 5. Ghép cặp ngẫu nhiên: {'Bật' if modes_dict.get('couple_random') == 'True'  else 'Tắt'}\n"+\
+    return "===========================================================================\n" +\
+        f"Chế độ chơi: \n" +\
+        f" - 1. Ẩn danh sách các nhân vật đầu game: {'Bật' if modes_dict.get('hidden_role') == 'True' else 'Tắt'}\n" +\
+        f" - 2. Tiên tri có thể giết Cáo: {'Bật' if modes_dict.get('seer_can_kill_fox') == 'True'  else 'Tắt'}\n" +\
+        f" - 3. Không cho phép Bảo vệ bản thân: {'Bật' if modes_dict.get('prevent_guard_self_protection') == 'True'  else 'Tắt'}\n" +\
+        f" - 4. Phù thủy (Witch) có thể giết người: {'Bật' if modes_dict.get('witch_can_kill') == 'True'  else 'Tắt'}\n" +\
+        f" - 5. Ghép cặp ngẫu nhiên: {'Bật' if modes_dict.get('couple_random') == 'True'  else 'Tắt'}\n" +\
         "\n===========================================================================\n"
 
 

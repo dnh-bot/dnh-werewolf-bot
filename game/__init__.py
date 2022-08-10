@@ -126,11 +126,12 @@ class Game:
         random.shuffle(ids)
         if self.modes.get("couple_random"):
             # Replace Cupid by Villager:
-            print("DEBUG----", game_role)
+            # print("DEBUG----", game_role)
             game_role = map(lambda role: role if role != 'Cupid' else 'Villager', game_role)
-            print("DEBUG----", game_role)
+            # print("DEBUG----", game_role)
 
-        r = {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
+        r = {id_: roles.get_role_type(role_name)(
+            interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
         print("Player list:", r)
         return r
 
