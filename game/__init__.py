@@ -726,7 +726,10 @@ class Game:
         elif cmd == "zombie":
             return await self.zombie(author)
         elif cmd == "ship":
-            return await self.ship(author, *targets[:2])
+            if self.modes.get("couple_random"):
+                return await "Sorry. You cannot use power in couple random enable mode"
+            else:
+                return await self.ship(author, *targets[:2])
 
     async def vote(self, author, target):
         author_id = author.player_id
