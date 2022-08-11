@@ -211,7 +211,8 @@ async def do_generate_status_table(channel, game_status, remaining_time, table, 
             vote_table[name_field] = sorted(v)
 
     await admin.send_embed_to_channel(
-        channel.guild, text_template.generate_status_embed(game_status, remaining_time, vote_table, table_description), channel.name
+        channel.guild, text_template.generate_status_embed(
+            game_status, remaining_time, vote_table, table_description), channel.name
     )
 
 
