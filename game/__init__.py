@@ -86,11 +86,11 @@ class Game:
 
     def set_mode(self, mode_str, on):
         utils.common.update_json_file("json/game_config.json", mode_str, "True" if on else "False")
-        return f"Set mode '{mode_str}' is {on}. Warning: This setting is permanant!"
+        return f"Set mode '{mode_str}' is {on}. Warning: This setting is permanent!"
 
     def read_modes(self):
         modes = utils.common.read_json_file("json/game_config.json")
-        #  Read json dict into runtime dict modes
+        # Read json dict into runtime dict modes
         for k, v in modes.items():
             if v == "True":
                 self.modes[k] = True
@@ -277,29 +277,61 @@ class Game:
 
     def get_game_status(self, channel_name, author_id):
         """
-        Return voter table (if any) with its description
+        Return game status description, a phase's remaining time, voter table (if any) with its description
         """
-        if self.game_phase == GamePhase.DAY:
-            return self.get_vote_status(), "Danh sách những kẻ có khả năng bị hành hình"
-        elif self.game_phase == GamePhase.NIGHT:
-            author = self.players.get(author_id)
-            if author and author.is_alive():
-                if isinstance(author, roles.Werewolf) and (channel_name == config.WEREWOLF_CHANNEL or channel_name.startswith("personal")):
-                    return self.get_vote_status(self.wolf_kill_dict), "Danh sách những kẻ có khả năng bị ăn thịt"
+        if self.is_ended():
+            return "Trò chơi đã kết thúc.", None, None, ""
 
-            return None, "Đêm rồi, đi ngủ đi :>"
+        if self.game_phase == GamePhase.NEW_GAME:
+            status_table = {}
+            if self.players:
+                status_table["👍 vào chơi"] = [*self.players.keys()]
 
-        elif self.game_phase == GamePhase.NEW_GAME:
-            if self.players or self.watchers:
-                status_table = {"👍 vào chơi": [*self.players.keys()], "👎 chỉ xem": [*self.watchers]}
-                if self.vote_start:
-                    status_table["👍 vote start"] = [*self.vote_start]
+            if self.watchers:
+                status_table["👎 chỉ xem"] =  [*self.watchers]
 
-                return status_table, "Danh sách những người đang chờ vào game"
+            if self.vote_start:
+                status_table["👍 vote start"] = [*self.vote_start]
+
+            return "Trò chơi chưa bắt đầu.", None, status_table, "Danh sách những người đang chờ vào game"
+
+        if not (self.game_phase == GamePhase.DAY or self.game_phase == GamePhase.NIGHT):
+            return None, None, None, ""
+
+        status_description = ""
+        if self.is_in_play_time():
+            if self.timer_stopped:
+                status_description += "Trò chơi đang tạm dừng. "
             else:
-                return None, "Hiện không có ai đang chờ vào game."
+                status_description += "Trò chơi đang diễn ra. "
+        else:
+            status_description += "Hiện đang ngoài giờ chơi game, trò chơi đang tạm dừng. "
 
-        return None, ""
+        if self.game_phase == GamePhase.DAY:
+            status_description += "Bây giờ là ban ngày."
+            return status_description, self.timecounter, self.get_vote_status(), "Danh sách những kẻ có khả năng bị hành hình"
+
+        if self.game_phase == GamePhase.NIGHT:
+            status_description += "Bây giờ là ban đêm."
+            author = self.players.get(author_id)
+            if not author:
+                author_status = "Chưa có gì để xem đâu :>"
+
+            elif author.is_alive():
+                author_status = "Đêm rồi, đi ngủ đi :>"
+                if isinstance(author, roles.Werewolf) and (channel_name == config.WEREWOLF_CHANNEL or channel_name.startswith("personal")):
+                    return status_description, self.timecounter, self.get_vote_status(self.wolf_kill_dict), "Danh sách những kẻ có khả năng bị ăn thịt"
+
+                if isinstance(author, (roles.Seer, roles.Guard)) and channel_name.startswith("personal"):
+                    if author.get_mana() > 0:
+                        author_status = f"Bạn vẫn chưa sử dụng quyền năng của mình :<"
+
+            else:
+                author_status = "A con ma 👻"
+
+            return status_description, self.timecounter, None, author_status
+
+        return None, None, None, ""
 
     def get_vote_status(self, voter_dict=None):
         # From {"u1":"u2", "u2":"u1", "u3":"u1"}
@@ -606,7 +638,10 @@ class Game:
                 if not self.timer_stopped and self.is_in_play_time():
                     if self.timecounter % period == 0 or self.timecounter <= 5:
                         print(f"{self.timecounter} remaining")
-                        await self.interface.send_text_to_channel(text_template.generate_timer_remaining_text(self.timecounter), config.GAMEPLAY_CHANNEL)
+                        await self.interface.send_text_to_channel(
+                            "🔔 Bing boong! " + text_template.generate_timer_remaining_text(self.timecounter),
+                            config.GAMEPLAY_CHANNEL
+                        )
                     self.timecounter -= 1
                 await asyncio.sleep(1)
 
@@ -837,6 +872,7 @@ class Game:
         await self.interface.create_channel(config.COUPLE_CHANNEL)
         await self.interface.add_user_to_channel(target1_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
         await self.interface.add_user_to_channel(target2_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+        await self.interface.send_text_to_channel(text_template.generate_couple_welcome_text(f"<@{target1_id}>", f"<@{target2_id}>"), config.COUPLE_CHANNEL)
 
         return text_template.generate_after_cupid_ship(f"<@{target1_id}>", f"<@{target2_id}>")
 

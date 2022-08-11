@@ -115,9 +115,13 @@ async def parse_command(client, game, message):
                 )
 
         elif cmd == "status":
-            vote_table, vote_table_description = game.get_game_status(message.channel.name, message.author.id)
-            await player.do_generate_vote_status_table(message.channel, vote_table, vote_table_description)
-            await message.reply(text_template.generate_timer_remaining_text(game.timecounter))
+            # status_description, remaining_time, vote_table, vote_table_description = game.get_game_status(message.channel.name, message.author.id)
+            # await player.do_generate_vote_status_table(message.channel, vote_table, vote_table_description)
+            # await message.reply(text_template.generate_timer_remaining_text(game.timecounter))
+
+            # new status table here
+            game_status = game.get_game_status(message.channel.name, message.author.id)
+            await player.do_generate_status_table(message.channel, *game_status)
 
         elif cmd == "timer":
             """ Usage: 
