@@ -140,6 +140,7 @@ class Game:
             self.game_phase = GamePhase.DAY
             self.is_stopped = False
             self.last_nextcmd_time = time.time()
+            self.read_modes()  # Read json config mode into runtime dict
             await self.interface.send_text_to_channel(text_template.generate_start_text(), config.LOBBY_CHANNEL)
             if not init_players:
                 self.players = self.generate_roles(self.interface, list(self.players.keys()), self.playersname)
@@ -150,7 +151,6 @@ class Game:
             role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
 
             await self.create_channel()
-            self.read_modes()  # Read json config mode into runtime dict
             await self.interface.send_text_to_channel(text_template.generate_modes(dict(zip(self.modes, map(lambda x: "True", self.modes.values())))), config.GAMEPLAY_CHANNEL)
 
             if not self.modes.get("hidden_role"):
@@ -288,7 +288,7 @@ class Game:
                 status_table["👍 vào chơi"] = [*self.players.keys()]
 
             if self.watchers:
-                status_table["👎 chỉ xem"] =  [*self.watchers]
+                status_table["👎 chỉ xem"] = [*self.watchers]
 
             if self.vote_start:
                 status_table["👍 vote start"] = [*self.vote_start]
@@ -726,7 +726,10 @@ class Game:
         elif cmd == "zombie":
             return await self.zombie(author)
         elif cmd == "ship":
-            return await self.ship(author, *targets[:2])
+            if self.modes.get("couple_random"):
+                return await "Sorry. You cannot use power in couple random enable mode"
+            else:
+                return await self.ship(author, *targets[:2])
 
     async def vote(self, author, target):
         author_id = author.player_id
