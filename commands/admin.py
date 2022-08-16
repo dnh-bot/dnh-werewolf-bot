@@ -79,8 +79,8 @@ async def create_channel(guild, author, channel_name, is_public=False, is_admin_
         try:
             admin_role = discord.utils.get(guild.roles, name="Admin")
             overwrites = {
-                guild.default_role: discord.PermissionOverwrite(read_messages=is_public, send_message=is_public and not is_admin_writeonly),
-                guild.me: discord.PermissionOverwrite(read_messages=True, send_message=not is_admin_writeonly),
+                guild.default_role: discord.PermissionOverwrite(read_messages=is_public, send_messages=is_public and not is_admin_writeonly),
+                guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=not is_admin_writeonly),
                 admin_role: discord.PermissionOverwrite(read_messages=True)
             }
             response = "{} created channel {}".format(author.name, channel_name)
