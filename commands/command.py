@@ -46,7 +46,7 @@ async def parse_command(client, game, message):
         elif cmd == "version":
             tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
             name = os.getenv("BOT_NAME")
-            await message.reply("-".join((name, tag)).rstrip('\n'))
+            await message.reply(f"{name}-{tag}".rstrip('\n'))  # prevent bug of name's or tag's type
         elif cmd == "join":
             await player.do_join(game, message, force=False)
         elif cmd == "leave":
