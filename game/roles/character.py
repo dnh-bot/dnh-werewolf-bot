@@ -21,6 +21,7 @@ class Character:
         self.status = CharacterStatus.ALIVE
         self.player_name = player_name
         # channel_name MUST BE lowercase!
+        player_name = player_name.replace("-", " ")
         valid_channel_name = "".join(c for c in player_name if c not in BANNED_CHARS).lower()
         valid_channel_name = "-".join(valid_channel_name.split())
         self.channel_name = f"personal-{valid_channel_name}"
