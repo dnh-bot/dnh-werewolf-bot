@@ -46,7 +46,7 @@ async def parse_command(client, game, message):
         elif cmd == "version":
             tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
             name = os.getenv("BOT_NAME")
-            await message.reply("-".join((name, tag)).rstrip('\n'))
+            await message.reply(f"{name}-{tag}".rstrip('\n'))  # prevent bug of name's or tag's type
         elif cmd == "join":
             await player.do_join(game, message, force=False)
         elif cmd == "leave":
@@ -233,7 +233,7 @@ async def parse_command(client, game, message):
                         await admin.create_category(message.guild, client.user, config.GAME_CATEGORY)
                         await admin.create_channel(message.guild, client.user, config.LOBBY_CHANNEL, is_public=True)
                         await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
-                        await admin.create_channel(message.guild, client.user, config.LEADERBOARD_CHANNEL, is_public=True)
+                        await admin.create_channel(message.guild, client.user, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
                 else:
                     await message.reply("Missing @bot_name")
             elif cmd == "fdelete":  # Delete all channels and category under config.GAME_CATEGORY

@@ -46,7 +46,7 @@ async def create_category(guild, author, category_name):
             category = await guild.create_category(category_name, overwrites=overwrites)
             await create_channel(guild, author, config.LOBBY_CHANNEL, is_public=True)
             await create_channel(guild, author, config.GAMEPLAY_CHANNEL, is_public=False)
-            await create_channel(guild, author, config.LEADERBOARD_CHANNEL, is_public=True)
+            await create_channel(guild, author, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
             return category
         except Exception as e:
             print("Exception at #", category_name, author)
@@ -70,7 +70,7 @@ async def delete_category(guild, author, category_name=config.GAME_CATEGORY):
         print(e)
 
 
-async def create_channel(guild, author, channel_name, is_public=False):
+async def create_channel(guild, author, channel_name, is_public=False, is_admin_writeonly=False):
     # Create text channel with limited permissions
     # Only the author and Admin roles can view this channel
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
@@ -79,8 +79,8 @@ async def create_channel(guild, author, channel_name, is_public=False):
         try:
             admin_role = discord.utils.get(guild.roles, name="Admin")
             overwrites = {
-                guild.default_role: discord.PermissionOverwrite(read_messages=is_public),
-                guild.me: discord.PermissionOverwrite(read_messages=True),
+                guild.default_role: discord.PermissionOverwrite(read_messages=is_public, send_messages=is_public and not is_admin_writeonly),
+                guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=not is_admin_writeonly),
                 admin_role: discord.PermissionOverwrite(read_messages=True)
             }
             response = "{} created channel {}".format(author.name, channel_name)
