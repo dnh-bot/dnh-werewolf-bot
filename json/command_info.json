@@ -25,8 +25,8 @@
   },
   "setplaytime": {
     "description": {
-      "vi": "Thiết lập giờ chơi trong 1 ngày.",
-      "en": "Set the playing time in a day."
+      "vi": "Thiết lập giờ chơi trong 1 ngày. Thời gian phải ở định dạng HH:MM.",
+      "en": "Set the playing time in a day. Time must be in HH:MM format."
     },
     "exclusive_roles": [],
     "required_params": ["time_start", "time_end"],
@@ -114,8 +114,8 @@
   },
   "status": {
     "description": {
-      "vi": "Xem trạng thái bầu chọn của buổi hiện tại.",
-      "en": "Show voting status of current time."
+      "vi": "Xem trạng thái trò chơi trong buổi hiện tại.",
+      "en": "Show status of current phase."
     },
     "exclusive_roles": [],
     "required_params": []
@@ -123,7 +123,7 @@
   "vote": {
     "description": {
       "vi": "Lựa chọn một người sẽ bị đưa lên máy chém.",
-      "en": "A command for everyone to vote an user."
+      "en": "Vote a player."
     },
     "exclusive_roles": [],
     "required_params": ["player_id"]
@@ -131,7 +131,7 @@
   "kill": {
     "description": {
       "vi": "Lựa chọn một người sẽ bị ăn thịt trong đêm.",
-      "en": "A command for a Werewolf to kill an user."
+      "en": "Kill a player."
     },
     "exclusive_roles": ["Werewolf", "Superwolf"],
     "required_params": ["player_id"]
@@ -139,7 +139,7 @@
   "guard": {
     "description": {
       "vi": "Bảo vệ một ai đó trong đêm.",
-      "en": "A command for a Guard to guard an user."
+      "en": "Guard a player."
     },
     "exclusive_roles": ["Guard"],
     "required_params": ["player_id"]
@@ -147,7 +147,7 @@
   "seer": {
     "description": {
       "vi": "Soi một người bất kỳ.",
-      "en": "A command for a Seer to seer an user."
+      "en": "Seer a player."
     },
     "exclusive_roles": ["Seer"],
     "required_params": ["player_id"]
@@ -155,15 +155,15 @@
   "reborn": {
     "description": {
       "vi": "Hồi sinh một người đã chết.",
-      "en": "A command for a Witch to reborn an user."
+      "en": "Reborn a player."
     },
     "exclusive_roles": ["Witch"],
     "required_params": ["player_id"]
   },
   "curse": {
     "description": {
-      "vi": "Nguyền rủa một người.",
-      "en": "Curse another player."
+      "vi": "Nguyền rủa một người còn sống.",
+      "en": "Curse a player."
     },
     "exclusive_roles": ["Witch"],
     "required_params": ["player_id"]
@@ -179,7 +179,7 @@
   "ship": {
     "description": {
       "vi": "Ghép đôi 2 người.",
-      "en": "A command for a Cupid to ship 2 users."
+      "en": "Match 2 players together as a couple."
     },
     "exclusive_roles": ["Cupid"],
     "required_params": ["player_id1", "player_id2"]
