@@ -5,7 +5,7 @@
       "en": "Set the current timer."
     },
     "exclusive_roles": [],
-    "required_param_number": 3
+    "required_params": ["dayphase", "nightphase", "alertperiod"]
   },
   "timerstart": {
     "description": {
@@ -13,7 +13,7 @@
       "en": "Start the current timer."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "timerstop": {
     "description": {
@@ -21,7 +21,7 @@
       "en": "Stop the current timer."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "setplaytime": {
     "description": {
@@ -29,7 +29,8 @@
       "en": "Set the playing time in a day."
     },
     "exclusive_roles": [],
-    "required_param_number": 2
+    "required_params": ["time_start", "time_end"],
+    "additional_params": ["time_zone"]
   },
   "setroles": {
     "description": {
@@ -37,7 +38,7 @@
       "en": "Set default player roles for a new game"
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "showmodes": {
     "description": {
@@ -45,7 +46,7 @@
       "en": "Display mode setting"
     },
     "exclusive_roles": [],
-    "required_param_number": 2
+    "required_params": []
   },
   "setmode": {
     "description": {
@@ -53,7 +54,7 @@
       "en": "Enable/Disable game modes."
     },
     "exclusive_roles": [],
-    "required_param_number": 2
+    "required_params": ["mode_id", "on_str"]
   },
   "join": {
     "description": {
@@ -61,7 +62,7 @@
       "en": "Join a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "leave": {
     "description": {
@@ -69,7 +70,7 @@
       "en": "Leave a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "watch": {
     "description": {
@@ -77,7 +78,7 @@
       "en": "Watch a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "unwatch": {
     "description": {
@@ -85,7 +86,7 @@
       "en": "Unwatch a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "start": {
     "description": {
@@ -93,7 +94,7 @@
       "en": "Start a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "next": {
     "description": {
@@ -101,7 +102,7 @@
       "en": "Jump to next phase."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "stopgame": {
     "description": {
@@ -109,7 +110,7 @@
       "en": "Stop a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "status": {
     "description": {
@@ -117,7 +118,7 @@
       "en": "Show voting status of current time."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "vote": {
     "description": {
@@ -125,7 +126,7 @@
       "en": "A command for everyone to vote an user."
     },
     "exclusive_roles": [],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "kill": {
     "description": {
@@ -133,7 +134,7 @@
       "en": "A command for a Werewolf to kill an user."
     },
     "exclusive_roles": ["Werewolf", "Superwolf"],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "guard": {
     "description": {
@@ -141,7 +142,7 @@
       "en": "A command for a Guard to guard an user."
     },
     "exclusive_roles": ["Guard"],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "seer": {
     "description": {
@@ -149,7 +150,7 @@
       "en": "A command for a Seer to seer an user."
     },
     "exclusive_roles": ["Seer"],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "reborn": {
     "description": {
@@ -157,7 +158,7 @@
       "en": "A command for a Witch to reborn an user."
     },
     "exclusive_roles": ["Witch"],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "curse": {
     "description": {
@@ -165,7 +166,7 @@
       "en": "Curse another player."
     },
     "exclusive_roles": ["Witch"],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "zombie": {
     "description": {
@@ -173,7 +174,7 @@
       "en": "Reborn yourself."
     },
     "exclusive_roles": ["Zombie"],
-    "required_param_number": 0
+    "required_params": []
   },
   "ship": {
     "description": {
@@ -181,6 +182,6 @@
       "en": "A command for a Cupid to ship 2 users."
     },
     "exclusive_roles": ["Cupid"],
-    "required_param_number": 2
+    "required_params": ["player_id1", "player_id2"]
   }
 }

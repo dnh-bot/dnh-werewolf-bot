@@ -25,8 +25,15 @@ def get_command_exclusive_roles(command):
     return None
 
 
-def get_command_param_number(command):
+def get_command_required_params(command):
     if command in command_info:
-        return command_info[command]["required_param_number"]
+        return command_info[command]["required_params"]
 
-    return None
+    return []
+
+
+def get_command_additional_params(command):
+    if command in command_info:
+        return command_info[command].get("additional_params", [])
+
+    return []
