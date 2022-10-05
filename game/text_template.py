@@ -624,7 +624,7 @@ def generate_mode_disabled():
 
 
 def generate_reveal_str_list(reveal_list):
-    return "\n".join([f"<@{player_id}> là {role}" for player_id, role in reveal_list])
+    return [f"- <@{player_id}> là {role}" for player_id, role in reveal_list]
 
 
 def date_range_to_string(start_time, end_time, zone):
