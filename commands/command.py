@@ -41,7 +41,7 @@ async def parse_command(client, game, message):
     if admin.is_valid_category(message):
         if cmd == "help":
             await admin.send_embed_to_channel(
-                message.guild, text_template.generate_help_text(*parameters), message.channel.name, False
+                message.guild, text_template.generate_help_embed(*parameters), message.channel.name, False
             )
         elif cmd == "version":
             tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
@@ -181,6 +181,9 @@ async def parse_command(client, game, message):
                     game.set_play_time(start_time_utc.time(), end_time_utc.time(), zone)
                     msg = text_template.generate_play_time_text(start_time_utc.time(), end_time_utc.time(), zone)
                     await message.reply(msg)
+
+            else:
+                await message.reply(text_template.generate_invalid_command_text(cmd))
 
         elif cmd == "setroles":
             res = game.add_default_roles(parameters)

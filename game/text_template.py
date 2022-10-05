@@ -140,7 +140,7 @@ def generate_vote_table_embed(vote_table, table_description):
             "title": "Vote Results",
             "description": table_description,
             "content": [
-                (f"{title}", [f"Votes: {len(votes)}", f"Voters: {', '.join([f'<@!{i}>' for i in votes])}"])
+                (f"{title}", [f"Votes: {len(votes)}", f"Voters: {', '.join(f'<@!{i}>' for i in votes)}"])
                 for title, votes in sorted(vote_table.items(), key=lambda t: (-len(t[1]), t[0]))
             ]
         }
@@ -157,12 +157,12 @@ def generate_vote_field(vote_table, table_description):
 
     if isinstance(vote_table, dict) and table_description:
         if vote_table:
-            return (table_description, [
-                f"- {title}: {len(votes)} phiếu ({', '.join([f'<@!{i}>' for i in votes])})"
+            return table_description, [
+                f"- {title}: {len(votes)} phiếu ({', '.join(f'<@!{i}>' for i in votes)})"
                 for title, votes in sorted(vote_table.items(), key=lambda t: (-len(t[1]), t[0]))
-            ])
+            ]
         else:
-            return (table_description, [generate_nobody_text()])
+            return table_description, [generate_nobody_text()]
 
     return None
 
@@ -455,12 +455,13 @@ def generate_timer_up_text():
     return f"⏰ HẾT GIỜ!!!!"
 
 
-def generate_help_command_text(command=None):
+def generate_help_command_embed(command=None):
     help_embed_data = {
         "title": "Werewolf Bot Help",
         "description": f"Full command list. You can get more information on a command using `{config.BOT_PREFIX}help cmd <name of command>`",
         "content": []
     }
+    all_commands = commands.get_all_commands()
     command = command.lower() if isinstance(command, str) else command
     if command is None:
         help_embed_data["color"] = 0xffffff
@@ -508,7 +509,7 @@ def generate_help_command_text(command=None):
     return help_embed_data
 
 
-def generate_help_role_text(role=None):
+def generate_help_role_embed(role=None):
     help_embed_data = {
         "title": "Werewolf Bot Help",
         "description": f"Full role list. You can get more information on a role using `{config.BOT_PREFIX}help role <name of role>`",
@@ -525,7 +526,10 @@ def generate_help_role_text(role=None):
             else:
                 title = a_role.__name__
 
-            help_embed_data["content"].append((title, [roles.get_role_description(a_role.__name__)]))
+        help_embed_data["content"] = [
+            (roles.get_role_title(role_name), [roles.get_role_description(role_name)])
+            for role_name in all_roles_name
+        ]
 
     elif role in all_roles_name:
         help_embed_data["color"] = 0x3498db
@@ -553,7 +557,7 @@ def generate_help_role_text(role=None):
     return help_embed_data
 
 
-def generate_help_text(*args):
+def generate_help_embed(*args):
     if len(args) == 0:
         help_embed_data = {
             "color": 0xffffff,
@@ -567,9 +571,9 @@ def generate_help_text(*args):
             ]
         }
     elif args[0] == "role":
-        help_embed_data = generate_help_role_text(None if len(args) == 1 else args[1])
+        help_embed_data = generate_help_role_embed(None if len(args) == 1 else args[1])
     elif args[0] == "cmd":
-        help_embed_data = generate_help_command_text(None if len(args) == 1 else args[1])
+        help_embed_data = generate_help_command_embed(None if len(args) == 1 else args[1])
     else:
         help_embed_data = {
             "color": 0xdc4e4e,
@@ -584,7 +588,7 @@ def generate_help_text(*args):
 def generate_table(header, data):
     # This needs to be adjusted based on expected range of values or calculated dynamically
     for i in data:
-        header.append("   ".join([str(item) for item in data]))
+        header.append("   ".join(str(item) for item in data))
 
     # Joining up scores into a line
     return "```"+"\n".join(header) + "```"
@@ -592,13 +596,26 @@ def generate_table(header, data):
 
 def generate_modes(modes_dict):
     print(modes_dict)
+    mode_list = [
+        "hidden_role",
+        "seer_can_kill_fox",
+        "prevent_guard_self_protection",
+        "witch_can_kill",
+        "couple_random",
+    ]
+    title_list = [
+        "Ẩn danh sách các nhân vật đầu game",
+        "Tiên tri có thể giết Cáo",
+        "Không cho phép Bảo vệ bản thân",
+        "Phù thủy (Witch) có thể giết người",
+        "Ghép cặp ngẫu nhiên",
+    ]
     return "===========================================================================\n" +\
         f"Chế độ chơi: \n" +\
-        f" - 1. Ẩn danh sách các nhân vật đầu game: {'Bật' if modes_dict.get('hidden_role') == 'True' else 'Tắt'}\n" +\
-        f" - 2. Tiên tri có thể giết Cáo: {'Bật' if modes_dict.get('seer_can_kill_fox') == 'True'  else 'Tắt'}\n" +\
-        f" - 3. Không cho phép Bảo vệ bản thân: {'Bật' if modes_dict.get('prevent_guard_self_protection') == 'True'  else 'Tắt'}\n" +\
-        f" - 4. Phù thủy (Witch) có thể giết người: {'Bật' if modes_dict.get('witch_can_kill') == 'True'  else 'Tắt'}\n" +\
-        f" - 5. Ghép cặp ngẫu nhiên: {'Bật' if modes_dict.get('couple_random') == 'True'  else 'Tắt'}\n" +\
+        "".join(
+            f" - {i}. {title}: {'Bật' if modes_dict.get(mode) == 'True' else 'Tắt'}\n"
+            for i, (mode, title) in enumerate(zip(mode_list, title_list), 1)
+        ) +\
         "\n===========================================================================\n"
 
 
@@ -606,19 +623,20 @@ def generate_mode_disabled():
     return f"Chế độ này chưa bật"
 
 
-def generate_reveal_list(reveal_list):
+def generate_reveal_str_list(reveal_list):
     return "\n".join([f"<@{player_id}> là {role}" for player_id, role in reveal_list])
 
 
-def date_range_to_string(start_time, end_time):
+def date_range_to_string(start_time, end_time, zone):
     if start_time == end_time:
         result = "cả ngày"
     else:
         result = f"từ {start_time} đến "
         if str(end_time) == "00:00:00":
-            result += f"hết ngày"
+            result += f"hết ngày (giờ {zone})"
         else:
-            result += f"{end_time}{'' if start_time < end_time else ' ngày hôm sau'}"
+            result += f"{end_time}{'' if start_time < end_time else ' ngày hôm sau'} (giờ {zone})"
+
     return result
 
 
@@ -632,7 +650,11 @@ def generate_play_time_text(start_time_utc: datetime.time, end_time_utc: datetim
     end_time = end_time_utc.replace(tzinfo=tz.UTC).astimezone(to_zone)
 
     zone = zone_str or str(to_zone.tzname(None))
-    msg = f"Bạn sẽ được chơi {date_range_to_string(start_time.time(), end_time.time())} (theo múi giờ {zone})"
-    msg += f", hay {date_range_to_string(start_time_utc.time(), end_time_utc.time())} (giờ UTC)."
+    utc_zone_str = ""
+    if start_time_utc != start_time != end_time:
+        # zone is not UTC and the play time is not a while day
+        utc_zone_str = f", hay {date_range_to_string(start_time_utc.time(), end_time_utc.time(), 'UTC')}"
+
+    msg = f"Bạn sẽ được chơi {date_range_to_string(start_time.time(), end_time.time(), zone)}{utc_zone_str}."
 
     return msg

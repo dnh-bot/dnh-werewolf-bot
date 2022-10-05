@@ -409,7 +409,9 @@ class Game:
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
         reveal_list = [(_id, player.__class__.__name__) for _id, player in self.players.items()]
-        await self.interface.send_text_to_channel(text_template.generate_reveal_list(reveal_list), config.GAMEPLAY_CHANNEL)
+        await self.interface.send_text_to_channel(
+            "\n".join(text_template.generate_reveal_str_list(reveal_list)), config.GAMEPLAY_CHANNEL
+        )
 
         # write to leaderboard
         if self.start_time is not None:  # game has been started
@@ -420,7 +422,7 @@ class Game:
                 "content": [
                     ("Số ngày đã trải qua", [str(self.day)]),
                     ("🏆 Phe chiến thắng", [game_winner]),
-                    ("📝 Danh sách role", [f"- <@{player_id}> là {role}" for player_id, role in reveal_list])
+                    ("📝 Danh sách role", text_template.generate_reveal_str_list(reveal_list))
                 ]
             }
             if self.cupid_dict:
@@ -555,7 +557,7 @@ class Game:
                     if self.cupid_dict.get(_id):
                         cupid_couple = self.cupid_dict[_id]
 
-            kills = ", ".join([f"<@{_id}>" for _id in final_kill_list])
+            kills = ", ".join(f"<@{_id}>" for _id in final_kill_list)
             self.night_pending_kill_list = []  # Reset killed list for next day
 
         await self.interface.send_text_to_channel(text_template.generate_killed_text(kills), config.GAMEPLAY_CHANNEL)

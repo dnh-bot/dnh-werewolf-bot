@@ -23,19 +23,16 @@ async def do_join(game, message, force=False):
     """Join game"""
     if not game.is_started():
         if force:
-            if not message.mentions:
+            user_list = message.mentions
+            if not user_list:
                 await message.reply(text_template.generate_invalid_command_text("fjoin"))
-            else:
-                for user in message.mentions:
-                    joined_players = await game.add_player(user.id, user.name)
-                    if joined_players > 0:
-                        await message.channel.send(text_template.generate_join_text(user.display_name, joined_players))
-                    else:
-                        await message.channel.send(text_template.generate_already_in_game_text())
         else:
-            joined_players = await game.add_player(message.author.id, f"{message.author.name}-{message.author.discriminator}")
+            user_list = [message.author]
+
+        for user in user_list:
+            joined_players = await game.add_player(user.id, user.name if force else f"{user.name}-{user.discriminator}")
             if joined_players > 0:
-                await message.channel.send(text_template.generate_join_text(message.author.display_name, joined_players))
+                await message.channel.send(text_template.generate_join_text(user.display_name, joined_players))
             else:
                 await message.channel.send(text_template.generate_already_in_game_text())
     else:
@@ -46,19 +43,16 @@ async def do_leave(game, message, force=False):
     """Leave game"""
     if not game.is_started():
         if force:
-            if not message.mentions:
+            user_list = message.mentions
+            if not user_list:
                 await message.reply(text_template.generate_invalid_command_text("fleave"))
-            else:
-                for user in message.mentions:
-                    joined_players = await game.remove_player(user.id)
-                    if joined_players >= 0:
-                        await message.channel.send(text_template.generate_leave_text(user.display_name, joined_players))
-                    else:
-                        await message.channel.send(text_template.generate_not_in_game_text())
         else:
-            joined_players = await game.remove_player(message.author.id)
+            user_list = [message.author]
+
+        for user in user_list:
+            joined_players = await game.remove_player(user.id)
             if joined_players >= 0:
-                await message.channel.send(text_template.generate_leave_text(message.author.display_name, joined_players))
+                await message.channel.send(text_template.generate_leave_text(user.display_name, joined_players))
             else:
                 await message.channel.send(text_template.generate_not_in_game_text())
     else:
