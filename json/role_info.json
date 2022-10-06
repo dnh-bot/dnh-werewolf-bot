@@ -30,7 +30,7 @@
     "name_vi": "Bảo vệ",
     "description": {
       "vi": "Bảo vệ được chọn 1 người khác nhau mỗi đêm và người được chọn sẽ bất tử đêm đó.",
-      "en": "Guards a player."
+      "en": "Guards a player: Protect the player from being killed."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["guard"]
@@ -57,7 +57,7 @@
     "name_vi": "Kẻ phản bội",
     "description": {
       "vi": "Là người nhưng bị mua chuộc theo phe sói. Kẻ phản bội biết ai là sói nhưng phe sói không biết ai là Kẻ phản bội.",
-      "en": "A human but betrays Villagers."
+      "en": "A human but betrays Villagers. Betrayer knows werewolf players."
     },
     "daytime_command": "vote",
     "nighttime_commands": []
@@ -65,8 +65,8 @@
   "Fox": {
     "name_vi": "Cáo",
     "description": {
-      "vi": "Thuộc phe thứ ba, cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.",
-      "en": "A fox."
+      "vi": "Thuộc phe thứ ba, Cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.",
+      "en": "A Fox belongs to third party. Fox wins if all werewolves are killed. Fox is dead if being revealed by Seer. Fox will not be dead if being protected by Guard."
     },
     "daytime_command": "vote",
     "nighttime_commands": []
@@ -75,7 +75,7 @@
     "name_vi": "Phù thủy",
     "description": {
       "vi": "Vào ban đêm, Phù thủy có 1 bình phép có thể phục sinh một người chơi đã chết, đôi khi cũng có thể nguyền rủa một người còn sống. Mỗi chức năng này chỉ được sử dụng một lần duy nhất trong game.",
-      "en": "Can reborn a dead player, and also can curse an alive player."
+      "en": "Can reborn a dead player, and also can curse an alive player once per game."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["reborn", "curse"]
@@ -93,7 +93,7 @@
     "name_vi": "Thần tình yêu",
     "description": {
       "vi": "Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ thành phe thứ 3 với nhiệm vụ là hai người cuối cùng sống sót.",
-      "en": "Ships 2 players."
+      "en": "On the first day, Cupid can choose 2 players and make them to be a couple. If one of them is dead, the other will be also dead. If the couple belongs to different parties (Werewolf and Villager), then they become the third party. Their mission is to be the last stand players."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["ship"]
