@@ -465,46 +465,50 @@ def generate_help_command_embed(command=None):
     command = command.lower() if isinstance(command, str) else command
     if command is None:
         help_embed_data["color"] = 0xffffff
-        help_embed_data["content"] = [("All commands", [" | ".join(f"`{cmd}`" for cmd in commands.get_all_commands())])]
-    else:
+        help_embed_data["content"] = [(cmd, [commands.get_command_description(cmd)]) for cmd in all_commands]
+    elif command in all_commands:
         command_description = commands.get_command_description(command)
-        if command_description is not None:
-            command_exclusive_roles = commands.get_command_exclusive_roles(command)
-            if len(command_exclusive_roles) > 0:
-                command_description += f" Dành riêng cho {', '.join(command_exclusive_roles)}."
-            else:
-                command_description += f" Dành cho tất cả mọi người."
-
-            help_embed_data["color"] = 0x17a168
-            help_embed_data["title"] += f" for command `{command}`"
-            help_embed_data["description"] = command_description
-
-            usage_str = ["- " + usage_text for usage_text in generate_usage_text_list(command)]
-            help_embed_data["content"] = [("Usage", usage_str)]
-
-            example_args_list = []
-            if command in ("vote", "kill", "guard", "seer", "reborn", "ship"):
-                example_args_list = [{"player_id1": 2, "player_id2": 3}]
-            elif command == "setmode":
-                example_args_list = [{"mode_id": "2", "on_str": "on"}]
-            elif command == "setplaytime":
-                example_args_list = [
-                    {"time_start": "00:00", "time_end": "23:59", "time_zone": ""},
-                    {"time_start": "00:00", "time_end": "23:59", "time_zone": "UTC+7"}
-                ]
-
-            if len(example_args_list) > 0:
-                help_embed_data["content"].append(
-                    ("Example", [
-                        "- " + usage_text
-                        for example_args in example_args_list
-                        for usage_text in generate_usage_text_list(command, **example_args)
-                    ])
-                )
+        command_exclusive_roles = commands.get_command_exclusive_roles(command)
+        if len(command_exclusive_roles) > 0:
+            command_exclusive_roles_str = ", ".join(command_exclusive_roles)
         else:
-            help_embed_data["color"] = 0xdc4e4e
-            help_embed_data["title"] = f"Invalid help for command `{command}`"
-            help_embed_data["description"] = "A command with this name doesn't exist!"
+            command_exclusive_roles_str = text_templates.get_word_in_language("everyone")
+            command_exclusive_roles_str = "Tất cả mọi người."
+
+        help_embed_data["color"] = 0x17a168
+        help_embed_data["title"] += f" for command `{command}`"
+        help_embed_data["description"] = command_description
+
+        usage_str = ["- " + usage_text for usage_text in commands.get_command_usages(command)]
+        help_embed_data["content"] = [("Exclusive roles", command_exclusive_roles_str), ("Usage", usage_str)]
+
+        example_args_list = []
+        if command in ("vote", "kill", "guard", "seer", "reborn", "curse"):
+            example_args_list = [{"player_id": 2}]
+        elif command == "ship":
+            example_args_list = [{"player_id1": 2, "player_id2": 3}]
+        elif command == "timer":
+            example_args_list = [{"dayphase": 60, "nightphase": 30, "alertperiod": 20}]
+        elif command == "setmode":
+            example_args_list = [{"mode_id": "2", "on_str": "on"}]
+        elif command == "setplaytime":
+            example_args_list = [
+                {"time_start": "00:00", "time_end": "23:59", "time_zone": ""},
+                {"time_start": "00:00", "time_end": "23:59", "time_zone": "UTC+7"}
+            ]
+
+        if len(example_args_list) > 0:
+            help_embed_data["content"].append(
+                ("Example", [
+                    "- " + usage_text
+                    for example_args in example_args_list
+                    for usage_text in commands.get_command_usages(command, **example_args)
+                ])
+            )
+    else:
+        help_embed_data["color"] = 0xdc4e4e
+        help_embed_data["title"] = f"Invalid help for command `{command}`"
+        help_embed_data["description"] = "A command with this name doesn't exist!"
 
     return help_embed_data
 
