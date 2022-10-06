@@ -472,7 +472,6 @@ def generate_help_command_embed(command=None):
         if len(command_exclusive_roles) > 0:
             command_exclusive_roles_str = ", ".join(command_exclusive_roles)
         else:
-            command_exclusive_roles_str = text_templates.get_word_in_language("everyone")
             command_exclusive_roles_str = "Tất cả mọi người."
 
         help_embed_data["color"] = 0x17a168
