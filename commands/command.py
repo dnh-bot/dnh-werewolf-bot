@@ -2,6 +2,7 @@ from commands import admin, player
 import commands
 import config
 from game import text_template
+import text_templates
 
 import discord
 import asyncio   # Do not remove this. This for debug command
@@ -65,11 +66,11 @@ async def parse_command(client, game, message):
         elif cmd in ("vote", "kill", "guard", "seer", "reborn", "curse", "zombie", "ship"):
             if not game.is_started():
                 # prevent user uses command before game starts
-                await message.reply(text_template.generate_game_not_started_text())
+                await message.reply(text_templates.generate_text("game_not_started_text"))
                 return None
 
             if not game.is_in_play_time():
-                await message.reply(text_template.generate_game_not_playing_text())
+                await message.reply(text_templates.generate_text("game_not_playing_text"))
                 return None
 
             is_valid_channel = \
@@ -101,7 +102,8 @@ async def parse_command(client, game, message):
                     if not is_valid_command:
                         await message.reply(text_template.generate_invalid_command_text(cmd))
                 else:
-                    await message.reply(text_template.generate_not_vote_n_player_text(required_param_number))
+                    await message.reply(
+                        text_templates.generate_text("not_vote_n_player_text", num=required_param_number))
             else:
                 if cmd == "vote":
                     real_channel = f"#{config.GAMEPLAY_CHANNEL}"
@@ -111,7 +113,7 @@ async def parse_command(client, game, message):
                     real_channel = "riêng của bạn"
 
                 await admin.send_text_to_channel(
-                    message.guild, text_template.generate_invalid_channel_text(real_channel), message.channel.name
+                    message.guild, text_templates.generate_text("invalid_channel_text", channel=real_channel), message.channel.name
                 )
 
         elif cmd == "status":
@@ -147,10 +149,10 @@ async def parse_command(client, game, message):
 
         elif cmd == "timerstart":
             game.timer_stopped = False
-            await message.reply(text_template.generate_timer_start_text())
+            await message.reply(text_templates.generate_text("timer_start_text"))
         elif cmd == "timerstop":
             game.timer_stopped = True
-            await message.reply(text_template.generate_timer_stop_text())
+            await message.reply(text_templates.generate_text("timer_stop_text"))
 
         elif cmd == "setplaytime":
             """Usage:
