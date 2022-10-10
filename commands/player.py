@@ -12,12 +12,12 @@ import text_templates
 
 def check_vote_valid(num_votes, num_players, task_name):
     if task_name == "start" and num_players < 4:
-        return False, f"At least 4 players to {task_name} game."
+        return False, text_templates.generate_text("players_not_enough_text", task_name=task_name)
 
     if num_votes / num_players <= config.VOTE_RATE:
-        return False, f"(vote rate {num_votes}/{num_players}). Need at least {math.floor(num_players * config.VOTE_RATE) + 1} votes"
+        return False, text_templates.generate_text("vote_rate_not_enough_text", task_name=task_name, votes_num=num_votes, players_num=num_players, min_votes_num=math.floor(num_players*config.VOTE_RATE)+1)
     else:
-        return True, f"Enough votes to proceed `{task_name}`"  # Should never see it :D
+        return True, text_templates.generate_text("vote_rate_enough_text", task_name=task_name)  # Should never see it :D
 
 
 async def do_join(game, message, force=False):

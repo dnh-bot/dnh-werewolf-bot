@@ -30,10 +30,16 @@ def get_word_in_language(key):
     return text_template_dict["KEYWORDS"][key][TEXT_LANGUAGE]
 
 
+def get_format_string(key):
+    return text_template_dict["FORMAT_STRING"][key][TEXT_LANGUAGE]
+
+
 def generate_text(action, **kwargs):
     if action in text_template_dict:
         template_obj = text_template_dict[action]
-        return "\n".join(template_obj["template"][TEXT_LANGUAGE]).format(bot_prefix=BOT_PREFIX, gameplay_channel=GAMEPLAY_CHANNEL, **kwargs).rstrip()
+        return "\n".join(template_obj["template"][TEXT_LANGUAGE]).format(
+            bot_prefix=BOT_PREFIX, gameplay_channel=GAMEPLAY_CHANNEL, **kwargs
+        ).rstrip()
 
     return ""
 

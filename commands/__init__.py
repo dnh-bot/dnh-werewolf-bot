@@ -69,7 +69,7 @@ def get_command_usages(command, **kwargs):
         # print(command, required_params, additional_params, kwargs, "->", *command_args_list)
 
         return [
-            "`" + " ".join([f"{BOT_PREFIX}{command}", *command_args]) + "`"
+            f"`{BOT_PREFIX}{command} {' '.join(command_args)}`"
             for command_args in command_args_list
         ]
 

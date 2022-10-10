@@ -12,6 +12,20 @@
     "everyone": {
       "vi": "tất cả mọi người",
       "en": "everyone"
+    },
+    "default": {
+      "vi": "mặc định",
+      "en": "default"
+    },
+    "new": {
+      "vi": "mới",
+      "en": "new"
+    }
+  },
+  "FORMAT_STRING": {
+    "datetime": {
+      "vi": "%H:%M:%S ngày %d-%m-%Y",
+      "en": "%H:%M:%S, %d %B %Y"
     }
   },
   "player_title": {
@@ -408,10 +422,24 @@
       "vi": ["Hiện tại bạn không được phép dùng kỹ năng này!"]
     }
   },
+  "invalid_alive_author_text": {
+    "params": ["cmd"],
+    "template": {
+      "vi": ["Bạn phải sống thì mới được dùng lệnh {cmd}!"],
+      "en": ["You must be alive in-game to {cmd}!"]
+    }
+  },
   "invalid_nighttime_text": {
     "params": [],
     "template": {
       "vi": ["Ráng đợi tới đêm bạn êy!"]
+    }
+  },
+  "invalid_ship_with_random_couple_text": {
+    "params": [],
+    "template": {
+      "vi": ["Bạn không được ghép đôi 2 người vì máy đã random couple rồi."],
+      "en": ["Sorry. You cannot use power in couple random enable mode."]
     }
   },
   "game_started_text": {
@@ -502,6 +530,13 @@
       "vi": ["Bạn phải chọn {num} người chơi để thực hiện command."]
     }
   },
+  "timer_settings_text": {
+    "params": ["settings_name", "day_phase", "night_phase", "alert_period"],
+    "template": {
+      "vi": ["Sử dụng chế độ {settings_name}: dayphase={day_phase}s, nightphase={night_phase}s, alertperiod={alert_period}s"],
+      "en": ["Use {settings_name} settings: dayphase={day_phase}s, nightphase={night_phase}s, alertperiod={alert_period}s"]
+    }
+  },
   "timer_start_text": {
     "params": [],
     "template": {
@@ -514,10 +549,46 @@
       "en": ["Timer stopped!"]
     }
   },
-  "timer_remaining_text": {
-    "params": ["days", "hours", "minutes", "seconds"],
+  "count_days_text": {
+    "params": ["days"],
     "template": {
-      "vi": ["Còn {days} ngày {hours} giờ {minutes} phút {seconds} giây"]
+      "vi": ["{days} ngày "],
+      "en": ["{days} days "]
+    }
+  },
+  "count_hours_text": {
+    "params": ["hours"],
+    "template": {
+      "vi": ["{hours} giờ "],
+      "en": ["{hours} hours "]
+    }
+  },
+  "count_minutes_text": {
+    "params": ["minutes"],
+    "template": {
+      "vi": ["{minutes} phút "],
+      "en": ["{minutes} minutes "]
+    }
+  },
+  "count_seconds_text": {
+    "params": ["seconds"],
+    "template": {
+      "vi": ["{seconds} giây "],
+      "en": ["{seconds} seconds "]
+    }
+  },
+  "timer_remaining_text": {
+    "params": ["time_remaining_str"],
+    "template": {
+      "vi": ["Còn {time_remaining_str}"],
+      "en": ["{time_remaining_str} left"]
+    }
+  },
+  "timer_alert_text": {
+    "params": "timer_remaining_text",
+    "template": {
+      "vi": ["🔔 Bing boong! {timer_remaining_text}"],
+      "en": ["🔔 Ding-dong! {timer_remaining_text}"]
     }
   },
   "timer_up_text": {
@@ -657,11 +728,38 @@
       "vi": ["- {vote_title}: {voters_num} phiếu ({voters_str})"]
     }
   },
+  "players_not_enough_text": {
+    "params": ["task_name"],
+    "template": {
+      "vi": ["Cần có ít nhất 4 người để {task_name} trò chơi."],
+      "en": ["At least 4 players to {task_name} game."]
+    }
+  },
+  "vote_rate_not_enough_text": {
+    "params": ["task_name", "votes_num", "players_num", "min_votes_num"],
+    "template": {
+      "vi": ["(tỉ lệ {votes_num}/{players_num}). Cần ít nhất {min_votes_num} phiếu"],
+      "en": ["(vote rate {votes_num}/{players_num}). Need at least {min_votes_num} votes"]
+    }
+  },
+  "vote_rate_enough_text": {
+    "params": ["task_name"],
+    "template": {
+      "vi": ["Đã đủ số phiếu để thực hiện {task_name}"],
+      "en": ["Enough votes to proceed {task_name}"]
+    }
+  },
   "reveal_player_text": {
     "params": ["player_id", "role"],
     "template": {
       "vi": ["<@{player_id}> là {role}"],
       "en": ["<@{player_id}> is {role}"]
+    }
+  },
+  "time_range_whole_day_text": {
+    "params": [],
+    "template": {
+      "vi": ["cả ngày"]
     }
   },
   "time_range_end_of_day_text": {
@@ -682,22 +780,28 @@
       "vi": ["từ {start_time} đến {end_time} ngày hôm sau (giờ {zone})"]
     }
   },
-  "play_time_whole_day_text": {
-    "params": [],
-    "template": {
-      "vi": ["Bạn sẽ được chơi cả ngày."]
-    }
-  },
-  "play_time_in_zone_text": {
+  "play_time_without_utc_text": {
     "params": ["time_range_str"],
     "template": {
       "vi": ["Bạn sẽ được chơi {time_range_str}."]
     }
   },
-  "play_time_in_utc_text": {
+  "play_time_with_utc_text": {
     "params": ["time_range_str", "utc_time_range_str"],
     "template": {
       "vi": ["Bạn sẽ được chơi {time_range_str}, hay {utc_time_range_str}."]
+    }
+  },
+  "play_time_in_range_alert_text": {
+    "params": [],
+    "template": {
+      "vi": ["Đã đến giờ chơi, trò chơi sẽ được tiếp tục!"]
+    }
+  },
+  "play_time_out_range_alert_text": {
+    "params": [],
+    "template": {
+      "vi": ["Đã ngoài giờ chơi, trò chơi sẽ được dừng lại!"]
     }
   },
   "alive_player_list_embed": {
@@ -719,6 +823,66 @@
         "title": "Danh sách người chơi đã chết",
         "description": "Chọn một ID trong số người chơi bên dưới",
         "content_headers": ["ID -> Player"]
+      }
+    }
+  },
+  "game_status_new_game_phase_embed": {
+    "params": [],
+    "color": "0xff0000",
+    "template": {
+      "vi": {
+        "title": "Trạng thái trò chơi",
+        "description": "Trò chơi chưa bắt đầu.",
+        "content_headers": ["Danh sách những người đang chờ vào game"]
+      }
+    }
+  },
+  "game_status_day_phase_embed": {
+    "params": ["status_description"],
+    "color": "0xff0000",
+    "template": {
+      "vi": {
+        "title": "Trạng thái trò chơi",
+        "description": "{status_description}Bây giờ là ban ngày.",
+        "content_headers": ["⏰ Thời gian còn lại", "Danh sách những kẻ có khả năng bị hành hình"]
+      }
+    }
+  },
+  "game_status_night_phase_werewolf_embed": {
+    "params": ["status_description"],
+    "color": "0xff0000",
+    "template": {
+      "vi": {
+        "title": "Trạng thái trò chơi",
+        "description": "{status_description}Bây giờ là ban đêm.",
+        "content_headers": ["⏰ Thời gian còn lại", "Danh sách những kẻ có khả năng bị ăn thịt"]
+      }
+    }
+  },
+  "game_status_night_phase_player_embed": {
+    "params": ["status_description"],
+    "color": "0xff0000",
+    "template": {
+      "vi": {
+        "title": "Trạng thái trò chơi",
+        "description": "{status_description}Bây giờ là ban đêm.",
+        "content_headers": ["⏰ Thời gian còn lại", "Trạng thái của bạn"]
+      }
+    }
+  },
+  "game_result_embed": {
+    "params": ["start_time_str"],
+    "color": "0xfabe4e",
+    "template": {
+      "vi": {
+        "title": "Kết quả trò chơi",
+        "description": "Trò chơi đã bắt đầu lúc {start_time_str}.",
+        "content_headers": ["Số ngày đã trải qua", "🏆 Phe chiến thắng", "📝 Danh sách role", "💘 Cặp đôi vàng"]
+      },
+      "en": {
+        "title": "Game result",
+        "description": "Game has been started at {start_time_str}.",
+        "content_headers": ["Number of days", "🏆 Winner", "📝 Role list", "💘 Couple"]
       }
     }
   }

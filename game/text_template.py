@@ -78,15 +78,15 @@ def generate_timer_remaining_text(seconds):
     days, hours = divmod(hours, 24)
     time_text = []
     if days > 0:
-        time_text.append(f"{days} ngày")
+        time_text.append(text_templates.generate_text("count_days_text", days=days))
     if hours > 0:
-        time_text.append(f"{hours} giờ")
+        time_text.append(text_templates.generate_text("count_hours_text", hours=hours))
     if minutes > 0:
-        time_text.append(f"{minutes} phút")
+        time_text.append(text_templates.generate_text("count_minutes_text", minutes=minutes))
     if seconds > 0 or days == hours == minutes == seconds == 0:
-        time_text.append(f"{seconds} giây")
+        time_text.append(text_templates.generate_text("count_seconds_text", seconds=seconds))
 
-    return f"Còn {' '.join(time_text)}... "
+    return text_templates.generate_text("timer_remaining_text", time_remaining_str=" ".join(time_text))
 
 
 def generate_help_command_embed(command=None):
@@ -228,15 +228,15 @@ def generate_reveal_str_list(reveal_list):
 
 def time_range_to_string(start_time, end_time, zone):
     if start_time == end_time:
-        result = "cả ngày"
+        template_name = "time_range_whole_day_text"
+    elif str(end_time) == "00:00:00":
+        template_name = "time_range_end_of_day_text"
+    elif start_time < end_time:
+        template_name = "time_range_start_le_end_text"
     else:
-        result = f"từ {start_time} đến "
-        if str(end_time) == "00:00:00":
-            result += f"hết ngày (giờ {zone})"
-        else:
-            result += f"{end_time}{'' if start_time < end_time else ' ngày hôm sau'} (giờ {zone})"
+        template_name = "time_range_start_ge_end_text"
 
-    return result
+    return text_templates.generate_text(template_name, start_time=start_time, end_time=end_time, zone=zone)
 
 
 def generate_play_time_text(start_time_utc: datetime.time, end_time_utc: datetime.time, zone_str=""):
@@ -249,11 +249,16 @@ def generate_play_time_text(start_time_utc: datetime.time, end_time_utc: datetim
     end_time = end_time_utc.replace(tzinfo=tz.UTC).astimezone(to_zone)
 
     zone = zone_str or str(to_zone.tzname(None))
-    utc_zone_str = ""
+    time_range_str = time_range_to_string(start_time.time(), end_time.time(), zone),
     if start_time_utc != start_time != end_time:
-        # zone is not UTC and the play time is not a while day
-        utc_zone_str = f", hay {time_range_to_string(start_time_utc.time(), end_time_utc.time(), 'UTC')}"
-
-    msg = f"Bạn sẽ được chơi {time_range_to_string(start_time.time(), end_time.time(), zone)}{utc_zone_str}."
-
-    return msg
+        # zone is not UTC and the play time is not a whole day
+        return text_templates.generate_text(
+            "play_time_with_utc_text",
+            time_range_str=time_range_str,
+            utc_time_range_str=time_range_to_string(start_time_utc.time(), end_time_utc.time(), 'UTC')
+        )
+    else:
+        return text_templates.generate_text(
+            "play_time_without_utc_text",
+            time_range_str=time_range_str
+        )

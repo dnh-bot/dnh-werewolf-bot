@@ -417,20 +417,16 @@ class Game:
 
         # write to leaderboard
         if self.start_time is not None:  # game has been started
-            game_result = {
-                "color": 0xfabe4e,
-                "title": "Kết quả trò chơi",
-                "description": f"Trò chơi đã bắt đầu lúc {self.start_time.strftime('%H:%M:%S ngày %d-%m-%Y')}.",
-                "content": [
-                    ("Số ngày đã trải qua", [str(self.day)]),
-                    ("🏆 Phe chiến thắng", [game_winner]),
-                    ("📝 Danh sách role", text_template.generate_reveal_str_list(reveal_list))
-                ]
-            }
-            if self.cupid_dict:
-                game_result["content"].append(("💘 Cặp đôi vàng", [" x ".join(
-                    f"<@{player_id}>" for player_id in self.cupid_dict.keys())]))
-
+            game_result = text_templates.generate_embed(
+                "game_result_embed",
+                [
+                    [str(self.day)],
+                    [game_winner],
+                    text_template.generate_reveal_str_list(reveal_list),
+                    [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict.keys())] if self.cupid_dict else []
+                ],
+                start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime"))
+            )
             await self.interface.send_embed_to_channel(game_result, config.LEADERBOARD_CHANNEL)
 
         await self.cancel_running_task(self.task_run_timer_phase)
@@ -652,9 +648,9 @@ class Game:
                 if not self.timer_stopped and self.is_in_play_time():
                     if self.timecounter % period == 0 or self.timecounter <= 5:
                         print(f"{self.timecounter} remaining")
-                        await self.interface.send_text_to_channel(
-                            "🔔 Bing boong! " + text_template.generate_timer_remaining_text(self.timecounter),
-                            config.GAMEPLAY_CHANNEL
+                        await self.interface.send_action_text_to_channel(
+                            "timer_alert_text", config.GAMEPLAY_CHANNEL,
+                            timer_remaining_text=text_template.generate_timer_remaining_text(self.timecounter)
                         )
                     self.timecounter -= 1
                 await asyncio.sleep(1)
@@ -696,16 +692,10 @@ class Game:
         self.curr_playtime = self.is_in_play_time()
         if self.curr_playtime != self.prev_playtime:
             self.prev_playtime = self.curr_playtime
-            if self.curr_playtime:
-                await self.interface.send_text_to_channel(
-                    "Đã đến giờ chơi, trò chơi sẽ được tiếp tục!",
-                    config.GAMEPLAY_CHANNEL
-                )
-            else:
-                await self.interface.send_text_to_channel(
-                    "Đã ngoài giờ chơi, trò chơi sẽ được dừng lại!",
-                    config.GAMEPLAY_CHANNEL
-                )
+            await self.interface.send_action_text_to_channel(
+                "play_time_in_range_alert_text" if self.curr_playtime else "play_time_out_range_alert_text",
+                config.GAMEPLAY_CHANNEL
+            )
 
     async def do_player_action(self, cmd, author_id, *targets_id):
         assert self.players is not None
@@ -713,13 +703,13 @@ class Game:
         author = self.players.get(author_id)
         if author is None or not author.is_alive():
             if cmd != "zombie":  # Zombie can use skill after death
-                return f"You must be alive ingame to {cmd}!"
+                return text_templates.generate_text("invalid_alive_author_text")
 
         targets = []
         for target_id in targets_id:
             target = self.players.get(target_id)
             if target is None:
-                return "Invalid target user. Target user is not a player"
+                return text_templates.generate_text("invalid_target_text")
             targets.append(target)
 
         if cmd != "zombie" and not targets[0].is_alive() and cmd != "reborn":
@@ -741,7 +731,7 @@ class Game:
             return await self.zombie(author)
         elif cmd == "ship":
             if self.modes.get("couple_random"):
-                return await "Sorry. You cannot use power in couple random enable mode"
+                return text_templates.generate_text("invalid_ship_with_random_couple_text")
             else:
                 return await self.ship(author, *targets[:2])
 

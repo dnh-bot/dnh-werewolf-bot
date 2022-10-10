@@ -132,8 +132,13 @@ async def parse_command(client, game, message):
             if len(parameters) < 3:
                 timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
                 await message.reply(
-                    "Use default settings: " +
-                    f"dayphase={config.DAYTIME}s, nightphase={config.NIGHTTIME}s, alertperiod={config.ALERT_PERIOD}s"
+                    text_templates.generate_text(
+                        "timer_settings_text",
+                        settings_name=text_templates.get_word_in_language("default"),
+                        day_phase=config.DAYTIME,
+                        night_phase=config.NIGHTTIME,
+                        alert_period=config.ALERT_PERIOD
+                    )
                 )
             else:
                 timer_phase = list(map(int, parameters))
@@ -142,8 +147,13 @@ async def parse_command(client, game, message):
                     await message.reply("Config must greater than 5s")
                     return None
                 await message.reply(
-                    "New settings: " +
-                    f"dayphase={timer_phase[0]}s, nightphase={timer_phase[1]}s, alertperiod={timer_phase[2]}s"
+                    text_templates.generate_text(
+                        "timer_settings_text",
+                        settings_name=text_templates.get_word_in_language("new"),
+                        day_phase=timer_phase[0],
+                        night_phase=timer_phase[1],
+                        alert_period=timer_phase[2]
+                    )
                 )
             game.set_timer_phase(timer_phase)
 
