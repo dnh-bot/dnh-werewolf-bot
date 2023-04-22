@@ -36,7 +36,7 @@ async def test_bot(game, guild):
 # ============ Discord server ============
 # We need to enable intents to access guild.members list
 # details: https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
-intents = discord.Intents.default()
+intents = discord.Intents.all() # Recent change in discord need set this to all()
 intents.members = True
 client = discord.Client(intents=intents)
 game_list = GameList()
