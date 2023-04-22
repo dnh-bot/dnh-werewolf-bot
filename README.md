@@ -1,65 +1,150 @@
-# dnh-werewolf-bot
+# DNH Werewolf bot (Bot Ma Sói, Thỏ và Sói).
+This is a Discord bot for hosting Werewolf game (Ma Sói, Thỏ và Sói). This bot is created and contributed by [DNH members](https://daynhauhoc.com/)
 
-## Cơ bản về Werewolf
+The game will automatically run without a human hoster. More fun!
 
-Ngôi làng DNH xưa nay là nơi quy tụ của giang hồ huynh đệ tứ hải về ẩn mình. Cuộc sống vốn thanh bình, êm ả, bỗng nhiên bị xáo động khi một vài thành viên của làng bị phanh thây trong ba đêm liên tiếp, trên người có dấu tích của loài Werewolf vốn có thể hóa thành hình người. Vốn cô lập với phần còn lại của thế giới, dân làng nhanh chóng kết luận: lũ Werewolf đang núp mình trong làng, và có thể không chỉ một. Nhưng với tư cách là 1 làng dân chủ, Trưởng làng không thể tự ý treo cổ tội phạm, mà cần thông qua biểu quyết để tiêu diệt sát nhân.
-Loài Werewolf cần rất nhiều máu người để có thể chuyển hoàn toàn thành nhân dạng, vậy nên Werewolf phải giết nhân loại. Nhưng thế cô lực quạnh, Werewolf phải làm bí mật trong đêm, và năng lực chỉ cho phép giết một người mỗi đêm.
-Mặt khác, đã có vài thành viên có ý đồ chiếm đoạt Cấm thư, bảo vật của làng, và họ cần phải tiêu diệt tất cả mọi người - chắc chắn sẽ không ai chịu đầu hàng và giao ra bảo vật.
+Original making for Vietnamese player but able to port to any language.
 
-Vậy bên nào sẽ chiến thắng, Thường dân, Werewolf, hay là phe Phản loạn? Hãy dùng lập luận của mình để chiến thắng và hoàn thành mục tiêu trong Werewolf.
+# Setup running environment
+Require python >= 3.9
+Please note that this repo use Python 3.9 features, so it cannot run on python3.7
 
-## Hướng dẫn cơ bản
+Install dependency packages:
+```
+python3.9 -m pip install -r requirement.txt
+```
 
-- Trò chơi chia làm 2 giai đoạn: **[D]ay Phase** (ban ngày) và **[N]ight Phase** (ban đêm).
+It's also possible to use `pyenv` if you want to install this independently.  
 
-- Vào ban ngày, mỗi người chơi có 1 lượt vote và cần vote để treo cổ người mình cho là sát nhân. Người có số vote cao nhất sẽ bị treo cổ.
-- Các nhân vật thực hiện các kĩ năng phụ thuộc vào thời gian mô tả ở phần dưới đây.
+## Setup .env file
+`cp .env.example .env`
 
-## Các phe phái trong trò chơi
+Change the fill in the Mandatory fields:
+```s
+# Mandatory fields
+BOT_PREFIX=!         =====> For use command in game like `!join` `!vote`
+BOT_NAME=EXAMPLE_BOT   =====> Your bot name, not important
+GAME_CATEGORY=GAME     =====> The bot will create a new Category channel in your discord server
 
-### I. Phe dân: Chiến thắng nếu sông sót. Không thể nhận biết được người cùng phe.
+DISCORD_TOKEN=ODgx**********************.YSsNGw.ya5O**********************.   ===> Replace this by your own Bot token, generated in https://discord.com/developers/applications/<your_bot_id>/oauth2/general 
+DISCORD_DEPLOY_SERVER_ID=881**************     ====> right click on your Discord server and copy the server id.
+```
 
-- [D] Dân làng: Không có chức năng đặc biệt.
-- [N] Tiên tri: Xác định vai trò của 1 người mỗi đêm.
-- [N] Bảo vệ: Bảo vệ được chọn 1 người khác nhau mỗi đêm trừ bản thân và người được chọn sẽ bất tử đêm đó.
 
-### II. Phe sói: Chiến thắng nếu giết hết dân làng. Nhận biết được người cùng phe.
+Right Click to copy ServerID:
 
-- [N] Sói: Chọn 1 người để giết mỗi đêm.
+![Alt text](docs/DiscordServer_CopyServerID.png)
 
-### III. Phe thứ 3: Chiến thắng khi sống sót cuối cùng. Không thể nhận biết được người cùng phe.
 
-Hệ thống nhân vật này sẽ được cập nhật sau.
+# Deployment
+## Create and add Bot to Discord server
+Follow guide to create a new Discord bot and how to add it into your Discord server: https://discordpy.readthedocs.io/en/stable/discord.html
 
-### Các vai trò sẽ được cập nhật:
+## Run bot
+Simply run:
+```python
+python3.9 bot.py
+```
+The bot should connect to your Discord server and online:
 
-- [D] Trường làng: Khi tiết lộ vai trò, Trưởng làng sẽ có 2 vote mỗi phase đến khi trò chơi kết thúc.
-- [N] Thám tử: Chọn 2 người bất kì mỗi đêm xem họ cùng phe hay không.
-- [N] Pháp sư câm: Chọn 1 người gây câm mỗi đêm. Người bị chọn sẽ không thể nói trong ngày hôm sau.
-- [D/N] Kẻ báo thù: Được chọn 1 người chết chung nếu bị giết.
-- [N] Nguyệt nữ: Chọn 1 người để ngủ cùng từ đêm đầu tiên. Nếu 1 trong 2 bị giết thì người còn lại sẽ chết thay.
-- [N] Mục sư: Có 1 lần rảy nước thánh. Rảy vào Sói, Sói sẽ chết. Rảy lộn, mục sư sẽ chết.
-- [D/N] Sói pháp sư: Yểm bùa 1 người vào ban ngày, ban đêm người bị yểm sẽ bị Tiên tri soi ra Sói.
-- [N] Sói báo thù: Được chọn 1 người chết chung khi bị giết ban ngày.
-- [N] Sói tiên tri: Mỗi đêm được chọn 1 người để xem vai trò.
-- [D] Thằng ngố: Chiến thắng nếu bị dân làng treo cổ.
-- [N] Sát nhân: Chọn 1 người để giết mỗi đêm. Không bị Sói giết.
-- [N] Thần Cupid: Chọn 1 cặp người chơi vào đêm đầu tiên. Cặp đó sẽ chết nếu 1 trong 2 bị giết.
+![Alt text](docs/DiscordServer_BotOnline.png)
 
-## Số lượng vai trò
 
-| Tổng số người chơi | Dân | Sói | Bảo vệ | Tiên tri | Khác |
-|----|---|---|---|---|---|
-| 4  | 3 | 1 | 0 | 0 |   |
-| 5  | 4 | 1 | 0 | 0 |   |
-| 6  | 4 | 1 | 1 | 0 |   |
-| 7  | 4 | 1 | 1 | 1 |   |
-| 8  | 5 | 1 | 1 | 1 |   |
-| 9  | 5 | 2 | 1 | 1 |   |
-| 10 | 6 | 2 | 1 | 1 |   |
-| 11 | 7 | 2 | 1 | 1 |   |
-| 12 | 5 | 3 | 1 | 1 | 1 thợ săn, 1 cupid |
-| 13 | 6 | 3 | 1 | 1 | 1 thợ săn, 1 cupid |
-| 14 | 5 | 3 | 1 | 1 | 1 thợ săn, 1 cupid, 1 phù thủy, 1 phản bội |
-| 15 | 6 | 4 | 1 | 1 | 1 thợ săn, 1 cupid, 1 phù thủy |
-| 16+ | 6 | 4 | 1 | 1 | 1 thợ săn, 1 cupid, 1 phù thủy, 1 già làng,... |
+## Create Admin and Members roles
+You MUST create these `Admin` role and `Members` role to play the game. 
+
+- Admin role: 
+    - User with Admin role can use super command to control the bot. The super commands start with prefix `f`. Eg: `fjoin`, `fcreate`, `fdelete`.
+You can see list of available commands in [label](commands/command.py) or [label](json/command_info.json). 
+    - It's not neccessary to have Admin as a player in game.
+    - Admin role can view all game channels including private and public channels.
+- Members role: Only user with Members role can join and play a game. You MUST assign this role to users who you allow them to play. This task only needs to be done once every user.
+
+Note that you do not need to them Admin and Members any permission. The bot will provide proper permission for them under GAME_CATEGORY.
+
+Follow this guide to create and assign roles: https://www.howtogeek.com/809671/how-to-add-assign-roles-discord/
+
+
+## Create GAME_CATEGORY
+Assign you as `Admin` role.
+Then run this command:
+`!fcreate @bot_name` where @bot_name tag your bot display name in your server
+
+![Alt text](docs/DiscordServer_CreateGame.png)
+
+if your bot can read the message, then it will automatically create a new category channel like:
+
+![Alt text](docs/DiscordServer_CategoryChannel.png)
+
+If you want to be a normal player, you can safely remove your Admin role now and enjoy the game.
+
+## Useful commands:
+```s
+!version  
+!help
+!help cmd vote
+!help role cupid
+```
+
+![Alt text](docs/Gameplay_Commands.png)
+
+
+# Game story
+
+[Vietnamese version](STORY_VN.md)
+
+English version: TODO
+
+You can custom langauge under  [./json](json) directory.
+- [./json/command_info.json](json/command_info.json) for command text
+- [./json/role_info.json](json/role_info.json) for role text
+
+# Gameplay
+
+User can join game via `!join` command or `!fjoin` by Admin:
+
+![Alt text](docs/Gameplay_JoinGame.png)
+
+Then players vote to start game via `!start` command.
+After if the votes are greater than half of players, the game will be started:
+
+![Alt text](docs/Gameplay_Newgame.png)
+
+Each player will have a personal channel, where they can cast spell or sleep :D
+
+![Alt text](docs/Gameplay_PersonalChannel.jpeg)
+
+Players can discuss, `!vote` for werewolf.
+
+![Alt text](docs/Gameplay_Status.png)
+
+Player who is killed by werewolf/witch or is voted to die will be sent to cemetery channel:
+
+![Alt text](docs/Gameplay_Cemetery.png)
+
+But don't worry, you have chance to reborn :D (witch,zombie roles)
+
+The game includes 2 phases every game day time: 
+
+- Day phase: You all can chat in gameplay channel
+- Night phase: Werewolf can bite, Guard can protect others or Seer can reveal fox/werewolf...
+
+The game will be ended if all werewolves are eliminated (villager win) or number of werewolves greater or equal number of villagers (werewolves win).
+
+![Alt text](docs/Gameplay_Endgame.png)
+
+Leaderboard saves endgame result every game.
+
+Enjoy!
+
+# Contact
+It's open source and free to use Discord bot.
+
+Don't hesitate to contact us for guiding setup.
+
+# Known issue
+
+## Library bug
+A library bug while adding member to `gameplay` channel if using `discord.py==2.2.2`
+
+Prefer to use `discord.py==1.7.3` 
