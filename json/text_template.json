@@ -17,6 +17,10 @@
       "vi": "mặc định",
       "en": "default"
     },
+    "personal": {
+      "vi": "riêng của bạn",
+      "en": "personal"
+    },
     "new": {
       "vi": "mới",
       "en": "new"
@@ -159,6 +163,20 @@
     "template": {
       "vi": ["Người xem {user} đã bỏ xem ván đấu. Hiện có {watched_players} người xem."],
       "en": ["Viewer {user} has unwatched the game. There are now {watched_players} viewers."]
+    }
+  },
+  "reply_in_game_watch_text": {
+    "params": [],
+    "template": {
+      "vi": ["Bạn không thể ấn theo dõi nữa :v"],
+      "en": ["You can't use watch command :v"]
+    }
+  },
+  "reply_in_game_unwatch_text": {
+    "params": [],
+    "template": {
+      "vi": ["Bạn không được bỏ theo dõi đâu :v"],
+      "en": ["You can't use unwatch command :v"]
     }
   },
   "personal_channel_welcome_text": {

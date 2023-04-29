@@ -110,7 +110,7 @@ async def parse_command(client, game, message):
                 elif cmd == "kill":
                     real_channel = f"#{config.WEREWOLF_CHANNEL}"
                 else:
-                    real_channel = "riêng của bạn"
+                    real_channel = text_templates.get_word_in_language("personal")
 
                 await admin.send_text_to_channel(
                     message.guild, text_templates.generate_text("invalid_channel_text", channel=real_channel), message.channel.name

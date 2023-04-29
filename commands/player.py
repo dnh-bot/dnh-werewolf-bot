@@ -69,7 +69,9 @@ async def do_watch(game, message):
         await message.channel.send(text_templates.generate_text("already_watched_game_text"))
     elif watched_players == -2:
         await message.channel.send(
-            text_templates.generate_text("already_in_game_text") + " Bạn không thể ấn theo dõi nữa :v")
+            text_templates.generate_text("already_in_game_text") + " " + 
+            text_templates.generate_text("reply_in_game_watch_text")
+        )
 
 
 async def do_unwatch(game, message):
@@ -81,7 +83,9 @@ async def do_unwatch(game, message):
         await message.channel.send(text_templates.generate_text("not_watched_game_text"))
     elif watched_players == -2:
         await message.channel.send(
-            text_templates.generate_text("already_in_game_text") + " Bạn không được bỏ theo dõi đâu :v")
+            text_templates.generate_text("already_in_game_text") + " " + 
+            text_templates.generate_text("reply_in_game_unwatch_text")
+        )
 
 
 # Require at least 2 players to start the game
