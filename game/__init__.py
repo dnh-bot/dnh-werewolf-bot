@@ -20,6 +20,9 @@ class GamePhase(Enum):
     DAY = 1
     NIGHT = 2
 
+    def __str__(self):
+        return self.name.lower() + "_phase"
+
 
 class Game:
     def __init__(self, guild, interface):
@@ -278,61 +281,73 @@ class Game:
 
     def get_game_status(self, channel_name, author_id):
         """
-        Return game status description, a phase's remaining time, voter table (if any) with its description
+        Returns:
+        game status description,
+        a phase's remaining time,
+        vote table (if any) with its description,
+        author status.
         """
-        if self.is_ended():
-            return "Trò chơi đã kết thúc.", None, None, ""
+        status_description = ""
+        remaining_time = None
+        vote_table = None
+        table_title = ""
+        author_status = ""
+
+        if self.is_ended() or not isinstance(self.game_phase, GamePhase):
+            return status_description, remaining_time, vote_table, table_title, author_status
 
         if self.game_phase == GamePhase.NEW_GAME:
-            status_table = {}
-            if self.players:
-                status_table["👍 vào chơi"] = [*self.players.keys()]
-
-            if self.watchers:
-                status_table["👎 chỉ xem"] = [*self.watchers]
-
-            if self.vote_start:
-                status_table["👍 vote start"] = [*self.vote_start]
-
-            return "Trò chơi chưa bắt đầu.", None, status_table, "Danh sách những người đang chờ vào game"
-
-        if not (self.game_phase == GamePhase.DAY or self.game_phase == GamePhase.NIGHT):
-            return None, None, None, ""
-
-        status_description = ""
-        if self.is_in_play_time():
-            if self.timer_stopped:
-                status_description += "Trò chơi đang tạm dừng. "
-            else:
-                status_description += "Trò chơi đang diễn ra. "
+            status_description = text_templates.get_label_in_language("new_game_phase_status")
+            status_table_headers = text_templates.generate_table_headers("game_status_new_game_phase_table_headers")
+            vote_table = {
+                header: [*value]
+                for header, value in zip(status_table_headers, [self.players.keys(), self.watchers, self.vote_start])
+            }
+            table_title = text_templates.get_label_in_language("waiting_list_title")
         else:
-            status_description += "Hiện đang ngoài giờ chơi game, trò chơi đang tạm dừng. "
+            remaining_time = self.timecounter
+
+            if self.is_in_play_time():
+                if self.timer_stopped:
+                    status_description = text_templates.get_label_in_language("in_playing_time_paused_status")
+                else:
+                    status_description = text_templates.get_label_in_language("in_playing_time_playing_status")
+            else:
+                status_description = text_templates.get_label_in_language("out_of_playing_time_status")
 
         if self.game_phase == GamePhase.DAY:
-            status_description += "Bây giờ là ban ngày."
-            return status_description, self.timecounter, self.get_vote_status(), "Danh sách những kẻ có khả năng bị hành hình"
+            vote_table = {f'<@!{k}>': v for k, v in self.get_vote_status().items()}
+            table_title = text_templates.get_label_in_language("vote_list_title")
 
-        if self.game_phase == GamePhase.NIGHT:
-            status_description += "Bây giờ là ban đêm."
+        elif self.game_phase == GamePhase.NIGHT:
             author = self.players.get(author_id)
             if not author:
                 author_status = "Chưa có gì để xem đâu :>"
 
             elif author.is_alive():
-                author_status = "Đêm rồi, đi ngủ đi :>"
                 if isinstance(author, roles.Werewolf) and (channel_name == config.WEREWOLF_CHANNEL or channel_name.startswith("personal")):
-                    return status_description, self.timecounter, self.get_vote_status(self.wolf_kill_dict), "Danh sách những kẻ có khả năng bị ăn thịt"
+                    vote_table = {f'<@!{k}>': v for k, v in self.get_vote_status(self.wolf_kill_dict).items()}
+                    table_title = text_templates.get_label_in_language("kill_list_title")
 
-                if isinstance(author, (roles.Seer, roles.Guard)) and channel_name.startswith("personal"):
+                elif isinstance(author, (roles.Seer, roles.Guard)) and channel_name.startswith("personal"):
                     if author.get_mana() > 0:
-                        author_status = f"Bạn vẫn chưa sử dụng quyền năng của mình :<"
+                        author_status = text_templates.get_label_in_language("author_not_use_mana_status")
+                    else:
+                        author_status = text_templates.get_label_in_language("author_used_mana_status")
 
+                elif isinstance(author, (roles.Zombie, roles.Cupid)) and channel_name.startswith("personal"):
+                    if author.get_power() > 0:
+                        author_status = text_templates.get_label_in_language("author_not_use_power_status")
+                    else:
+                        author_status = text_templates.get_label_in_language("author_used_power_status")
+
+                else:
+                    author_status = text_templates.get_label_in_language("author_sleeping_status")
             else:
-                author_status = "A con ma 👻"
+                # TODO: future features in #cemetery channel
+                author_status = text_templates.get_label_in_language("author_dead_status")
 
-            return status_description, self.timecounter, None, author_status
-
-        return None, None, None, ""
+        return status_description, remaining_time, vote_table, table_title, author_status
 
     def get_vote_status(self, voter_dict=None):
         # From {"u1":"u2", "u2":"u1", "u3":"u1"}

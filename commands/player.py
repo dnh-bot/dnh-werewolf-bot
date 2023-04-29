@@ -152,35 +152,6 @@ async def do_stop(game, message, force=False):
         await message.reply(text_templates.generate_text("game_not_started_text"))
 
 
-async def do_generate_status_table(channel, game_status, remaining_time, table, table_description=""):
-    # Table format: {"u2": {"u1"}, "u1": {"u3", "u2"}}
-    # ->
-    # table_description
-    # - @user1: 2 phiếu (@user2, @user3)
-    # - @user2: 1 phiếu (@user1)
-
-    if not table:
-        if table is None and table_description:
-            vote_table = None
-        else:
-            vote_table = {}
-    else:
-        vote_table = {}
-        for k, v in table.items():
-            member_k = channel.guild.get_member(k)
-            if member_k is not None:
-                name_field = f'<@!{k}>'
-            else:
-                name_field = str(k)
-
-            vote_table[name_field] = sorted(v)
-
-    await admin.send_embed_to_channel(
-        channel.guild, text_template.generate_status_embed(
-            game_status, remaining_time, vote_table, table_description), channel.name
-    )
-
-
 async def test_player_command(guild):
     # TODO:
     pass

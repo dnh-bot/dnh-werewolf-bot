@@ -27,11 +27,24 @@ def get_template_params(action):
 
 
 def get_word_in_language(key):
-    return text_template_dict["KEYWORDS"][key][TEXT_LANGUAGE]
+    if key in text_template_dict["KEYWORDS"]:
+        return text_template_dict["KEYWORDS"][key][TEXT_LANGUAGE]
+
+    return ""
+
+
+def get_label_in_language(key):
+    if key in text_template_dict["LABEL"]:
+        return text_template_dict["LABEL"][key][TEXT_LANGUAGE]
+
+    return ""
 
 
 def get_format_string(key):
-    return text_template_dict["FORMAT_STRING"][key][TEXT_LANGUAGE]
+    if key in text_template_dict["FORMAT_STRING"]:
+        return text_template_dict["FORMAT_STRING"][key][TEXT_LANGUAGE]
+
+    return ""
 
 
 def generate_text(action, **kwargs):
@@ -44,6 +57,17 @@ def generate_text(action, **kwargs):
     return ""
 
 
+def generate_table_headers(action, **kwargs):
+    if action in text_template_dict:
+        template_obj = text_template_dict[action]
+        return [
+            header.format(bot_prefix=BOT_PREFIX, **kwargs)
+            for header in template_obj["template"][TEXT_LANGUAGE]
+        ]
+
+    return []
+
+
 def generate_embed(action, content_values: List[List[str]], **kwargs):
     if action in text_template_dict:
         template_obj = text_template_dict[action]
@@ -53,9 +77,12 @@ def generate_embed(action, content_values: List[List[str]], **kwargs):
             "title": embed_template["title"].format(bot_prefix=BOT_PREFIX, **kwargs),
             "description": embed_template["description"].format(bot_prefix=BOT_PREFIX, **kwargs),
             "content": [
-                (header, [line.format(bot_prefix=BOT_PREFIX, **kwargs) for line in value])
+                (
+                    header.format(bot_prefix=BOT_PREFIX, **kwargs),
+                    [line.format(bot_prefix=BOT_PREFIX, **kwargs) for line in value if line]
+                )
                 for header, value in zip(embed_template["content_headers"], content_values)
-                if value
+                if header and value
             ]
         }
 

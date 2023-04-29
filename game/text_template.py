@@ -21,46 +21,29 @@ def generate_player_list_embed(player_list, alive_status):
     return None
 
 
-def generate_vote_field(vote_table, table_description):
+def generate_vote_field(vote_table):
     # vote_table format: {"u2": {"u1"}, "u1": {"u3", "u2"}}
     # ->
-    # table_description
     # - @user1: 2 phiếu (@user2, @user3)
     # - @user2: 1 phiếu (@user1)
 
-    if isinstance(vote_table, dict) and table_description:
-        if vote_table:
-            return table_description, [
-                f"- {title}: {len(votes)} phiếu ({', '.join(f'<@!{i}>' for i in votes)})"
-                for title, votes in sorted(vote_table.items(), key=lambda t: (-len(t[1]), t[0]))
-            ]
+    if isinstance(vote_table, dict):
+        vote_field = [
+            text_templates.generate_text(
+                "game_status_vote_field_text",
+                be_voted_str=vote_title,
+                votes_num=len(votes),
+                voters_str=', '.join(f'<@!{_id}>' for _id in sorted(votes))
+            )
+            for vote_title, votes in sorted(vote_table.items(), key=lambda t: (-len(t[1]), t[0]))
+            if len(votes)
+        ]
+        if vote_field:
+            return vote_field
         else:
-            return table_description, [text_templates.generate_text("nobody_text")]
+            return [text_templates.generate_text("nobody_text")]
 
     return None
-
-
-def generate_status_embed(game_status, time_left, vote_table, table_description):
-    embed_content = []
-
-    if time_left is not None:
-        embed_content.append(("⏰ Thời gian còn lại", [generate_timer_remaining_text(time_left)]))
-
-    if table_description:
-        field_content = generate_vote_field(vote_table, table_description)
-        if field_content:
-            embed_content.append(field_content)
-        else:
-            embed_content.append(("Trạng thái của bạn", [table_description]))
-
-    embed_data = {
-        "color": 0xff0000,
-        "title": "Trạng thái trò chơi",
-        "description": game_status or "Không biết nữa :>",
-        "content": embed_content
-    }
-
-    return embed_data
 
 
 # Common
@@ -73,6 +56,9 @@ def generate_invalid_command_text(command):
 
 
 def generate_timer_remaining_text(seconds):
+    if seconds is None:
+        return ""
+
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
@@ -86,7 +72,7 @@ def generate_timer_remaining_text(seconds):
     if seconds > 0 or days == hours == minutes == seconds == 0:
         time_text.append(text_templates.generate_text("count_seconds_text", seconds=seconds))
 
-    return text_templates.generate_text("timer_remaining_text", time_remaining_str=" ".join(time_text))
+    return " ".join(time_text)
 
 
 def generate_help_command_embed(command=None):
@@ -249,7 +235,7 @@ def generate_play_time_text(start_time_utc: datetime.time, end_time_utc: datetim
     end_time = end_time_utc.replace(tzinfo=tz.UTC).astimezone(to_zone)
 
     zone = zone_str or str(to_zone.tzname(None))
-    time_range_str = time_range_to_string(start_time.time(), end_time.time(), zone),
+    time_range_str = time_range_to_string(start_time.time(), end_time.time(), zone)
     if start_time_utc != start_time != end_time:
         # zone is not UTC and the play time is not a whole day
         return text_templates.generate_text(

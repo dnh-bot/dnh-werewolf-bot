@@ -1,7 +1,7 @@
 from commands import admin, player
 import commands
 import config
-from game import text_template
+from game import text_template, GamePhase
 import text_templates
 
 import discord
@@ -117,13 +117,27 @@ async def parse_command(client, game, message):
                 )
 
         elif cmd == "status":
-            # status_description, remaining_time, vote_table, vote_table_description = game.get_game_status(message.channel.name, message.author.id)
-            # await player.do_generate_vote_status_table(message.channel, vote_table, vote_table_description)
-            # await message.reply(text_template.generate_timer_remaining_text(game.timecounter))
-
-            # new status table here
-            game_status = game.get_game_status(message.channel.name, message.author.id)
-            await player.do_generate_status_table(message.channel, *game_status)
+            if game.is_ended():
+                await admin.send_text_to_channel(
+                    message.guild, text_templates.generate_text("end_text"), message.channel.name
+                )
+            else:
+                status_description, remaining_time, vote_table, table_title, author_status = game.get_game_status(
+                    message.channel.name, message.author.id
+                )
+                print(status_description, remaining_time, vote_table, text_template.generate_vote_field(vote_table), table_title, author_status)
+                embed_data = text_templates.generate_embed(
+                    "game_status_with_table_embed",
+                    [
+                        [text_template.generate_timer_remaining_text(remaining_time)],
+                        text_template.generate_vote_field(vote_table),
+                        [author_status]
+                    ],
+                    status_description=status_description,
+                    phase_str=text_templates.get_word_in_language(str(game.game_phase)),
+                    table_title=table_title
+                )
+                await admin.send_embed_to_channel(message.channel.guild, embed_data, message.channel.name)
 
         elif cmd == "timer":
             """ Usage: 
