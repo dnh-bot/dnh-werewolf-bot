@@ -772,7 +772,7 @@
     "params": "timer_remaining_text",
     "template": {
       "vi": ["🔔 Bing boong! Còn {timer_remaining_text}..."],
-      "en": ["🔔 Ding-dong! {timer_remaining_text} left..."]
+      "en": ["🔔 Ding-dong! {timer_remaining_text} remaining..."]
     }
   },
   "timer_up_text": {
@@ -986,16 +986,16 @@
     }
   },
   "play_time_in_range_alert_text": {
-    "params": ["text_day","timer_remaining_text"],
+    "params": ["text_day", "timer_remaining_text"],
     "template": {
       "vi": ["Đã đến giờ chơi, đồng hồ trò chơi tiếp tục đếm. Hiện tại là {text_day}. Còn {timer_remaining_text}"],
       "en": ["It's time to play, the game timer will continue! It's {text_day}. {timer_remaining_text} remaining"]
     }
   },
   "play_time_out_range_alert_text": {
-    "params": ["text_day","timer_remaining_text"],
+    "params": ["text_day", "timer_remaining_text"],
     "template": {
-      "vi": ["Hiện đã ngoài giờ chơi, đồng hồ trò chơi sẽ được dừng lại! Hiện tại là ban {text_day}. Còn {timer_remaining_text}"],
+      "vi": ["Hiện đã ngoài giờ chơi, đồng hồ trò chơi sẽ được dừng lại! Hiện tại là {text_day}. Còn {timer_remaining_text}"],
       "en": ["It's out of playtime, the game timer will be stopped! It's {text_day}. {timer_remaining_text} remaining"]
     }
   },
