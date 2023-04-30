@@ -137,6 +137,34 @@ Leaderboard saves endgame result every game.
 
 Enjoy!
 
+# Test
+`python3 test.py`
+
+Sample successful output:
+```s
+successfully loaded json/command_info.json
+successfully loaded json/text_template.json
+successfully loaded json/role_info.json
+reset_game_state
+
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+====== Begin test case at testcases/case-witch-reborn-wolf.json =====
+...
+<Many lines hidden here>
+...
+reset_game_state
+#lobby: Trò chơi đã kết thúc.
+gameplay created!
+====== End test case =====
+
+
+FINISH ALL TEST CASES SUCCESSFULLY
+```
+
+Tips: you can reduce the DELAY_TIME for faster run
+
 # Contact
 It's open source and free to use Discord bot.
 

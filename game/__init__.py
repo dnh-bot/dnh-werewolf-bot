@@ -709,7 +709,9 @@ class Game:
             self.prev_playtime = self.curr_playtime
             await self.interface.send_action_text_to_channel(
                 "play_time_in_range_alert_text" if self.curr_playtime else "play_time_out_range_alert_text",
-                config.GAMEPLAY_CHANNEL
+                config.GAMEPLAY_CHANNEL,
+                text_day=text_templates.get_word_in_language(str(self.game_phase)),
+                timer_remaining_text=text_template.generate_timer_remaining_text(self.timecounter)
             )
 
     async def do_player_action(self, cmd, author_id, *targets_id):
