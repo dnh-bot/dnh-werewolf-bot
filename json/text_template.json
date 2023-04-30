@@ -995,7 +995,7 @@
   "play_time_out_range_alert_text": {
     "params": ["text_day","timer_remaining_text"],
     "template": {
-      "vi": ["Hiện đã ngoài giờ chơi, đồng hồ trò chơi sẽ được dừng lại! Hiện tại là ban {text_day}. Còn {timer_remaining_text}"],
+      "vi": ["Hiện đã ngoài giờ chơi, đồng hồ trò chơi sẽ được dừng lại! Hiện tại là {text_day}. Còn {timer_remaining_text}"],
       "en": ["It's out of playtime, the game timer will be stopped! It's {text_day}. {timer_remaining_text} remaining"]
     }
   },
