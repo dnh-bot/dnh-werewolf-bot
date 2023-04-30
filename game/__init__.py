@@ -707,9 +707,13 @@ class Game:
         self.curr_playtime = self.is_in_play_time()
         if self.curr_playtime != self.prev_playtime:
             self.prev_playtime = self.curr_playtime
+            if self.game_phase == GamePhase.DAY:
+                text_day = text_templates.get_word_in_language("day_phase")
+            else:
+                text_day = text_templates.get_word_in_language("night_phase")
             await self.interface.send_action_text_to_channel(
                 "play_time_in_range_alert_text" if self.curr_playtime else "play_time_out_range_alert_text",
-                config.GAMEPLAY_CHANNEL
+                config.GAMEPLAY_CHANNEL, text_day=text_day
             )
 
     async def do_player_action(self, cmd, author_id, *targets_id):
