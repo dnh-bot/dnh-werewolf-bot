@@ -33,7 +33,7 @@ class Game:
             config.GAMEPLAY_CHANNEL,
             config.LEADERBOARD_CHANNEL,
             config.WEREWOLF_CHANNEL,
-            # Personal channel will goes into role class
+            # Personal channel will go into role class
         ]  # List of channels in game
         self.next_flag = asyncio.Event()
         self.timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
