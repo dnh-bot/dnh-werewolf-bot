@@ -1,5 +1,4 @@
 from game.roles.villager import Villager
-from game.text_template import *
 from enum import Enum
 
 
@@ -21,4 +20,4 @@ class Zombie(Villager):
 
     async def on_action(self, embed_data):
         if not self.is_alive():
-            await self.interface.send_text_to_channel(generate_before_voting_zombie(), self.channel_name)
+            await self.interface.send_action_text_to_channel("zombie_before_voting_text", self.channel_name)

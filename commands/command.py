@@ -1,7 +1,8 @@
 from commands import admin, player
 import commands
 import config
-from game import text_template
+from game import text_template, GamePhase
+import text_templates
 
 import discord
 import asyncio   # Do not remove this. This for debug command
@@ -41,7 +42,7 @@ async def parse_command(client, game, message):
     if admin.is_valid_category(message):
         if cmd == "help":
             await admin.send_embed_to_channel(
-                message.guild, text_template.generate_help_text(*parameters), message.channel.name, False
+                message.guild, text_template.generate_help_embed(*parameters), message.channel.name, False
             )
         elif cmd == "version":
             tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
@@ -65,11 +66,11 @@ async def parse_command(client, game, message):
         elif cmd in ("vote", "kill", "guard", "seer", "reborn", "curse", "zombie", "ship"):
             if not game.is_started():
                 # prevent user uses command before game starts
-                await message.reply(text_template.generate_game_not_started_text())
+                await message.reply(text_templates.generate_text("game_not_started_text"))
                 return None
 
             if not game.is_in_play_time():
-                await message.reply(text_template.generate_game_not_playing_text())
+                await message.reply(text_templates.generate_text("game_not_playing_text"))
                 return None
 
             is_valid_channel = \
@@ -80,7 +81,7 @@ async def parse_command(client, game, message):
 
             if is_valid_channel:
                 author = message.author
-                required_param_number = commands.get_command_param_number(cmd)
+                required_param_number = len(commands.get_command_required_params(cmd))
 
                 if len(message.raw_mentions) == required_param_number:
                     msg = await game.do_player_action(cmd, author.id, *message.raw_mentions)
@@ -101,27 +102,42 @@ async def parse_command(client, game, message):
                     if not is_valid_command:
                         await message.reply(text_template.generate_invalid_command_text(cmd))
                 else:
-                    await message.reply(text_template.generate_not_vote_n_player_text(required_param_number))
+                    await message.reply(
+                        text_templates.generate_text("not_vote_n_player_text", num=required_param_number))
             else:
                 if cmd == "vote":
                     real_channel = f"#{config.GAMEPLAY_CHANNEL}"
                 elif cmd == "kill":
                     real_channel = f"#{config.WEREWOLF_CHANNEL}"
                 else:
-                    real_channel = "riêng của bạn"
+                    real_channel = text_templates.get_word_in_language("personal")
 
                 await admin.send_text_to_channel(
-                    message.guild, text_template.generate_invalid_channel_text(real_channel), message.channel.name
+                    message.guild, text_templates.generate_text("invalid_channel_text", channel=real_channel), message.channel.name
                 )
 
         elif cmd == "status":
-            # status_description, remaining_time, vote_table, vote_table_description = game.get_game_status(message.channel.name, message.author.id)
-            # await player.do_generate_vote_status_table(message.channel, vote_table, vote_table_description)
-            # await message.reply(text_template.generate_timer_remaining_text(game.timecounter))
-
-            # new status table here
-            game_status = game.get_game_status(message.channel.name, message.author.id)
-            await player.do_generate_status_table(message.channel, *game_status)
+            if game.is_ended():
+                await admin.send_text_to_channel(
+                    message.guild, text_templates.generate_text("end_text"), message.channel.name
+                )
+            else:
+                status_description, remaining_time, vote_table, table_title, author_status = game.get_game_status(
+                    message.channel.name, message.author.id
+                )
+                print(status_description, remaining_time, vote_table, text_template.generate_vote_field(vote_table), table_title, author_status)
+                embed_data = text_templates.generate_embed(
+                    "game_status_with_table_embed",
+                    [
+                        [text_template.generate_timer_remaining_text(remaining_time)],
+                        text_template.generate_vote_field(vote_table),
+                        [author_status]
+                    ],
+                    status_description=status_description,
+                    phase_str=text_templates.get_word_in_language(str(game.game_phase)),
+                    table_title=table_title
+                )
+                await admin.send_embed_to_channel(message.channel.guild, embed_data, message.channel.name)
 
         elif cmd == "timer":
             """ Usage: 
@@ -130,8 +146,13 @@ async def parse_command(client, game, message):
             if len(parameters) < 3:
                 timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
                 await message.reply(
-                    "Use default settings: " +
-                    f"dayphase={config.DAYTIME}s, nightphase={config.NIGHTTIME}s, alertperiod={config.ALERT_PERIOD}s"
+                    text_templates.generate_text(
+                        "timer_settings_text",
+                        settings_name=text_templates.get_word_in_language("default"),
+                        day_phase=config.DAYTIME,
+                        night_phase=config.NIGHTTIME,
+                        alert_period=config.ALERT_PERIOD
+                    )
                 )
             else:
                 timer_phase = list(map(int, parameters))
@@ -140,17 +161,22 @@ async def parse_command(client, game, message):
                     await message.reply("Config must greater than 5s")
                     return None
                 await message.reply(
-                    "New settings: " +
-                    f"dayphase={timer_phase[0]}s, nightphase={timer_phase[1]}s, alertperiod={timer_phase[2]}s"
+                    text_templates.generate_text(
+                        "timer_settings_text",
+                        settings_name=text_templates.get_word_in_language("new"),
+                        day_phase=timer_phase[0],
+                        night_phase=timer_phase[1],
+                        alert_period=timer_phase[2]
+                    )
                 )
             game.set_timer_phase(timer_phase)
 
         elif cmd == "timerstart":
             game.timer_stopped = False
-            await message.reply(text_template.generate_timer_start_text())
+            await message.reply(text_templates.generate_text("timer_start_text"))
         elif cmd == "timerstop":
             game.timer_stopped = True
-            await message.reply(text_template.generate_timer_stop_text())
+            await message.reply(text_templates.generate_text("timer_stop_text"))
 
         elif cmd == "setplaytime":
             """Usage:
@@ -181,6 +207,9 @@ async def parse_command(client, game, message):
                     game.set_play_time(start_time_utc.time(), end_time_utc.time(), zone)
                     msg = text_template.generate_play_time_text(start_time_utc.time(), end_time_utc.time(), zone)
                     await message.reply(msg)
+
+            else:
+                await message.reply(text_template.generate_invalid_command_text(cmd))
 
         elif cmd == "setroles":
             res = game.add_default_roles(parameters)

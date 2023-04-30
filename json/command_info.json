@@ -5,7 +5,7 @@
       "en": "Set the current timer."
     },
     "exclusive_roles": [],
-    "required_param_number": 3
+    "required_params": ["dayphase", "nightphase", "alertperiod"]
   },
   "timerstart": {
     "description": {
@@ -13,7 +13,7 @@
       "en": "Start the current timer."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "timerstop": {
     "description": {
@@ -21,15 +21,16 @@
       "en": "Stop the current timer."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "setplaytime": {
     "description": {
-      "vi": "Thiết lập giờ chơi trong 1 ngày.",
-      "en": "Set the playing time in a day."
+      "vi": "Thiết lập giờ chơi trong 1 ngày. Thời gian phải ở định dạng HH:MM.",
+      "en": "Set the playing time in a day. Time must be in HH:MM format."
     },
     "exclusive_roles": [],
-    "required_param_number": 2
+    "required_params": ["time_start", "time_end"],
+    "additional_params": ["time_zone"]
   },
   "setroles": {
     "description": {
@@ -37,7 +38,7 @@
       "en": "Set default player roles for a new game"
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "showmodes": {
     "description": {
@@ -45,7 +46,7 @@
       "en": "Display mode setting"
     },
     "exclusive_roles": [],
-    "required_param_number": 2
+    "required_params": []
   },
   "setmode": {
     "description": {
@@ -53,7 +54,7 @@
       "en": "Enable/Disable game modes."
     },
     "exclusive_roles": [],
-    "required_param_number": 2
+    "required_params": ["mode_id", "on_str"]
   },
   "join": {
     "description": {
@@ -61,7 +62,7 @@
       "en": "Join a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "leave": {
     "description": {
@@ -69,7 +70,7 @@
       "en": "Leave a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "watch": {
     "description": {
@@ -77,7 +78,7 @@
       "en": "Watch a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "unwatch": {
     "description": {
@@ -85,7 +86,7 @@
       "en": "Unwatch a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "start": {
     "description": {
@@ -93,7 +94,7 @@
       "en": "Start a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "next": {
     "description": {
@@ -101,7 +102,7 @@
       "en": "Jump to next phase."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "stopgame": {
     "description": {
@@ -109,63 +110,63 @@
       "en": "Stop a game."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "status": {
     "description": {
-      "vi": "Xem trạng thái bầu chọn của buổi hiện tại.",
-      "en": "Show voting status of current time."
+      "vi": "Xem trạng thái trò chơi trong buổi hiện tại.",
+      "en": "Show status of current phase."
     },
     "exclusive_roles": [],
-    "required_param_number": 0
+    "required_params": []
   },
   "vote": {
     "description": {
       "vi": "Lựa chọn một người sẽ bị đưa lên máy chém.",
-      "en": "A command for everyone to vote an user."
+      "en": "Vote a player."
     },
     "exclusive_roles": [],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "kill": {
     "description": {
       "vi": "Lựa chọn một người sẽ bị ăn thịt trong đêm.",
-      "en": "A command for a Werewolf to kill an user."
+      "en": "Kill a player."
     },
     "exclusive_roles": ["Werewolf", "Superwolf"],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "guard": {
     "description": {
       "vi": "Bảo vệ một ai đó trong đêm.",
-      "en": "A command for a Guard to guard an user."
+      "en": "Guard a player."
     },
     "exclusive_roles": ["Guard"],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "seer": {
     "description": {
       "vi": "Soi một người bất kỳ.",
-      "en": "A command for a Seer to seer an user."
+      "en": "Seer a player."
     },
     "exclusive_roles": ["Seer"],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "reborn": {
     "description": {
       "vi": "Hồi sinh một người đã chết.",
-      "en": "A command for a Witch to reborn an user."
+      "en": "Reborn a player."
     },
     "exclusive_roles": ["Witch"],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "curse": {
     "description": {
-      "vi": "Nguyền rủa một người.",
-      "en": "Curse another player."
+      "vi": "Nguyền rủa một người còn sống.",
+      "en": "Curse a player."
     },
     "exclusive_roles": ["Witch"],
-    "required_param_number": 1
+    "required_params": ["player_id"]
   },
   "zombie": {
     "description": {
@@ -173,14 +174,14 @@
       "en": "Reborn yourself."
     },
     "exclusive_roles": ["Zombie"],
-    "required_param_number": 0
+    "required_params": []
   },
   "ship": {
     "description": {
       "vi": "Ghép đôi 2 người.",
-      "en": "A command for a Cupid to ship 2 users."
+      "en": "Match 2 players together as a couple."
     },
     "exclusive_roles": ["Cupid"],
-    "required_param_number": 2
+    "required_params": ["player_id1", "player_id2"]
   }
 }

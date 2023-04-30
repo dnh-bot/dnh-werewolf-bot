@@ -1,10 +1,15 @@
 import asyncio
 import commands
+import text_templates
 
 
 class ConsoleInterface:
     def __init__(self, guild=None):
         self.guild = guild  # Unused
+
+    async def send_action_text_to_channel(self, action, channel_name, **kwargs):
+        await self.send_text_to_channel(text_templates.generate_text(action, **kwargs), channel_name)
+        return True
 
     async def send_text_to_channel(self, msg, channel_name):
         print(f"#{channel_name}: {msg}")
@@ -31,6 +36,9 @@ class DiscordInterface:
     def __init__(self, guild, client):
         self.guild = guild
         self.client = client
+
+    async def send_action_text_to_channel(self, action, channel_name, **kwargs):
+        return await self.send_text_to_channel(text_templates.generate_text(action, **kwargs), channel_name)
 
     async def send_text_to_channel(self, msg, channel_name):
         return await commands.admin.send_text_to_channel(self.guild, msg, channel_name)

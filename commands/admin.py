@@ -164,7 +164,10 @@ async def send_embed_to_channel(guild, embed_data, channel_name, *args):
         color = embed_data["color"] if "color" in embed_data else 0
         embed = discord.Embed(title=embed_data["title"], description=embed_data.get("description"), color=color)
         for field_name, field_value in embed_data["content"]:
-            embed.add_field(name=field_name, value="\n".join(field_value), inline=False)
+            field_value_str = "\n".join(field_value).rstrip()
+            if field_name and field_value_str:
+                embed.add_field(name=field_name, value=field_value_str, inline=False)
+
         await channel.send(embed=embed)
         return True
     except Exception as e:

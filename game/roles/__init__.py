@@ -29,10 +29,18 @@ def get_role_type(name):
 
 
 def get_role_name_in_language(name, language):
+    # TODO: remove this function after complete text_template.json
+    return name
+
+
+def get_role_title(name):
     name = name.capitalize()
-    field_name = f"name_{language}"
-    if name in role_info and field_name in role_info[name]:
-        return role_info[name][field_name]
+    if name in role_info:
+        field_name = f"name_{TEXT_LANGUAGE}"
+        if field_name in role_info[name]:
+            return f"{name} ({role_info[name][field_name]})"
+
+        return name
 
 
 def get_role_description(name):

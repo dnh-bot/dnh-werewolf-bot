@@ -3,7 +3,7 @@
     "name_vi": "Dân làng",
     "description": {
       "vi": "Không có chức năng đặc biệt.",
-      "en": ""
+      "en": "A simple villager."
     },
     "daytime_command": "vote",
     "nighttime_commands": []
@@ -12,7 +12,7 @@
     "name_vi": "Sói",
     "description": {
       "vi": "Chọn 1 người để giết mỗi đêm.",
-      "en": ""
+      "en": "Chooses a player to kill at night."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["kill"]
@@ -21,7 +21,7 @@
     "name_vi": "Sói già",
     "description": {
       "vi": "Chọn 1 người để giết mỗi đêm. Sói già có khả năng che giấu Tiên tri và không bị soi ra là sói.",
-      "en": ""
+      "en": "Chooses a player to kill at night. Can't be seen as a Werewolf."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["kill"]
@@ -29,8 +29,8 @@
   "Guard": {
     "name_vi": "Bảo vệ",
     "description": {
-      "vi": "Bảo vệ được chọn 1 người khác nhau mỗi đêm trừ bản thân và người được chọn sẽ bất tử đêm đó.",
-      "en": ""
+      "vi": "Bảo vệ được chọn 1 người khác nhau mỗi đêm và người được chọn sẽ bất tử đêm đó.",
+      "en": "Guards a player: Protect the player from being killed."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["guard"]
@@ -39,7 +39,7 @@
     "name_vi": "Người hóa sói",
     "description": {
       "vi": "Người hóa sói thuộc Phe dân làng, nhưng nếu được chỉ định bởi Tiên tri, thì sẽ bị thông báo là Sói.",
-      "en": ""
+      "en": "A villager but is seen as a Werewolf."
     },
     "daytime_command": "vote",
     "nighttime_commands": []
@@ -48,7 +48,7 @@
     "name_vi": "Tiên tri",
     "description": {
       "vi": "Soi một người chơi có phải là sói hay không. Có thể giết chết Cáo nếu soi trúng Cáo.",
-      "en": ""
+      "en": "Sees who is the Werewolf. Can kill Fox if Seer sees Fox."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["seer"]
@@ -57,7 +57,7 @@
     "name_vi": "Kẻ phản bội",
     "description": {
       "vi": "Là người nhưng bị mua chuộc theo phe sói. Kẻ phản bội biết ai là sói nhưng phe sói không biết ai là Kẻ phản bội.",
-      "en": ""
+      "en": "A human but betrays Villagers. Betrayer knows werewolf players."
     },
     "daytime_command": "vote",
     "nighttime_commands": []
@@ -65,8 +65,8 @@
   "Fox": {
     "name_vi": "Cáo",
     "description": {
-      "vi": "Thuộc phe thứ ba, cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.",
-      "en": ""
+      "vi": "Thuộc phe thứ ba, Cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.",
+      "en": "A Fox belongs to third party. Fox wins if all werewolves are killed. Fox is dead if being revealed by Seer. Fox will not be dead if being protected by Guard."
     },
     "daytime_command": "vote",
     "nighttime_commands": []
@@ -75,7 +75,7 @@
     "name_vi": "Phù thủy",
     "description": {
       "vi": "Vào ban đêm, Phù thủy có 1 bình phép có thể phục sinh một người chơi đã chết, đôi khi cũng có thể nguyền rủa một người còn sống. Mỗi chức năng này chỉ được sử dụng một lần duy nhất trong game.",
-      "en": ""
+      "en": "Can reborn a dead player, and also can curse an alive player once per game."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["reborn", "curse"]
@@ -84,7 +84,7 @@
     "name_vi": "Xác sống",
     "description": {
       "vi": "Có thể tự hồi sinh một lần duy nhất trong game.",
-      "en": ""
+      "en": "Can reborn once."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["zombie"]
@@ -93,7 +93,7 @@
     "name_vi": "Thần tình yêu",
     "description": {
       "vi": "Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ thành phe thứ 3 với nhiệm vụ là hai người cuối cùng sống sót.",
-      "en": ""
+      "en": "On the first day, Cupid can choose 2 players and make them to be a couple. If one of them is dead, the other will be also dead. If the couple belongs to different parties (Werewolf and Villager), then they become the third party. Their mission is to be the last stand players."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["ship"]

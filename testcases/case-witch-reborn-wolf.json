@@ -2,7 +2,7 @@
 	"name": "6 Players - Witch reborn wolf",
 	"player_list": {
 		"w1": "Werewolf",
-        "w2": "Werewolf",
+		"w2": "Werewolf",
 		"f1": "Fox",
 		"g1": "Guard",
 		"s1": "Seer",
@@ -46,14 +46,14 @@
 			"time": "day2",
 			"alive": [
 				"w1",
-                "w2",
+				"w2",
 				"g1",
 				"s1",
 				"wi1"
 			],
 			"action": [
 				"g1 vote wi1",
-				"f1 vote wi1"
+				"s1 vote wi1"
 			]
 		}
     ],

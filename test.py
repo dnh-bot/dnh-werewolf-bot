@@ -42,8 +42,8 @@ async def test_case(game, filepath):
 
     try:
         assert test_case_data is not None
-
-        print(f"\n\n\n====== Begin test case at {filepath} =====")
+        print("\n\n\n"+"$"*150)
+        print(f"====== Begin test case at {filepath} =====")
         print(f"Test case: {test_case_data['name']}")
         DELAY_TIME = 0.03  # MUST greater than 0
         game.timer_enable = False  # MUST have
@@ -69,7 +69,8 @@ async def test_case(game, filepath):
             for action_str in action_data["action"]:
                 author_name, command = action_str.split()[:2]
                 target_name = action_str.split()[2:]
-                print(await game.do_player_action(command, id_map[author_name], *[id_map[i] for i in target_name]))
+                text = await game.do_player_action(command, id_map[author_name], *[id_map[i] for i in target_name])
+                print(text)
             await asyncio.sleep(DELAY_TIME)
             await game.next_phase()
 
@@ -95,7 +96,7 @@ async def test_game():
 
     # Run single test
 
-    await test_case(game, "./testcases/case-cupid-win.json")
+    await test_case(game, "testcases/case-witch-reborn-wolf.json")
 
     # Run all tests
     directory = "testcases"
@@ -117,4 +118,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(test_game())
-    print("END=======")
+    print("\n\nFINISH ALL TEST CASES SUCCESSFULLY")

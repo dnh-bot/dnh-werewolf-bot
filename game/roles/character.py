@@ -1,6 +1,5 @@
 import asyncio
 from enum import Enum
-from game import text_template
 
 import game
 import config
@@ -38,8 +37,7 @@ class Character:
         await asyncio.gather(
             self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False),
             self.interface.add_user_to_channel(self.player_id, config.CEMETERY_CHANNEL, is_read=True, is_send=True),
-            self.interface.send_text_to_channel(text_template.generate_after_death(
-                f"<@{self.player_id}>"), config.CEMETERY_CHANNEL),
+            self.interface.send_action_text_to_channel("after_death_text", config.CEMETERY_CHANNEL, user=f"<@{self.player_id}>"),
             self.interface.add_user_to_channel(self.player_id, config.COUPLE_CHANNEL, is_read=False, is_send=False)
         )
         return True
@@ -49,8 +47,7 @@ class Character:
         await asyncio.gather(
             self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True),
             self.interface.add_user_to_channel(self.player_id, config.CEMETERY_CHANNEL, is_read=False, is_send=False),
-            self.interface.send_text_to_channel(text_template.generate_after_reborn(
-                f"<@{self.player_id}>"), config.GAMEPLAY_CHANNEL)
+            self.interface.send_action_text_to_channel("after_reborn_text", config.GAMEPLAY_CHANNEL, user=f"<@{self.player_id}>")
         )
 
     def get_protected(self):
@@ -65,8 +62,9 @@ class Character:
     async def create_personal_channel(self):
         await self.interface.create_channel(self.channel_name)
         await self.interface.add_user_to_channel(self.player_id, self.channel_name, is_read=True, is_send=True)
-        await self.interface.send_text_to_channel(
-            f"Chào mừng <@{self.player_id}> tham gia game!\nVai của bạn là {self.__class__.__name__}", self.channel_name
+        await self.interface.send_action_text_to_channel(
+            "personal_channel_welcome_text", self.channel_name,
+            player_id=self.player_id, player_role=self.__class__.__name__
         )
         print("Created channel", self.channel_name)
 

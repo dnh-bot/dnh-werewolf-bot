@@ -1,5 +1,4 @@
 from game.roles.villager import Villager
-from game.text_template import *
 
 
 class Witch(Villager):
@@ -26,5 +25,5 @@ class Witch(Villager):
         pass
 
     async def on_action(self, embed_data):
-        await self.interface.send_text_to_channel(generate_before_voting_witch(), self.channel_name)
+        await self.interface.send_action_text_to_channel("witch_before_voting_text", self.channel_name)
         await self.interface.send_embed_to_channel(embed_data, self.channel_name)

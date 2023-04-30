@@ -1,5 +1,4 @@
 from game.roles.villager import Villager
-from game.text_template import *
 
 
 class Guard(Villager):
@@ -17,7 +16,7 @@ class Guard(Villager):
             self.yesterday_target = None
 
     async def on_action(self, embed_data):
-        await self.interface.send_text_to_channel(generate_before_voting_guard(), self.channel_name)
+        await self.interface.send_action_text_to_channel("guard_before_voting_text", self.channel_name)
         await self.interface.send_embed_to_channel(embed_data, self.channel_name)
 
     def is_yesterday_target(self, target_id):
