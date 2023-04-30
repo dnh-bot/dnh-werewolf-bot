@@ -1,0 +1,178 @@
+{
+  "no_event": {
+    "title": {
+      "vi": "Không có sự kiện nào",
+      "en": "Nothing"
+    },
+    "description": {
+      "vi": "Không có sự kiện nào",
+      "en": "No special event"
+    },
+    "rate": 0
+  },
+  "heads_or_tails": {
+    "title": {
+      "vi": "Sấp ngửa",
+      "en": "Heads or Tails"
+    },
+    "description": {
+      "vi": "Người bị vote treo cổ sẽ tung đồng xu: nếu là mặt ngửa thì sẽ sống",
+      "en": "The person who gets hanged will toss a coin: if it's heads, they will be alive"
+    },
+    "rate": 1
+  },
+  "somnambulism": {
+    "title": {
+      "vi": "Mộng du",
+      "en": "Somnambulism"
+    },
+    "description": {
+      "vi": "Tiên tri soi ai thì quản trò sẽ la lớn chức năng người được coi.",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "dissatisfaction": {
+    "title": {
+      "vi": "Sự không hài lòng",
+      "en": "Dissatisfaction"
+    },
+    "description": {
+      "vi": "nếu không loại đúng sói, dân làng được quyền loại bỏ thêm 1 người",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "enthusiasm": {
+    "title": {
+      "vi": "Nhiệt tình",
+      "en": "Enthusiasm"
+    },
+    "description": {
+      "vi": "nếu loại bỏ đúng sói, thì đươc loại bỏ thêm 1 người",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "miracle": {
+    "title": {
+      "vi": "Phép màu",
+      "en": "Miracle"
+    },
+    "description": {
+      "vi": "nếu đêm đó bị sói cắn thì chỉ mất hết chức năng chứ không chết",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "april_fools": {
+    "title": {
+      "vi": "Cá tháng tư",
+      "en": "April Fools"
+    },
+    "description": {
+      "vi": "vai trò của tất cả người chơi sẽ xáo trộn lẫn nhau",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "punishment": {
+    "title": {
+      "vi": "Trừng phạt",
+      "en": "Punishment"
+    },
+    "description": {
+      "vi": "những người bị giết có thể vote 1 người để treo cố",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "spiritualism": {
+    "title": {
+      "vi": "Triệu hồn",
+      "en": "Spiritualism"
+    },
+    "description": {
+      "vi": "được gọi 1 người chết và hỏi 1 câu bất kỳ",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "halloween": {
+    "title": {
+      "vi": "Halloween",
+      "en": "Halloween"
+    },
+    "description": {
+      "vi": "những người bị giết trở lại và có thể thực hiện chức năng bình thường",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "back_fire": {
+    "title": {
+      "vi": "BackFire",
+      "en": "BackFire"
+    },
+    "description": {
+      "vi": "đến đêm, nếu sói cắn trúng 1 người dân thường thì người này sẽ biến thành sói, ngược lại, nếu là người có chức năng thì 1 sói ngẫu nhiên sẽ bị chết",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "full_moon_rising": {
+    "title": {
+      "vi": "Trăng tròn",
+      "en": "Full Moon Rising"
+    },
+    "description": {
+      "vi": "Đến đêm, sói có thể soi 1 người để biết chức năng của người đó",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "gathering": {
+    "title": {
+      "vi": "Thu hoạch",
+      "en": "Gathering"
+    },
+    "description": {
+      "vi": "một nửa người chơi ngẫu nhiên sẽ ra khỏi làng để thu thập gỗ hoặc thức ăn, và không thể chat hay vote trong ngày hôm đó",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "flooding": {
+    "title": {
+      "vi": "Lũ lụt",
+      "en": "Flooding"
+    },
+    "description": {
+      "vi": "tất cả mọi người đi trú ẩn, chỉ có thể thảo luận chứ không thể vote để treo cổ ai cả",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "great_distrust": {
+    "title": {
+      "vi": "Không tin tưởng",
+      "en": "Great Distrust"
+    },
+    "description": {
+      "vi": "1 người sẽ chọn ra 2 người mình tin tưởng nhất, nếu đến cuối ngày, người nào không có ai tin tưởng sẽ bị chết",
+      "en": ""
+    },
+    "rate": 0
+  },
+  "nor_me_nor_wolf": {
+    "title": {
+      "vi": "Không phải tôi, không phải sói",
+      "en": "Nor Me, Nor Wolf"
+    },
+    "description": {
+      "vi": "trong ngày hôm đó, bất kỳ ai đề cập tới tôi, mình, sói hoặc từ chỉ bản thân sẽ không được vote",
+      "en": ""
+    },
+    "rate": 0
+  }
+}

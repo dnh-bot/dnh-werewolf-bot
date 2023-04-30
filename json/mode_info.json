@@ -33,15 +33,6 @@
     "title": {
       "vi": "Sự kiện New moon",
       "en": "New moon event"
-    },
-    "events": {
-      "no_event": {
-        "title": {
-          "vi": "Không có sự kiện nào",
-          "en": "No special event"
-        },
-        "rate": 1
-      }
     }
   }
 }
