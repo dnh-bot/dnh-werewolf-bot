@@ -8,7 +8,7 @@ class ConsoleInterface:
         self.guild = guild  # Unused
 
     async def send_action_text_to_channel(self, action, channel_name, **kwargs):
-        self.send_text_to_channel(text_templates.generate_text(action, **kwargs), channel_name)
+        await self.send_text_to_channel(text_templates.generate_text(action, **kwargs), channel_name)
         return True
 
     async def send_text_to_channel(self, msg, channel_name):
