@@ -7,6 +7,10 @@ class ConsoleInterface:
     def __init__(self, guild=None):
         self.guild = guild  # Unused
 
+    async def send_action_text_to_channel(self, action, channel_name, **kwargs):
+        self.send_text_to_channel(text_templates.generate_text(action, **kwargs), channel_name)
+        return True
+
     async def send_text_to_channel(self, msg, channel_name):
         print(f"#{channel_name}: {msg}")
         return True
