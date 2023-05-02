@@ -44,6 +44,11 @@ async def parse_command(client, game, message):
             await admin.send_embed_to_channel(
                 message.guild, text_template.generate_help_embed(*parameters), message.channel.name, False
             )
+        elif cmd == "list":
+            if game.is_started():
+                await message.reply(game.get_role_list())  # prevent bug of name's or tag's type
+            else:
+                await message.reply("Game has not started yet")  # prevent bug of name's or tag's type
         elif cmd == "version":
             tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
             name = os.getenv("BOT_NAME")

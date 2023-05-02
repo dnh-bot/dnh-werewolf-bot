@@ -138,6 +138,12 @@ class Game:
             interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
         print("Player list:", r)
         return r
+    
+    def get_role_list(self):
+        role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
+        if not self.modes.get("hidden_role"):
+            return text_templates.generate_text("role_list_text", roles_data=role_list)
+        return "Warning: hidden_role is ON. Cannot show list"
 
     async def start(self, init_players=None):
         if self.is_stopped and self.game_phase == GamePhase.NEW_GAME:
@@ -152,13 +158,13 @@ class Game:
             else:
                 self.players = init_players
 
-            role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
+            
 
             await self.create_channel()
             await self.interface.send_text_to_channel(text_template.generate_modes(dict(zip(self.modes, map(lambda x: "True", self.modes.values())))), config.GAMEPLAY_CHANNEL)
 
             if not self.modes.get("hidden_role"):
-                await self.interface.send_action_text_to_channel("role_list_text", config.GAMEPLAY_CHANNEL, roles_data=role_list)
+                await self.interface.send_text_to_channel(self.get_role_list(), config.GAMEPLAY_CHANNEL)
 
             self.start_time = datetime.datetime.now()
 

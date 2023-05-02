@@ -183,5 +183,13 @@
     },
     "exclusive_roles": ["Cupid"],
     "required_params": ["player_id1", "player_id2"]
+  },
+  "list": {
+    "description": {
+      "vi": "Hiển thị các nhân vật trong game hiện tại.",
+      "en": "List all roles in current game."
+    },
+    "exclusive_roles": [],
+    "required_params": []
   }
 }
