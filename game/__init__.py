@@ -8,7 +8,7 @@ import random
 import time
 import json
 from enum import Enum
-from collections import Counter
+from collections import Counter, defaultdict
 from functools import reduce
 import traceback
 import asyncio
@@ -70,6 +70,7 @@ class Game:
         self.winner = None
         self.runtime_roles = None
         self.prev_playtime = self.is_in_play_time()
+        self.auto_hook = defaultdict(list)
 
     def get_winner(self):
         if self.winner is None:
@@ -138,7 +139,7 @@ class Game:
             interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
         print("Player list:", r)
         return r
-    
+
     def get_role_list(self):
         role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
         if not self.modes.get("hidden_role"):
@@ -158,7 +159,7 @@ class Game:
             else:
                 self.players = init_players
 
-            
+
 
             await self.create_channel()
             await self.interface.send_text_to_channel(text_template.generate_modes(dict(zip(self.modes, map(lambda x: "True", self.modes.values())))), config.GAMEPLAY_CHANNEL)
@@ -757,6 +758,8 @@ class Game:
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")
             else:
                 return await self.ship(author, *targets[:2])
+        elif cmd == "auto":
+            return await self.register_auto(author, *target[:2])
 
     async def vote(self, author, target):
         author_id = author.player_id
@@ -914,6 +917,74 @@ class Game:
         await self.interface.send_action_text_to_channel("couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{target1_id}>", user2=f"<@{target2_id}>")
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
+
+    async def register_auto(self, author, subcmd):
+        def check(pred):
+            def wrapper(f):
+                def execute(*a, **kw):
+                    if pred():
+                        return f(*a, **kw)
+                return execute
+            return wrapper
+
+        def is_night():
+            return self.game_phase == GamePhase.NIGHT
+
+        def is_day():
+            return self.game_phase == GamePhase.DAY
+
+        def has_role(role):
+            return lambda: isinstance(author, role)
+
+        def is_alive():
+            return author.is_alive()
+
+        @check(is_alive)
+        @check(is_night)
+        @check(has_role(roles.Werewolf))
+        def auto_kill():
+            target = random.choice(self.get_alive_players())
+            self.kill(author, target)
+
+        @check(is_alive)
+        @check(is_night)
+        @check(has_role(roles.Guard))
+        def auto_guard():
+            target = random.choice(self.get_alive_players())
+            self.guard(author, target)
+
+        @check(is_alive)
+        @check(is_night)
+        @check(has_role(roles.Seer))
+        def auto_seer():
+            target = random.choice(self.get_alive_players())
+            if author.player_id in self.cupid_dict:
+                while target.player_id in  self.cupid_dict:
+                    target = random.choice(self.get_alive_players())
+            self.seer(author, target)
+
+        @check(is_alive)
+        @check(is_day)
+        def auto_vote():
+            target = random.choice(self.get_alive_players())
+            while target.player_id == author.player_id:
+                target = random.choice(self.get_alive_players())
+            self.vote(author, target)
+
+        if subcmd == "off":
+            self.auto_hook[author] = []
+        elif subcmd == "seer":
+            self.auto_hook[author].append(auto_seer)
+        elif subcmd == "guard":
+            self.auto_hook[author].append(auto_guard)
+        elif subcmd == "kill":
+            self.auto_hook[author].append(auto_kill)
+        elif subcmd == "vote":
+            self.auto_hook[author].append(auto_vote)
+
+
+    def do_run_auto_hook(self):
+        list(f() for k in self.auto_hook for f in self.auto_hook[k])
 
     async def test_game(self):
         print("====== Begin test game =====")
