@@ -948,16 +948,6 @@ class Game:
 
         @check(is_alive)
         @check(is_night)
-        @check(has_role(roles.Werewolf))
-        async def auto_kill():
-            target = random.choice(self.get_alive_players())
-            while isinstance(target, roles.Werewolf):
-                target = random.choice(self.get_alive_players())
-            msg = await self.kill(author, target)
-            await self.interface.send_text_to_channel("[Auto] " + msg, config.WEREWOLF_CHANNEL)
-
-        @check(is_alive)
-        @check(is_night)
         @check(has_role(roles.Guard))
         async def auto_guard():
             target = random.choice(self.get_alive_players())
@@ -975,15 +965,6 @@ class Game:
             msg = await self.seer(author, target)
             await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
 
-        @check(is_alive)
-        @check(is_day)
-        async def auto_vote():
-            target = random.choice(self.get_alive_players())
-            while target.player_id == author.player_id:
-                target = random.choice(self.get_alive_players())
-            msg = await self.vote(author, target)
-            await self.interface.send_text_to_channel("[Auto] " + msg, config.GAMEPLAY_CHANNEL)
-
         if subcmd == "off":
             self.auto_hook[author] = []
             return "Clear auto successed"
@@ -999,15 +980,6 @@ class Game:
                 return "Register auto guard success"
             else:
                 return "You are not a guard"
-        elif subcmd == "kill":
-            if has_role(roles.Werewolf)():
-                self.auto_hook[author].append(auto_kill)
-                return "Register auto kill success"
-            else:
-                return "You are not a wolf"
-        elif subcmd == "vote":
-            self.auto_hook[author].append(auto_vote)
-            return "Register auto vote success"
         else:
             return "Unknown auto command, please try again"
 
