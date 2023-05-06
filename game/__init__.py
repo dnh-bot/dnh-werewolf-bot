@@ -509,6 +509,7 @@ class Game:
             await self.stop()
 
     async def do_end_daytime_phase(self):
+        await self.do_run_auto_hook()
         print("do_end_daytime_phase")
         if self.voter_dict:
             lynched, votes = Game.get_top_voted(list(self.voter_dict.values()))
@@ -564,6 +565,7 @@ class Game:
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])
 
     async def do_end_nighttime_phase(self):
+        await self.do_run_auto_hook()
         print("do_end_nighttime_phase")
         kills = None
         if self.wolf_kill_dict:
@@ -729,6 +731,10 @@ class Game:
             if cmd != "zombie":  # Zombie can use skill after death
                 return text_templates.generate_text("invalid_alive_author_text")
 
+        if cmd == "auto":
+            return await self.register_auto(author, *targets_id)
+
+
         targets = []
         for target_id in targets_id:
             target = self.players.get(target_id)
@@ -758,8 +764,6 @@ class Game:
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")
             else:
                 return await self.ship(author, *targets[:2])
-        elif cmd == "auto":
-            return await self.register_auto(author, *target[:2])
 
     async def vote(self, author, target):
         author_id = author.player_id
@@ -921,9 +925,12 @@ class Game:
     async def register_auto(self, author, subcmd):
         def check(pred):
             def wrapper(f):
-                def execute(*a, **kw):
+                async def execute(*a, **kw):
                     if pred():
-                        return f(*a, **kw)
+                        print("Check success")
+                        return await f(*a, **kw)
+                    else:
+                        print("Check failed")
                 return execute
             return wrapper
 
@@ -942,49 +949,71 @@ class Game:
         @check(is_alive)
         @check(is_night)
         @check(has_role(roles.Werewolf))
-        def auto_kill():
+        async def auto_kill():
             target = random.choice(self.get_alive_players())
-            self.kill(author, target)
+            while isinstance(target, roles.Werewolf):
+                target = random.choice(self.get_alive_players())
+            msg = await self.kill(author, target)
+            await self.interface.send_text_to_channel("[Auto] " + msg, config.WEREWOLF_CHANNEL)
 
         @check(is_alive)
         @check(is_night)
         @check(has_role(roles.Guard))
-        def auto_guard():
+        async def auto_guard():
             target = random.choice(self.get_alive_players())
-            self.guard(author, target)
+            msg = await self.guard(author, target)
+            await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
 
         @check(is_alive)
         @check(is_night)
         @check(has_role(roles.Seer))
-        def auto_seer():
+        async def auto_seer():
             target = random.choice(self.get_alive_players())
             if author.player_id in self.cupid_dict:
                 while target.player_id in  self.cupid_dict:
                     target = random.choice(self.get_alive_players())
-            self.seer(author, target)
+            msg = await self.seer(author, target)
+            await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
 
         @check(is_alive)
         @check(is_day)
-        def auto_vote():
+        async def auto_vote():
             target = random.choice(self.get_alive_players())
             while target.player_id == author.player_id:
                 target = random.choice(self.get_alive_players())
-            self.vote(author, target)
+            msg = await self.vote(author, target)
+            await self.interface.send_text_to_channel("[Auto] " + msg, config.GAMEPLAY_CHANNEL)
 
         if subcmd == "off":
             self.auto_hook[author] = []
+            return "Clear auto successed"
         elif subcmd == "seer":
-            self.auto_hook[author].append(auto_seer)
+            if has_role(roles.Seer)():
+                self.auto_hook[author].append(auto_seer)
+                return "Register auto seer success"
+            else:
+                return "You are not a seer"
         elif subcmd == "guard":
-            self.auto_hook[author].append(auto_guard)
+            if has_role(roles.Guard)():
+                self.auto_hook[author].append(auto_guard)
+                return "Register auto guard success"
+            else:
+                return "You are not a guard"
         elif subcmd == "kill":
-            self.auto_hook[author].append(auto_kill)
+            if has_role(roles.Werewolf)():
+                self.auto_hook[author].append(auto_kill)
+                return "Register auto kill success"
+            else:
+                return "You are not a wolf"
         elif subcmd == "vote":
             self.auto_hook[author].append(auto_vote)
+            return "Register auto vote success"
+        else:
+            return "Unknown auto command, please try again"
 
-
-    def do_run_auto_hook(self):
-        list(f() for k in self.auto_hook for f in self.auto_hook[k])
+    async def do_run_auto_hook(self):
+        print("do_run_auto_hook")
+        await asyncio.gather(*[f() for k in self.auto_hook for f in self.auto_hook[k]])
 
     async def test_game(self):
         print("====== Begin test game =====")
