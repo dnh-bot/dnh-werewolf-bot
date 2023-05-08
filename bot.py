@@ -45,7 +45,8 @@ game_list = GameList()
 @client.event
 async def on_ready():
     """ Log ready message, check server roles/channels setup """
-    print("=========================BOT STARTUP=========================")
+    startup_msg = "=========================BOT STARTUP========================="
+    print(startup_msg)
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id)
         await admin.create_category(guild, client.user, config.GAME_CATEGORY)  # Create GAME_CATEGORY if not existing
@@ -54,7 +55,9 @@ async def on_ready():
         await admin.create_channel(guild, client.user, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
         # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
         game_list.add_game(guild.id, Game(guild, interface.DiscordInterface(guild, client)))
-        await admin.send_text_to_channel(guild, "Bot started up", config.LOBBY_CHANNEL)
+
+        await admin.send_text_to_channel(guild, startup_msg, config.LOBBY_CHANNEL)
+        await admin.send_text_to_channel(guild, startup_msg, config.GAMEPLAY_CHANNEL)
 
     """ Uncomment to run test """
     server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
