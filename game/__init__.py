@@ -8,7 +8,7 @@ import random
 import time
 import json
 from enum import Enum
-from collections import Counter
+from collections import Counter, defaultdict
 from functools import reduce
 import traceback
 import asyncio
@@ -70,6 +70,7 @@ class Game:
         self.winner = None
         self.runtime_roles = None
         self.prev_playtime = self.is_in_play_time()
+        self.auto_hook = defaultdict(list)
 
     def get_winner(self):
         if self.winner is None:
@@ -138,7 +139,7 @@ class Game:
             interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
         print("Player list:", r)
         return r
-    
+
     def get_role_list(self):
         role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
         if not self.modes.get("hidden_role"):
@@ -158,7 +159,7 @@ class Game:
             else:
                 self.players = init_players
 
-            
+
 
             await self.create_channel()
             await self.interface.send_text_to_channel(text_template.generate_modes(dict(zip(self.modes, map(lambda x: "True", self.modes.values())))), config.GAMEPLAY_CHANNEL)
@@ -508,6 +509,7 @@ class Game:
             await self.stop()
 
     async def do_end_daytime_phase(self):
+        await self.do_run_auto_hook()
         print("do_end_daytime_phase")
         if self.voter_dict:
             lynched, votes = Game.get_top_voted(list(self.voter_dict.values()))
@@ -563,6 +565,7 @@ class Game:
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])
 
     async def do_end_nighttime_phase(self):
+        await self.do_run_auto_hook()
         print("do_end_nighttime_phase")
         kills = None
         if self.wolf_kill_dict:
@@ -727,6 +730,10 @@ class Game:
         if author is None or not author.is_alive():
             if cmd != "zombie":  # Zombie can use skill after death
                 return text_templates.generate_text("invalid_alive_author_text")
+
+        if cmd == "auto":
+            return await self.register_auto(author, *targets_id)
+
 
         targets = []
         for target_id in targets_id:
@@ -914,6 +921,71 @@ class Game:
         await self.interface.send_action_text_to_channel("couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{target1_id}>", user2=f"<@{target2_id}>")
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
+
+    async def register_auto(self, author, subcmd):
+        def check(pred):
+            def wrapper(f):
+                async def execute(*a, **kw):
+                    if pred():
+                        print("Check success")
+                        return await f(*a, **kw)
+                    else:
+                        print("Check failed")
+                return execute
+            return wrapper
+
+        def is_night():
+            return self.game_phase == GamePhase.NIGHT
+
+        def is_day():
+            return self.game_phase == GamePhase.DAY
+
+        def has_role(role):
+            return lambda: isinstance(author, role)
+
+        def is_alive():
+            return author.is_alive()
+
+        @check(is_alive)
+        @check(is_night)
+        @check(has_role(roles.Guard))
+        async def auto_guard():
+            target = random.choice(self.get_alive_players())
+            msg = await self.guard(author, target)
+            await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
+
+        @check(is_alive)
+        @check(is_night)
+        @check(has_role(roles.Seer))
+        async def auto_seer():
+            target = random.choice(self.get_alive_players())
+            if author.player_id in self.cupid_dict:
+                while target.player_id in  self.cupid_dict:
+                    target = random.choice(self.get_alive_players())
+            msg = await self.seer(author, target)
+            await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
+
+        if subcmd == "off":
+            self.auto_hook[author] = []
+            return "Clear auto successed"
+        elif subcmd == "seer":
+            if has_role(roles.Seer)():
+                self.auto_hook[author].append(auto_seer)
+                return "Register auto seer success"
+            else:
+                return "You are not a seer"
+        elif subcmd == "guard":
+            if has_role(roles.Guard)():
+                self.auto_hook[author].append(auto_guard)
+                return "Register auto guard success"
+            else:
+                return "You are not a guard"
+        else:
+            return "Unknown auto command, please try again"
+
+    async def do_run_auto_hook(self):
+        print("do_run_auto_hook")
+        await asyncio.gather(*[f() for k in self.auto_hook for f in self.auto_hook[k]])
 
     async def test_game(self):
         print("====== Begin test game =====")
