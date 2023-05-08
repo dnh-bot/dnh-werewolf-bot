@@ -44,6 +44,11 @@ async def parse_command(client, game, message):
             await admin.send_embed_to_channel(
                 message.guild, text_template.generate_help_embed(*parameters), message.channel.name, False
             )
+        elif cmd == "list":
+            if game.is_started():
+                await message.reply(game.get_role_list())  # prevent bug of name's or tag's type
+            else:
+                await message.reply("Game has not started yet")  # prevent bug of name's or tag's type
         elif cmd == "version":
             tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
             name = os.getenv("BOT_NAME")
@@ -63,7 +68,7 @@ async def parse_command(client, game, message):
         elif cmd == "stopgame":
             await player.do_stop(game, message, force=False)
 
-        elif cmd in ("vote", "kill", "guard", "seer", "reborn", "curse", "zombie", "ship"):
+        elif cmd in ("vote", "kill", "guard", "seer", "reborn", "curse", "zombie", "ship", "auto"):
             if not game.is_started():
                 # prevent user uses command before game starts
                 await message.reply(text_templates.generate_text("game_not_started_text"))
@@ -76,14 +81,18 @@ async def parse_command(client, game, message):
             is_valid_channel = \
                 (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
                 (cmd == "kill" and message.channel.name == config.WEREWOLF_CHANNEL) or\
-                (cmd in ("guard", "seer", "reborn", "curse", "zombie", "ship")
+                (cmd in ("guard", "seer", "reborn", "curse", "zombie", "ship", "auto")
                  and message.channel.name.strip().startswith("personal"))
 
             if is_valid_channel:
                 author = message.author
                 required_param_number = len(commands.get_command_required_params(cmd))
 
-                if len(message.raw_mentions) == required_param_number:
+                if cmd == "auto":
+                    msg = await game.do_player_action(cmd, author.id, *parameters)
+                    await message.reply(msg)
+
+                elif len(message.raw_mentions) == required_param_number:
                     msg = await game.do_player_action(cmd, author.id, *message.raw_mentions)
                     await message.reply(msg)
 
@@ -140,7 +149,7 @@ async def parse_command(client, game, message):
                 await admin.send_embed_to_channel(message.channel.guild, embed_data, message.channel.name)
 
         elif cmd == "timer":
-            """ Usage: 
+            """ Usage:
                 `!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
             """
             if len(parameters) < 3:
