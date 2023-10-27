@@ -11,7 +11,7 @@ Please note that this repo use Python 3.9 features, so it cannot run on python3.
 
 Install dependency packages:
 ```
-python3.9 -m pip install -r requirement.txt
+python3.9 -m pip install -r requirements.txt
 ```
 
 It's also possible to use `pyenv` if you want to install this independently.  
@@ -40,6 +40,9 @@ Right Click to copy ServerID:
 ## Create and add Bot to Discord server
 Follow guide to create a new Discord bot and how to add it into your Discord server: https://discordpy.readthedocs.io/en/stable/discord.html
 
+Note: You may need Priviledged Gateway Intents permissions to get the bot work properly due to Discord bug
+![Alt text](docs/DiscordCreateBot1.png)
+
 ## Run bot
 Simply run:
 ```python
@@ -51,7 +54,7 @@ The bot should connect to your Discord server and online:
 
 
 ## Create Admin and Members roles
-You MUST create these `Admin` role and `Members` role to play the game. 
+You MUST create these `Admin` role and `Members` role to play the game.
 
 - Admin role: 
     - User with Admin role can use super command to control the bot. The super commands start with prefix `f`. Eg: `fjoin`, `fcreate`, `fdelete`.
@@ -60,7 +63,7 @@ You can see list of available commands in [label](commands/command.py) or [label
     - Admin role can view all game channels including private and public channels.
 - Members role: Only user with Members role can join and play a game. You MUST assign this role to users who you allow them to play. This task only needs to be done once every user.
 
-Note that you do not need to them Admin and Members any permission. The bot will provide proper permission for them under GAME_CATEGORY.
+Note that you do not need to provide Admin and Members any permission. The bot will provide proper permission for them under GAME_CATEGORY.
 
 Follow this guide to create and assign roles: https://www.howtogeek.com/809671/how-to-add-assign-roles-discord/
 
@@ -169,6 +172,7 @@ Tips: you can reduce the DELAY_TIME for faster run
 It's open source and free to use Discord bot.
 
 Don't hesitate to contact us for guiding setup.
+Discord chat group: https://discordapp.com/invite/jHwsRAN
 
 # Known issue
 
