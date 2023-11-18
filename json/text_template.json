@@ -32,6 +32,10 @@
     "night_phase": {
       "vi": "ban đêm",
       "en": "night phase"
+    },
+    "end_of_day": {
+      "vi": "hết ngày",
+      "en": "end of day"
     }
   },
   "LABEL": {
@@ -618,7 +622,7 @@
     "params": [],
     "template": {
       "en": ["Sorry. You cannot use power in couple random enable mode."],
-      "vi": ["Bạn không được ghép đôi 2 người vì máy đã random couple rồi."]
+      "vi": ["Bạn không được ghép đôi 2 người này vì bot đã ghép cặp khác rồi."]
     }
   },
   "game_started_text": {
@@ -948,13 +952,6 @@
     "template": {
       "vi": ["cả ngày"],
       "en": ["a whole day"]
-    }
-  },
-  "time_range_end_of_day_text": {
-    "params": ["start_time", "end_time", "zone"],
-    "template": {
-      "vi": ["từ {start_time} đến hết ngày (giờ {zone})"],
-      "en": ["from {start_time} to end of day (time {zone})"]
     }
   },
   "time_range_start_le_end_text": {

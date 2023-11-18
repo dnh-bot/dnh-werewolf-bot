@@ -216,7 +216,8 @@ def time_range_to_string(start_time, end_time, zone):
     if start_time == end_time:
         template_name = "time_range_whole_day_text"
     elif str(end_time) == "00:00:00":
-        template_name = "time_range_end_of_day_text"
+        end_time = text_templates.get_word_in_language("end_of_day")
+        template_name = "time_range_start_le_end_text"
     elif start_time < end_time:
         template_name = "time_range_start_le_end_text"
     else:

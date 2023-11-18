@@ -209,7 +209,7 @@ class Game:
                 *[player.delete_personal_channel() for player in self.players.values()]
             )
         except Exception as e:
-            print(e)
+            print("delete_channel", traceback.format_exc())
 
     async def add_player(self, id_, player_name):
         if id_ in self.players:
@@ -729,7 +729,7 @@ class Game:
         author = self.players.get(author_id)
         if author is None or not author.is_alive():
             if cmd != "zombie":  # Zombie can use skill after death
-                return text_templates.generate_text("invalid_alive_author_text")
+                return text_templates.generate_text("invalid_alive_author_text", cmd=cmd)
 
         if cmd == "auto":
             return await self.register_auto(author, *targets_id)
