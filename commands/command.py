@@ -1,3 +1,5 @@
+import traceback
+
 from commands import admin, player
 import commands
 import config
@@ -254,7 +256,7 @@ async def parse_command(client, game, message):
                         await admin.delete_all_personal_channel(message.guild)
                         await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
                     except Exception as e:
-                        print(e)
+                        print(cmd, traceback.format_exc())
                 elif cmd == "fdebug":
                     # print(asyncio.all_tasks())
                     exec(" ".join(parameters))
@@ -286,7 +288,7 @@ async def parse_command(client, game, message):
                             await admin.delete_channel(message.guild, client.user, config.LOBBY_CHANNEL)
                             await admin.delete_category(message.guild, client.user)
                     except Exception as e:
-                        print(e)
+                        print(cmd, traceback.format_exc())
                 else:
                     await message.reply("Missing @bot_name")
         else:  # No need to reply because there are many bots
