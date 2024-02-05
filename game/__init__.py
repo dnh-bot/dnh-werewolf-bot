@@ -101,9 +101,8 @@ class Game:
                 self.modes[k] = True
 
         #Backward compatible
-        if "allow_guard_self_protection" not in self.modes:
-            self.modes["allow_guard_self_protection"] = !self.modes["prevent_guard_self_protection"]
-            del self.modes["prevent_guard_self_protection"]
+        if "allow_guard_self_protection" not in self.modes and "prevent_guard_self_protection" in self.modes:
+            self.modes["allow_guard_self_protection"] = not self.modes["prevent_guard_self_protection"]
             print("prevent_guard_self_protection is deprecated, please use allow_guard_self_protection in config file instead")
 
     def add_default_roles(self, role_json_in_string):
@@ -805,7 +804,7 @@ class Game:
         if author.get_mana() == 0:
             return text_templates.generate_text("out_of_mana_text")
 
-        if !self.modes.get("allow_guard_self_protection") and author_id == target_id:
+        if not self.modes.get("allow_guard_self_protection") and author_id == target_id:
             return text_templates.generate_text("invalid_guard_selfprotection_text")
         if author.is_yesterday_target(target_id):
             return text_templates.generate_text("invalid_guard_yesterdaytarget_text")
