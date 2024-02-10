@@ -44,7 +44,8 @@ class Game:
         self.play_time_start = datetime.time(0, 0, 0)  # in UTC
         self.play_time_end = datetime.time(0, 0, 0)  # in UTC
         self.play_zone = "UTC+7"
-        self.reset_game_state()  # Init other game variables every end game.
+        if not self.load_saved_game_state():
+            self.reset_game_state()  # Init other game variables every end game.
 
     def reset_game_state(self):
         print("reset_game_state")
@@ -77,24 +78,7 @@ class Game:
     def save_game_state(self):
         game_state = {}
 
-        if self.is_ended():
-            if 0:
-                game_state["players"] = []
-                game_state["watchers"] = []
-                game_state["game_phase"] = GamePhase.NEW_GAME.value
-                game_state["timer_phase"] = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
-                game_state["phase_time_left"] = 0
-                game_state["day"] = 0
-                game_state["couple"] = []
-                game_state["vote_start"] = []
-                game_state["vote_next"] = []
-                game_state["vote_stop"] = []
-
-                game_state["phase_command_targets"] = {
-                    "vote": {},
-                    "kill": {},
-                }
-        else:
+        if not self.is_ended():
             game_state["players"] = [repr(p) for p in self.players.values()]
             game_state["watchers"] = list(self.watchers)
             game_state["game_phase"] = self.game_phase.value
@@ -112,17 +96,13 @@ class Game:
             }
 
         try:
-            with open("saved_game.json", "r+", encoding="utf8") as f:
-                print(f"successfully loaded saved_game.json")
-                f.seek(0)
+            with open("saved_game.json", "w", encoding="utf8") as f:
                 json.dump(game_state, f, indent=4)
-                f.truncate()
                 print(f"successfully saved game into saved_game.json")
                 return True
         except Exception as e:
             print("update saved_game.json failed.", e)
             return False
-
 
     def load_saved_game_state(self):
         # TODO: apply this function to somewhere
@@ -147,7 +127,7 @@ class Game:
             self.voter_dict = game_state["phase_command_targets"]["vote"]
             self.wolf_kill_dict = game_state["phase_command_targets"]["kill"]
 
-            return True
+            return False  # TODO: restore to 'return True'
 
         return False
 
