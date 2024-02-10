@@ -1,12 +1,12 @@
+from game.roles.character import CharacterStatus
 from game.roles.villager import Villager
-from enum import Enum
 
 
 class Zombie(Villager):
     # Zombie can reborn himself 1 time in a game.
 
-    def __init__(self, interface, player_id, player_name):
-        super().__init__(interface, player_id, player_name)
+    def __init__(self, interface, player_id, player_name, status=CharacterStatus.ALIVE):
+        super().__init__(interface, player_id, player_name, status)
         self.power = 1
 
     def get_power(self):

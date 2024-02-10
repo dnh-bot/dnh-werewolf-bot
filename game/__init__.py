@@ -14,6 +14,8 @@ import traceback
 import asyncio
 import tzlocal
 
+from game.roles import create_from_str
+
 
 class GamePhase(Enum):
     NEW_GAME = 0
@@ -71,6 +73,83 @@ class Game:
         self.runtime_roles = None
         self.prev_playtime = self.is_in_play_time()
         self.auto_hook = defaultdict(list)
+
+    def save_game_state(self):
+        game_state = {}
+
+        if self.is_ended():
+            if 0:
+                game_state["players"] = []
+                game_state["watchers"] = []
+                game_state["game_phase"] = GamePhase.NEW_GAME.value
+                game_state["timer_phase"] = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
+                game_state["phase_time_left"] = 0
+                game_state["day"] = 0
+                game_state["couple"] = []
+                game_state["vote_start"] = []
+                game_state["vote_next"] = []
+                game_state["vote_stop"] = []
+
+                game_state["phase_command_targets"] = {
+                    "vote": {},
+                    "kill": {},
+                }
+        else:
+            game_state["players"] = [repr(p) for p in self.players.values()]
+            game_state["watchers"] = list(self.watchers)
+            game_state["game_phase"] = self.game_phase.value
+            game_state["timer_phase"] = self.timer_phase
+            game_state["phase_time_left"] = self.timecounter
+            game_state["day"] = self.day
+            game_state["couple"] = list(self.cupid_dict.keys())
+            game_state["vote_start"] = list(self.vote_start)
+            game_state["vote_next"] = list(self.vote_next)
+            game_state["vote_stop"] = list(self.vote_stop)
+
+            game_state["phase_command_targets"] = {
+                "vote": self.voter_dict,
+                "kill": self.wolf_kill_dict,
+            }
+
+        try:
+            with open("saved_game.json", "r+", encoding="utf8") as f:
+                print(f"successfully loaded saved_game.json")
+                f.seek(0)
+                json.dump(game_state, f, indent=4)
+                f.truncate()
+                print(f"successfully saved game into saved_game.json")
+                return True
+        except Exception as e:
+            print("update saved_game.json failed.", e)
+            return False
+
+
+    def load_saved_game_state(self):
+        # TODO: apply this function to somewhere
+        game_state = utils.common.read_json_file("saved_game.json")
+        if game_state:
+            self.players = {}
+            self.playersname = {}
+            for player_str in game_state["players"]:
+                player = create_from_str(self.interface, player_str)
+                self.players[player.player_id] = player
+                self.playersname[player.player_id] = player.player_name
+
+            self.watchers = set(game_state["watchers"])
+            self.game_phase = GamePhase(game_state["game_phase"])
+            self.timer_phase = game_state["timer_phase"]
+            self.timecounter = game_state["phase_time_left"]
+            self.day = game_state["day"]
+            self.cupid_dict = dict([tuple(game_state["couple"]), tuple(game_state["couple"][::-1])])
+            self.vote_start = set(game_state["vote_start"])
+            self.vote_next = set(game_state["vote_next"])
+            self.vote_stop = set(game_state["vote_stop"])
+            self.voter_dict = game_state["phase_command_targets"]["vote"]
+            self.wolf_kill_dict = game_state["phase_command_targets"]["kill"]
+
+            return True
+
+        return False
 
     def get_winner(self):
         if self.winner is None:
@@ -413,6 +492,7 @@ class Game:
                 print("After clear")
 
                 await self.end_phase()
+                self.save_game_state()
                 # End_phase
 
                 print("End phase")

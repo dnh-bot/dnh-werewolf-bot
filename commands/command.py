@@ -234,6 +234,11 @@ async def parse_command(client, game, message):
             res = game.set_mode(mode, on)
             await message.reply(res)
 
+        elif cmd == "restart":
+            game.save_game_state()
+            # TODO: do restart bot
+            await message.reply("Bot sẽ được khởi động lại.")
+
         elif cmd.startswith('f'):
             if admin.is_admin(message.author):
                 if cmd == "fjoin":

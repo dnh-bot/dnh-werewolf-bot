@@ -1,10 +1,12 @@
+from game.roles.character import CharacterStatus
 from game.roles.villager import Villager
 
 
 class Guard(Villager):
     # Guard is basic Villager with ability to protect one person each night
-    def __init__(self, interface, player_id, player_name):
-        super().__init__(interface, player_id, player_name)
+
+    def __init__(self, interface, player_id, player_name, status=CharacterStatus.ALIVE):
+        super().__init__(interface, player_id, player_name, status)
         self.yesterday_target = None
 
     async def on_night(self):

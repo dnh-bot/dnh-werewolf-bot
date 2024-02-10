@@ -1,9 +1,10 @@
+from game.roles.character import CharacterStatus
 from game.roles.villager import Villager
 
 
 class Cupid(Villager):
-    def __init__(self, interface, player_id, player_name):
-        super().__init__(interface, player_id, player_name)
+    def __init__(self, interface, player_id, player_name, status=CharacterStatus.ALIVE):
+        super().__init__(interface, player_id, player_name, status)
         self.power = 1
 
     def get_power(self):

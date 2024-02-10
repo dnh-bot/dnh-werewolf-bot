@@ -14,10 +14,10 @@ class CharacterStatus(Enum):
 
 
 class Character:
-    def __init__(self, interface, player_id, player_name):
+    def __init__(self, interface, player_id, player_name, status=CharacterStatus.ALIVE):
         self.interface = interface
         self.player_id = player_id
-        self.status = CharacterStatus.ALIVE
+        self.status = status
         self.player_name = player_name
         # channel_name MUST BE lowercase!
         player_name = player_name.replace("-", " ")
@@ -105,3 +105,6 @@ class Character:
     async def on_action(self, embed_data):
         # Will be overloaded in Child Class
         pass
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.player_id},{self.status.value})"
