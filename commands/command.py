@@ -136,10 +136,11 @@ async def parse_command(client, game, message):
                 status_description, remaining_time, vote_table, table_title, author_status = game.get_game_status(
                     message.channel.name, message.author.id
                 )
-                print(status_description, remaining_time, vote_table, text_template.generate_vote_field(vote_table), table_title, author_status)
+                # print(status_description, remaining_time, vote_table, text_template.generate_vote_field(vote_table), table_title, author_status)
                 embed_data = text_templates.generate_embed(
                     "game_status_with_table_embed",
                     [
+                        [str(game.day)],
                         [text_template.generate_timer_remaining_text(remaining_time)],
                         text_template.generate_vote_field(vote_table),
                         [author_status]
