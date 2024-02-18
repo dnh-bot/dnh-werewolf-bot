@@ -46,7 +46,7 @@ class Game:
         self.play_zone = "UTC+7"
         self.reset_game_state()  # Init other game variables every end game.
         if self.load_saved_game_state():
-            self.timer_enable = False
+            self.is_continued_from_saved_game = True
             print("successfully load saved game state")
 
     def reset_game_state(self):
@@ -77,6 +77,8 @@ class Game:
         self.prev_playtime = self.is_in_play_time()
         self.auto_hook = defaultdict(list)
 
+        self.start_phase = GamePhase.DAY
+        self.is_continued_from_saved_game = False
     def save_game_state(self):
         game_state = {}
 
@@ -118,7 +120,7 @@ class Game:
                 self.playersname[player.player_id] = player.player_name
 
             self.watchers = set(game_state["watchers"])
-            self.game_phase = GamePhase(game_state["game_phase"])
+            self.start_phase = GamePhase(game_state["game_phase"])
             self.timer_phase = game_state["timer_phase"]
             self.timecounter = game_state["phase_time_left"]
             self.day = game_state["day"]
@@ -130,7 +132,7 @@ class Game:
             self.voter_dict = game_state["phase_command_targets"]["vote"]
             self.wolf_kill_dict = game_state["phase_command_targets"]["kill"]
 
-            return True  # TODO: restore to 'return True'
+            return True
 
         return False
 
@@ -210,12 +212,14 @@ class Game:
 
     async def start(self, init_players=None):
         if self.is_stopped and self.game_phase == GamePhase.NEW_GAME:
-            self.game_phase = GamePhase.DAY
+            self.game_phase = self.start_phase
             self.is_stopped = False
             self.last_nextcmd_time = time.time()
             self.read_modes()  # Read json config mode into runtime dict
             await self.interface.send_action_text_to_channel("start_text", config.LOBBY_CHANNEL)
-            if not init_players:
+            if self.is_continued_from_saved_game:
+                pass
+            elif not init_players:
                 self.players = self.generate_roles(self.interface, list(self.players.keys()), self.playersname)
                 # Must use list(dict_keys) in python >= 3.3
             else:
@@ -450,7 +454,7 @@ class Game:
 
         await self.interface.send_text_to_channel(text_template.generate_play_time_text(self.play_time_start, self.play_time_end, self.play_zone), config.GAMEPLAY_CHANNEL)
 
-        if self.modes.get("couple_random"):
+        if not self.is_continued_from_saved_game and self.modes.get("couple_random"):
             random_cupid_couple = random.sample(self.get_alive_players(), 2)
             await self.ship(None, *random_cupid_couple)
 
@@ -725,9 +729,12 @@ class Game:
         try:
             self.timer_stopped = False
             daytime, nighttime, period = self.timer_phase
-            self.timecounter = daytime
-            if self.game_phase == GamePhase.NIGHT:
-                self.timecounter = nighttime
+            if self.is_continued_from_saved_game:
+                self.is_continued_from_saved_game = False
+            else:
+                self.timecounter = daytime
+                if self.game_phase == GamePhase.NIGHT:
+                    self.timecounter = nighttime
 
             while self.timecounter > 0:
                 await self.do_process_with_play_time()
