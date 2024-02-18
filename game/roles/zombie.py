@@ -21,3 +21,6 @@ class Zombie(Villager):
     async def on_action(self, embed_data):
         if not self.is_alive():
             await self.interface.send_action_text_to_channel("zombie_before_voting_text", self.channel_name)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.player_id},{self.status.value},power={self.power})"

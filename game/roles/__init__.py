@@ -61,12 +61,13 @@ def get_role_nighttime_commands(name):
 
 
 def create_from_str(interface, character_str):
-    matcher = re.findall("^(\w+)\((\d+), ?(\d+)\)$", character_str)
+    matcher = re.findall(r"^(\w+)\((\d+),(\d+)(.*)\)$", character_str)
     if not matcher:
         return None
 
-    role_name, player_id, status = matcher[0]
+    role_name, player_id, status, kwargs_str = matcher[0]
     role_cls = get_role_type(role_name)
     player_id = int(player_id)
     status = int(status)
-    return role_cls(interface, player_id, interface.get_user_display_name(player_id), CharacterStatus(status))
+    kwargs = re.findall(",(\w+)=(.+?)", kwargs_str)
+    return role_cls.new(interface, player_id, CharacterStatus(status), **dict(kwargs))

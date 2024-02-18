@@ -9,6 +9,16 @@ class Guard(Villager):
         super().__init__(interface, player_id, player_name, status)
         self.yesterday_target = None
 
+    @classmethod
+    def new(cls, interface, player_id, status, **kwargs):
+        obj = cls(interface, player_id, interface.get_user_display_name(player_id), status)
+        if "mana" in kwargs:
+            obj.mana = int(kwargs["mana"])
+        if "yesterday_target" in kwargs:
+            obj.set_guard_target(int(kwargs["yesterday_target"]))
+
+        return obj
+
     async def on_night(self):
         # Regain mana
         self.mana = 1
@@ -26,3 +36,6 @@ class Guard(Villager):
 
     def set_guard_target(self, target_id):
         self.yesterday_target = target_id
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.player_id},{self.status.value},mana={self.mana},yesterday_target={self.yesterday_target})"

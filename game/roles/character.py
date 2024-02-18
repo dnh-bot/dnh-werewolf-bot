@@ -26,6 +26,11 @@ class Character:
         self.channel_name = f"personal-{valid_channel_name}"
         self.mana = 0
 
+    @classmethod
+    def new(cls, interface, player_id, status, **kwargs):
+        obj = cls(interface, player_id, interface.get_user_display_name(player_id), status)
+        return obj
+
     def is_alive(self):
         return self.status != CharacterStatus.KILLED
 

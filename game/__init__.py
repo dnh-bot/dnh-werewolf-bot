@@ -44,8 +44,10 @@ class Game:
         self.play_time_start = datetime.time(0, 0, 0)  # in UTC
         self.play_time_end = datetime.time(0, 0, 0)  # in UTC
         self.play_zone = "UTC+7"
-        if not self.load_saved_game_state():
-            self.reset_game_state()  # Init other game variables every end game.
+        self.reset_game_state()  # Init other game variables every end game.
+        if self.load_saved_game_state():
+            self.timer_enable = False
+            print("successfully load saved game state")
 
     def reset_game_state(self):
         print("reset_game_state")
@@ -92,7 +94,7 @@ class Game:
 
             game_state["phase_command_targets"] = {
                 "vote": self.voter_dict,
-                "kill": self.wolf_kill_dict,
+                "kill": self.wolf_kill_dict
             }
 
         try:
@@ -120,14 +122,15 @@ class Game:
             self.timer_phase = game_state["timer_phase"]
             self.timecounter = game_state["phase_time_left"]
             self.day = game_state["day"]
-            self.cupid_dict = dict([tuple(game_state["couple"]), tuple(game_state["couple"][::-1])])
+            if game_state["couple"]:
+                self.cupid_dict = dict([tuple(game_state["couple"]), tuple(game_state["couple"][::-1])])
             self.vote_start = set(game_state["vote_start"])
             self.vote_next = set(game_state["vote_next"])
             self.vote_stop = set(game_state["vote_stop"])
             self.voter_dict = game_state["phase_command_targets"]["vote"]
             self.wolf_kill_dict = game_state["phase_command_targets"]["kill"]
 
-            return False  # TODO: restore to 'return True'
+            return True  # TODO: restore to 'return True'
 
         return False
 

@@ -11,14 +11,6 @@
   "vote_stop": [],
   "phase_command_targets": {
     "vote": {},
-    "kill": {},
-    "guard": [],
-    "seer": []
-  },
-  "power_usage": {
-    "reborn": "",
-    "curse": "",
-    "zombie": 0,
-    "ship": []
+    "kill": {}
   }
 }
