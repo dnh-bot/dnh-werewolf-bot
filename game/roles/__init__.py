@@ -68,6 +68,11 @@ def create_from_str(interface, character_str):
     role_name, player_id, status, kwargs_str = matcher[0]
     role_cls = get_role_type(role_name)
     player_id = int(player_id)
-    status = int(status)
-    kwargs = re.findall(",(\w+)=(.+?)", kwargs_str)
-    return role_cls.new(interface, player_id, CharacterStatus(status), **dict(kwargs))
+    status = CharacterStatus(int(status))
+    if kwargs_str:
+        data = re.split(r",(\w+)=", kwargs_str)[1:]
+        kwargs = dict(zip(data[0::2], data[1::2]))
+    else:
+        kwargs = {}
+
+    return role_cls.new(interface, player_id, status, **kwargs)

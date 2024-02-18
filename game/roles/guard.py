@@ -15,7 +15,7 @@ class Guard(Villager):
         if "mana" in kwargs:
             obj.mana = int(kwargs["mana"])
         if "yesterday_target" in kwargs:
-            obj.set_guard_target(int(kwargs["yesterday_target"]))
+            obj.set_guard_target(None if kwargs["yesterday_target"] == "None" else int(kwargs["yesterday_target"]))
 
         return obj
 
