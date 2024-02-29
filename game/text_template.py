@@ -185,14 +185,14 @@ def generate_modes(modes_dict):
     mode_list = [
         "hidden_role",
         "seer_can_kill_fox",
-        "prevent_guard_self_protection",
+        "allow_guard_self_protection",
         "witch_can_kill",
         "couple_random",
     ]
     title_list = [
         "Ẩn danh sách các nhân vật đầu game",
         "Tiên tri có thể giết Cáo",
-        "Không cho phép Bảo vệ bản thân",
+        "Cho phép Bảo vệ bản thân",
         "Phù thủy (Witch) có thể giết người",
         "Ghép cặp ngẫu nhiên",
     ]

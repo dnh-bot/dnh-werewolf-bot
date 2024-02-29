@@ -1,7 +1,7 @@
 {
     "hidden_role": "False",
     "seer_can_kill_fox": "True",
-    "prevent_guard_self_protection": "False",
+    "allow_guard_self_protection": "True",
     "witch_can_kill": "True",
     "couple_random": "False"
 }
