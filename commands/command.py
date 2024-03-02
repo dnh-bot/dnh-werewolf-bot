@@ -147,7 +147,10 @@ async def parse_command(client, game, message):
                     table_title=table_title
                 )
                 await admin.send_embed_to_channel(message.channel.guild, embed_data, message.channel.name)
-
+                
+                role_list = [game.get_role_list()]
+                players_embed_data = text_template.generate_player_list_embed(game.get_all_players(), None, role_list)
+                await admin.send_embed_to_channel(message.channel.guild, players_embed_data, message.channel.name)
         elif cmd == "timer":
             """ Usage:
                 `!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
@@ -280,8 +283,10 @@ async def parse_command(client, game, message):
                     try:
                         if user.id == client.user.id:
                             await admin.delete_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL)
+                            await admin.delete_channel(message.guild, client.user, config.LEADERBOARD_CHANNEL) #Comment this to keep the board
                             await admin.delete_channel(message.guild, client.user, config.WEREWOLF_CHANNEL)
                             await admin.delete_channel(message.guild, client.user, config.CEMETERY_CHANNEL)
+                            await admin.delete_channel(message.guild, client.user, config.COUPLE_CHANNEL)
                             await admin.delete_all_personal_channel(message.guild)
                             await admin.delete_channel(message.guild, client.user, config.LOBBY_CHANNEL)
                             await admin.delete_category(message.guild, client.user)

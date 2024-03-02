@@ -168,6 +168,20 @@ FINISH ALL TEST CASES SUCCESSFULLY
 
 Tips: you can reduce the DELAY_TIME for faster run
 
+# How to run bot on free deployment service
+
+As usual, free deployment services have certain limitations, typically after a period of inactivity, your bot may go to sleep and all data will be lost.
+
+To address this issue, please follow these steps:
+
+1. Install necessary packages in `web/requirements.txt`
+2. Use the `keep_alive()` function in `bot.py`. Now we have our website running together.
+3. Link your web URL to UptimeRobot (or anything related), please see below references.
+https://uptimerobot.com/
+https://dev.to/12944qwerty/hosting-a-discord-py-bot-with-repl-it-3l5a
+
+Explanation: Your bot will be alive because the monitoring services request(ping) every 5-10 minutes and keeps our website running up.
+
 # Contact
 It's open source and free to use Discord bot.
 

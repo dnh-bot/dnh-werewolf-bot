@@ -8,11 +8,33 @@ if not config.DISCORD_TOKEN:
     print("Use must setup DISCORD_TOKEN in .env file")
     exit(1)
 # ============ Local functions ============
+    
+async def init_setup(init_game_list=False):
+    """ Log ready message, check server roles/channels setup """
+    startup_msg = "=========================BOT STARTUP========================="
+    print(startup_msg)
+    for guild in client.guilds:
+        print("Connected to server: ", guild.name, " ServerID: ", guild.id, " Game Category: ", config.GAME_CATEGORY)
+        if init_game_list == False:
+            await admin.create_category(guild, client.user, config.GAME_CATEGORY)  # Create GAME_CATEGORY if not existing
+            await admin.create_channel(guild, client.user, config.LOBBY_CHANNEL, is_public=True)
+            await admin.create_channel(guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
+            await admin.create_channel(guild, client.user, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
+        # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
+        game_list.add_game(guild.id, Game(guild, interface.DiscordInterface(guild, client)))
+
+        await admin.send_text_to_channel(guild, startup_msg, config.LOBBY_CHANNEL)
+        await admin.send_text_to_channel(guild, startup_msg, config.GAMEPLAY_CHANNEL)
 
 
 async def process_message(client, message):
     if message.content.strip().startswith(config.BOT_PREFIX):
         game = game_list.get_game(message.guild.id)
+        if game is None:
+            # Init game_list
+            init_setup(True)
+            game = game_list.get_game(message.guild.id)
+        
         await command.parse_command(client, game, message)
 
 
@@ -44,20 +66,8 @@ game_list = GameList()
 
 @client.event
 async def on_ready():
-    """ Log ready message, check server roles/channels setup """
-    startup_msg = "=========================BOT STARTUP========================="
-    print(startup_msg)
-    for guild in client.guilds:
-        print("Connected to server: ", guild.name, " ServerID: ", guild.id)
-        await admin.create_category(guild, client.user, config.GAME_CATEGORY)  # Create GAME_CATEGORY if not existing
-        await admin.create_channel(guild, client.user, config.LOBBY_CHANNEL, is_public=True)
-        await admin.create_channel(guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
-        await admin.create_channel(guild, client.user, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
-        # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
-        game_list.add_game(guild.id, Game(guild, interface.DiscordInterface(guild, client)))
-
-        await admin.send_text_to_channel(guild, startup_msg, config.LOBBY_CHANNEL)
-        await admin.send_text_to_channel(guild, startup_msg, config.GAMEPLAY_CHANNEL)
+    await init_setup()
+    print("The bot is ready")
 
     """ Uncomment to run test """
     server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
@@ -71,4 +81,6 @@ async def on_message(message):
         await process_message(client, message)  # loop through all commands and do action on first command that match
 
 
-client.run(config.DISCORD_TOKEN)
+if __name__ == '__main__':
+    # keep_alive() # Uncomment to keep the bot alive
+    client.run(config.DISCORD_TOKEN)

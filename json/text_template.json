@@ -210,8 +210,15 @@
   "role_list_text": {
     "params": ["roles_data"],
     "template": {
-      "vi": ["Danh sách nhân vật trong game: {roles_data}"],
-      "en": ["Roles list in game: {roles_data}"]
+      "vi": ["Nhân vật: {roles_data}"],
+      "en": ["Roles: {roles_data}"]
+    }
+  },
+  "hidden_role_warning_text": {
+    "params": [],
+    "template": {
+      "vi": ["Cảnh báo: hidden_role đang bật, không hiện danh sách"],
+      "en": ["Warning: hidden_role is ON, do not show list"]
     }
   },
   "execution_player_text": {
@@ -997,6 +1004,22 @@
     "template": {
       "vi": ["Hiện đã ngoài giờ chơi, đồng hồ trò chơi sẽ được dừng lại! Hiện tại là {text_day}. Còn {timer_remaining_text}"],
       "en": ["It's out of playtime, the game timer will be stopped! It's {text_day}. {timer_remaining_text} remaining"]
+    }
+  },
+  "all_player_list_embed": {
+    "params": [],
+    "color": "0x2ecc71",
+    "template": {
+      "vi": {
+        "title": "Danh sách tất cả người chơi",
+        "description": "Chọn một ID trong số người chơi bên dưới",
+        "content_headers": ["ID -> Người chơi", "Danh sách role"]
+      },
+      "en": {
+        "title": "List of alive players",
+        "description": "Select 1 of these below ID.",
+        "content_headers": ["ID -> Player", "Role list"]
+      }
     }
   },
   "alive_player_list_embed": {
