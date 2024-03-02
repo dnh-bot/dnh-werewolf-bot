@@ -148,8 +148,9 @@ class Game:
     def get_role_list(self):
         role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
         if not self.modes.get("hidden_role"):
-            return text_templates.generate_text("role_list_text", roles_data=role_list)
-        return "Warning: hidden_role is ON. Cannot show list"
+            formatted_roles = ", ".join(f"{role}: {count}" for role, count in role_list.items())
+            return text_templates.generate_text("role_list_text", roles_data=formatted_roles)
+        return text_templates.generate_text("hidden_role_warning_text")
 
     async def start(self, init_players=None):
         if self.is_stopped and self.game_phase == GamePhase.NEW_GAME:
@@ -242,6 +243,12 @@ class Game:
         await self.interface.send_action_text_to_channel("gameplay_leave_text", config.GAMEPLAY_CHANNEL, player_id=id_)
         await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
         return len(self.players)  # Return number of current players
+
+    def get_all_players(self):
+        return sorted(
+            list(self.players.values()),
+            key=lambda player: player.player_id
+        )
 
     def get_alive_players(self):
         return sorted(
@@ -1040,7 +1047,7 @@ class GameList:
         self.game_list[guild_id] = game
 
     def get_game(self, guild_id):
-        return self.game_list[guild_id]
+        return self.game_list.get(guild_id, None)
 
 
 if __name__ == "__main__":
