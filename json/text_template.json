@@ -915,6 +915,26 @@
       "en": ["This mode is disabled"]
     }
   },
+  "mode_list_text": {
+    "template": {
+      "vi": {
+        "title": "Chế độ chơi",
+        "hidden_role": "Ẩn danh sách các nhân vật đầu game",
+        "seer_can_kill_fox": "Tiên tri có thể giết Cáo",
+        "allow_guard_self_protection": "Cho phép Bảo vệ bản thân",
+        "witch_can_kill": "Phù thủy (Witch) có thể giết người",
+        "couple_random": "Ghép cặp ngẫu nhiên"
+      },
+      "en": {
+        "title": "Game modes",
+        "hidden_role": "Hide role list from players",
+        "seer_can_kill_fox": "Allow Seer to kill Fox",
+        "allow_guard_self_protection": "Allow Guard to protect themselves",
+        "witch_can_kill": "Allow Witch to kill people",
+        "couple_random": "Choose a random couple"
+      }
+    }
+  },
   "vote_with_voters_text": {
     "params": ["vote_title", "voters_num", "voters_str"],
     "template": {

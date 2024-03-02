@@ -5,6 +5,7 @@ import commands
 
 from datetime import *
 from dateutil import parser, tz
+from config import TEXT_LANGUAGE
 
 
 def get_full_cmd_description(cmd):
@@ -184,27 +185,15 @@ def generate_table(header, data):
 
 def generate_modes(modes_dict):
     print(modes_dict)
-    mode_list = [
-        "hidden_role",
-        "seer_can_kill_fox",
-        "allow_guard_self_protection",
-        "witch_can_kill",
-        "couple_random",
-    ]
-    title_list = [
-        "Ẩn danh sách các nhân vật đầu game",
-        "Tiên tri có thể giết Cáo",
-        "Cho phép Bảo vệ bản thân",
-        "Phù thủy (Witch) có thể giết người",
-        "Ghép cặp ngẫu nhiên",
-    ]
+    mode_list = text_templates.get_text_object("mode_list_text")["template"][TEXT_LANGUAGE]
+
     return "===========================================================================\n" +\
-        f"Chế độ chơi: \n" +\
+        f"{mode_list['title']}: \n" +\
         "".join(
-            f" - {i}. {title}: {'Bật' if modes_dict.get(mode) == 'True' else 'Tắt'}\n"
-            for i, (mode, title) in enumerate(zip(mode_list, title_list), 1)
+            f"- {i}. {title}: {'`ON`' if modes_dict.get(mode, None) == 'True' else '`OFF`' if modes_dict.get(mode, None) == 'False' else '`NONE`'}\n"
+            for i, (mode, title) in enumerate(mode_list.items(), 0) if mode != 'title'
         ) +\
-        "\n===========================================================================\n"
+        "===========================================================================\n"
 
 
 def generate_reveal_str_list(reveal_list):

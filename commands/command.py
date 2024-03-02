@@ -230,10 +230,13 @@ async def parse_command(client, game, message):
             modes = utils.common.read_json_file("json/game_config.json")
             await message.reply(text_template.generate_modes(modes))
         elif cmd == "setmode":
-            mode = parameters[0]
-            on = True if parameters[1] == 'on' else False
-            res = game.set_mode(mode, on)
-            await message.reply(res)
+            try:
+                mode_id, status = parameters[0], parameters[1]
+                res = game.set_mode(mode_id, status)
+                await message.reply(res)
+            except Exception as e:
+                print(e)
+                await message.reply('Invalid usage.')
 
         elif cmd.startswith('f'):
             if admin.is_admin(message.author):

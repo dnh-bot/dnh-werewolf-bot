@@ -89,9 +89,23 @@ class Game:
     def is_ended(self):
         return self.winner is not None
 
-    def set_mode(self, mode_str, on):
-        utils.common.update_json_file("json/game_config.json", mode_str, "True" if on else "False")
-        return f"Set mode '{mode_str}' is {on}. Warning: This setting is permanent!"
+    def set_mode(self, mode_id, status):
+        read_modes = utils.common.read_json_file("json/game_config.json")
+        modes_list = list(read_modes.keys())
+
+        if not modes_list:
+            return "Mode list not found."
+        if not (mode_id.isdigit()):
+            return "Mode ID must be a valid number."
+        if int(mode_id) < 1 or int(mode_id) > len(modes_list):
+            return f"Mode ID must be between `1 - {len(modes_list)}`"
+        if status not in ['on', 'off']:
+            return "Set mode value must be `on` or `off`"
+
+        mode_str = modes_list[int(mode_id) - 1]
+        utils.common.update_json_file("json/game_config.json", mode_str, "True" if status == 'on' else "False")
+
+        return f"Set mode `{mode_str}` to `{status.upper()}`\nWarning: This setting is permanent!"
 
     def read_modes(self):
         modes = utils.common.read_json_file("json/game_config.json")
