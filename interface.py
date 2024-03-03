@@ -31,6 +31,9 @@ class ConsoleInterface:
         print(f"Added {player_id} to channel #{channel_name} {is_read} {is_send}")
         return True
 
+    def get_user_display_name(self, player_id):
+        return str(player_id)
+
 
 class DiscordInterface:
     def __init__(self, guild, client):
@@ -54,3 +57,6 @@ class DiscordInterface:
 
     async def add_user_to_channel(self, player_id, channel_name, is_read=True, is_send=True):
         return await commands.admin.add_user_to_channel(self.guild, self.client.get_user(player_id), channel_name, is_read, is_send)
+
+    def get_user_display_name(self, player_id):
+        return self.client.get_user(player_id).name

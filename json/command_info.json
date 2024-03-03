@@ -112,6 +112,14 @@
     "exclusive_roles": [],
     "required_params": []
   },
+  "restart": {
+    "description": {
+      "vi": "Khởi động lại bot.",
+      "en": "Restart the bot."
+    },
+    "exclusive_roles": [],
+    "required_params": []
+  },
   "status": {
     "description": {
       "vi": "Xem trạng thái trò chơi trong buổi hiện tại.",

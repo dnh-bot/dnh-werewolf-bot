@@ -1,3 +1,5 @@
+import traceback
+
 from commands import admin, player
 import commands
 import config
@@ -134,10 +136,11 @@ async def parse_command(client, game, message):
                 status_description, remaining_time, vote_table, table_title, author_status = game.get_game_status(
                     message.channel.name, message.author.id
                 )
-                print(status_description, remaining_time, vote_table, text_template.generate_vote_field(vote_table), table_title, author_status)
+                # print(status_description, remaining_time, vote_table, text_template.generate_vote_field(vote_table), table_title, author_status)
                 embed_data = text_templates.generate_embed(
                     "game_status_with_table_embed",
                     [
+                        [str(game.day)],
                         [text_template.generate_timer_remaining_text(remaining_time)],
                         text_template.generate_vote_field(vote_table),
                         [author_status]
@@ -238,6 +241,11 @@ async def parse_command(client, game, message):
                 print(e)
                 await message.reply('Invalid usage.')
 
+        elif cmd == "restart":
+            game.save_game_state()
+            # TODO: do restart bot
+            await message.reply("Bot sẽ được khởi động lại.")
+
         elif cmd.startswith('f'):
             if admin.is_admin(message.author):
                 if cmd == "fjoin":
@@ -260,7 +268,7 @@ async def parse_command(client, game, message):
                         await admin.delete_all_personal_channel(message.guild)
                         await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
                     except Exception as e:
-                        print(e)
+                        print(cmd, traceback.format_exc())
                 elif cmd == "fdebug":
                     # print(asyncio.all_tasks())
                     exec(" ".join(parameters))
@@ -294,7 +302,7 @@ async def parse_command(client, game, message):
                             await admin.delete_channel(message.guild, client.user, config.LOBBY_CHANNEL)
                             await admin.delete_category(message.guild, client.user)
                     except Exception as e:
-                        print(e)
+                        print(cmd, traceback.format_exc())
                 else:
                     await message.reply("Missing @bot_name")
         else:  # No need to reply because there are many bots

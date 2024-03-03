@@ -14,6 +14,8 @@ import traceback
 import asyncio
 import tzlocal
 
+from game.roles import create_from_str
+
 
 class GamePhase(Enum):
     NEW_GAME = 0
@@ -43,6 +45,9 @@ class Game:
         self.play_time_end = datetime.time(0, 0, 0)  # in UTC
         self.play_zone = "UTC+7"
         self.reset_game_state()  # Init other game variables every end game.
+        if self.load_saved_game_state():
+            self.is_continued_from_saved_game = True
+            print("successfully load saved game state")
 
     def reset_game_state(self):
         print("reset_game_state")
@@ -71,6 +76,65 @@ class Game:
         self.runtime_roles = None
         self.prev_playtime = self.is_in_play_time()
         self.auto_hook = defaultdict(list)
+
+        self.start_phase = GamePhase.DAY
+        self.is_continued_from_saved_game = False
+    def save_game_state(self):
+        game_state = {}
+
+        if not self.is_ended():
+            game_state["players"] = [repr(p) for p in self.players.values()]
+            game_state["watchers"] = list(self.watchers)
+            game_state["game_phase"] = self.game_phase.value
+            game_state["timer_phase"] = self.timer_phase
+            game_state["phase_time_left"] = self.timecounter
+            game_state["day"] = self.day
+            game_state["couple"] = list(self.cupid_dict.keys())
+            game_state["vote_start"] = list(self.vote_start)
+            game_state["vote_next"] = list(self.vote_next)
+            game_state["vote_stop"] = list(self.vote_stop)
+
+            game_state["phase_command_targets"] = {
+                "vote": self.voter_dict,
+                "kill": self.wolf_kill_dict
+            }
+
+        try:
+            with open("saved_game.json", "w", encoding="utf8") as f:
+                json.dump(game_state, f, indent=4)
+                print(f"successfully saved game into saved_game.json")
+                return True
+        except Exception as e:
+            print("update saved_game.json failed.", e)
+            return False
+
+    def load_saved_game_state(self):
+        # TODO: apply this function to somewhere
+        game_state = utils.common.read_json_file("saved_game.json")
+        if game_state:
+            self.players = {}
+            self.playersname = {}
+            for player_str in game_state["players"]:
+                player = create_from_str(self.interface, player_str)
+                self.players[player.player_id] = player
+                self.playersname[player.player_id] = player.player_name
+
+            self.watchers = set(game_state["watchers"])
+            self.start_phase = GamePhase(game_state["game_phase"])
+            self.timer_phase = game_state["timer_phase"]
+            self.timecounter = game_state["phase_time_left"]
+            self.day = game_state["day"]
+            if game_state["couple"]:
+                self.cupid_dict = dict([tuple(game_state["couple"]), tuple(game_state["couple"][::-1])])
+            self.vote_start = set(game_state["vote_start"])
+            self.vote_next = set(game_state["vote_next"])
+            self.vote_stop = set(game_state["vote_stop"])
+            self.voter_dict = game_state["phase_command_targets"]["vote"]
+            self.wolf_kill_dict = game_state["phase_command_targets"]["kill"]
+
+            return True
+
+        return False
 
     def get_winner(self):
         if self.winner is None:
@@ -168,12 +232,14 @@ class Game:
 
     async def start(self, init_players=None):
         if self.is_stopped and self.game_phase == GamePhase.NEW_GAME:
-            self.game_phase = GamePhase.DAY
+            self.game_phase = self.start_phase
             self.is_stopped = False
             self.last_nextcmd_time = time.time()
             self.read_modes()  # Read json config mode into runtime dict
             await self.interface.send_action_text_to_channel("start_text", config.LOBBY_CHANNEL)
-            if not init_players:
+            if self.is_continued_from_saved_game:
+                pass
+            elif not init_players:
                 self.players = self.generate_roles(self.interface, list(self.players.keys()), self.playersname)
                 # Must use list(dict_keys) in python >= 3.3
             else:
@@ -229,7 +295,7 @@ class Game:
                 *[player.delete_personal_channel() for player in self.players.values()]
             )
         except Exception as e:
-            print(e)
+            print("delete_channel", traceback.format_exc())
 
     async def add_player(self, id_, player_name):
         if id_ in self.players:
@@ -414,7 +480,7 @@ class Game:
 
         await self.interface.send_text_to_channel(text_template.generate_play_time_text(self.play_time_start, self.play_time_end, self.play_zone), config.GAMEPLAY_CHANNEL)
 
-        if self.modes.get("couple_random"):
+        if not self.is_continued_from_saved_game and self.modes.get("couple_random"):
             random_cupid_couple = random.sample(self.get_alive_players(), 2)
             await self.ship(None, *random_cupid_couple)
 
@@ -439,6 +505,7 @@ class Game:
                 print("After clear")
 
                 await self.end_phase()
+                self.save_game_state()
                 # End_phase
 
                 print("End phase")
@@ -688,9 +755,12 @@ class Game:
         try:
             self.timer_stopped = False
             daytime, nighttime, period = self.timer_phase
-            self.timecounter = daytime
-            if self.game_phase == GamePhase.NIGHT:
-                self.timecounter = nighttime
+            if self.is_continued_from_saved_game:
+                self.is_continued_from_saved_game = False
+            else:
+                self.timecounter = daytime
+                if self.game_phase == GamePhase.NIGHT:
+                    self.timecounter = nighttime
 
             while self.timecounter > 0:
                 await self.do_process_with_play_time()
@@ -755,7 +825,7 @@ class Game:
         author = self.players.get(author_id)
         if author is None or not author.is_alive():
             if cmd != "zombie":  # Zombie can use skill after death
-                return text_templates.generate_text("invalid_alive_author_text")
+                return text_templates.generate_text("invalid_alive_author_text", cmd=cmd)
 
         if cmd == "auto":
             return await self.register_auto(author, *targets_id)

@@ -2,6 +2,7 @@
 This provides APIs for Admin role and bot role
 """
 
+import traceback
 from time import sleep
 import discord
 import asyncio
@@ -151,7 +152,7 @@ async def send_text_to_channel(guild, text, channel_name):
         await channel.send(text)
         return True
     except Exception as e:
-        print(e)
+        print(f"send_text_to_channel #{channel_name}:", traceback.format_exc())
 
 
 async def send_embed_to_channel(guild, embed_data, channel_name, *args):
@@ -171,7 +172,7 @@ async def send_embed_to_channel(guild, embed_data, channel_name, *args):
         await channel.send(embed=embed)
         return True
     except Exception as e:
-        print("send_embed_to_channel:", e)
+        print(f"send_embed_to_channel #{channel_name}:", traceback.format_exc())
 
 
 async def delete_all_personal_channel(guild):

@@ -1,6 +1,7 @@
-import json
+import re
 
 from config import TEXT_LANGUAGE
+from game.roles.character import CharacterStatus
 from game.roles.villager import Villager
 from game.roles.werewolf import Werewolf
 from game.roles.guard import Guard
@@ -57,3 +58,21 @@ def get_role_nighttime_commands(name):
         return role_info[name]["nighttime_commands"]
 
     return []
+
+
+def create_from_str(interface, character_str):
+    matcher = re.findall(r"^(\w+)\((\d+),(\d+)(.*)\)$", character_str)
+    if not matcher:
+        return None
+
+    role_name, player_id, status, kwargs_str = matcher[0]
+    role_cls = get_role_type(role_name)
+    player_id = int(player_id)
+    status = CharacterStatus(int(status))
+    if kwargs_str:
+        data = re.split(r",(\w+)=", kwargs_str)[1:]
+        kwargs = dict(zip(data[0::2], data[1::2]))
+    else:
+        kwargs = {}
+
+    return role_cls.new(interface, player_id, status, **kwargs)
