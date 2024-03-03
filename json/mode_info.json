@@ -17,6 +17,12 @@
       "en": "Do not allow Guard self-defense"
     }
   },
+  "allow_guard_self_protection": {
+    "title": {
+      "vi": "Cho phép Bảo vệ bản thân",
+      "en": "Allow Guard self-defense"
+    }
+  },
   "witch_can_kill": {
     "title": {
       "vi": "Phù thủy (Witch) có thể giết người",
