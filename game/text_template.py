@@ -1,9 +1,11 @@
 from game import roles
+from game.roles.character import CharacterStatus
 import text_templates
 import commands
 
 from datetime import *
 from dateutil import parser, tz
+from config import TEXT_LANGUAGE
 
 
 def get_full_cmd_description(cmd):
@@ -12,11 +14,12 @@ def get_full_cmd_description(cmd):
     return f"{description} {text_templates.get_word_in_language('use_command')} {usage_text}."
 
 
-def generate_player_list_embed(player_list, alive_status):
+def generate_player_list_embed(player_list, alive_status=None, role_list=None):
+    # Handle 3 types of list: Alive, Dead, Overview
     if player_list:
-        id_player_list = [f"{row_id} -> <@{user.player_id}>" for row_id, user in enumerate(player_list, 1)]
-        action_name = f"{'alive' if alive_status else 'dead'}_player_list_embed"
-        embed_data = text_templates.generate_embed(action_name, [id_player_list])
+        id_player_list = [f"{'💀' if alive_status is None and user.status == CharacterStatus.KILLED else row_id} -> <@{user.player_id}>" for row_id, user in enumerate(player_list, 1)]
+        action_name = f"{'all' if alive_status is None else 'alive' if alive_status else 'dead'}_player_list_embed"
+        embed_data = text_templates.generate_embed(action_name, [id_player_list] if role_list is None else [id_player_list, role_list])
         return embed_data
     return None
 
@@ -182,27 +185,15 @@ def generate_table(header, data):
 
 def generate_modes(modes_dict):
     print(modes_dict)
-    mode_list = [
-        "hidden_role",
-        "seer_can_kill_fox",
-        "prevent_guard_self_protection",
-        "witch_can_kill",
-        "couple_random",
-    ]
-    title_list = [
-        "Ẩn danh sách các nhân vật đầu game",
-        "Tiên tri có thể giết Cáo",
-        "Không cho phép Bảo vệ bản thân",
-        "Phù thủy (Witch) có thể giết người",
-        "Ghép cặp ngẫu nhiên",
-    ]
+    mode_list = text_templates.get_text_object("mode_list_text")["template"][TEXT_LANGUAGE]
+
     return "===========================================================================\n" +\
-        f"Chế độ chơi: \n" +\
+        f"{mode_list['title']}: \n" +\
         "".join(
-            f" - {i}. {title}: {'Bật' if modes_dict.get(mode) == 'True' else 'Tắt'}\n"
-            for i, (mode, title) in enumerate(zip(mode_list, title_list), 1)
+            f"- {i}. {title}: {'`ON`' if modes_dict.get(mode, None) == 'True' else '`OFF`' if modes_dict.get(mode, None) == 'False' else '`NONE`'}\n"
+            for i, (mode, title) in enumerate(mode_list.items(), 0) if mode != 'title'
         ) +\
-        "\n===========================================================================\n"
+        "===========================================================================\n"
 
 
 def generate_reveal_str_list(reveal_list):

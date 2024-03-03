@@ -175,8 +175,10 @@ async def send_embed_to_channel(guild, embed_data, channel_name, *args):
 
 
 async def delete_all_personal_channel(guild):
-    # TODO: Only delete personal channels under GAME category
-    await asyncio.gather(*[c.delete() for c in guild.channels if c.name.startswith("personal")])
+    category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+    if category:
+        personal_channels = [c for c in category.channels if c.name.startswith("personal")]
+        await asyncio.gather(*[c.delete() for c in personal_channels])
 
 
 async def test_admin_command(guild):

@@ -92,16 +92,29 @@ class Game:
     def is_ended(self):
         return self.winner is not None
 
-    def set_mode(self, mode_str, on):
-        self.modes[mode_str] = on
+    def set_mode(self, mode_id, status):
+        read_modes = utils.common.read_json_file("json/game_config.json")
+        modes_list = list(read_modes.keys())
+
+        if not modes_list:
+            return "Mode list not found."
+        if not (mode_id.isdigit()):
+            return "Mode ID must be a valid number."
+        if int(mode_id) < 1 or int(mode_id) > len(modes_list):
+            return f"Mode ID must be between `1 - {len(modes_list)}`"
+        if status not in ['on', 'off']:
+            return "Set mode value must be `on` or `off`"
+
+        mode_str = modes_list[int(mode_id) - 1]
+        utils.common.update_json_file("json/game_config.json", mode_str, "True" if status == 'on' else "False")
+
         if mode_str == "new_moon":
-            if on:
+            if status == "on":
                 self.new_moon_mode.turn_on()
             else:
                 self.new_moon_mode.turn_off()
 
-        utils.common.update_json_file("json/game_config.json", mode_str, "True" if on else "False")
-        return f"Set mode '{mode_str}' is {on}. Warning: This setting is permanent!"
+        return f"Set mode `{mode_str}` to `{status.upper()}`\nWarning: This setting is permanent!"
 
     def read_modes(self):
         modes = utils.common.read_json_file("json/game_config.json")
@@ -114,6 +127,11 @@ class Game:
             self.new_moon_mode.turn_on()
         else:
             self.new_moon_mode.turn_off()
+
+        #Backward compatible
+        if "allow_guard_self_protection" not in self.modes and "prevent_guard_self_protection" in self.modes:
+            self.modes["allow_guard_self_protection"] = not self.modes["prevent_guard_self_protection"]
+            print("prevent_guard_self_protection is deprecated, please use allow_guard_self_protection in config file instead")
 
     def add_default_roles(self, role_json_in_string):
         try:
@@ -158,8 +176,9 @@ class Game:
     def get_role_list(self):
         role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
         if not self.modes.get("hidden_role"):
-            return text_templates.generate_text("role_list_text", roles_data=role_list)
-        return "Warning: hidden_role is ON. Cannot show list"
+            formatted_roles = ", ".join(f"{role}: {count}" for role, count in role_list.items())
+            return text_templates.generate_text("role_list_text", roles_data=formatted_roles)
+        return text_templates.generate_text("hidden_role_warning_text")
 
     async def start(self, init_players=None):
         if self.is_stopped and self.game_phase == GamePhase.NEW_GAME:
@@ -252,6 +271,12 @@ class Game:
         await self.interface.send_action_text_to_channel("gameplay_leave_text", config.GAMEPLAY_CHANNEL, player_id=id_)
         await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
         return len(self.players)  # Return number of current players
+
+    def get_all_players(self):
+        return sorted(
+            list(self.players.values()),
+            key=lambda player: player.player_id
+        )
 
     def get_alive_players(self):
         return sorted(
@@ -844,7 +869,7 @@ class Game:
         if author.get_mana() == 0:
             return text_templates.generate_text("out_of_mana_text")
 
-        if self.modes.get("prevent_guard_self_protection") and author_id == target_id:
+        if not self.modes.get("allow_guard_self_protection") and author_id == target_id:
             return text_templates.generate_text("invalid_guard_selfprotection_text")
         if author.is_yesterday_target(target_id):
             return text_templates.generate_text("invalid_guard_yesterdaytarget_text")
@@ -1080,7 +1105,7 @@ class GameList:
         self.game_list[guild_id] = game
 
     def get_game(self, guild_id):
-        return self.game_list[guild_id]
+        return self.game_list.get(guild_id, None)
 
 
 if __name__ == "__main__":
