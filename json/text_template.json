@@ -112,29 +112,29 @@
   "gameplay_join_text": {
     "params": ["player_id"],
     "template": {
-      "vi": ["Chào <@{player_id}>"],
-      "en": ["Hi <@{player_id}>"]
+      "vi": ["Chào <@!{player_id}>"],
+      "en": ["Hi <@!{player_id}>"]
     }
   },
   "gameplay_leave_text": {
     "params": ["player_id"],
     "template": {
-      "vi": ["Bye <@{player_id}>"],
-      "en": ["Bye <@{player_id}>"]
+      "vi": ["Bye <@!{player_id}>"],
+      "en": ["Bye <@!{player_id}>"]
     }
   },
   "gameplay_watch_text": {
     "params": ["player_id"],
     "template": {
-      "vi": ["Người xem <@{player_id}> đã theo dõi game."],
-      "en": ["Viewer <@{player_id}> has watched the game."]
+      "vi": ["Người xem <@!{player_id}> đã theo dõi game."],
+      "en": ["Viewer <@!{player_id}> has watched the game."]
     }
   },
   "gameplay_unwatch_text": {
     "params": ["player_id"],
     "template": {
-      "vi": ["Người xem <@{player_id}> đã bỏ theo dõi game."],
-      "en": ["Viewer <@{player_id}> has unwatched the game."]
+      "vi": ["Người xem <@!{player_id}> đã bỏ theo dõi game."],
+      "en": ["Viewer <@!{player_id}> has unwatched the game."]
     }
   },
   "reply_join_text": {
@@ -182,8 +182,8 @@
   "personal_channel_welcome_text": {
     "params": ["player_id", "player_role"],
     "template": {
-      "vi": ["Chào mừng <@{player_id}> tham gia game!\nVai của bạn là {player_role}"],
-      "en": ["Welcome <@{player_id}> to the game!\nYour role is {player_role}"]
+      "vi": ["Chào mừng <@!{player_id}> tham gia game!\nVai của bạn là {player_role}"],
+      "en": ["Welcome <@!{player_id}> to the game!\nYour role is {player_role}"]
     }
   },
   "too_quick_text": {
@@ -966,8 +966,8 @@
   "reveal_player_text": {
     "params": ["player_id", "role"],
     "template": {
-      "vi": ["<@{player_id}> là {role}"],
-      "en": ["<@{player_id}> is {role}"]
+      "vi": ["<@!{player_id}> là {role}"],
+      "en": ["<@!{player_id}> is {role}"]
     }
   },
   "time_range_whole_day_text": {

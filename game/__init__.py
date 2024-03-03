@@ -400,7 +400,7 @@ class Game:
             if isinstance(player, roles.Werewolf):
                 print("Wolf: ", player)
                 await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
-                await self.interface.send_action_text_to_channel("werewolf_welcome_text", config.WEREWOLF_CHANNEL, user=f"<@{_id}>")
+                await self.interface.send_action_text_to_channel("werewolf_welcome_text", config.WEREWOLF_CHANNEL, user=f"<@!{_id}>")
                 werewolf_list.append(_id)
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
@@ -408,7 +408,7 @@ class Game:
         embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
 
-        info = text_templates.generate_text("werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in werewolf_list))
+        info = text_templates.generate_text("werewolf_list_text", werewolf_str=", ".join(f"<@!{_id}>" for _id in werewolf_list))
         print("werewolf_list_text", info)
         await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
 
@@ -471,7 +471,7 @@ class Game:
                     [str(self.day)],
                     [game_winner],
                     text_template.generate_reveal_str_list(reveal_list),
-                    [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict.keys())] if self.cupid_dict else []
+                    [" x ".join(f"<@!{player_id}>" for player_id in self.cupid_dict.keys())] if self.cupid_dict else []
                 ],
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime"))
             )
@@ -545,7 +545,7 @@ class Game:
                 await self.players[lynched].get_killed()
                 await self.interface.send_action_text_to_channel(
                     "execution_player_text", config.GAMEPLAY_CHANNEL,
-                    voted_user=f"<@{lynched}>", highest_vote_number=votes
+                    voted_user=f"<@!{lynched}>", highest_vote_number=votes
                 )
 
                 cupid_couple = self.cupid_dict.get(lynched)
@@ -553,7 +553,7 @@ class Game:
                     await self.players[cupid_couple].get_killed(True)
                     await self.interface.send_action_text_to_channel(
                         "couple_died_on_day_text", config.GAMEPLAY_CHANNEL,
-                        died_player=f"<@{lynched}>", follow_player=f"<@{cupid_couple}>"
+                        died_player=f"<@!{lynched}>", follow_player=f"<@!{cupid_couple}>"
                     )
             else:
                 await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
@@ -609,7 +609,7 @@ class Game:
                     if self.cupid_dict.get(_id):
                         cupid_couple = self.cupid_dict[_id]
 
-            kills = ", ".join(f"<@{_id}>" for _id in final_kill_list)
+            kills = ", ".join(f"<@!{_id}>" for _id in final_kill_list)
             self.night_pending_kill_list = []  # Reset killed list for next day
 
         await self.interface.send_action_text_to_channel(
@@ -621,7 +621,7 @@ class Game:
             await self.players[cupid_couple].get_killed(True)
             await self.interface.send_action_text_to_channel(
                 "couple_died_on_night_text", config.GAMEPLAY_CHANNEL,
-                died_player=f"<@{self.cupid_dict[cupid_couple]}>", follow_player=f"<@{cupid_couple}>"
+                died_player=f"<@!{self.cupid_dict[cupid_couple]}>", follow_player=f"<@!{cupid_couple}>"
             )
 
         for _id in self.reborn_set:
@@ -797,7 +797,7 @@ class Game:
 
         # Vote for target user
         self.voter_dict[author_id] = target_id
-        return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
+        return text_templates.generate_text("vote_text", author=f"<@!{author_id}>", target=f"<@!{target_id}>")
 
     async def kill(self, author, target):
         if self.game_phase != GamePhase.NIGHT:
@@ -810,7 +810,7 @@ class Game:
         target_id = target.player_id
 
         self.wolf_kill_dict[author_id] = target_id
-        return text_templates.generate_text("werewolf_kill_text", werewolf=f"<@{author_id}>", target=f"<@{target_id}>")
+        return text_templates.generate_text("werewolf_kill_text", werewolf=f"<@!{author_id}>", target=f"<@!{target_id}>")
 
     async def guard(self, author, target):
         if self.game_phase != GamePhase.NIGHT:
@@ -833,7 +833,7 @@ class Game:
         author.on_use_mana()
         author.set_guard_target(target_id)
         target.get_protected()
-        return text_templates.generate_text("guard_after_voting_text", target=f"<@{target_id}>")
+        return text_templates.generate_text("guard_after_voting_text", target=f"<@!{target_id}>")
 
     async def seer(self, author, target):
         if self.game_phase != GamePhase.NIGHT:
@@ -854,7 +854,7 @@ class Game:
 
         return text_templates.generate_text(
             f"seer_after_voting_{'' if target.seer_seen_as_werewolf() else 'not_'}werewolf_text",
-            target=f"<@{target_id}>"
+            target=f"<@!{target_id}>"
         )
 
     async def reborn(self, author, target):
@@ -871,12 +871,12 @@ class Game:
             return text_templates.generate_text("out_of_power_text")
 
         if target.is_alive():
-            return text_templates.generate_text("invalid_player_alive_text", user=f"<@{target_id}>")
+            return text_templates.generate_text("invalid_player_alive_text", user=f"<@!{target_id}>")
 
         author.on_use_power()
         self.reborn_set.add(target_id)
 
-        return text_templates.generate_text("witch_after_reborn_text", target=f"<@{target_id}>")
+        return text_templates.generate_text("witch_after_reborn_text", target=f"<@!{target_id}>")
 
     async def curse(self, author, target):
         if not self.modes.get("witch_can_kill"):
@@ -898,7 +898,7 @@ class Game:
         # Kill someone
         self.night_pending_kill_list.append(target_id)
 
-        return text_templates.generate_text("witch_after_curse_text", target=f"<@{target_id}>")
+        return text_templates.generate_text("witch_after_curse_text", target=f"<@!{target_id}>")
 
     async def zombie(self, author):
         if self.game_phase != GamePhase.NIGHT:
@@ -935,18 +935,18 @@ class Game:
 
         await self.interface.send_action_text_to_channel(
             "couple_shipped_with_text",
-            self.players[target1_id].channel_name, target=f"<@{target2_id}> {target2.__class__.__name__}"
+            self.players[target1_id].channel_name, target=f"<@!{target2_id}> {target2.__class__.__name__}"
         )
         await self.interface.send_action_text_to_channel(
             "couple_shipped_with_text",
-            self.players[target2_id].channel_name, target=f"<@{target1_id}> {target1.__class__.__name__}"
+            self.players[target2_id].channel_name, target=f"<@!{target1_id}> {target1.__class__.__name__}"
         )
         await self.interface.create_channel(config.COUPLE_CHANNEL)
         await self.interface.add_user_to_channel(target1_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
         await self.interface.add_user_to_channel(target2_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
-        await self.interface.send_action_text_to_channel("couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{target1_id}>", user2=f"<@{target2_id}>")
+        await self.interface.send_action_text_to_channel("couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@!{target1_id}>", user2=f"<@!{target2_id}>")
 
-        return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
+        return text_templates.generate_text("cupid_after_ship_text", target1=f"<@!{target1_id}>", target2=f"<@!{target2_id}>")
 
     async def register_auto(self, author, subcmd):
         def check(pred):
