@@ -111,7 +111,7 @@ class Game:
         modes = utils.common.read_json_file("json/game_config.json")
         # Read json dict into runtime dict modes
         for k, v in modes.items():
-            self.modes[k] = v == "True":
+            self.modes[k] = v == "True"
 
         #Backward compatible
         if "allow_guard_self_protection" not in self.modes and "prevent_guard_self_protection" in self.modes:
