@@ -111,8 +111,7 @@ class Game:
         modes = utils.common.read_json_file("json/game_config.json")
         # Read json dict into runtime dict modes
         for k, v in modes.items():
-            if v == "True":
-                self.modes[k] = True
+            self.modes[k] = v == "True"
 
         #Backward compatible
         if "allow_guard_self_protection" not in self.modes and "prevent_guard_self_protection" in self.modes:
@@ -182,7 +181,7 @@ class Game:
 
 
             await self.create_channel()
-            await self.interface.send_text_to_channel(text_template.generate_modes(dict(zip(self.modes, map(lambda x: "True", self.modes.values())))), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel(text_template.generate_modes(dict(zip(self.modes, map(lambda x: str(x), self.modes.values())))), config.GAMEPLAY_CHANNEL)
 
             if not self.modes.get("hidden_role"):
                 await self.interface.send_text_to_channel(self.get_role_list(), config.GAMEPLAY_CHANNEL)
