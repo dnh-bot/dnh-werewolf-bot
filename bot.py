@@ -3,10 +3,11 @@ from commands import command, admin
 from game import *
 import config
 import interface
+import sys
 
 if not config.DISCORD_TOKEN:
     print("Use must setup DISCORD_TOKEN in .env file")
-    exit(1)
+    sys.exit(1)
 # ============ Local functions ============
 
 
@@ -16,7 +17,7 @@ async def init_setup(init_game_list=False):
     print(startup_msg)
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id, " Game Category: ", config.GAME_CATEGORY)
-        if init_game_list == False:
+        if init_game_list is False:
             # Create GAME_CATEGORY if not existing
             await admin.create_category(guild, client.user, config.GAME_CATEGORY)
             await admin.create_channel(guild, client.user, config.LOBBY_CHANNEL, is_public=True)
@@ -72,7 +73,7 @@ async def on_ready():
     print("The bot is ready")
 
     """ Uncomment to run test """
-    server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
+    # server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
     # server_id = config.DISCORD_DEPLOY_SERVER_ID  # Running test on DNH ma sói bot's server
     # await test_bot(game_list.get_game(server_id), client.get_guild(server_id))
 

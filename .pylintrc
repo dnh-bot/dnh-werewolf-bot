@@ -3,3 +3,7 @@ disable=
     C0114, # missing-module-docstring
     C0115, # missing-class-docstring
     C0116, # missing-function-docstring
+    C0301, # line-too-long
+    W0401, # wildcard-import
+    W0614, # unused-wildcard-import
+    W0718, # broad-exception-caught
