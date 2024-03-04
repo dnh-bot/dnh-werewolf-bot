@@ -196,10 +196,12 @@ def generate_modes(modes_dict):
         "===========================================================================\n"
 
 
-def generate_reveal_str_list(reveal_list):
+def generate_reveal_str_list(reveal_list, game_winner):
+    winner_list = [(player_id, role, '🥳' if roles.get_role_party(role) == game_winner else '😭') for player_id, role in reveal_list]
+
     return [
-        "- " + text_templates.generate_text("reveal_player_text", player_id=player_id, role=role)
-        for player_id, role in reveal_list
+        "- " + text_templates.generate_text("reveal_player_text", player_id=player_id, role=role, result_emoji=result_emoji)
+        for player_id, role, result_emoji in winner_list
     ]
 
 

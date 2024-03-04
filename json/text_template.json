@@ -964,10 +964,10 @@
     }
   },
   "reveal_player_text": {
-    "params": ["player_id", "role"],
+    "params": ["player_id", "role", "result_emoji"],
     "template": {
-      "vi": ["<@{player_id}> là {role}"],
-      "en": ["<@{player_id}> is {role}"]
+      "vi": ["<@{player_id}> là {role} {result_emoji}"],
+      "en": ["<@{player_id}> is {role} {result_emoji}"]
     }
   },
   "time_range_whole_day_text": {
@@ -1111,12 +1111,12 @@
       "vi": {
         "title": "Kết quả trò chơi",
         "description": "Trò chơi đã bắt đầu lúc {start_time_str}.",
-        "content_headers": ["Số ngày đã trải qua", "🏆 Phe chiến thắng", "📝 Danh sách role", "💘 Cặp đôi vàng"]
+        "content_headers": ["Số ngày đã trải qua", "\u200B\n🏆 Phe chiến thắng", "\u200B\n📝 Danh sách người chơi", "💘 Cặp đôi vàng"]
       },
       "en": {
         "title": "Game result",
         "description": "Game has been started at {start_time_str}.",
-        "content_headers": ["Number of days", "🏆 Winner", "📝 Role list", "💘 Couple"]
+        "content_headers": ["Number of days", "\u200B\n🏆 The Winner", "\u200B\n📝 Player list", "💘 Couple"]
       }
     }
   }
