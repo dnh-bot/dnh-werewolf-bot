@@ -150,6 +150,9 @@ successfully loaded json/text_template.json
 successfully loaded json/role_info.json
 reset_game_state
 
+# Code standard
+We apply Autopep8 for this project.
+Please run `./format.sh` before creating new PR.
 
 
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
