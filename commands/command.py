@@ -122,7 +122,8 @@ async def parse_command(client, game, message):
                     real_channel = text_templates.get_word_in_language("personal")
 
                 await admin.send_text_to_channel(
-                    message.guild, text_templates.generate_text("invalid_channel_text", channel=real_channel), message.channel.name
+                    message.guild, text_templates.generate_text(
+                        "invalid_channel_text", channel=real_channel), message.channel.name
                 )
 
         elif cmd == "status":
@@ -134,7 +135,8 @@ async def parse_command(client, game, message):
                 status_description, remaining_time, vote_table, table_title, author_status = game.get_game_status(
                     message.channel.name, message.author.id
                 )
-                print(status_description, remaining_time, vote_table, text_template.generate_vote_field(vote_table), table_title, author_status)
+                print(status_description, remaining_time, vote_table,
+                      text_template.generate_vote_field(vote_table), table_title, author_status)
                 embed_data = text_templates.generate_embed(
                     "game_status_with_table_embed",
                     [
@@ -147,7 +149,7 @@ async def parse_command(client, game, message):
                     table_title=table_title
                 )
                 await admin.send_embed_to_channel(message.channel.guild, embed_data, message.channel.name)
-                
+
                 role_list = [game.get_role_list()]
                 players_embed_data = text_template.generate_player_list_embed(game.get_all_players(), None, role_list)
                 await admin.send_embed_to_channel(message.channel.guild, players_embed_data, message.channel.name)
@@ -286,7 +288,8 @@ async def parse_command(client, game, message):
                     try:
                         if user.id == client.user.id:
                             await admin.delete_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL)
-                            await admin.delete_channel(message.guild, client.user, config.LEADERBOARD_CHANNEL) #Comment this to keep the board
+                            # Comment this to keep the board
+                            await admin.delete_channel(message.guild, client.user, config.LEADERBOARD_CHANNEL)
                             await admin.delete_channel(message.guild, client.user, config.WEREWOLF_CHANNEL)
                             await admin.delete_channel(message.guild, client.user, config.CEMETERY_CHANNEL)
                             await admin.delete_channel(message.guild, client.user, config.COUPLE_CHANNEL)

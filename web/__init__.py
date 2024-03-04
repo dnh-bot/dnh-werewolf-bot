@@ -7,12 +7,15 @@ from waitress import serve
 
 appFlask = Flask(__name__)
 
+
 @appFlask.route('/')
 def home():
     return render_template('index.html')
 
+
 def run():
     serve(appFlask, port=10000)
+
 
 def keep_alive():
     thread = Thread(target=run)

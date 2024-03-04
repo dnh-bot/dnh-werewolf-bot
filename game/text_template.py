@@ -17,9 +17,11 @@ def get_full_cmd_description(cmd):
 def generate_player_list_embed(player_list, alive_status=None, role_list=None):
     # Handle 3 types of list: Alive, Dead, Overview
     if player_list:
-        id_player_list = [f"{'💀' if alive_status is None and user.status == CharacterStatus.KILLED else row_id} -> <@{user.player_id}>" for row_id, user in enumerate(player_list, 1)]
+        id_player_list = [
+            f"{'💀' if alive_status is None and user.status == CharacterStatus.KILLED else row_id} -> <@{user.player_id}>" for row_id, user in enumerate(player_list, 1)]
         action_name = f"{'all' if alive_status is None else 'alive' if alive_status else 'dead'}_player_list_embed"
-        embed_data = text_templates.generate_embed(action_name, [id_player_list] if role_list is None else [id_player_list, role_list])
+        embed_data = text_templates.generate_embed(
+            action_name, [id_player_list] if role_list is None else [id_player_list, role_list])
         return embed_data
     return None
 
@@ -197,10 +199,12 @@ def generate_modes(modes_dict):
 
 
 def generate_reveal_str_list(reveal_list, game_winner):
-    winner_list = [(player_id, role, '🥳' if roles.get_role_party(role) == game_winner else '😭') for player_id, role in reveal_list]
+    winner_list = [(player_id, role, '🥳' if roles.get_role_party(role) == game_winner else '😭')
+                   for player_id, role in reveal_list]
 
     return [
-        "- " + text_templates.generate_text("reveal_player_text", player_id=player_id, role=role, result_emoji=result_emoji)
+        "- " + text_templates.generate_text("reveal_player_text", player_id=player_id,
+                                            role=role, result_emoji=result_emoji)
         for player_id, role, result_emoji in winner_list
     ]
 

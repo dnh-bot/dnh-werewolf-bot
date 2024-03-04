@@ -8,7 +8,8 @@ if not config.DISCORD_TOKEN:
     print("Use must setup DISCORD_TOKEN in .env file")
     exit(1)
 # ============ Local functions ============
-    
+
+
 async def init_setup(init_game_list=False):
     """ Log ready message, check server roles/channels setup """
     startup_msg = "=========================BOT STARTUP========================="
@@ -16,7 +17,8 @@ async def init_setup(init_game_list=False):
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id, " Game Category: ", config.GAME_CATEGORY)
         if init_game_list == False:
-            await admin.create_category(guild, client.user, config.GAME_CATEGORY)  # Create GAME_CATEGORY if not existing
+            # Create GAME_CATEGORY if not existing
+            await admin.create_category(guild, client.user, config.GAME_CATEGORY)
             await admin.create_channel(guild, client.user, config.LOBBY_CHANNEL, is_public=True)
             await admin.create_channel(guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
             await admin.create_channel(guild, client.user, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
@@ -34,7 +36,7 @@ async def process_message(client, message):
             # Init game_list
             init_setup(True)
             game = game_list.get_game(message.guild.id)
-        
+
         await command.parse_command(client, game, message)
 
 
@@ -58,7 +60,7 @@ async def test_bot(game, guild):
 # ============ Discord server ============
 # We need to enable intents to access guild.members list
 # details: https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
-intents = discord.Intents.all() # Recent change in discord need set this to all()
+intents = discord.Intents.all()  # Recent change in discord need set this to all()
 intents.members = True
 client = discord.Client(intents=intents)
 game_list = GameList()

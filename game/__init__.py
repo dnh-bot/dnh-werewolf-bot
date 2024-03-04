@@ -127,7 +127,7 @@ class Game:
         else:
             self.new_moon_mode.turn_off()
 
-        #Backward compatible
+        # Backward compatible
         if "allow_guard_self_protection" not in self.modes and "prevent_guard_self_protection" in self.modes:
             self.modes["allow_guard_self_protection"] = not self.modes["prevent_guard_self_protection"]
             print("prevent_guard_self_protection is deprecated, please use allow_guard_self_protection in config file instead")
@@ -191,8 +191,6 @@ class Game:
                 # Must use list(dict_keys) in python >= 3.3
             else:
                 self.players = init_players
-
-
 
             await self.create_channel()
             await self.interface.send_text_to_channel(text_template.generate_modes(dict(zip(self.modes, map(lambda x: str(x), self.modes.values())))), config.GAMEPLAY_CHANNEL)
@@ -421,7 +419,8 @@ class Game:
         embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
 
-        info = text_templates.generate_text("werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in werewolf_list))
+        info = text_templates.generate_text(
+            "werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in werewolf_list))
         print("werewolf_list_text", info)
         await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
 
@@ -483,7 +482,7 @@ class Game:
                 [
                     [str(self.day)],
                     # \u00A0\u00A0 is one space character for discord embed
-                    # Put \u200B\n at first of the next field to break line 
+                    # Put \u200B\n at first of the next field to break line
                     [f"🎉\u00A0\u00A0\u00A0\u00A0{game_winner}\u00A0\u00A0\u00A0\u00A0🎉"],
                     text_template.generate_reveal_str_list(reveal_list, game_winner),
                     [" x ".join(f"<@!{player_id}>" for player_id in self.cupid_dict.keys())] if self.cupid_dict else []
@@ -805,7 +804,6 @@ class Game:
         if cmd == "auto":
             return await self.register_auto(author, *targets_id)
 
-
         targets = []
         for target_id in targets_id:
             target = self.players.get(target_id)
@@ -1031,7 +1029,7 @@ class Game:
         async def auto_seer():
             target = random.choice(self.get_alive_players())
             if author.player_id in self.cupid_dict:
-                while target.player_id in  self.cupid_dict:
+                while target.player_id in self.cupid_dict:
                     target = random.choice(self.get_alive_players())
             msg = await self.seer(author, target)
             await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)

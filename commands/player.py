@@ -17,7 +17,8 @@ def check_vote_valid(num_votes, num_players, task_name):
     if num_votes / num_players <= config.VOTE_RATE:
         return False, text_templates.generate_text("vote_rate_not_enough_text", task_name=task_name, votes_num=num_votes, players_num=num_players, min_votes_num=math.floor(num_players*config.VOTE_RATE)+1)
     else:
-        return True, text_templates.generate_text("vote_rate_enough_text", task_name=task_name)  # Should never see it :D
+        # Should never see it :D
+        return True, text_templates.generate_text("vote_rate_enough_text", task_name=task_name)
 
 
 async def do_join(game, message, force=False):
@@ -69,7 +70,7 @@ async def do_watch(game, message):
         await message.channel.send(text_templates.generate_text("already_watched_game_text"))
     elif watched_players == -2:
         await message.channel.send(
-            text_templates.generate_text("already_in_game_text") + " " + 
+            text_templates.generate_text("already_in_game_text") + " " +
             text_templates.generate_text("reply_in_game_watch_text")
         )
 
@@ -83,7 +84,7 @@ async def do_unwatch(game, message):
         await message.channel.send(text_templates.generate_text("not_watched_game_text"))
     elif watched_players == -2:
         await message.channel.send(
-            text_templates.generate_text("already_in_game_text") + " " + 
+            text_templates.generate_text("already_in_game_text") + " " +
             text_templates.generate_text("reply_in_game_unwatch_text")
         )
 
