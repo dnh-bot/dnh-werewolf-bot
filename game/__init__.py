@@ -12,7 +12,8 @@ from collections import Counter, defaultdict
 from functools import reduce
 import traceback
 import asyncio
-import tzlocal
+
+from game.modes.new_moon import NewMoonMode
 
 
 class GamePhase(Enum):
@@ -33,12 +34,13 @@ class Game:
             config.GAMEPLAY_CHANNEL,
             config.LEADERBOARD_CHANNEL,
             config.WEREWOLF_CHANNEL,
-            # Personal channel will goes into role class
+            # Personal channel will go into role class
         ]  # List of channels in game
         self.next_flag = asyncio.Event()
         self.timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
         self.timer_enable = True
         self.modes = {}
+        self.new_moon_mode = NewMoonMode()
         self.play_time_start = datetime.time(0, 0, 0)  # in UTC
         self.play_time_end = datetime.time(0, 0, 0)  # in UTC
         self.play_zone = "UTC+7"
@@ -70,6 +72,7 @@ class Game:
         self.winner = None
         self.runtime_roles = None
         self.prev_playtime = self.is_in_play_time()
+        self.new_moon_mode.set_random_event()
         self.auto_hook = defaultdict(list)
 
     def get_winner(self):
@@ -105,6 +108,12 @@ class Game:
         mode_str = modes_list[int(mode_id) - 1]
         utils.common.update_json_file("json/game_config.json", mode_str, "True" if status == 'on' else "False")
 
+        if mode_str == "new_moon":
+            if status == "on":
+                self.new_moon_mode.turn_on()
+            else:
+                self.new_moon_mode.turn_off()
+
         return f"Set mode `{mode_str}` to `{status.upper()}`\nWarning: This setting is permanent!"
 
     def read_modes(self):
@@ -112,6 +121,11 @@ class Game:
         # Read json dict into runtime dict modes
         for k, v in modes.items():
             self.modes[k] = v == "True"
+
+        if self.modes.get("new_moon", False):
+            self.new_moon_mode.turn_on()
+        else:
+            self.new_moon_mode.turn_off()
 
         #Backward compatible
         if "allow_guard_self_protection" not in self.modes and "prevent_guard_self_protection" in self.modes:
@@ -524,6 +538,14 @@ class Game:
             embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
+            if self.modes.get("new_moon", False):
+                self.new_moon_mode.set_random_event()
+                await self.interface.send_action_text_to_channel(
+                    f"new_moon_{'special' if self.new_moon_mode.has_special_event() else 'no'}_event_text",
+                    config.GAMEPLAY_CHANNEL,
+                    event_name=self.new_moon_mode.get_current_event_name()
+                )
+
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
             await asyncio.gather(
                 *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
@@ -536,26 +558,41 @@ class Game:
     async def do_end_daytime_phase(self):
         await self.do_run_auto_hook()
         print("do_end_daytime_phase")
+        lynched, votes = None, 0
         if self.voter_dict:
             lynched, votes = Game.get_top_voted(list(self.voter_dict.values()))
             print("lynched list:", self.voter_dict)
             self.voter_dict = {}
-            if lynched:
-                await self.players[lynched].get_killed()
+
+        if self.modes.get("new_moon", False):
+            if self.new_moon_mode.current_event == "heads_or_tails":
+                coin_toss_value = self.new_moon_mode.do_coin_toss()
+                print("coin toss value =", coin_toss_value)
+                if coin_toss_value != 0:
+                    coin_value_str = text_templates.get_word_in_language("coin_head")
+                    lynched, votes = None, 0
+                else:
+                    coin_value_str = text_templates.get_word_in_language("coin_tail")
+
                 await self.interface.send_action_text_to_channel(
-                    "execution_player_text", config.GAMEPLAY_CHANNEL,
-                    voted_user=f"<@{lynched}>", highest_vote_number=votes
+                    "new_moon_heads_or_tails_result_text", config.GAMEPLAY_CHANNEL,
+                    coin_value_str=coin_value_str
                 )
 
-                cupid_couple = self.cupid_dict.get(lynched)
-                if cupid_couple is not None:
-                    await self.players[cupid_couple].get_killed(True)
-                    await self.interface.send_action_text_to_channel(
-                        "couple_died_on_day_text", config.GAMEPLAY_CHANNEL,
-                        died_player=f"<@{lynched}>", follow_player=f"<@{cupid_couple}>"
-                    )
-            else:
-                await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
+        if lynched:
+            await self.players[lynched].get_killed()
+            await self.interface.send_action_text_to_channel(
+                "execution_player_text", config.GAMEPLAY_CHANNEL,
+                voted_user=f"<@{lynched}>", highest_vote_number=votes
+            )
+
+            cupid_couple = self.cupid_dict.get(lynched)
+            if cupid_couple is not None:
+                await self.players[cupid_couple].get_killed(True)
+                await self.interface.send_action_text_to_channel(
+                    "couple_died_on_day_text", config.GAMEPLAY_CHANNEL,
+                    died_player=f"<@{lynched}>", follow_player=f"<@{cupid_couple}>"
+                )
         else:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
 
@@ -747,6 +784,13 @@ class Game:
                 text_day=text_templates.get_word_in_language(str(self.game_phase)),
                 timer_remaining_text=text_template.generate_timer_remaining_text(self.timecounter)
             )
+
+    async def do_new_moon_event_action(self):
+        if not self.modes.get("new_moon", False):
+            return None
+
+        # TODO
+        return None
 
     async def do_player_action(self, cmd, author_id, *targets_id):
         assert self.players is not None

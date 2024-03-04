@@ -32,6 +32,14 @@
     "night_phase": {
       "vi": "ban đêm",
       "en": "night phase"
+    },
+    "coin_head": {
+      "vi": "ngửa",
+      "en": "head"
+    },
+    "coin_tail": {
+      "vi": "sấp",
+      "en": "tail"
     }
   },
   "LABEL": {
@@ -1118,6 +1126,27 @@
         "description": "Game has been started at {start_time_str}.",
         "content_headers": ["Number of days", "🏆 Winner", "📝 Role list", "💘 Couple"]
       }
+    }
+  },
+  "new_moon_no_event_text": {
+    "params": [],
+    "template": {
+      "vi": ["📆 Ngày hôm nay không có sự kiện đặc biệt nào."],
+      "en": ["📆 No special event today."]
+    }
+  },
+  "new_moon_special_event_text": {
+    "params": ["event_name"],
+    "template": {
+      "vi": ["📆 Sự kiện đặc biệt của ngày hôm nay là {event_name}."],
+      "en": ["📆 Today's special event is {event_name}."]
+    }
+  },
+  "new_moon_heads_or_tails_result_text": {
+    "params": ["coin_value_str"],
+    "template": {
+      "vi": ["Vũ trụ đã tung đồng xu và kết quả là {coin_value_str}."],
+      "en": ["The universe has flipped a coin and the result was {coin_value_str}."]
     }
   }
 }

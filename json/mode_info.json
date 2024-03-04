@@ -1,0 +1,44 @@
+{
+  "hidden_role": {
+    "title": {
+      "vi": "Ẩn danh sách các nhân vật đầu game",
+      "en": "Hide the list of role on start"
+    }
+  },
+  "seer_can_kill_fox": {
+    "title": {
+      "vi": "Tiên tri có thể giết Cáo",
+      "en": "Seer can kill Fox"
+    }
+  },
+  "prevent_guard_self_protection": {
+    "title": {
+      "vi": "Không cho phép Bảo vệ bản thân",
+      "en": "Do not allow Guard self-defense"
+    }
+  },
+  "allow_guard_self_protection": {
+    "title": {
+      "vi": "Cho phép Bảo vệ bản thân",
+      "en": "Allow Guard self-defense"
+    }
+  },
+  "witch_can_kill": {
+    "title": {
+      "vi": "Phù thủy (Witch) có thể giết người",
+      "en": "Witch can kill people"
+    }
+  },
+  "couple_random": {
+    "title": {
+      "vi": "Ghép cặp ngẫu nhiên",
+      "en": "Random pairing"
+    }
+  },
+  "new_moon": {
+    "title": {
+      "vi": "Sự kiện New moon",
+      "en": "New moon event"
+    }
+  }
+}
