@@ -1,6 +1,7 @@
 {
   "Villager": {
     "name_vi": "Dân làng",
+    "party": "Villager",
     "description": {
       "vi": "Không có chức năng đặc biệt.",
       "en": "A simple villager."
@@ -10,6 +11,7 @@
   },
   "Werewolf": {
     "name_vi": "Sói",
+    "party": "Werewolf",
     "description": {
       "vi": "Chọn 1 người để giết mỗi đêm.",
       "en": "Chooses a player to kill at night."
@@ -19,6 +21,7 @@
   },
   "Superwolf": {
     "name_vi": "Sói già",
+    "party": "Werewolf",
     "description": {
       "vi": "Chọn 1 người để giết mỗi đêm. Sói già có khả năng che giấu Tiên tri và không bị soi ra là sói.",
       "en": "Chooses a player to kill at night. Can't be seen as a Werewolf."
@@ -28,6 +31,7 @@
   },
   "Guard": {
     "name_vi": "Bảo vệ",
+    "party": "Villager",
     "description": {
       "vi": "Bảo vệ được chọn 1 người khác nhau mỗi đêm và người được chọn sẽ bất tử đêm đó.",
       "en": "Guards a player: Protect the player from being killed."
@@ -37,6 +41,7 @@
   },
   "Lycan": {
     "name_vi": "Người hóa sói",
+    "party": "Villager",
     "description": {
       "vi": "Người hóa sói thuộc Phe dân làng, nhưng nếu được chỉ định bởi Tiên tri, thì sẽ bị thông báo là Sói.",
       "en": "A villager but is seen as a Werewolf."
@@ -46,6 +51,7 @@
   },
   "Seer": {
     "name_vi": "Tiên tri",
+    "party": "Villager",
     "description": {
       "vi": "Soi một người chơi có phải là sói hay không. Có thể giết chết Cáo nếu soi trúng Cáo.",
       "en": "Sees who is the Werewolf. Can kill Fox if Seer sees Fox."
@@ -55,6 +61,7 @@
   },
   "Betrayer": {
     "name_vi": "Kẻ phản bội",
+    "party": "Werewolf",
     "description": {
       "vi": "Là người nhưng bị mua chuộc theo phe sói. Kẻ phản bội biết ai là sói nhưng phe sói không biết ai là Kẻ phản bội.",
       "en": "A human but betrays Villagers. Betrayer knows werewolf players."
@@ -64,6 +71,7 @@
   },
   "Fox": {
     "name_vi": "Cáo",
+    "party": "Fox",
     "description": {
       "vi": "Thuộc phe thứ ba, Cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.",
       "en": "A Fox belongs to third party. Fox wins if all werewolves are killed. Fox is dead if being revealed by Seer. Fox will not be dead if being protected by Guard."
@@ -73,6 +81,7 @@
   },
   "Witch": {
     "name_vi": "Phù thủy",
+    "party": "Villager",
     "description": {
       "vi": "Vào ban đêm, Phù thủy có 1 bình phép có thể phục sinh một người chơi đã chết, đôi khi cũng có thể nguyền rủa một người còn sống. Mỗi chức năng này chỉ được sử dụng một lần duy nhất trong game.",
       "en": "Can reborn a dead player, and also can curse an alive player once per game."
@@ -82,6 +91,7 @@
   },
   "Zombie": {
     "name_vi": "Xác sống",
+    "party": "Villager",
     "description": {
       "vi": "Có thể tự hồi sinh một lần duy nhất trong game.",
       "en": "Can reborn once."
@@ -91,6 +101,7 @@
   },
   "Cupid": {
     "name_vi": "Thần tình yêu",
+    "party": "Cupid",
     "description": {
       "vi": "Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ thành phe thứ 3 với nhiệm vụ là hai người cuối cùng sống sót.",
       "en": "On the first day, Cupid can choose 2 players and make them to be a couple. If one of them is dead, the other will be also dead. If the couple belongs to different parties (Werewolf and Villager), then they become the third party. Their mission is to be the last stand players."

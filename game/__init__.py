@@ -473,7 +473,7 @@ class Game:
 
         reveal_list = [(_id, player.__class__.__name__) for _id, player in self.players.items()]
         await self.interface.send_text_to_channel(
-            "\n".join(text_template.generate_reveal_str_list(reveal_list)), config.GAMEPLAY_CHANNEL
+            "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner)), config.GAMEPLAY_CHANNEL
         )
 
         # write to leaderboard
@@ -482,9 +482,11 @@ class Game:
                 "game_result_embed",
                 [
                     [str(self.day)],
-                    [game_winner],
-                    text_template.generate_reveal_str_list(reveal_list),
-                    [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict.keys())] if self.cupid_dict else []
+                    # \u00A0\u00A0 is one space character for discord embed
+                    # Put \u200B\n at first of the next field to break line 
+                    [f"🎉\u00A0\u00A0\u00A0\u00A0{game_winner}\u00A0\u00A0\u00A0\u00A0🎉"],
+                    text_template.generate_reveal_str_list(reveal_list, game_winner),
+                    [" x ".join(f"<@!{player_id}>" for player_id in self.cupid_dict.keys())] if self.cupid_dict else []
                 ],
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime"))
             )
