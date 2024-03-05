@@ -192,7 +192,10 @@ class Game:
                 self.players = init_players
 
             await self.create_channel()
-            await self.interface.send_text_to_channel(text_template.generate_modes(dict(zip(self.modes, map(lambda x: str(x), self.modes.values())))), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel(
+                text_template.generate_modes({mode: str(value) for mode, value in self.modes.items()}),
+                config.GAMEPLAY_CHANNEL
+            )
 
             if not self.modes.get("hidden_role"):
                 await self.interface.send_text_to_channel(self.get_role_list(), config.GAMEPLAY_CHANNEL)
@@ -496,7 +499,7 @@ class Game:
     def get_winning_role(self):
         alives = self.get_alive_players()
         num_players = len(alives)
-        num_werewolf = sum([isinstance(p, roles.Werewolf) for p in alives])
+        num_werewolf = sum(isinstance(p, roles.Werewolf) for p in alives)
 
         print("DEBUG: ", num_players, num_werewolf)
 
@@ -505,11 +508,11 @@ class Game:
             return None
 
         # check cupid
-        couple = [self.players[i] for i in self.cupid_dict.keys()]
+        couple = [self.players[i] for i in self.cupid_dict]
         if num_players == 2 and \
-           any([isinstance(p, roles.Werewolf) for p in couple]) and \
-           any([not isinstance(p, roles.Werewolf) for p in couple]) and \
-           all([c in alives for c in couple]):
+            any(isinstance(p, roles.Werewolf) for p in couple) and \
+            any(not isinstance(p, roles.Werewolf) for p in couple) and \
+            all(p in alives for p in couple):
             return roles.Cupid
 
         # werewolf still alive then werewolf win
@@ -517,7 +520,7 @@ class Game:
             return roles.Werewolf
 
         # werewolf died and fox still alive
-        if any([isinstance(p, roles.Fox) for p in alives]):
+        if any(isinstance(p, roles.Fox) for p in alives):
             return roles.Fox
 
         return roles.Villager
@@ -637,7 +640,7 @@ class Game:
             self.wolf_kill_dict = {}
 
         cupid_couple = None
-        if len(self.night_pending_kill_list):
+        if self.night_pending_kill_list:
             final_kill_list = []
             for _id in self.night_pending_kill_list:
                 if await self.players[_id].get_killed():  # Guard can protect Fox from Seer kill
@@ -771,10 +774,10 @@ class Game:
 
         if self.play_time_start < self.play_time_end:
             return self.play_time_start <= time_point <= self.play_time_end
-        elif self.play_time_start > self.play_time_end:
+        if self.play_time_start > self.play_time_end:
             return self.play_time_start <= time_point or time_point <= self.play_time_end
-        else:
-            return True  # a day
+
+        return True  # a day
 
     async def do_process_with_play_time(self):
         self.curr_playtime = self.is_in_play_time()
@@ -832,8 +835,8 @@ class Game:
         elif cmd == "ship":
             if self.modes.get("couple_random"):
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")
-            else:
-                return await self.ship(author, *targets[:2])
+
+            return await self.ship(author, *targets[:2])
 
     async def vote(self, author, target):
         author_id = author.player_id

@@ -193,10 +193,20 @@ def generate_modes(modes_dict):
     return "===========================================================================\n" +\
         f"{mode_list['title']}: \n" +\
         "".join(
-            f"- {i}. {title}: {'`ON`' if modes_dict.get(mode) == 'True' else '`OFF`' if modes_dict.get(mode) == 'False' else '`NONE`'}\n"
+            f"- {i}. {title}: `{generate_on_off_value(modes_dict.get(mode))}`\n"
             for i, (mode, title) in enumerate(mode_list.items()) if mode != 'title'
         ) +\
         "===========================================================================\n"
+
+
+def generate_on_off_value(str_value):
+    if str_value == 'True':
+        return text_templates.get_word_in_language("turn_on").capitalize()
+
+    if str_value == 'False':
+        return text_templates.get_word_in_language("turn_off").capitalize()
+
+    return "None"
 
 
 def generate_reveal_str_list(reveal_list, game_winner):
