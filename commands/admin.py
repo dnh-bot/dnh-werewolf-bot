@@ -12,7 +12,8 @@ import config
 def is_valid_category(message):
     try:  # Channel may not belong to any category, make message.channel.category empty
         return message.channel.category.name == config.GAME_CATEGORY
-    except:  # Command not in Category channel
+    except Exception as e:  # Command not in Category channel
+        print(e)
         return False
 
 
@@ -147,14 +148,20 @@ async def send_text_to_channel(guild, text, channel_name):
     """ Send a message to a channel """
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
+    if channel is None:
+        print(f"Channel #{channel_name} in category {config.GAME_CATEGORY} does not exist!")
+        return False
+
     try:
         await channel.send(text)
         return True
     except Exception as e:
         print(e)
 
+    return False
 
-async def send_embed_to_channel(guild, embed_data, channel_name, *args):
+
+async def send_embed_to_channel(guild, embed_data, channel_name, *_):
     """Send an embed message to a channel"""
 
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)

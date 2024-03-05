@@ -27,8 +27,8 @@ def check_alive_players(game, alive_list, playersname):
 def check_game_end(game, win):
     if not win:  # If test case does not define "win", then it must end.
         return game.get_winner() is not None
-    else:
-        return game.get_winner() == win
+
+    return game.get_winner() == win
 
 
 def assign_roles(interface, ids, names_dict, game_role):

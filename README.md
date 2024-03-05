@@ -45,7 +45,7 @@ Note: You may need Priviledged Gateway Intents permissions to get the bot work p
 
 ## Run bot
 Simply run:
-```python
+```bash
 python3.9 bot.py
 ```
 The bot should connect to your Discord server and online:

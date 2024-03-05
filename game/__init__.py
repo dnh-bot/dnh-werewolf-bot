@@ -1,18 +1,17 @@
-import config
-from game import roles, text_template
-import text_templates
-
 import utils
 import datetime
 import random
 import time
 import json
+import traceback
+import asyncio
 from enum import Enum
 from collections import Counter, defaultdict
 from functools import reduce
-import traceback
-import asyncio
 
+import config
+import text_templates
+from game import roles, text_template
 from game.modes.new_moon import NewMoonMode
 
 
@@ -139,7 +138,7 @@ class Game:
                 self.runtime_roles = user_roles
                 return f"Config loaded."
             return f"Invalid json format. Use list of dictionary. Eg in role_config.json"
-        except:
+        except Exception:
             self.runtime_roles = None
             return f"Invalid json format."
 
@@ -700,7 +699,8 @@ class Game:
                 await self.current_task
             except asyncio.CancelledError:
                 print("... cancelled now")
-            except:
+            except Exception as e:
+                print(e)
                 print("Cancelled task in cancel_running_task")
         except Exception as e:
             print(e)
@@ -748,7 +748,8 @@ class Game:
                 await self.next_phase()
         except asyncio.CancelledError:
             print("cancel_me(): cancel sleep")
-        except:
+        except Exception as e:
+            print(e)
             print("Unknown run_timer_phase")
 
     def set_play_time(self, time_start: datetime.time, time_end: datetime.time, zone):

@@ -1,18 +1,18 @@
-from commands import admin, player
-import commands
-import config
-from game import text_template, GamePhase
-import text_templates
-
-import discord
 import asyncio   # Do not remove this. This for debug command
 import re
 from datetime import *
 import tzlocal
 import subprocess
 import os
+
+import discord
 from dateutil import parser, tz
 
+from commands import admin, player
+import commands
+import config
+from game import text_template
+import text_templates
 import utils
 
 # TODO: generate content of command embed_data
@@ -27,9 +27,9 @@ def parse_time_str(time_str):
         args_tz_parts = args_matches[1].split(":")
         if len(args_tz_parts) == 2:  # \d+:\d+
             return args_tz_sign, args_tz_parts[0], args_tz_parts[1]
-        elif len(args_tz_parts[0]) <= 2:  # \d | \d\d
+        if len(args_tz_parts[0]) <= 2:  # \d | \d\d
             return args_tz_sign, args_tz_parts[0], 0
-        elif len(args_tz_parts[0]) <= 4:  # (\d)(\d\d) | (\d\d)(\d\d)
+        if len(args_tz_parts[0]) <= 4:  # (\d)(\d\d) | (\d\d)(\d\d)
             return args_tz_sign, args_tz_parts[0][:-2], args_tz_parts[0][-2:]
 
     return None
