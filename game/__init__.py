@@ -359,7 +359,7 @@ class Game:
                 status_description = text_templates.get_label_in_language("out_of_playing_time_status")
 
         if self.game_phase == GamePhase.DAY:
-            vote_table = {f'<@!{k}>': v for k, v in self.get_vote_status().items()}
+            vote_table = {f'<@{k}>': v for k, v in self.get_vote_status().items()}
             table_title = text_templates.get_label_in_language("vote_list_title")
 
         elif self.game_phase == GamePhase.NIGHT:
@@ -369,7 +369,7 @@ class Game:
 
             elif author.is_alive():
                 if isinstance(author, roles.Werewolf) and (channel_name == config.WEREWOLF_CHANNEL or channel_name.startswith("personal")):
-                    vote_table = {f'<@!{k}>': v for k, v in self.get_vote_status(self.wolf_kill_dict).items()}
+                    vote_table = {f'<@{k}>': v for k, v in self.get_vote_status(self.wolf_kill_dict).items()}
                     table_title = text_templates.get_label_in_language("kill_list_title")
 
                 elif isinstance(author, (roles.Seer, roles.Guard)) and channel_name.startswith("personal"):
@@ -484,7 +484,7 @@ class Game:
                     # Put \u200B\n at first of the next field to break line
                     [f"🎉\u00A0\u00A0\u00A0\u00A0{game_winner}\u00A0\u00A0\u00A0\u00A0🎉"],
                     text_template.generate_reveal_str_list(reveal_list, game_winner),
-                    [" x ".join(f"<@!{player_id}>" for player_id in self.cupid_dict.keys())] if self.cupid_dict else []
+                    [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict.keys())] if self.cupid_dict else []
                 ],
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime"))
             )
