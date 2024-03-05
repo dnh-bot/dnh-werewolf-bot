@@ -100,7 +100,7 @@ async def parse_command(client, game, message):
                     is_valid_command = False
                     if all(param.isdigit() for param in parameters):
                         targets_index = [int(param) - 1 for param in parameters]
-                        id_players = game.get_dead_players() if cmd == "reborn" else game.get_alive_players()
+                        id_players = game.get_all_players()
                         if all(0 <= i < len(id_players) for i in targets_index):
                             is_valid_command = True
                             msg = await game.do_player_action(cmd, author.id, *[id_players[i].player_id for i in targets_index])
@@ -149,7 +149,7 @@ async def parse_command(client, game, message):
                 await admin.send_embed_to_channel(message.channel.guild, embed_data, message.channel.name)
                 
                 role_list = [game.get_role_list()]
-                players_embed_data = text_template.generate_player_list_embed(game.get_all_players(), None, role_list)
+                players_embed_data = text_template.generate_player_list_embed(game.get_all_players(), alive_status=True, role_list=role_list)
                 await admin.send_embed_to_channel(message.channel.guild, players_embed_data, message.channel.name)
         elif cmd == "timer":
             """ Usage:

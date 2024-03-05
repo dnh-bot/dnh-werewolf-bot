@@ -1,7 +1,7 @@
 import config
 from game import roles, text_template
 import text_templates
-
+from game.roles.character import CharacterStatus
 import utils
 import datetime
 import random
@@ -418,7 +418,7 @@ class Game:
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
 
-        embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
+        embed_data = text_template.generate_player_list_embed(self.get_all_players(), alive_status=True)
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
 
         info = text_templates.generate_text("werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in werewolf_list))
@@ -537,7 +537,7 @@ class Game:
         self.day += 1
         if self.players:
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
+            embed_data = text_template.generate_player_list_embed(self.get_all_players(), alive_status=True)
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
             if self.modes.get("new_moon", False):
@@ -615,7 +615,7 @@ class Game:
                 "werewolf_before_voting_text",
                 config.WEREWOLF_CHANNEL
             )
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
+            embed_data = text_template.generate_player_list_embed(self.get_all_players(), alive_status=True)
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
             # Send alive player list to all skilled characters (guard, seer, etc.)
             if self.modes.get("witch_can_kill"):
@@ -623,7 +623,7 @@ class Game:
             else:
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if not isinstance(player, roles.Witch)])
 
-            embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False)
+            embed_data = text_template.generate_player_list_embed(self.get_all_players(), alive_status=False)
             # Send dead player list to Witch if Witch has not used skill
             if embed_data:  # This table can be empty (No one is dead)
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])
@@ -1021,7 +1021,10 @@ class Game:
         @check(is_night)
         @check(has_role(roles.Guard))
         async def auto_guard():
-            target = random.choice(self.get_alive_players())
+            alives = self.get_all_players()
+            target = random.choice(alives)
+            while target.status == CharacterStatus.KILLED:
+                target = random.choice(alives)
             msg = await self.guard(author, target)
             await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
 
@@ -1029,10 +1032,10 @@ class Game:
         @check(is_night)
         @check(has_role(roles.Seer))
         async def auto_seer():
-            target = random.choice(self.get_alive_players())
-            if author.player_id in self.cupid_dict:
-                while target.player_id in  self.cupid_dict:
-                    target = random.choice(self.get_alive_players())
+            alives = self.get_all_players()
+            target = random.choice(alives)
+            while (author.player_id in self.cupid_dict and (target.player_id in self.cupid_dict or target.status == CharacterStatus.KILLED)) or (target.status == CharacterStatus.KILLED):
+                target = random.choice(alives)
             msg = await self.seer(author, target)
             await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
 
