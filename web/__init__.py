@@ -1,5 +1,6 @@
-from flask import Flask, render_template
 from threading import Thread
+
+from flask import Flask, render_template
 from waitress import serve
 
 # ============ Flask functions ============
@@ -19,5 +20,5 @@ def run():
 
 def keep_alive():
     thread = Thread(target=run)
-    print('Start Flask seperated from the bot')
+    print('Start Flask separated from the bot')
     thread.start()

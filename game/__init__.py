@@ -1,4 +1,3 @@
-import utils
 import datetime
 import random
 import time
@@ -10,6 +9,7 @@ from collections import Counter, defaultdict
 from functools import reduce
 
 import config
+import utils
 import text_templates
 from game import roles, text_template
 from game.modes.new_moon import NewMoonMode

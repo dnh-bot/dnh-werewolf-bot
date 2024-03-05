@@ -1,5 +1,3 @@
-import json
-
 from config import TEXT_LANGUAGE
 from game.roles.villager import Villager
 from game.roles.werewolf import Werewolf
@@ -26,11 +24,6 @@ def get_role_type(name):
     for role in get_all_roles():
         if role.__name__ == name:
             return role
-
-
-def get_role_name_in_language(name, language):
-    # TODO: remove this function after complete text_template.json
-    return name
 
 
 def get_role_title(name):
