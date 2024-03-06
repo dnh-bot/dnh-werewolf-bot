@@ -17,11 +17,24 @@ def get_full_cmd_description(cmd):
 def generate_player_list_embed(player_list, alive_status=None, role_list=None):
     # Handle 3 types of list: Alive, Dead, Overview
     if player_list:
-        id_player_list = [f"{'💀' if alive_status is None and user.status == CharacterStatus.KILLED else row_id} -> <@{user.player_id}>" for row_id, user in enumerate(player_list, 1)]
+        id_player_list = generate_id_player_list(player_list, alive_status)
         action_name = f"{'all' if alive_status is None else 'alive' if alive_status else 'dead'}_player_list_embed"
         embed_data = text_templates.generate_embed(action_name, [id_player_list] if role_list is None else [id_player_list, role_list])
         return embed_data
     return None
+
+
+def generate_id_player_list(player_list, alive_status):
+    id_player_list = []
+    row_id = 1
+    for user in player_list:
+        if alive_status is None and user.status == CharacterStatus.KILLED:
+            id_player_list.append(f"💀 -> <@{user.player_id}>") # Do not increase row_id when user is dead
+        else:
+            id_player_list.append(f"{row_id} -> <@{user.player_id}>")
+            row_id += 1
+
+    return id_player_list
 
 
 def generate_vote_field(vote_table):
@@ -196,13 +209,29 @@ def generate_modes(modes_dict):
         "===========================================================================\n"
 
 
-def generate_reveal_str_list(reveal_list, game_winner):
-    winner_list = [(player_id, role, '🥳' if roles.get_role_party(role) == game_winner else '😭') for player_id, role in reveal_list]
+def generate_reveal_str_list(reveal_list, game_winner, cupid_dict):
+    winner_list = generate_winner_list(reveal_list, game_winner, cupid_dict)
 
     return [
         "- " + text_templates.generate_text("reveal_player_text", player_id=player_id, role=role, result_emoji=result_emoji)
         for player_id, role, result_emoji in winner_list
     ]
+
+
+def generate_winner_list(reveal_list, game_winner, cupid_dict):
+    winner_list = []
+    for player_id, role in reveal_list:
+        if roles.get_role_party(role) == game_winner:
+            emoji = '🥳'
+        else:
+            emoji = '😭'
+
+        if game_winner == 'Cupid' and player_id in cupid_dict:
+            emoji = '🥳'
+
+        winner_list.append((player_id, role, emoji))
+
+    return winner_list
 
 
 def time_range_to_string(start_time, end_time, zone):
