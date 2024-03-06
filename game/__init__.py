@@ -597,6 +597,9 @@ class Game:
                 )
         else:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
+            
+        players_embed_data = text_template.generate_player_list_embed(self.get_all_players())
+        await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
 
         # Mute all players in config.GAMEPLAY_CHANNEL
         await asyncio.gather(
