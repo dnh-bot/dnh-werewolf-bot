@@ -14,16 +14,12 @@ def get_full_cmd_description(cmd):
     return f"{description} {text_templates.get_word_in_language('use_command')} {usage_text}."
 
 
-def generate_player_list_embed(player_list, alive_status=False, role_list=False):
-    # Always use all players list
+def generate_player_list_embed(player_list, alive_status=None, role_list=None):
+    # Handle 3 types of list: Alive, Dead, Overview
     if player_list:
-        if alive_status:
-            id_player_list = [f"{'💀' if alive_status is True and user.status == CharacterStatus.KILLED else row_id} -> <@!{user.player_id}>" for row_id, user in enumerate(player_list, 1)]
-        else:
-            # Some actions may need dead players ID
-            id_player_list = [f"{row_id} -> <@!{user.player_id}>{'💀' if user.status == CharacterStatus.KILLED else ''}" for row_id, user in enumerate(player_list, 1)]
-        action_name = "all_player_list_embed"
-        embed_data = text_templates.generate_embed(action_name, [id_player_list] if role_list is False else [id_player_list, role_list])
+        id_player_list = [f"{'💀' if alive_status is None and user.status == CharacterStatus.KILLED else row_id} -> <@{user.player_id}>" for row_id, user in enumerate(player_list, 1)]
+        action_name = f"{'all' if alive_status is None else 'alive' if alive_status else 'dead'}_player_list_embed"
+        embed_data = text_templates.generate_embed(action_name, [id_player_list] if role_list is None else [id_player_list, role_list])
         return embed_data
     return None
 
