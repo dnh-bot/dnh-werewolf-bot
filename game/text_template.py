@@ -18,7 +18,7 @@ def generate_player_list_embed(player_list, alive_status=False, role_list=False)
     # Always use all players list
     if player_list:
         if alive_status:
-            id_player_list = [f"{'💀' if user.status == CharacterStatus.KILLED else row_id} -> <@!{user.player_id}>" for row_id, user in enumerate(player_list, 1)]
+            id_player_list = [f"{'💀' if alive_status is True and user.status == CharacterStatus.KILLED else row_id} -> <@!{user.player_id}>" for row_id, user in enumerate(player_list, 1)]
         else:
             # Some actions may need dead players ID
             id_player_list = [f"{row_id} -> <@!{user.player_id}>{'💀' if user.status == CharacterStatus.KILLED else ''}" for row_id, user in enumerate(player_list, 1)]
