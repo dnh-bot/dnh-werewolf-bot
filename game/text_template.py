@@ -221,13 +221,13 @@ def generate_reveal_str_list(reveal_list, game_winner, cupid_dict):
 def generate_winner_list(reveal_list, game_winner, cupid_dict):
     winner_list = []
     for player_id, role in reveal_list:
-        if roles.get_role_party(role) == game_winner:
+        party_victory = roles.get_role_party(role) == game_winner
+        cupid_victory = game_winner == 'Cupid' and player_id in cupid_dict
+
+        if party_victory or cupid_victory:
             emoji = '🥳'
         else:
             emoji = '😭'
-
-        if game_winner == 'Cupid' and player_id in cupid_dict:
-            emoji = '🥳'
 
         winner_list.append((player_id, role, emoji))
 
