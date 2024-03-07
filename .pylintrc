@@ -7,3 +7,5 @@ disable=
     W0401, # wildcard-import
     W0614, # unused-wildcard-import
     W0718, # broad-exception-caught
+    R0914, # too-many-locals
+    R0915, # too-many-statements
