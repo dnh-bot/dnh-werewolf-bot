@@ -178,12 +178,14 @@ def generate_help_embed(*args):
     return help_embed_data
 
 
-def generate_table(header, data):
-    # This needs to be adjusted based on expected range of values or calculated dynamically
-    # header + ["   ".join(str(item) for item in data] * len(data)
+def generate_on_off_value(str_value):
+    if str_value == 'True':
+        return text_templates.get_word_in_language("turn_on").capitalize()
 
-    # Joining up scores into a line
-    return "```"+"\n".join(header + ["   ".join(str(item) for item in data)] * len(data)) + "```"
+    if str_value == 'False':
+        return text_templates.get_word_in_language("turn_off").capitalize()
+
+    return "None"
 
 
 def generate_modes(modes_dict):
@@ -197,16 +199,6 @@ def generate_modes(modes_dict):
             for i, (mode, title) in enumerate(mode_list.items()) if mode != 'title'
         ) +\
         "===========================================================================\n"
-
-
-def generate_on_off_value(str_value):
-    if str_value == 'True':
-        return text_templates.get_word_in_language("turn_on").capitalize()
-
-    if str_value == 'False':
-        return text_templates.get_word_in_language("turn_off").capitalize()
-
-    return "None"
 
 
 def generate_reveal_str_list(reveal_list, game_winner):

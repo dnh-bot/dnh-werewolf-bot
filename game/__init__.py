@@ -97,10 +97,10 @@ class Game:
 
         if not modes_list:
             return "Mode list not found."
-        if not (mode_id.isdigit()):
+        if not mode_id.isdigit():
             return "Mode ID must be a valid number."
         if int(mode_id) < 1 or int(mode_id) > len(modes_list):
-            return f"Mode ID must be between `1 - {len(modes_list)}`"
+            return f"Mode ID must be between 1 and {len(modes_list)}"
         if status not in ['on', 'off']:
             return "Set mode value must be `on` or `off`"
 
@@ -136,11 +136,11 @@ class Game:
             user_roles = json.loads("".join(role_json_in_string))
             if isinstance(user_roles, list) and all(map(lambda x: isinstance(x, dict), user_roles)):
                 self.runtime_roles = user_roles
-                return f"Config loaded."
-            return f"Invalid json format. Use list of dictionary. Eg in role_config.json"
+                return "Config loaded."
+            return "Invalid json format. Use list of dictionary. Eg in role_config.json"
         except Exception:
             self.runtime_roles = None
-            return f"Invalid json format."
+            return "Invalid json format."
 
     def generate_roles(self, interface, ids, names_dict):
         def dict_to_list(config, number=0):
@@ -820,19 +820,19 @@ class Game:
 
         if cmd == "vote":
             return await self.vote(author, targets[0])
-        elif cmd == "kill":
+        if cmd == "kill":
             return await self.kill(author, targets[0])
-        elif cmd == "guard":
+        if cmd == "guard":
             return await self.guard(author, targets[0])
-        elif cmd == "seer":
+        if cmd == "seer":
             return await self.seer(author, targets[0])
-        elif cmd == "reborn":
+        if cmd == "reborn":
             return await self.reborn(author, targets[0])
-        elif cmd == "curse":
+        if cmd == "curse":
             return await self.curse(author, targets[0])
-        elif cmd == "zombie":
+        if cmd == "zombie":
             return await self.zombie(author)
-        elif cmd == "ship":
+        if cmd == "ship":
             if self.modes.get("couple_random"):
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")
 
