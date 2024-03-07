@@ -272,10 +272,7 @@ class Game:
         return len(self.players)  # Return number of current players
 
     def get_all_players(self):
-        return sorted(
-            list(self.players.values()),
-            key=lambda player: player.player_id
-        )
+        return self.get_alive_players() + self.get_dead_players()
 
     def get_alive_players(self):
         return sorted(
@@ -537,7 +534,7 @@ class Game:
         self.day += 1
         if self.players:
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
+            embed_data = text_template.generate_player_list_embed(self.get_all_players())
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
             if self.modes.get("new_moon", False):
