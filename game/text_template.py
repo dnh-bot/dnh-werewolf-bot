@@ -49,7 +49,7 @@ def generate_vote_field(vote_table):
                 "game_status_vote_field_text",
                 be_voted_str=vote_title,
                 votes_num=len(votes),
-                voters_str=', '.join(f'<@!{_id}>' for _id in sorted(votes))
+                voters_str=', '.join(f'<@{_id}>' for _id in sorted(votes))
             )
             for vote_title, votes in sorted(vote_table.items(), key=lambda t: (-len(t[1]), t[0]))
             if len(votes)
