@@ -9,3 +9,4 @@ disable=
     W0718, # broad-exception-caught
     R0914, # too-many-locals
     R0915, # too-many-statements
+    W0511, # fixme

@@ -1,4 +1,3 @@
-import time
 import asyncio
 import os
 
@@ -83,7 +82,7 @@ async def test_case(game, filepath):
             await asyncio.sleep(DELAY_TIME)
         await game.stop()
         print("====== End test case =====")
-    except AssertionError as e:
+    except AssertionError:
         assert_time_print(filepath, game, playersname)
         raise
     except Exception as e:
@@ -110,7 +109,7 @@ async def test_game():
 
 async def main():
     task = asyncio.create_task(test_game())
-    done, pending = await asyncio.wait({task})
+    done, _ = await asyncio.wait({task})
 
     if task in done:
         print("DONE")

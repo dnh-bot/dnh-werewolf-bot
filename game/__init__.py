@@ -1,3 +1,5 @@
+#FIXME:
+# pylint: disable=too-many-lines
 import datetime
 import random
 import time
@@ -26,6 +28,8 @@ class GamePhase(Enum):
 
 class Game:
     def __init__(self, guild, interface):
+        # FIXME:
+        # pylint: disable=too-many-instance-attributes
         self.guild = guild  # Should not use. Reserved for future.
         self.interface = interface
         self.channels = [

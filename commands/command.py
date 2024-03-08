@@ -1,7 +1,6 @@
-import asyncio   # Do not remove this. This for debug command
+# import asyncio   # Do not remove this. This for debug command
 import re
 from datetime import *
-import tzlocal
 import subprocess
 import os
 
@@ -33,6 +32,8 @@ def parse_time_str(time_str):
 
 
 async def parse_command(client, game, message):
+    # FIXME:
+    # pylint: disable=too-many-nested-blocks, too-many-branches
     message_parts = message.content.strip()[len(config.BOT_PREFIX):].split(" ")
     cmd, parameters = message_parts[0], message_parts[1:]
     # Game commands only valid under GAME CATEGORY:
@@ -151,9 +152,7 @@ async def parse_command(client, game, message):
                 players_embed_data = text_template.generate_player_list_embed(game.get_all_players(), None, role_list)
                 await admin.send_embed_to_channel(message.channel.guild, players_embed_data, message.channel.name)
         elif cmd == "timer":
-            """ Usage:
-                `!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
-            """
+            # Usage:`!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
             if len(parameters) < 3:
                 timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
                 await message.reply(
@@ -190,9 +189,7 @@ async def parse_command(client, game, message):
             await message.reply(text_templates.generate_text("timer_stop_text"))
 
         elif cmd == "setplaytime":
-            """Usage:
-                `!setplaytime 10:00 21:00 UTC+7` -> start_time = 10:00, end_time = 21:00, zone=UTC+7
-            """
+            # Usage: `!setplaytime 10:00 21:00 UTC+7` -> start_time = 10:00, end_time = 21:00, zone=UTC+7
             if len(parameters) >= 2:
                 zone = "UTC+7"
                 if len(parameters) >= 3:
@@ -262,7 +259,8 @@ async def parse_command(client, game, message):
                         print(e)
                 elif cmd == "fdebug":
                     # print(asyncio.all_tasks())
-                    exec(" ".join(parameters))
+                    # exec(" ".join(parameters))
+                    pass
             else:
                 await message.reply("You do not have Admin role.")
 
