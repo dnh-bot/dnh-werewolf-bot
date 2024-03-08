@@ -21,6 +21,8 @@ jobs:
         pip install -r requirements.txt
     - name: Analysing the code with pylint
       run: |
+        pylint $(git ls-files '*.py')
+    - name: Run Test cases
+      run: |
         cp .env.example .env
         python test.py
-        pylint $(git ls-files '*.py')
