@@ -169,7 +169,7 @@ gameplay created!
 FINISH ALL TEST CASES SUCCESSFULLY
 ```
 
-Tips: you can reduce the DELAY_TIME for faster run
+Tips: you can reduce the delay_time for faster run
 
 # How to run bot on free deployment service
 

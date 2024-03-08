@@ -36,15 +36,15 @@ def assign_roles(game_interface, ids, names_dict, game_role):
 
 async def test_case(game, filepath):
     test_case_data = None
-    with open(filepath, "r") as fi:
+    with open(filepath, "r", encoding="utf8") as fi:
         test_case_data = json.load(fi)
 
     try:
         assert test_case_data is not None
-        print("\n\n\n"+"$"*150)
+        print("\n\n\n" + "$" * 150)
         print(f"====== Begin test case at {filepath} =====")
         print(f"Test case: {test_case_data['name']}")
-        DELAY_TIME = 0.03  # MUST greater than 0
+        delay_time = 0.03  # MUST greater than 0
         game.timer_enable = False  # MUST have
 
         player_name_dict = test_case_data["player_list"]  # username: Role
@@ -62,7 +62,7 @@ async def test_case(game, filepath):
 
         timeline_action_list = test_case_data["timeline"]
         for timeline_idx, action_data in enumerate(timeline_action_list):
-            await asyncio.sleep(DELAY_TIME)
+            await asyncio.sleep(delay_time)
 
             assert check_alive_players(game, list(map(lambda x: id_map[x], action_data["alive"])), playersname)
             for action_str in action_data["action"]:
@@ -70,16 +70,16 @@ async def test_case(game, filepath):
                 target_name = action_str.split()[2:]
                 text = await game.do_player_action(command, id_map[author_name], *[id_map[i] for i in target_name])
                 print(text)
-            await asyncio.sleep(DELAY_TIME)
+            await asyncio.sleep(delay_time)
             await game.next_phase()
 
-        await asyncio.sleep(DELAY_TIME)
+        await asyncio.sleep(delay_time)
 
         assert check_game_end(game, test_case_data.get("win"))
         if test_case_data.get("win") != "None":
             await game.task_game_loop
         else:
-            await asyncio.sleep(DELAY_TIME)
+            await asyncio.sleep(delay_time)
         await game.stop()
         print("====== End test case =====")
     except AssertionError:

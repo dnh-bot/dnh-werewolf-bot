@@ -1,4 +1,4 @@
-#FIXME:
+# FIXME:
 # pylint: disable=too-many-lines
 import datetime
 import random
@@ -28,7 +28,7 @@ class GamePhase(Enum):
 
 class Game:
     # FIXME:
-    # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods
     def __init__(self, guild, interface):
         self.guild = guild  # Should not use. Reserved for future.
         self.interface = interface
@@ -147,9 +147,9 @@ class Game:
             return "Invalid json format."
 
     def generate_roles(self, interface, ids, names_dict):
-        def dict_to_list(config, number=0):
-            yield from (name for name in config for _ in range(config[name]))
-            yield from ('Werewolf' if i % 4 == 0 else 'Villager' for i in range(number-sum(config.values())))
+        def dict_to_list(cfg, number=0):
+            yield from (name for name in cfg for _ in range(cfg[name]))
+            yield from ('Werewolf' if i % 4 == 0 else 'Villager' for i in range(number - sum(cfg.values())))
 
         if self.runtime_roles:
             role_config = self.runtime_roles
@@ -330,6 +330,8 @@ class Game:
         return len(self.watchers)  # Return number of current watchers
 
     def get_game_status(self, channel_name, author_id):
+        # FIXME
+        # pylint: disable=too-many-branches
         """
         Returns:
         game status description,
@@ -514,9 +516,9 @@ class Game:
         # check cupid
         couple = [self.players[i] for i in self.cupid_dict]
         if num_players == 2 and \
-            any(isinstance(p, roles.Werewolf) for p in couple) and \
-            any(not isinstance(p, roles.Werewolf) for p in couple) and \
-            all(p in alives for p in couple):
+                any(isinstance(p, roles.Werewolf) for p in couple) and \
+                any(not isinstance(p, roles.Werewolf) for p in couple) and \
+                all(p in alives for p in couple):
             return roles.Cupid
 
         # werewolf still alive then werewolf win
@@ -802,6 +804,8 @@ class Game:
         return None
 
     async def do_player_action(self, cmd, author_id, *targets_id):
+        # FIXME
+        # pylint: disable=too-many-return-statements, too-many-branches
         assert self.players is not None
         # print(self.players)
         author = self.players.get(author_id)
@@ -839,8 +843,10 @@ class Game:
         if cmd == "ship":
             if self.modes.get("couple_random"):
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")
-
             return await self.ship(author, *targets[:2])
+
+        return text_templates.generate_text("invalid_command_text")
+
 
     async def vote(self, author, target):
         author_id = author.player_id
@@ -893,7 +899,7 @@ class Game:
         if not isinstance(author, roles.Seer):
             return text_templates.generate_text("invalid_author_text")
 
-        author_id = author.player_id
+        # author_id = author.player_id
         target_id = target.player_id
 
         if author.get_mana() == 0:
@@ -915,7 +921,7 @@ class Game:
         if not isinstance(author, roles.Witch):
             return text_templates.generate_text("invalid_author_text")
 
-        author_id = author.player_id
+        # author_id = author.player_id
         target_id = target.player_id
 
         if author.get_power() == 0:
@@ -939,7 +945,7 @@ class Game:
         if not isinstance(author, roles.Witch):
             return text_templates.generate_text("invalid_author_text")
 
-        author_id = author.player_id
+        # author_id = author.player_id
         target_id = target.player_id
 
         if author.get_curse_power() == 0:
@@ -1006,8 +1012,7 @@ class Game:
                     if pred():
                         print("Check success")
                         return await f(*a, **kw)
-                    else:
-                        print("Check failed")
+                    print("Check failed")
                 return execute
             return wrapper
 
@@ -1045,20 +1050,20 @@ class Game:
         if subcmd == "off":
             self.auto_hook[author] = []
             return "Clear auto successed"
-        elif subcmd == "seer":
+
+        if subcmd == "seer":
             if has_role(roles.Seer)():
                 self.auto_hook[author].append(auto_seer)
                 return "Register auto seer success"
-            else:
-                return "You are not a seer"
-        elif subcmd == "guard":
+            return "You are not a seer"
+
+        if subcmd == "guard":
             if has_role(roles.Guard)():
                 self.auto_hook[author].append(auto_guard)
                 return "Register auto guard success"
-            else:
-                return "You are not a guard"
-        else:
-            return "Unknown auto command, please try again"
+            return "You are not a guard"
+
+        return "Unknown auto command, please try again"
 
     async def do_run_auto_hook(self):
         print("do_run_auto_hook")
@@ -1073,7 +1078,7 @@ class Game:
 
     async def test_case_real_players(self):
         print("====== Begin test case =====")
-        DELAY_TIME = 3
+        delay_time = 3
         real_id = dict((i, x) for i, x in enumerate(config.DISCORD_TESTING_USERS_ID, 1))
         await self.add_player(real_id[1], "w")
         await self.add_player(real_id[2], "s")
@@ -1081,7 +1086,7 @@ class Game:
         await self.add_player(real_id[4], "v2")
         players = {
             real_id[1]: roles.Werewolf(self.interface, real_id[1], "w"),
-            real_id[2]: roles.Seer(self.interface,     real_id[2], "s"),
+            real_id[2]: roles.Seer(self.interface, real_id[2], "s"),
             real_id[3]: roles.Villager(self.interface, real_id[3], "v1"),
             real_id[4]: roles.Villager(self.interface, real_id[4], "v2"),
         }
@@ -1091,16 +1096,16 @@ class Game:
         print(await self.vote(real_id[4], real_id[1]))
 
         await self.next_phase()  # go NIGHT
-        time.sleep(DELAY_TIME)
+        time.sleep(delay_time)
         print(await self.kill(real_id[1], real_id[3]))
 
         await self.next_phase()  # go DAY
-        time.sleep(DELAY_TIME)
+        time.sleep(delay_time)
 
         await self.next_phase()
-        time.sleep(DELAY_TIME)
+        time.sleep(delay_time)
         await self.stop()
-        time.sleep(DELAY_TIME)
+        time.sleep(delay_time)
         print("====== End test case =====")
 
 

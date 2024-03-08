@@ -24,6 +24,8 @@ def get_role_type(name):
     for role in get_all_roles():
         if role.__name__ == name:
             return role
+    print("Unknown state get_role_type")
+    return None
 
 
 def get_role_title(name):
@@ -32,9 +34,9 @@ def get_role_title(name):
         field_name = f"name_{TEXT_LANGUAGE}"
         if field_name in role_info[name]:
             return f"{name} ({role_info[name][field_name]})"
-
         return name
-
+    print("Unknown state get_role_title")
+    return None
 
 def get_role_party(name):
     name = name.capitalize()
