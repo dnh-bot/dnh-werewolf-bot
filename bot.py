@@ -1,13 +1,12 @@
+import sys
+
 import discord
 from commands import command, admin
 from game import *
 import config
 import interface
-import sys
 
-if not config.DISCORD_TOKEN:
-    print("Use must setup DISCORD_TOKEN in .env file")
-    sys.exit(1)
+
 # ============ Local functions ============
 
 
@@ -41,7 +40,7 @@ async def process_message(client, message):
         await command.parse_command(client, game, message)
 
 
-def verify_ok(message):
+def verify_ok(_):
     return True
 
 
@@ -72,7 +71,7 @@ async def on_ready():
     await init_setup()
     print("The bot is ready")
 
-    """ Uncomment to run test """
+    # Uncomment to run test
     # server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
     # server_id = config.DISCORD_DEPLOY_SERVER_ID  # Running test on DNH ma sói bot's server
     # await test_bot(game_list.get_game(server_id), client.get_guild(server_id))
@@ -85,5 +84,8 @@ async def on_message(message):
 
 
 if __name__ == '__main__':
+    if not config.DISCORD_TOKEN:
+        print("Use must setup DISCORD_TOKEN in .env file")
+        sys.exit(1)
     # keep_alive() # Uncomment to keep the bot alive
     client.run(config.DISCORD_TOKEN)

@@ -2,9 +2,9 @@
 This provides APIs for Admin role and bot role
 """
 
-from time import sleep
-import discord
 import asyncio
+
+import discord
 from utils import logger
 import config
 
@@ -84,7 +84,7 @@ async def create_channel(guild, author, channel_name, is_public=False, is_admin_
                 guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=not is_admin_writeonly),
                 admin_role: discord.PermissionOverwrite(read_messages=True)
             }
-            response = "{} created channel {}".format(author.name, channel_name)
+            response = f"{author.name} created channel {channel_name}"
             print(response)
             # logger.logger_debug(category)
             channel = await guild.create_text_channel(channel_name, overwrites=overwrites, category=category)

@@ -15,9 +15,6 @@ from game import text_template
 import text_templates
 import utils
 
-# TODO: generate content of command embed_data
-# e.g: Select a player to vote/kill/... by using command ...\nFor example: ...
-
 
 def parse_time_str(time_str):
     args_matches = re.findall(r"^([+-])*(\d{1,2}|\d{1,2}:?\d{2})$", time_str)
