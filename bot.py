@@ -29,7 +29,7 @@ async def init_setup(init_game_list=False):
         await admin.send_text_to_channel(guild, startup_msg, config.GAMEPLAY_CHANNEL)
 
 
-async def process_message(client, message):
+async def process_message(discord_client, message):
     if message.content.strip().startswith(config.BOT_PREFIX):
         game = game_list.get_game(message.guild.id)
         if game is None:
@@ -37,7 +37,7 @@ async def process_message(client, message):
             init_setup(True)
             game = game_list.get_game(message.guild.id)
 
-        await command.parse_command(client, game, message)
+        await command.parse_command(discord_client, game, message)
 
 
 def verify_ok(_):

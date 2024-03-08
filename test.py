@@ -30,8 +30,8 @@ def check_game_end(game, win):
     return game.get_winner() == win
 
 
-def assign_roles(interface, ids, names_dict, game_role):
-    return {id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
+def assign_roles(game_interface, ids, names_dict, game_role):
+    return {id_: roles.get_role_type(role_name)(game_interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
 
 
 async def test_case(game, filepath):

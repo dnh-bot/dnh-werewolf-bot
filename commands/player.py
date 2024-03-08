@@ -156,6 +156,6 @@ async def do_stop(game, message, force=False):
         await message.reply(text_templates.generate_text("game_not_started_text"))
 
 
-async def test_player_command(guild):
+async def test_player_command(_):
     # TODO:
     pass

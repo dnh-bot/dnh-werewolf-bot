@@ -27,9 +27,9 @@ class GamePhase(Enum):
 
 
 class Game:
+    # FIXME:
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, guild, interface):
-        # FIXME:
-        # pylint: disable=too-many-instance-attributes
         self.guild = guild  # Should not use. Reserved for future.
         self.interface = interface
         self.channels = [
@@ -405,7 +405,7 @@ class Game:
         if voter_dict is None:
             voter_dict = self.voter_dict
 
-        table_dict = reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, voter_dict.items(), dict())
+        table_dict = reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, voter_dict.items(), {})
         print(table_dict)
         return table_dict
 
@@ -703,7 +703,7 @@ class Game:
             print("Cancelling....", current_task)
             current_task.cancel()
             try:
-                await self.current_task
+                await current_task
             except asyncio.CancelledError:
                 print("... cancelled now")
             except Exception as e:

@@ -1,4 +1,3 @@
-import asyncio
 import commands
 import text_templates
 
