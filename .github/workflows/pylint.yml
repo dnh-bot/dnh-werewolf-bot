@@ -21,4 +21,5 @@ jobs:
         pip install -r requirements.txt
     - name: Analysing the code with pylint
       run: |
-        pylint --max-line-length=120 $(git ls-files '*.py')
+        python test.py
+        pylint $(git ls-files '*.py')
