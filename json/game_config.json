@@ -4,5 +4,5 @@
     "allow_guard_self_protection": "True",
     "witch_can_kill": "True",
     "couple_random": "False",
-    "new_moon": "True"
+    "new_moon": "False"
 }
