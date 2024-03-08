@@ -493,7 +493,7 @@ class Game:
                     # Put \u200B\n at first of the next field to break line
                     [f"🎉\u00A0\u00A0\u00A0\u00A0{game_winner}\u00A0\u00A0\u00A0\u00A0🎉"],
                     text_template.generate_reveal_str_list(reveal_list, game_winner),
-                    [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict.keys())] if self.cupid_dict else []
+                    [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict)] if self.cupid_dict else []
                 ],
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime"))
             )
@@ -843,7 +843,7 @@ class Game:
         if cmd == "ship":
             if self.modes.get("couple_random"):
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")
-            return await self.ship(author, *targets[:2])
+            return await self.ship(author, targets[0], targets[1])
 
         return text_templates.generate_text("invalid_command_text")
 
