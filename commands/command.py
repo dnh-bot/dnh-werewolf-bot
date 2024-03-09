@@ -1,22 +1,18 @@
+# import asyncio   # Do not remove this. This for debug command
+import re
+from datetime import *
+import subprocess
+import os
+
+import discord
+from dateutil import parser, tz
+
 from commands import admin, player
 import commands
 import config
-from game import text_template, GamePhase
+from game import text_template
 import text_templates
-
-import discord
-import asyncio   # Do not remove this. This for debug command
-import re
-from datetime import *
-import tzlocal
-import subprocess
-import os
-from dateutil import parser, tz
-
 import utils
-
-# TODO: generate content of command embed_data
-# e.g: Select a player to vote/kill/... by using command ...\nFor example: ...
 
 
 def parse_time_str(time_str):
@@ -27,15 +23,17 @@ def parse_time_str(time_str):
         args_tz_parts = args_matches[1].split(":")
         if len(args_tz_parts) == 2:  # \d+:\d+
             return args_tz_sign, args_tz_parts[0], args_tz_parts[1]
-        elif len(args_tz_parts[0]) <= 2:  # \d | \d\d
+        if len(args_tz_parts[0]) <= 2:  # \d | \d\d
             return args_tz_sign, args_tz_parts[0], 0
-        elif len(args_tz_parts[0]) <= 4:  # (\d)(\d\d) | (\d\d)(\d\d)
+        if len(args_tz_parts[0]) <= 4:  # (\d)(\d\d) | (\d\d)(\d\d)
             return args_tz_sign, args_tz_parts[0][:-2], args_tz_parts[0][-2:]
 
     return None
 
 
 async def parse_command(client, game, message):
+    # FIXME:
+    # pylint: disable=too-many-nested-blocks, too-many-branches
     message_parts = message.content.strip()[len(config.BOT_PREFIX):].split(" ")
     cmd, parameters = message_parts[0], message_parts[1:]
     # Game commands only valid under GAME CATEGORY:
@@ -122,7 +120,8 @@ async def parse_command(client, game, message):
                     real_channel = text_templates.get_word_in_language("personal")
 
                 await admin.send_text_to_channel(
-                    message.guild, text_templates.generate_text("invalid_channel_text", channel=real_channel), message.channel.name
+                    message.guild, text_templates.generate_text(
+                        "invalid_channel_text", channel=real_channel), message.channel.name
                 )
 
         elif cmd == "status":
@@ -134,7 +133,8 @@ async def parse_command(client, game, message):
                 status_description, remaining_time, vote_table, table_title, author_status = game.get_game_status(
                     message.channel.name, message.author.id
                 )
-                print(status_description, remaining_time, vote_table, text_template.generate_vote_field(vote_table), table_title, author_status)
+                print(status_description, remaining_time, vote_table,
+                      text_template.generate_vote_field(vote_table), table_title, author_status)
                 embed_data = text_templates.generate_embed(
                     "game_status_with_table_embed",
                     [
@@ -147,14 +147,12 @@ async def parse_command(client, game, message):
                     table_title=table_title
                 )
                 await admin.send_embed_to_channel(message.channel.guild, embed_data, message.channel.name)
-                
+
                 role_list = [game.get_role_list()]
                 players_embed_data = text_template.generate_player_list_embed(game.get_all_players(), None, role_list)
                 await admin.send_embed_to_channel(message.channel.guild, players_embed_data, message.channel.name)
         elif cmd == "timer":
-            """ Usage:
-                `!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
-            """
+            # Usage:`!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
             if len(parameters) < 3:
                 timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
                 await message.reply(
@@ -191,9 +189,7 @@ async def parse_command(client, game, message):
             await message.reply(text_templates.generate_text("timer_stop_text"))
 
         elif cmd == "setplaytime":
-            """Usage:
-                `!setplaytime 10:00 21:00 UTC+7` -> start_time = 10:00, end_time = 21:00, zone=UTC+7
-            """
+            # Usage: `!setplaytime 10:00 21:00 UTC+7` -> start_time = 10:00, end_time = 21:00, zone=UTC+7
             if len(parameters) >= 2:
                 zone = "UTC+7"
                 if len(parameters) >= 3:
@@ -263,7 +259,8 @@ async def parse_command(client, game, message):
                         print(e)
                 elif cmd == "fdebug":
                     # print(asyncio.all_tasks())
-                    exec(" ".join(parameters))
+                    # exec(" ".join(parameters))
+                    pass
             else:
                 await message.reply("You do not have Admin role.")
 
@@ -286,7 +283,8 @@ async def parse_command(client, game, message):
                     try:
                         if user.id == client.user.id:
                             await admin.delete_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL)
-                            await admin.delete_channel(message.guild, client.user, config.LEADERBOARD_CHANNEL) #Comment this to keep the board
+                            # Comment this to keep the board
+                            await admin.delete_channel(message.guild, client.user, config.LEADERBOARD_CHANNEL)
                             await admin.delete_channel(message.guild, client.user, config.WEREWOLF_CHANNEL)
                             await admin.delete_channel(message.guild, client.user, config.CEMETERY_CHANNEL)
                             await admin.delete_channel(message.guild, client.user, config.COUPLE_CHANNEL)

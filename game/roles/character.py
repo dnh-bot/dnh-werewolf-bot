@@ -1,7 +1,7 @@
 import asyncio
 from enum import Enum
 
-import game
+from game import const
 import config
 
 BANNED_CHARS = "`!@#$%^&*()\'\"#/\\<>[]()|{}?+=,."
@@ -37,7 +37,8 @@ class Character:
         await asyncio.gather(
             self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False),
             self.interface.add_user_to_channel(self.player_id, config.CEMETERY_CHANNEL, is_read=True, is_send=True),
-            self.interface.send_action_text_to_channel("after_death_text", config.CEMETERY_CHANNEL, user=f"<@{self.player_id}>"),
+            self.interface.send_action_text_to_channel(
+                "after_death_text", config.CEMETERY_CHANNEL, user=f"<@{self.player_id}>"),
             self.interface.add_user_to_channel(self.player_id, config.COUPLE_CHANNEL, is_read=False, is_send=False)
         )
         return True
@@ -47,7 +48,8 @@ class Character:
         await asyncio.gather(
             self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True),
             self.interface.add_user_to_channel(self.player_id, config.CEMETERY_CHANNEL, is_read=False, is_send=False),
-            self.interface.send_action_text_to_channel("after_reborn_text", config.GAMEPLAY_CHANNEL, user=f"<@{self.player_id}>")
+            self.interface.send_action_text_to_channel(
+                "after_reborn_text", config.GAMEPLAY_CHANNEL, user=f"<@{self.player_id}>")
         )
 
     def get_protected(self):
@@ -79,9 +81,9 @@ class Character:
         if self.status == CharacterStatus.PROTECTED:
             self.status = CharacterStatus.ALIVE
 
-        if phase == game.GamePhase.DAY:
+        if phase == const.GamePhase.DAY:
             await self.on_day()  # Special skill here
-        elif phase == game.GamePhase.NIGHT:
+        elif phase == const.GamePhase.NIGHT:
             await self.on_night()  # Special skill here
 
     async def on_end_game(self):

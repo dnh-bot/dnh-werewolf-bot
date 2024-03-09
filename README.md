@@ -45,7 +45,7 @@ Note: You may need Priviledged Gateway Intents permissions to get the bot work p
 
 ## Run bot
 Simply run:
-```python
+```bash
 python3.9 bot.py
 ```
 The bot should connect to your Discord server and online:
@@ -150,6 +150,9 @@ successfully loaded json/text_template.json
 successfully loaded json/role_info.json
 reset_game_state
 
+# Code standard
+We apply Autopep8 for this project.
+Please run `./format.sh` before creating new PR.
 
 
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -166,7 +169,7 @@ gameplay created!
 FINISH ALL TEST CASES SUCCESSFULLY
 ```
 
-Tips: you can reduce the DELAY_TIME for faster run
+Tips: you can reduce the TEST_THREAD_DELAY_TIME for faster run
 
 # How to run bot on free deployment service
 

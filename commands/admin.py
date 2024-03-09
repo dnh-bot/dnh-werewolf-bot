@@ -2,9 +2,9 @@
 This provides APIs for Admin role and bot role
 """
 
-from time import sleep
-import discord
 import asyncio
+
+import discord
 from utils import logger
 import config
 
@@ -12,7 +12,8 @@ import config
 def is_valid_category(message):
     try:  # Channel may not belong to any category, make message.channel.category empty
         return message.channel.category.name == config.GAME_CATEGORY
-    except:  # Command not in Category channel
+    except Exception as e:  # Command not in Category channel
+        print(e)
         return False
 
 
@@ -83,7 +84,7 @@ async def create_channel(guild, author, channel_name, is_public=False, is_admin_
                 guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=not is_admin_writeonly),
                 admin_role: discord.PermissionOverwrite(read_messages=True)
             }
-            response = "{} created channel {}".format(author.name, channel_name)
+            response = f"{author.name} created channel {channel_name}"
             print(response)
             # logger.logger_debug(category)
             channel = await guild.create_text_channel(channel_name, overwrites=overwrites, category=category)
@@ -147,14 +148,20 @@ async def send_text_to_channel(guild, text, channel_name):
     """ Send a message to a channel """
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
+    if channel is None:
+        print(f"Channel #{channel_name} in category {config.GAME_CATEGORY} does not exist!")
+        return False
+
     try:
         await channel.send(text)
         return True
     except Exception as e:
         print(e)
 
+    return False
 
-async def send_embed_to_channel(guild, embed_data, channel_name, *args):
+
+async def send_embed_to_channel(guild, embed_data, channel_name, *_):
     """Send an embed message to a channel"""
 
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
