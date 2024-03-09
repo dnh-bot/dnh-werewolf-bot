@@ -44,7 +44,7 @@ async def test_case(game, filepath):
         print("\n\n\n" + "$" * 150)
         print(f"====== Begin test case at {filepath} =====")
         print(f"Test case: {test_case_data['name']}")
-        delay_time = 0.03  # MUST greater than 0
+        delay_time = float(os.getenv("TEST_THREAD_DELAY_TIME"))
         game.timer_enable = False  # MUST have
 
         player_name_dict = test_case_data["player_list"]  # username: Role
