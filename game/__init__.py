@@ -106,8 +106,9 @@ class Game:
                 self.new_moon_mode.turn_on()
             else:
                 self.new_moon_mode.turn_off()
+        status_str = text_template.generate_on_off_value(status)
 
-        return f"Set mode `{mode_str}` to `{status.upper()}`\nWarning: This setting is permanent!"
+        return text_templates.generate_text("set_mode_successful_text", mode_str=mode_str, status_str=status_str)
 
     def read_modes(self):
         modes = utils.common.read_json_file("json/game_config.json")
@@ -266,10 +267,7 @@ class Game:
         return len(self.players)  # Return number of current players
 
     def get_all_players(self):
-        return sorted(
-            list(self.players.values()),
-            key=lambda player: player.player_id
-        )
+        return self.get_alive_players() + self.get_dead_players()
 
     def get_alive_players(self):
         return sorted(
@@ -470,7 +468,7 @@ class Game:
 
         reveal_list = [(_id, player.__class__.__name__) for _id, player in self.players.items()]
         await self.interface.send_text_to_channel(
-            "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner)), config.GAMEPLAY_CHANNEL
+            "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict)), config.GAMEPLAY_CHANNEL
         )
 
         # write to leaderboard
@@ -482,7 +480,7 @@ class Game:
                     # \u00A0\u00A0 is one space character for discord embed
                     # Put \u200B\n at first of the next field to break line
                     [f"🎉\u00A0\u00A0\u00A0\u00A0{game_winner}\u00A0\u00A0\u00A0\u00A0🎉"],
-                    text_template.generate_reveal_str_list(reveal_list, game_winner),
+                    text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict),
                     [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict)] if self.cupid_dict else []
                 ],
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime"))
@@ -534,7 +532,7 @@ class Game:
         self.day += 1
         if self.players:
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
+            embed_data = text_template.generate_player_list_embed(self.get_all_players())
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
             if self.modes.get("new_moon", False):
@@ -594,6 +592,9 @@ class Game:
                 )
         else:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
+
+        players_embed_data = text_template.generate_player_list_embed(self.get_all_players())
+        await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
 
         # Mute all players in config.GAMEPLAY_CHANNEL
         await asyncio.gather(

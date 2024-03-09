@@ -25,6 +25,8 @@ def update_json_file(filename, key, value):
                 f.seek(0)
                 json.dump(data, f, indent=4)
                 f.truncate()
+                # Add new line eof
+                f.write('\n')
                 return True
             return False
     except Exception as e:

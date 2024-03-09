@@ -931,24 +931,18 @@
       "en": ["This mode is disabled"]
     }
   },
-  "mode_list_text": {
+  "show_modes_title": {
+    "params": [],
     "template": {
-      "vi": {
-        "title": "Chế độ chơi",
-        "hidden_role": "Ẩn danh sách các nhân vật đầu game",
-        "seer_can_kill_fox": "Tiên tri có thể giết Cáo",
-        "allow_guard_self_protection": "Cho phép Bảo vệ bản thân",
-        "witch_can_kill": "Phù thủy (Witch) có thể giết người",
-        "couple_random": "Ghép cặp ngẫu nhiên"
-      },
-      "en": {
-        "title": "Game modes",
-        "hidden_role": "Hide role list from players",
-        "seer_can_kill_fox": "Allow Seer to kill Fox",
-        "allow_guard_self_protection": "Allow Guard to protect themselves",
-        "witch_can_kill": "Allow Witch to kill people",
-        "couple_random": "Choose a random couple"
-      }
+      "vi": ["Chế độ chơi"],
+      "en": ["Game modes"]
+    }
+  },
+  "set_mode_successful_text": {
+    "params": ["mode_str", "status_str"],
+    "template": {
+      "vi": ["Đã {status_str} chế độ `{mode_str}`\nCảnh báo: Cài đặt này là vĩnh viễn!"],
+      "en": ["Set `{mode_str}` to {status}\nWarning: This setting is permanent!"]
     }
   },
   "vote_with_voters_text": {
