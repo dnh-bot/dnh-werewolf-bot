@@ -95,7 +95,7 @@ async def test_game():
 
     # Run single test
 
-    await test_case(game, "testcases/case-witch-reborn-wolf.json")
+    await test_case(game, "testcases/case-chief-vote-break-draw.json")
 
     # Run all tests
     directory = "testcases"
