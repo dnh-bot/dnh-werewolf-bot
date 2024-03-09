@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-find . -name "*.py" -exec autopep8 -i --max-line-length 120 {} \;
+find . -name "*.py" -exec autopep8 -i --max-line-length 120 --ignore E501 {} \;
 
 # Print the changed files
 git status --porcelain

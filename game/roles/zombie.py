@@ -1,5 +1,4 @@
 from game.roles.villager import Villager
-from enum import Enum
 
 
 class Zombie(Villager):

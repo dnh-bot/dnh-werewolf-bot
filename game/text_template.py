@@ -1,10 +1,11 @@
+from datetime import *
+
+from dateutil import parser, tz
+
 from game import roles
 from game.roles.character import CharacterStatus
 import text_templates
 import commands
-
-from datetime import *
-from dateutil import parser, tz
 from config import TEXT_LANGUAGE
 
 
@@ -19,7 +20,8 @@ def generate_player_list_embed(player_list, alive_status=None, role_list=None):
     if player_list:
         id_player_list = generate_id_player_list(player_list, alive_status)
         action_name = f"{'all' if alive_status is None else 'alive' if alive_status else 'dead'}_player_list_embed"
-        embed_data = text_templates.generate_embed(action_name, [id_player_list] if role_list is None else [id_player_list, role_list])
+        embed_data = text_templates.generate_embed(
+            action_name, [id_player_list] if role_list is None else [id_player_list, role_list])
         return embed_data
     return None
 
@@ -56,8 +58,8 @@ def generate_vote_field(vote_table):
         ]
         if vote_field:
             return vote_field
-        else:
-            return [text_templates.generate_text("nobody_text")]
+
+        return [text_templates.generate_text("nobody_text")]
 
     return None
 
@@ -188,12 +190,14 @@ def generate_help_embed(*args):
     return help_embed_data
 
 
-def generate_table(header, data):
-    # This needs to be adjusted based on expected range of values or calculated dynamically
-    # header + ["   ".join(str(item) for item in data] * len(data)
+def generate_on_off_value(str_value):
+    if str_value == 'True':
+        return text_templates.get_word_in_language("turn_on").capitalize()
 
-    # Joining up scores into a line
-    return "```"+"\n".join(header + ["   ".join(str(item) for item in data)] * len(data)) + "```"
+    if str_value == 'False':
+        return text_templates.get_word_in_language("turn_off").capitalize()
+
+    return "None"
 
 
 def generate_modes(modes_dict):
@@ -203,8 +207,8 @@ def generate_modes(modes_dict):
     return "===========================================================================\n" +\
         f"{mode_list['title']}: \n" +\
         "".join(
-            f"- {i}. {title}: {'`ON`' if modes_dict.get(mode, None) == 'True' else '`OFF`' if modes_dict.get(mode, None) == 'False' else '`NONE`'}\n"
-            for i, (mode, title) in enumerate(mode_list.items(), 0) if mode != 'title'
+            f"- {i}. {title}: `{generate_on_off_value(modes_dict.get(mode))}`\n"
+            for i, (mode, title) in enumerate(mode_list.items()) if mode != 'title'
         ) +\
         "===========================================================================\n"
 
@@ -213,7 +217,9 @@ def generate_reveal_str_list(reveal_list, game_winner, cupid_dict):
     winner_list = generate_winner_list(reveal_list, game_winner, cupid_dict)
 
     return [
-        "- " + text_templates.generate_text("reveal_player_text", player_id=player_id, role=role, result_emoji=result_emoji)
+        "- " + text_templates.generate_text(
+            "reveal_player_text", player_id=player_id, role=role, result_emoji=result_emoji
+        )
         for player_id, role, result_emoji in winner_list
     ]
 
@@ -265,8 +271,8 @@ def generate_play_time_text(start_time_utc: datetime.time, end_time_utc: datetim
             time_range_str=time_range_str,
             utc_time_range_str=time_range_to_string(start_time_utc.time(), end_time_utc.time(), 'UTC')
         )
-    else:
-        return text_templates.generate_text(
-            "play_time_without_utc_text",
-            time_range_str=time_range_str
-        )
+
+    return text_templates.generate_text(
+        "play_time_without_utc_text",
+        time_range_str=time_range_str
+    )

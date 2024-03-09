@@ -1,4 +1,4 @@
-from game.roles.character import Character, CharacterStatus
+from game.roles.character import Character
 
 
 class Villager(Character):

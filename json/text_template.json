@@ -40,6 +40,14 @@
     "coin_tail": {
       "vi": "sấp",
       "en": "tail"
+    },
+    "turn_on": {
+      "vi": "bật",
+      "en": "on"
+    },
+    "turn_off": {
+      "vi": "tắt",
+      "en": "off"
     }
   },
   "LABEL": {

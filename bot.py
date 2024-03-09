@@ -1,22 +1,24 @@
+import sys
+
 import discord
 from commands import command, admin
 from game import *
 import config
 import interface
 
-if not config.DISCORD_TOKEN:
-    print("Use must setup DISCORD_TOKEN in .env file")
-    exit(1)
+
 # ============ Local functions ============
-    
+
+
 async def init_setup(init_game_list=False):
     """ Log ready message, check server roles/channels setup """
     startup_msg = "=========================BOT STARTUP========================="
     print(startup_msg)
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id, " Game Category: ", config.GAME_CATEGORY)
-        if init_game_list == False:
-            await admin.create_category(guild, client.user, config.GAME_CATEGORY)  # Create GAME_CATEGORY if not existing
+        if init_game_list is False:
+            # Create GAME_CATEGORY if not existing
+            await admin.create_category(guild, client.user, config.GAME_CATEGORY)
             await admin.create_channel(guild, client.user, config.LOBBY_CHANNEL, is_public=True)
             await admin.create_channel(guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
             await admin.create_channel(guild, client.user, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
@@ -27,18 +29,18 @@ async def init_setup(init_game_list=False):
         await admin.send_text_to_channel(guild, startup_msg, config.GAMEPLAY_CHANNEL)
 
 
-async def process_message(client, message):
+async def process_message(discord_client, message):
     if message.content.strip().startswith(config.BOT_PREFIX):
         game = game_list.get_game(message.guild.id)
         if game is None:
             # Init game_list
             init_setup(True)
             game = game_list.get_game(message.guild.id)
-        
-        await command.parse_command(client, game, message)
+
+        await command.parse_command(discord_client, game, message)
 
 
-def verify_ok(message):
+def verify_ok(_):
     return True
 
 
@@ -58,7 +60,7 @@ async def test_bot(game, guild):
 # ============ Discord server ============
 # We need to enable intents to access guild.members list
 # details: https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
-intents = discord.Intents.all() # Recent change in discord need set this to all()
+intents = discord.Intents.all()  # Recent change in discord need set this to all()
 intents.members = True
 client = discord.Client(intents=intents)
 game_list = GameList()
@@ -69,8 +71,8 @@ async def on_ready():
     await init_setup()
     print("The bot is ready")
 
-    """ Uncomment to run test """
-    server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
+    # Uncomment to run test
+    # server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
     # server_id = config.DISCORD_DEPLOY_SERVER_ID  # Running test on DNH ma sói bot's server
     # await test_bot(game_list.get_game(server_id), client.get_guild(server_id))
 
@@ -82,5 +84,8 @@ async def on_message(message):
 
 
 if __name__ == '__main__':
+    if not config.DISCORD_TOKEN:
+        print("Use must setup DISCORD_TOKEN in .env file")
+        sys.exit(1)
     # keep_alive() # Uncomment to keep the bot alive
     client.run(config.DISCORD_TOKEN)

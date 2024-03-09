@@ -1,31 +1,24 @@
-import config
-from game import roles, text_template
-import text_templates
-
-import utils
+# FIXME:
+# pylint: disable=too-many-lines
 import datetime
 import random
 import time
 import json
-from enum import Enum
-from collections import Counter, defaultdict
-from functools import reduce
 import traceback
 import asyncio
+from collections import Counter, defaultdict
+from functools import reduce
 
+import config
+import utils
+import text_templates
+from game import const, roles, text_template
 from game.modes.new_moon import NewMoonMode
 
 
-class GamePhase(Enum):
-    NEW_GAME = 0
-    DAY = 1
-    NIGHT = 2
-
-    def __str__(self):
-        return self.name.lower() + "_phase"
-
-
 class Game:
+    # FIXME:
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods
     def __init__(self, guild, interface):
         self.guild = guild  # Should not use. Reserved for future.
         self.interface = interface
@@ -53,7 +46,7 @@ class Game:
         self.players = {}  # id: Player
         self.playersname = {}  # id: username
         self.watchers = set()  # set of id
-        self.game_phase = GamePhase.NEW_GAME
+        self.game_phase = const.GamePhase.NEW_GAME
         self.wolf_kill_dict = {}  # dict[wolf] -> player
         self.reborn_set = set()
         self.cupid_dict = {}  # dict[player1] -> player2, dict[player2] -> player1
@@ -87,7 +80,7 @@ class Game:
         return self.guild
 
     def is_started(self):
-        return self.game_phase != GamePhase.NEW_GAME
+        return self.game_phase != const.GamePhase.NEW_GAME
 
     def is_ended(self):
         return self.winner is not None
@@ -98,10 +91,10 @@ class Game:
 
         if not modes_list:
             return "Mode list not found."
-        if not (mode_id.isdigit()):
+        if not mode_id.isdigit():
             return "Mode ID must be a valid number."
         if int(mode_id) < 1 or int(mode_id) > len(modes_list):
-            return f"Mode ID must be between `1 - {len(modes_list)}`"
+            return f"Mode ID must be between 1 and {len(modes_list)}"
         if status not in ['on', 'off']:
             return "Set mode value must be `on` or `off`"
 
@@ -127,7 +120,7 @@ class Game:
         else:
             self.new_moon_mode.turn_off()
 
-        #Backward compatible
+        # Backward compatible
         if "allow_guard_self_protection" not in self.modes and "prevent_guard_self_protection" in self.modes:
             self.modes["allow_guard_self_protection"] = not self.modes["prevent_guard_self_protection"]
             print("prevent_guard_self_protection is deprecated, please use allow_guard_self_protection in config file instead")
@@ -137,16 +130,16 @@ class Game:
             user_roles = json.loads("".join(role_json_in_string))
             if isinstance(user_roles, list) and all(map(lambda x: isinstance(x, dict), user_roles)):
                 self.runtime_roles = user_roles
-                return f"Config loaded."
-            return f"Invalid json format. Use list of dictionary. Eg in role_config.json"
-        except:
+                return "Config loaded."
+            return "Invalid json format. Use list of dictionary. Eg in role_config.json"
+        except Exception:
             self.runtime_roles = None
-            return f"Invalid json format."
+            return "Invalid json format."
 
     def generate_roles(self, interface, ids, names_dict):
-        def dict_to_list(config, number=0):
-            yield from (name for name in config for _ in range(config[name]))
-            yield from ('Werewolf' if i % 4 == 0 else 'Villager' for i in range(number-sum(config.values())))
+        def dict_to_list(cfg, number=0):
+            yield from (name for name in cfg for _ in range(cfg[name]))
+            yield from ('Werewolf' if i % 4 == 0 else 'Villager' for i in range(number - sum(cfg.values())))
 
         if self.runtime_roles:
             role_config = self.runtime_roles
@@ -180,8 +173,8 @@ class Game:
         return text_templates.generate_text("hidden_role_warning_text")
 
     async def start(self, init_players=None):
-        if self.is_stopped and self.game_phase == GamePhase.NEW_GAME:
-            self.game_phase = GamePhase.DAY
+        if self.is_stopped and self.game_phase == const.GamePhase.NEW_GAME:
+            self.game_phase = const.GamePhase.DAY
             self.is_stopped = False
             self.last_nextcmd_time = time.time()
             self.read_modes()  # Read json config mode into runtime dict
@@ -192,10 +185,11 @@ class Game:
             else:
                 self.players = init_players
 
-
-
             await self.create_channel()
-            await self.interface.send_text_to_channel(text_template.generate_modes(dict(zip(self.modes, map(lambda x: str(x), self.modes.values())))), config.GAMEPLAY_CHANNEL)
+            await self.interface.send_text_to_channel(
+                text_template.generate_modes({mode: str(value) for mode, value in self.modes.items()}),
+                config.GAMEPLAY_CHANNEL
+            )
 
             if not self.modes.get("hidden_role"):
                 await self.interface.send_text_to_channel(self.get_role_list(), config.GAMEPLAY_CHANNEL)
@@ -323,6 +317,8 @@ class Game:
         return len(self.watchers)  # Return number of current watchers
 
     def get_game_status(self, channel_name, author_id):
+        # FIXME
+        # pylint: disable=too-many-branches
         """
         Returns:
         game status description,
@@ -336,10 +332,10 @@ class Game:
         table_title = ""
         author_status = ""
 
-        if self.is_ended() or not isinstance(self.game_phase, GamePhase):
+        if self.is_ended() or not isinstance(self.game_phase, const.GamePhase):
             return status_description, remaining_time, vote_table, table_title, author_status
 
-        if self.game_phase == GamePhase.NEW_GAME:
+        if self.game_phase == const.GamePhase.NEW_GAME:
             status_description = text_templates.get_label_in_language("new_game_phase_status")
             status_table_headers = text_templates.generate_table_headers("game_status_new_game_phase_table_headers")
             vote_table = {
@@ -358,11 +354,11 @@ class Game:
             else:
                 status_description = text_templates.get_label_in_language("out_of_playing_time_status")
 
-        if self.game_phase == GamePhase.DAY:
+        if self.game_phase == const.GamePhase.DAY:
             vote_table = {f'<@{k}>': v for k, v in self.get_vote_status().items()}
             table_title = text_templates.get_label_in_language("vote_list_title")
 
-        elif self.game_phase == GamePhase.NIGHT:
+        elif self.game_phase == const.GamePhase.NIGHT:
             author = self.players.get(author_id)
             if not author:
                 author_status = "Chưa có gì để xem đâu :>"
@@ -398,7 +394,7 @@ class Game:
         if voter_dict is None:
             voter_dict = self.voter_dict
 
-        table_dict = reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, voter_dict.items(), dict())
+        table_dict = reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, voter_dict.items(), {})
         print(table_dict)
         return table_dict
 
@@ -418,7 +414,8 @@ class Game:
         embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
 
-        info = text_templates.generate_text("werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in werewolf_list))
+        info = text_templates.generate_text(
+            "werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in werewolf_list))
         print("werewolf_list_text", info)
         await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
 
@@ -480,10 +477,10 @@ class Game:
                 [
                     [str(self.day)],
                     # \u00A0\u00A0 is one space character for discord embed
-                    # Put \u200B\n at first of the next field to break line 
+                    # Put \u200B\n at first of the next field to break line
                     [f"🎉\u00A0\u00A0\u00A0\u00A0{game_winner}\u00A0\u00A0\u00A0\u00A0🎉"],
                     text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict),
-                    [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict.keys())] if self.cupid_dict else []
+                    [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict)] if self.cupid_dict else []
                 ],
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime"))
             )
@@ -495,7 +492,7 @@ class Game:
     def get_winning_role(self):
         alives = self.get_alive_players()
         num_players = len(alives)
-        num_werewolf = sum([isinstance(p, roles.Werewolf) for p in alives])
+        num_werewolf = sum(isinstance(p, roles.Werewolf) for p in alives)
 
         print("DEBUG: ", num_players, num_werewolf)
 
@@ -504,11 +501,11 @@ class Game:
             return None
 
         # check cupid
-        couple = [self.players[i] for i in self.cupid_dict.keys()]
+        couple = [self.players[i] for i in self.cupid_dict]
         if num_players == 2 and \
-           any([isinstance(p, roles.Werewolf) for p in couple]) and \
-           any([not isinstance(p, roles.Werewolf) for p in couple]) and \
-           all([c in alives for c in couple]):
+                any(isinstance(p, roles.Werewolf) for p in couple) and \
+                any(not isinstance(p, roles.Werewolf) for p in couple) and \
+                all(p in alives for p in couple):
             return roles.Cupid
 
         # werewolf still alive then werewolf win
@@ -516,7 +513,7 @@ class Game:
             return roles.Werewolf
 
         # werewolf died and fox still alive
-        if any([isinstance(p, roles.Fox) for p in alives]):
+        if any(isinstance(p, roles.Fox) for p in alives):
             return roles.Fox
 
         return roles.Villager
@@ -639,7 +636,7 @@ class Game:
             self.wolf_kill_dict = {}
 
         cupid_couple = None
-        if len(self.night_pending_kill_list):
+        if self.night_pending_kill_list:
             final_kill_list = []
             for _id in self.night_pending_kill_list:
                 if await self.players[_id].get_killed():  # Guard can protect Fox from Seer kill
@@ -673,22 +670,22 @@ class Game:
             await self.cancel_running_task(self.task_run_timer_phase)
             self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
 
-        if self.game_phase == GamePhase.DAY:
+        if self.game_phase == const.GamePhase.DAY:
             await self.do_new_daytime_phase()
-        elif self.game_phase == GamePhase.NIGHT:
+        elif self.game_phase == const.GamePhase.NIGHT:
             await self.do_new_nighttime_phase()
 
     async def end_phase(self):
-        assert self.game_phase != GamePhase.NEW_GAME
-        if self.game_phase == GamePhase.DAY:
+        assert self.game_phase != const.GamePhase.NEW_GAME
+        if self.game_phase == const.GamePhase.DAY:
             await self.do_end_daytime_phase()
-        elif self.game_phase == GamePhase.NIGHT:
+        elif self.game_phase == const.GamePhase.NIGHT:
             await self.do_end_nighttime_phase()
 
-        if self.game_phase == GamePhase.DAY:
-            self.game_phase = GamePhase.NIGHT
-        elif self.game_phase == GamePhase.NIGHT:
-            self.game_phase = GamePhase.DAY
+        if self.game_phase == const.GamePhase.DAY:
+            self.game_phase = const.GamePhase.NIGHT
+        elif self.game_phase == const.GamePhase.NIGHT:
+            self.game_phase = const.GamePhase.DAY
         else:
             print("Incorrect game flow")
 
@@ -698,10 +695,11 @@ class Game:
             print("Cancelling....", current_task)
             current_task.cancel()
             try:
-                await self.current_task
+                await current_task
             except asyncio.CancelledError:
                 print("... cancelled now")
-            except:
+            except Exception as e:
+                print(e)
                 print("Cancelled task in cancel_running_task")
         except Exception as e:
             print(e)
@@ -727,7 +725,7 @@ class Game:
             self.timer_stopped = False
             daytime, nighttime, period = self.timer_phase
             self.timecounter = daytime
-            if self.game_phase == GamePhase.NIGHT:
+            if self.game_phase == const.GamePhase.NIGHT:
                 self.timecounter = nighttime
 
             while self.timecounter > 0:
@@ -749,7 +747,8 @@ class Game:
                 await self.next_phase()
         except asyncio.CancelledError:
             print("cancel_me(): cancel sleep")
-        except:
+        except Exception as e:
+            print(e)
             print("Unknown run_timer_phase")
 
     def set_play_time(self, time_start: datetime.time, time_end: datetime.time, zone):
@@ -771,10 +770,10 @@ class Game:
 
         if self.play_time_start < self.play_time_end:
             return self.play_time_start <= time_point <= self.play_time_end
-        elif self.play_time_start > self.play_time_end:
+        if self.play_time_start > self.play_time_end:
             return self.play_time_start <= time_point or time_point <= self.play_time_end
-        else:
-            return True  # a day
+
+        return True  # a day
 
     async def do_process_with_play_time(self):
         self.curr_playtime = self.is_in_play_time()
@@ -795,6 +794,8 @@ class Game:
         return None
 
     async def do_player_action(self, cmd, author_id, *targets_id):
+        # FIXME
+        # pylint: disable=too-many-return-statements, too-many-branches
         assert self.players is not None
         # print(self.players)
         author = self.players.get(author_id)
@@ -804,7 +805,6 @@ class Game:
 
         if cmd == "auto":
             return await self.register_auto(author, *targets_id)
-
 
         targets = []
         for target_id in targets_id:
@@ -818,23 +818,24 @@ class Game:
 
         if cmd == "vote":
             return await self.vote(author, targets[0])
-        elif cmd == "kill":
+        if cmd == "kill":
             return await self.kill(author, targets[0])
-        elif cmd == "guard":
+        if cmd == "guard":
             return await self.guard(author, targets[0])
-        elif cmd == "seer":
+        if cmd == "seer":
             return await self.seer(author, targets[0])
-        elif cmd == "reborn":
+        if cmd == "reborn":
             return await self.reborn(author, targets[0])
-        elif cmd == "curse":
+        if cmd == "curse":
             return await self.curse(author, targets[0])
-        elif cmd == "zombie":
+        if cmd == "zombie":
             return await self.zombie(author)
-        elif cmd == "ship":
+        if cmd == "ship":
             if self.modes.get("couple_random"):
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")
-            else:
-                return await self.ship(author, *targets[:2])
+            return await self.ship(author, targets[0], targets[1])
+
+        return text_templates.generate_text("invalid_command_text")
 
     async def vote(self, author, target):
         author_id = author.player_id
@@ -845,7 +846,7 @@ class Game:
         return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
     async def kill(self, author, target):
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Werewolf):
@@ -858,7 +859,7 @@ class Game:
         return text_templates.generate_text("werewolf_kill_text", werewolf=f"<@{author_id}>", target=f"<@{target_id}>")
 
     async def guard(self, author, target):
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Guard):
@@ -881,13 +882,13 @@ class Game:
         return text_templates.generate_text("guard_after_voting_text", target=f"<@{target_id}>")
 
     async def seer(self, author, target):
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Seer):
             return text_templates.generate_text("invalid_author_text")
 
-        author_id = author.player_id
+        # author_id = author.player_id
         target_id = target.player_id
 
         if author.get_mana() == 0:
@@ -903,13 +904,13 @@ class Game:
         )
 
     async def reborn(self, author, target):
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Witch):
             return text_templates.generate_text("invalid_author_text")
 
-        author_id = author.player_id
+        # author_id = author.player_id
         target_id = target.player_id
 
         if author.get_power() == 0:
@@ -927,13 +928,13 @@ class Game:
         if not self.modes.get("witch_can_kill"):
             return text_templates.generate_text("mode_disabled_text")
 
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Witch):
             return text_templates.generate_text("invalid_author_text")
 
-        author_id = author.player_id
+        # author_id = author.player_id
         target_id = target.player_id
 
         if author.get_curse_power() == 0:
@@ -946,7 +947,7 @@ class Game:
         return text_templates.generate_text("witch_after_curse_text", target=f"<@{target_id}>")
 
     async def zombie(self, author):
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Zombie):
@@ -1000,16 +1001,15 @@ class Game:
                     if pred():
                         print("Check success")
                         return await f(*a, **kw)
-                    else:
-                        print("Check failed")
+                    print("Check failed")
                 return execute
             return wrapper
 
         def is_night():
-            return self.game_phase == GamePhase.NIGHT
+            return self.game_phase == const.GamePhase.NIGHT
 
         def is_day():
-            return self.game_phase == GamePhase.DAY
+            return self.game_phase == const.GamePhase.DAY
 
         def has_role(role):
             return lambda: isinstance(author, role)
@@ -1031,7 +1031,7 @@ class Game:
         async def auto_seer():
             target = random.choice(self.get_alive_players())
             if author.player_id in self.cupid_dict:
-                while target.player_id in  self.cupid_dict:
+                while target.player_id in self.cupid_dict:
                     target = random.choice(self.get_alive_players())
             msg = await self.seer(author, target)
             await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
@@ -1039,20 +1039,20 @@ class Game:
         if subcmd == "off":
             self.auto_hook[author] = []
             return "Clear auto successed"
-        elif subcmd == "seer":
+
+        if subcmd == "seer":
             if has_role(roles.Seer)():
                 self.auto_hook[author].append(auto_seer)
                 return "Register auto seer success"
-            else:
-                return "You are not a seer"
-        elif subcmd == "guard":
+            return "You are not a seer"
+
+        if subcmd == "guard":
             if has_role(roles.Guard)():
                 self.auto_hook[author].append(auto_guard)
                 return "Register auto guard success"
-            else:
-                return "You are not a guard"
-        else:
-            return "Unknown auto command, please try again"
+            return "You are not a guard"
+
+        return "Unknown auto command, please try again"
 
     async def do_run_auto_hook(self):
         print("do_run_auto_hook")
@@ -1067,7 +1067,7 @@ class Game:
 
     async def test_case_real_players(self):
         print("====== Begin test case =====")
-        DELAY_TIME = 3
+        delay_time = 3
         real_id = dict((i, x) for i, x in enumerate(config.DISCORD_TESTING_USERS_ID, 1))
         await self.add_player(real_id[1], "w")
         await self.add_player(real_id[2], "s")
@@ -1075,7 +1075,7 @@ class Game:
         await self.add_player(real_id[4], "v2")
         players = {
             real_id[1]: roles.Werewolf(self.interface, real_id[1], "w"),
-            real_id[2]: roles.Seer(self.interface,     real_id[2], "s"),
+            real_id[2]: roles.Seer(self.interface, real_id[2], "s"),
             real_id[3]: roles.Villager(self.interface, real_id[3], "v1"),
             real_id[4]: roles.Villager(self.interface, real_id[4], "v2"),
         }
@@ -1085,16 +1085,16 @@ class Game:
         print(await self.vote(real_id[4], real_id[1]))
 
         await self.next_phase()  # go NIGHT
-        time.sleep(DELAY_TIME)
+        time.sleep(delay_time)
         print(await self.kill(real_id[1], real_id[3]))
 
         await self.next_phase()  # go DAY
-        time.sleep(DELAY_TIME)
+        time.sleep(delay_time)
 
         await self.next_phase()
-        time.sleep(DELAY_TIME)
+        time.sleep(delay_time)
         await self.stop()
-        time.sleep(DELAY_TIME)
+        time.sleep(delay_time)
         print("====== End test case =====")
 
 

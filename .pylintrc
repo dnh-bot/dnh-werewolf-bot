@@ -1,0 +1,17 @@
+[MASTER]
+disable=
+    C0114, # missing-module-docstring
+    C0115, # missing-class-docstring
+    C0116, # missing-function-docstring
+    C0301, # line-too-long
+    W0401, # wildcard-import
+    W0614, # unused-wildcard-import
+    W0718, # broad-exception-caught
+    R0914, # too-many-locals
+    R0915, # too-many-statements
+    W0511, # fixme
+    W0105, # pointless-string-statement
+    W0201, # attribute-defined-outside-init
+    W0612, # unused-variable
+
+ignore-paths=./web

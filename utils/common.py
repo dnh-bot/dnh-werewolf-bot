@@ -1,5 +1,4 @@
 import json
-from collections import OrderedDict
 
 
 def read_json_file(filename):
