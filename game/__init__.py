@@ -106,8 +106,9 @@ class Game:
                 self.new_moon_mode.turn_on()
             else:
                 self.new_moon_mode.turn_off()
+        status_str = text_template.generate_on_off_value(status)
 
-        return f"Set mode `{mode_str}` to `{status.upper()}`\nWarning: This setting is permanent!"
+        return text_templates.generate_text("set_mode_successful_text", mode_str=mode_str, status_str=status_str)
 
     def read_modes(self):
         modes = utils.common.read_json_file("json/game_config.json")
