@@ -38,6 +38,7 @@ def get_role_title(name):
     print("Unknown state get_role_title")
     return None
 
+
 def get_role_party(name):
     name = name.capitalize()
     if name in role_info:

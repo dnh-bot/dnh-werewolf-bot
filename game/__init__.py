@@ -6,24 +6,14 @@ import time
 import json
 import traceback
 import asyncio
-from enum import Enum
 from collections import Counter, defaultdict
 from functools import reduce
 
 import config
 import utils
 import text_templates
-from game import roles, text_template
+from game import const, roles, text_template
 from game.modes.new_moon import NewMoonMode
-
-
-class GamePhase(Enum):
-    NEW_GAME = 0
-    DAY = 1
-    NIGHT = 2
-
-    def __str__(self):
-        return self.name.lower() + "_phase"
 
 
 class Game:
@@ -56,7 +46,7 @@ class Game:
         self.players = {}  # id: Player
         self.playersname = {}  # id: username
         self.watchers = set()  # set of id
-        self.game_phase = GamePhase.NEW_GAME
+        self.game_phase = const.GamePhase.NEW_GAME
         self.wolf_kill_dict = {}  # dict[wolf] -> player
         self.reborn_set = set()
         self.cupid_dict = {}  # dict[player1] -> player2, dict[player2] -> player1
@@ -90,7 +80,7 @@ class Game:
         return self.guild
 
     def is_started(self):
-        return self.game_phase != GamePhase.NEW_GAME
+        return self.game_phase != const.GamePhase.NEW_GAME
 
     def is_ended(self):
         return self.winner is not None
@@ -183,8 +173,8 @@ class Game:
         return text_templates.generate_text("hidden_role_warning_text")
 
     async def start(self, init_players=None):
-        if self.is_stopped and self.game_phase == GamePhase.NEW_GAME:
-            self.game_phase = GamePhase.DAY
+        if self.is_stopped and self.game_phase == const.GamePhase.NEW_GAME:
+            self.game_phase = const.GamePhase.DAY
             self.is_stopped = False
             self.last_nextcmd_time = time.time()
             self.read_modes()  # Read json config mode into runtime dict
@@ -345,10 +335,10 @@ class Game:
         table_title = ""
         author_status = ""
 
-        if self.is_ended() or not isinstance(self.game_phase, GamePhase):
+        if self.is_ended() or not isinstance(self.game_phase, const.GamePhase):
             return status_description, remaining_time, vote_table, table_title, author_status
 
-        if self.game_phase == GamePhase.NEW_GAME:
+        if self.game_phase == const.GamePhase.NEW_GAME:
             status_description = text_templates.get_label_in_language("new_game_phase_status")
             status_table_headers = text_templates.generate_table_headers("game_status_new_game_phase_table_headers")
             vote_table = {
@@ -367,11 +357,11 @@ class Game:
             else:
                 status_description = text_templates.get_label_in_language("out_of_playing_time_status")
 
-        if self.game_phase == GamePhase.DAY:
+        if self.game_phase == const.GamePhase.DAY:
             vote_table = {f'<@{k}>': v for k, v in self.get_vote_status().items()}
             table_title = text_templates.get_label_in_language("vote_list_title")
 
-        elif self.game_phase == GamePhase.NIGHT:
+        elif self.game_phase == const.GamePhase.NIGHT:
             author = self.players.get(author_id)
             if not author:
                 author_status = "Chưa có gì để xem đâu :>"
@@ -680,22 +670,22 @@ class Game:
             await self.cancel_running_task(self.task_run_timer_phase)
             self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
 
-        if self.game_phase == GamePhase.DAY:
+        if self.game_phase == const.GamePhase.DAY:
             await self.do_new_daytime_phase()
-        elif self.game_phase == GamePhase.NIGHT:
+        elif self.game_phase == const.GamePhase.NIGHT:
             await self.do_new_nighttime_phase()
 
     async def end_phase(self):
-        assert self.game_phase != GamePhase.NEW_GAME
-        if self.game_phase == GamePhase.DAY:
+        assert self.game_phase != const.GamePhase.NEW_GAME
+        if self.game_phase == const.GamePhase.DAY:
             await self.do_end_daytime_phase()
-        elif self.game_phase == GamePhase.NIGHT:
+        elif self.game_phase == const.GamePhase.NIGHT:
             await self.do_end_nighttime_phase()
 
-        if self.game_phase == GamePhase.DAY:
-            self.game_phase = GamePhase.NIGHT
-        elif self.game_phase == GamePhase.NIGHT:
-            self.game_phase = GamePhase.DAY
+        if self.game_phase == const.GamePhase.DAY:
+            self.game_phase = const.GamePhase.NIGHT
+        elif self.game_phase == const.GamePhase.NIGHT:
+            self.game_phase = const.GamePhase.DAY
         else:
             print("Incorrect game flow")
 
@@ -735,7 +725,7 @@ class Game:
             self.timer_stopped = False
             daytime, nighttime, period = self.timer_phase
             self.timecounter = daytime
-            if self.game_phase == GamePhase.NIGHT:
+            if self.game_phase == const.GamePhase.NIGHT:
                 self.timecounter = nighttime
 
             while self.timecounter > 0:
@@ -847,7 +837,6 @@ class Game:
 
         return text_templates.generate_text("invalid_command_text")
 
-
     async def vote(self, author, target):
         author_id = author.player_id
         target_id = target.player_id
@@ -857,7 +846,7 @@ class Game:
         return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
     async def kill(self, author, target):
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Werewolf):
@@ -870,7 +859,7 @@ class Game:
         return text_templates.generate_text("werewolf_kill_text", werewolf=f"<@{author_id}>", target=f"<@{target_id}>")
 
     async def guard(self, author, target):
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Guard):
@@ -893,7 +882,7 @@ class Game:
         return text_templates.generate_text("guard_after_voting_text", target=f"<@{target_id}>")
 
     async def seer(self, author, target):
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Seer):
@@ -915,7 +904,7 @@ class Game:
         )
 
     async def reborn(self, author, target):
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Witch):
@@ -939,7 +928,7 @@ class Game:
         if not self.modes.get("witch_can_kill"):
             return text_templates.generate_text("mode_disabled_text")
 
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Witch):
@@ -958,7 +947,7 @@ class Game:
         return text_templates.generate_text("witch_after_curse_text", target=f"<@{target_id}>")
 
     async def zombie(self, author):
-        if self.game_phase != GamePhase.NIGHT:
+        if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
         if not isinstance(author, roles.Zombie):
@@ -1017,10 +1006,10 @@ class Game:
             return wrapper
 
         def is_night():
-            return self.game_phase == GamePhase.NIGHT
+            return self.game_phase == const.GamePhase.NIGHT
 
         def is_day():
-            return self.game_phase == GamePhase.DAY
+            return self.game_phase == const.GamePhase.DAY
 
         def has_role(role):
             return lambda: isinstance(author, role)

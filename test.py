@@ -8,7 +8,7 @@ from game import *
 def assert_time_print(filepath, game, playersname):
     print("\n\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     print(f"Failed at test case {filepath}\n")
-    print(f"Test assert Error at {'#day' if game.game_phase==GamePhase.DAY else '#night'}{game.day}")
+    print(f"Test assert Error at {'#day' if game.game_phase==const.GamePhase.DAY else '#night'}{game.day}")
     p = [player.player_id for player in game.players.values() if player.is_alive()]
     print(f"Current alive player: {list(map(lambda x: playersname[x], p))}")
     print(f"Winner: {game.get_winner()}")
