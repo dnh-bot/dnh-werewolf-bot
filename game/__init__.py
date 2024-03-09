@@ -528,7 +528,7 @@ class Game:
         if len(top_voted) == 1 or (len(top_voted) == 2 and top_voted[0][1] > top_voted[1][1]):
             return top_voted[0][0], top_voted[0][1]
         return None, 0  # have no vote or equal voted
-    
+
     def get_voted_list(self, voter_dict):
         # self.voter_dict = {}  # Dict of voter:voted players {user1:user2, user3:user4, user2:user1}. All items are ids.
         voted_list = []
