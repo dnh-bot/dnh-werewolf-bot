@@ -527,6 +527,15 @@ class Game:
             return top_voted[0][0], top_voted[0][1]
         return None, 0  # have no vote or equal voted
 
+    def get_voted_list(self, voter_dict):
+        # self.voter_dict = {}  # Dict of voter:voted players {user1:user2, user3:user4, user2:user1}. All items are ids.
+        voted_list = []
+        for voter, voted in voter_dict.items():
+            voted_list.append(voted)
+            if isinstance(self.players[voter], roles.Chief):
+                voted_list.append(voted)
+        return voted_list
+
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
         self.day += 1
@@ -557,7 +566,7 @@ class Game:
         print("do_end_daytime_phase")
         lynched, votes = None, 0
         if self.voter_dict:
-            lynched, votes = Game.get_top_voted(list(self.voter_dict.values()))
+            lynched, votes = Game.get_top_voted(self.get_voted_list(self.voter_dict))
             print("lynched list:", self.voter_dict)
             self.voter_dict = {}
 

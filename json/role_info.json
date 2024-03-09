@@ -108,5 +108,15 @@
     },
     "daytime_command": "vote",
     "nighttime_commands": ["ship"]
+  },
+  "Chief": {
+    "name_vi": "Trưởng làng",
+    "party": "Villager",
+    "description": {
+      "vi": "Vào ban ngày, phiếu bầu của Trưởng làng được tính là 2",
+      "en": "On dayphase, the Chief's vote is counted as 2"
+    },
+    "daytime_command": "vote",
+    "nighttime_commands": []
   }
 }

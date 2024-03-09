@@ -20,6 +20,7 @@ Vậy bên nào sẽ chiến thắng, Thường dân, Werewolf, hay là phe Ph�
 ### I. Phe dân: Chiến thắng nếu sống sót và tiêu diệt được hết Sói và Cáo. Không thể nhận biết được người cùng phe.
 
 - [Villager] Dân làng: Không có chức năng đặc biệt.
+- [Villager Chief] Trưởng làng: Được vote tính 2 phiếu.
 - [Seer] Tiên tri: Soi một người chơi có phải là sói hay không. Có thể giết chết Cáo nếu soi trúng Cáo.
 - [Guard] Bảo vệ: Bảo vệ được chọn 1 người khác nhau mỗi đêm trừ bản thân và người được chọn sẽ bất tử đêm đó.
 - [Lycan] Người hóa sói: Người hóa sói thuộc Phe dân làng, nhưng nếu được chỉ định bởi Tiên tri, thì sẽ bị thông báo là Sói.
