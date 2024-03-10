@@ -243,9 +243,8 @@ class Game:
     async def self_check_channel(self):
         try:
             await asyncio.gather(
-            *[player.create_personal_channel(self_check=True) for player in self.players.values()]
-        )
-
+                *[player.create_personal_channel(self_check=True) for player in self.players.values()]
+            )
             return text_templates.generate_text('self_check_text')
         except Exception as e:
             print(e)
