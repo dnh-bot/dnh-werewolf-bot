@@ -269,15 +269,7 @@ def parse_setplaytime_params(parameters):
 
 async def do_fclean(client, message):
     """Delete all private channels under config.GAME_CATEGORY"""
-    try:
-        await admin.delete_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL)
-        await admin.delete_channel(message.guild, client.user, config.WEREWOLF_CHANNEL)
-        await admin.delete_channel(message.guild, client.user, config.CEMETERY_CHANNEL)
-        await admin.delete_channel(message.guild, client.user, config.COUPLE_CHANNEL)
-        await admin.delete_all_personal_channel(message.guild)
-        await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
-    except Exception as e:
-        print(e)
+    await admin.clean_game_category(message.guild, client.user, False)
 
 
 async def do_fcreate(client, message):
@@ -287,10 +279,7 @@ async def do_fcreate(client, message):
 
     user = message.mentions[0]
     if user.id == client.user.id:
-        await admin.create_category(message.guild, client.user, config.GAME_CATEGORY)
-        await admin.create_channel(message.guild, client.user, config.LOBBY_CHANNEL, is_public=True)
-        await admin.create_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
-        await admin.create_channel(message.guild, client.user, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
+        await admin.create_game_category(message.guild, client.user)
 
 
 async def do_fdelete(client, message):
@@ -300,18 +289,7 @@ async def do_fdelete(client, message):
 
     user = message.mentions[0]
     if user.id == client.user.id:
-        try:
-            await admin.delete_channel(message.guild, client.user, config.GAMEPLAY_CHANNEL)
-            # Comment this to keep the board
-            await admin.delete_channel(message.guild, client.user, config.LEADERBOARD_CHANNEL)
-            await admin.delete_channel(message.guild, client.user, config.WEREWOLF_CHANNEL)
-            await admin.delete_channel(message.guild, client.user, config.CEMETERY_CHANNEL)
-            await admin.delete_channel(message.guild, client.user, config.COUPLE_CHANNEL)
-            await admin.delete_all_personal_channel(message.guild)
-            await admin.delete_channel(message.guild, client.user, config.LOBBY_CHANNEL)
-            await admin.delete_category(message.guild, client.user)
-        except Exception as e:
-            print(e)
+        await admin.clean_game_category(message.guild, client.user, True)
 
 
 async def test_commands(guild):

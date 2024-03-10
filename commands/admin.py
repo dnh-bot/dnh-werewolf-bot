@@ -188,6 +188,35 @@ async def delete_all_personal_channel(guild):
         await asyncio.gather(*[c.delete() for c in personal_channels])
 
 
+async def create_game_category(guild, client_user):
+    """Create GAME_CATEGORY if not existing"""
+    await create_category(guild, client_user, config.GAME_CATEGORY)
+    await create_channel(guild, client_user, config.LOBBY_CHANNEL, is_public=True)
+    await create_channel(guild, client_user, config.GAMEPLAY_CHANNEL, is_public=False)
+    await create_channel(guild, client_user, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
+
+
+async def clean_game_category(guild, client_user, is_deleting_category=False):
+    """Clean GAME_CATEGORY"""
+    try:
+        await delete_channel(guild, client_user, config.GAMEPLAY_CHANNEL)
+        await delete_channel(guild, client_user, config.WEREWOLF_CHANNEL)
+        await delete_channel(guild, client_user, config.CEMETERY_CHANNEL)
+        await delete_channel(guild, client_user, config.COUPLE_CHANNEL)
+        await delete_all_personal_channel(guild)
+
+        if is_deleting_category:
+            # Comment this to keep the board
+            await delete_channel(guild, client_user, config.LEADERBOARD_CHANNEL)
+            await delete_channel(guild, client_user, config.LOBBY_CHANNEL)
+            await delete_category(guild, client_user)
+        else:
+            await create_channel(guild, client_user, config.GAMEPLAY_CHANNEL, is_public=False)
+
+    except Exception as e:
+        print(e)
+
+
 async def test_admin_command(guild):
     print("-- Testing admin command --")
     user_id = config.DISCORD_TESTING_USER1_ID
