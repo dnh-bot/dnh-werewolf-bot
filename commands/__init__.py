@@ -21,7 +21,7 @@ def get_command_description(command):
 
 def get_command_valid_channels(command):
     if command in command_info:
-        return command_info[command]["valid_channels"]
+        return command_info[command].get("valid_channels", [])
 
     return []
 

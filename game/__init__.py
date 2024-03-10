@@ -12,7 +12,7 @@ from functools import reduce
 import config
 import utils
 import text_templates
-from game import const, roles, text_template
+from game import const, roles, text_template, modes
 from game.modes.new_moon import NewMoonMode
 
 
@@ -107,7 +107,7 @@ class Game:
                 self.new_moon_mode.turn_on()
             else:
                 self.new_moon_mode.turn_off()
-        status_str = text_template.generate_on_off_value(status)
+        status_str = modes.generate_on_off_value(status)
 
         return text_templates.generate_text("set_mode_successful_text", mode_str=mode_str, status_str=status_str)
 
@@ -189,7 +189,7 @@ class Game:
 
             await self.create_channel()
             await self.interface.send_text_to_channel(
-                text_template.generate_modes({mode: str(value) for mode, value in self.modes.items()}),
+                modes.generate_modes_text({mode: str(value) for mode, value in self.modes.items()}),
                 config.GAMEPLAY_CHANNEL
             )
 
@@ -834,13 +834,15 @@ class Game:
                 return text_templates.generate_text("invalid_target_text")
             targets.append(target)
 
-        if cmd != "zombie" and not targets[0].is_alive() and cmd != "reborn":
+        if cmd == "zombie":
+            return await self.zombie(author)
+
+        if not targets[0].is_alive() and cmd != "reborn":
             return text_templates.generate_text("dead_target_text" if cmd == "vote" else "invalid_target_text")
 
         if cmd in ("vote", "kill", "guard", "seer", "reborn", "curse"):
             return await getattr(self, cmd)(author, targets[0])
-        if cmd == "zombie":
-            return await self.zombie(author)
+
         if cmd == "ship":
             if self.modes.get("couple_random"):
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")

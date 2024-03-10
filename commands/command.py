@@ -10,7 +10,7 @@ from dateutil import parser, tz
 from commands import admin, player
 import commands
 import config
-from game import text_template
+from game import text_template, modes
 import text_templates
 import utils
 
@@ -102,8 +102,6 @@ async def parse_command(client, game, message):
                         is_valid_command = True
                         msg = await game.do_player_action(cmd, author.id, *[id_players[i].player_id for i in targets_index])
                         await message.reply(msg)
-                    else:
-                        await message.reply(text_template.generate_invalid_command_text(cmd))
 
                 if not is_valid_command:
                     await message.reply(text_template.generate_invalid_command_text(cmd))
@@ -152,7 +150,9 @@ async def parse_command(client, game, message):
             await admin.send_embed_to_channel(message.channel.guild, embed_data, message.channel.name)
 
             role_list = [game.get_role_list()]
-            players_embed_data = text_template.generate_player_list_embed(game.get_all_players(), None, role_list, reveal_role=game.modes.get("reveal_role", False))
+            players_embed_data = text_template.generate_player_list_embed(
+                game.get_all_players(), None, role_list, game.modes.get("reveal_role", False)
+            )
             await admin.send_embed_to_channel(message.channel.guild, players_embed_data, message.channel.name)
 
         elif cmd == "timer":
@@ -199,8 +199,8 @@ async def parse_command(client, game, message):
             res = game.add_default_roles(parameters)
             await message.reply(res)
         elif cmd == "showmodes":
-            modes = utils.common.read_json_file("json/game_config.json")
-            await message.reply(text_template.generate_modes(modes))
+            game_modes = utils.common.read_json_file("json/game_config.json")
+            await message.reply(modes.generate_modes_text(game_modes))
         elif cmd == "setmode":
             try:
                 mode_id, status = parameters[0], parameters[1]
