@@ -149,7 +149,7 @@ async def parse_command(client, game, message):
                 await admin.send_embed_to_channel(message.channel.guild, embed_data, message.channel.name)
 
                 role_list = [game.get_role_list()]
-                players_embed_data = text_template.generate_player_list_embed(game.get_all_players(), None, role_list)
+                players_embed_data = text_template.generate_player_list_embed(game.get_all_players(), None, role_list, reveal_role=game.modes.get("reveal_role", False))
                 await admin.send_embed_to_channel(message.channel.guild, players_embed_data, message.channel.name)
         elif cmd == "timer":
             # Usage:`!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s

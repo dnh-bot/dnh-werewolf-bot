@@ -412,7 +412,7 @@ class Game:
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
 
-        embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
+        embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
 
         info = text_templates.generate_text(
@@ -541,7 +541,7 @@ class Game:
         self.day += 1
         if self.players:
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
-            embed_data = text_template.generate_player_list_embed(self.get_all_players())
+            embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
             if self.modes.get("new_moon", False):
@@ -602,7 +602,7 @@ class Game:
         else:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
 
-        players_embed_data = text_template.generate_player_list_embed(self.get_all_players())
+        players_embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
         await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
 
         # Mute all players in config.GAMEPLAY_CHANNEL
@@ -622,7 +622,7 @@ class Game:
                 "werewolf_before_voting_text",
                 config.WEREWOLF_CHANNEL
             )
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True)
+            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
             # Send alive player list to all skilled characters (guard, seer, etc.)
             if self.modes.get("witch_can_kill"):
@@ -630,7 +630,7 @@ class Game:
             else:
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if not isinstance(player, roles.Witch)])
 
-            embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False)
+            embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False, reveal_role=self.modes.get("reveal_role", False))
             # Send dead player list to Witch if Witch has not used skill
             if embed_data:  # This table can be empty (No one is dead)
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])

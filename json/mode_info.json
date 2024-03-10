@@ -40,5 +40,11 @@
       "vi": "Sự kiện New moon",
       "en": "New moon event"
     }
+  },
+  "reveal_role": {
+    "title": {
+      "vi": "Hiển thị role của người chết",
+      "en": "Reveal role of dead players"
+    }
   }
 }
