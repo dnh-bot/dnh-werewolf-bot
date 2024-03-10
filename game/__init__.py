@@ -37,7 +37,7 @@ class Game:
         self.play_time_start = datetime.time(0, 0, 0)  # in UTC
         self.play_time_end = datetime.time(0, 0, 0)  # in UTC
         self.play_zone = "UTC+7"
-        self.asyncLock = asyncio.Lock()
+        self.async_lock = asyncio.Lock()
         self.reset_game_state()  # Init other game variables every end game.
 
     def reset_game_state(self):
@@ -245,13 +245,13 @@ class Game:
             await asyncio.gather(
             *[player.create_personal_channel(self_check=True) for player in self.players.values()]
         )
-            
+
             return text_templates.generate_text('self_check_text')
         except Exception as e:
             print(e)
 
     async def add_player(self, id_, player_name):
-        async with self.asyncLock:
+        async with self.async_lock:
             if id_ in self.players:
                 return -1
 
