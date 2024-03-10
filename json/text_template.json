@@ -216,6 +216,13 @@
       "en": ["All players are ready. The system will assign roles and the game will begin soon!"]
     }
   },
+  "self_check_text": {
+    "params": [],
+    "template": {
+      "vi": ["Tất cả channel người chơi đã được kiểm tra!"],
+      "en": ["Player channels have been checked!"]
+    }
+  },
   "end_text": {
     "params": [],
     "template": {

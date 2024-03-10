@@ -123,6 +123,18 @@ async def parse_command(client, game, message):
                     message.guild, text_templates.generate_text(
                         "invalid_channel_text", channel=real_channel), message.channel.name
                 )
+        elif cmd == "selfcheck":
+            if not game.is_started():
+                await message.reply(text_templates.generate_text("game_not_started_text"))
+                return None
+            if message.channel.name not in (config.GAMEPLAY_CHANNEL, config.LOBBY_CHANNEL): # Only use in common channels, no spamming
+                await admin.send_text_to_channel(
+                    message.guild, text_templates.generate_text(
+                        "invalid_channel_text", channel=f"#{config.LOBBY_CHANNEL} #{config.GAMEPLAY_CHANNEL}"), message.channel.name
+                )
+                return None
+            msg = await game.self_check_channel()
+            await message.reply(msg)
 
         elif cmd == "status":
             if game.is_ended():

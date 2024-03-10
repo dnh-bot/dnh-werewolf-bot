@@ -61,13 +61,14 @@ class Character:
     def get_mana(self):
         return self.mana
 
-    async def create_personal_channel(self):
+    async def create_personal_channel(self, self_check = False):
         await self.interface.create_channel(self.channel_name)
         await self.interface.add_user_to_channel(self.player_id, self.channel_name, is_read=True, is_send=True)
-        await self.interface.send_action_text_to_channel(
-            "personal_channel_welcome_text", self.channel_name,
-            player_id=self.player_id, player_role=self.__class__.__name__
-        )
+        if not self_check:
+            await self.interface.send_action_text_to_channel(
+                "personal_channel_welcome_text", self.channel_name,
+                player_id=self.player_id, player_role=self.__class__.__name__
+            )
         print("Created channel", self.channel_name)
 
     async def send_to_personal_channel(self, text):

@@ -37,6 +37,7 @@ class Game:
         self.play_time_start = datetime.time(0, 0, 0)  # in UTC
         self.play_time_end = datetime.time(0, 0, 0)  # in UTC
         self.play_zone = "UTC+7"
+        self.asyncLock = asyncio.Lock()
         self.reset_game_state()  # Init other game variables every end game.
 
     def reset_game_state(self):
@@ -239,21 +240,32 @@ class Game:
         except Exception as e:
             print(e)
 
+    async def self_check_channel(self):
+        try:
+            await asyncio.gather(
+            *[player.create_personal_channel(self_check=True) for player in self.players.values()]
+        )
+            
+            return text_templates.generate_text('self_check_text')
+        except Exception as e:
+            print(e)
+
     async def add_player(self, id_, player_name):
-        if id_ in self.players:
-            return -1
+        async with self.asyncLock:
+            if id_ in self.players:
+                return -1
 
-        if id_ in self.watchers:
-            print("Player", id_, "unwatched and joined")
-            self.watchers.remove(id_)
-        else:
-            print("Player", id_, "joined")
+            if id_ in self.watchers:
+                print("Player", id_, "unwatched and joined")
+                self.watchers.remove(id_)
+            else:
+                print("Player", id_, "joined")
 
-        self.players[id_] = None
-        self.playersname[id_] = player_name
-        await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
-        await self.interface.send_action_text_to_channel("gameplay_join_text", config.GAMEPLAY_CHANNEL, player_id=id_)
-        return len(self.players)  # Return number of current players
+            self.players[id_] = None
+            self.playersname[id_] = player_name
+            await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
+            await self.interface.send_action_text_to_channel("gameplay_join_text", config.GAMEPLAY_CHANNEL, player_id=id_)
+            return len(self.players)  # Return number of current players
 
     async def remove_player(self, id_):
         if id_ not in self.players:
