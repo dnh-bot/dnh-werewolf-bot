@@ -6,8 +6,6 @@ from game import roles
 from game.roles.character import CharacterStatus
 import text_templates
 import commands
-from config import TEXT_LANGUAGE
-import utils
 
 
 def get_full_cmd_description(cmd):
