@@ -69,12 +69,10 @@ async def parse_command(client, game, message):
         elif cmd in ("vote", "kill", "guard", "seer", "reborn", "curse", "zombie", "ship", "auto"):
             if not game.is_started():
                 # prevent user uses command before game starts
-                await message.reply(text_templates.generate_text("game_not_started_text"))
-                return None
+                return await message.reply(text_templates.generate_text("game_not_started_text"))
 
             if not game.is_in_play_time():
-                await message.reply(text_templates.generate_text("game_not_playing_text"))
-                return None
+                return await message.reply(text_templates.generate_text("game_not_playing_text"))
 
             is_valid_channel = \
                 (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
@@ -178,8 +176,7 @@ async def parse_command(client, game, message):
                 timer_phase = list(map(int, parameters))
                 # Check if any timer phase is too short (<= 5 seconds):
                 if not timer_phase or any(map(lambda x: x <= 5, timer_phase)):
-                    await message.reply("Config must greater than 5s")
-                    return None
+                    return await message.reply("Config must greater than 5s")
                 await message.reply(
                     text_templates.generate_text(
                         "timer_settings_text",
