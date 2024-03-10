@@ -837,18 +837,8 @@ class Game:
         if cmd != "zombie" and not targets[0].is_alive() and cmd != "reborn":
             return text_templates.generate_text("dead_target_text" if cmd == "vote" else "invalid_target_text")
 
-        if cmd == "vote":
-            return await self.vote(author, targets[0])
-        if cmd == "kill":
-            return await self.kill(author, targets[0])
-        if cmd == "guard":
-            return await self.guard(author, targets[0])
-        if cmd == "seer":
-            return await self.seer(author, targets[0])
-        if cmd == "reborn":
-            return await self.reborn(author, targets[0])
-        if cmd == "curse":
-            return await self.curse(author, targets[0])
+        if cmd in ("vote", "kill", "guard", "seer", "reborn", "curse"):
+            return await getattr(self, cmd)(author, targets[0])
         if cmd == "zombie":
             return await self.zombie(author)
         if cmd == "ship":

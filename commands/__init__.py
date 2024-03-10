@@ -1,7 +1,9 @@
 """Add cmd decorator here for parsing command parameters"""
 
+import config
 from config import BOT_PREFIX, TEXT_LANGUAGE
 import utils
+import text_templates
 
 command_info = utils.common.read_json_file("json/command_info.json")
 
@@ -15,6 +17,13 @@ def get_command_description(command):
         return command_info[command]["description"][TEXT_LANGUAGE]
 
     return None
+
+
+def get_command_valid_channels(command):
+    if command in command_info:
+        return command_info[command]["valid_channels"]
+
+    return []
 
 
 def get_command_exclusive_roles(command):
@@ -74,3 +83,24 @@ def get_command_usages(command, **kwargs):
         ]
 
     return []
+
+
+def is_command_in_valid_channel(command, channel_name):
+    valid_channels = get_command_valid_channels(command)
+    if not valid_channels:
+        return True
+
+    return any(
+        channel_name.strip().startswith("personal") if valid_channel_name == "PERSONAL" else
+        channel_name == getattr(config, f"{valid_channel_name}_CHANNEL", "")
+        for valid_channel_name in valid_channels
+    )
+
+
+def get_command_valid_channel_name(command):
+    valid_channels = get_command_valid_channels(command)
+    return f' {text_templates.get_word_in_language("or")} '.join(
+        text_templates.get_word_in_language("personal") if valid_channel_name == "PERSONAL" else
+        f'#{getattr(config, f"{valid_channel_name}_CHANNEL", "")}'
+        for valid_channel_name in valid_channels
+    )
