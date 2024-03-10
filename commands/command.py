@@ -70,11 +70,11 @@ async def parse_command(client, game, message):
             if not game.is_started():
                 # prevent user uses command before game starts
                 await message.reply(text_templates.generate_text("game_not_started_text"))
-                return None
+                return
 
             if not game.is_in_play_time():
                 await message.reply(text_templates.generate_text("game_not_playing_text"))
-                return None
+                return
 
             is_valid_channel = \
                 (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
@@ -123,6 +123,15 @@ async def parse_command(client, game, message):
                     message.guild, text_templates.generate_text(
                         "invalid_channel_text", channel=real_channel), message.channel.name
                 )
+        elif cmd == "selfcheck":
+            if not game.is_started():
+                await message.reply(text_templates.generate_text("game_not_started_text"))
+                return
+            if message.channel.name not in (config.GAMEPLAY_CHANNEL, config.LOBBY_CHANNEL): # Only use in common channels, no spamming
+                await message.reply(text_templates.generate_text("invalid_channel_text", channel=f"#{config.LOBBY_CHANNEL} #{config.GAMEPLAY_CHANNEL}"))
+                return
+            msg = await game.self_check_channel()
+            await message.reply(msg)
 
         elif cmd == "status":
             if game.is_ended():
@@ -169,7 +178,7 @@ async def parse_command(client, game, message):
                 # Check if any timer phase is too short (<= 5 seconds):
                 if not timer_phase or any(map(lambda x: x <= 5, timer_phase)):
                     await message.reply("Config must greater than 5s")
-                    return None
+                    return
                 await message.reply(
                     text_templates.generate_text(
                         "timer_settings_text",

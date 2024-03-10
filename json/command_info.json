@@ -96,6 +96,14 @@
     "exclusive_roles": [],
     "required_params": []
   },
+  "selfcheck": {
+    "description": {
+      "vi": "Kiểm tra lại tất cả channel người chơi.",
+      "en": "Re-check all player channels."
+    },
+    "exclusive_roles": [],
+    "required_params": []
+  },
   "next": {
     "description": {
       "vi": "Nhảy đến phase sau (cần đủ số lượng vote).",
