@@ -69,10 +69,12 @@ async def parse_command(client, game, message):
         elif cmd in ("vote", "kill", "guard", "seer", "reborn", "curse", "zombie", "ship", "auto"):
             if not game.is_started():
                 # prevent user uses command before game starts
-                return await message.reply(text_templates.generate_text("game_not_started_text"))
+                await message.reply(text_templates.generate_text("game_not_started_text"))
+                return
 
             if not game.is_in_play_time():
-                return await message.reply(text_templates.generate_text("game_not_playing_text"))
+                await message.reply(text_templates.generate_text("game_not_playing_text"))
+                return
 
             is_valid_channel = \
                 (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
@@ -123,12 +125,14 @@ async def parse_command(client, game, message):
                 )
         elif cmd == "selfcheck":
             if not game.is_started():
-                return await message.reply(text_templates.generate_text("game_not_started_text"))
+                await message.reply(text_templates.generate_text("game_not_started_text"))
+                return
             if message.channel.name not in (config.GAMEPLAY_CHANNEL, config.LOBBY_CHANNEL): # Only use in common channels, no spamming
-                return await admin.send_text_to_channel(
+                await admin.send_text_to_channel(
                     message.guild, text_templates.generate_text(
                         "invalid_channel_text", channel=f"#{config.LOBBY_CHANNEL} #{config.GAMEPLAY_CHANNEL}"), message.channel.name
                 )
+                return
             msg = await game.self_check_channel()
             await message.reply(msg)
 
@@ -176,7 +180,8 @@ async def parse_command(client, game, message):
                 timer_phase = list(map(int, parameters))
                 # Check if any timer phase is too short (<= 5 seconds):
                 if not timer_phase or any(map(lambda x: x <= 5, timer_phase)):
-                    return await message.reply("Config must greater than 5s")
+                    await message.reply("Config must greater than 5s")
+                    return
                 await message.reply(
                     text_templates.generate_text(
                         "timer_settings_text",
