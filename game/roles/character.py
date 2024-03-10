@@ -26,6 +26,9 @@ class Character:
         self.channel_name = f"personal-{valid_channel_name}"
         self.mana = 0
 
+    def get_role(self):
+        return self.__class__.__name__
+
     def is_alive(self):
         return self.status != CharacterStatus.KILLED
 
