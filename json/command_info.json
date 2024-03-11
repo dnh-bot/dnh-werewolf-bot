@@ -38,7 +38,7 @@
       "en": "Set default player roles for a new game"
     },
     "exclusive_roles": [],
-    "required_params": []
+    "required_params": ["role_dict"]
   },
   "showmodes": {
     "description": {
