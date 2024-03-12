@@ -243,8 +243,8 @@ class Game:
     async def self_check_channel(self):
         try:
             await asyncio.gather(
-            *[player.create_personal_channel(self_check=True) for player in self.players.values()]
-        )
+                *[player.create_personal_channel(self_check=True) for player in self.players.values()]
+            )
 
             return text_templates.generate_text('self_check_text')
         except Exception as e:
@@ -611,7 +611,7 @@ class Game:
                     "couple_died_on_day_text", config.GAMEPLAY_CHANNEL,
                     died_player=f"<@{lynched}>", follow_player=f"<@{cupid_couple}>"
                 )
-            
+
             # Kill anyone who is hunted if hunter is lynched
             if isinstance(self.players[lynched], roles.Hunter):
                 hunted = self.players[lynched].get_hunted_target()
@@ -681,7 +681,6 @@ class Game:
                         if hunted and hunted != _id:
                             # We append to pending list to make it loop another round
                             self.night_pending_kill_list.append(hunted)
-
 
             kills = ", ".join(f"<@{_id}>" for _id in final_kill_list)
             self.night_pending_kill_list = []  # Reset killed list for next day
@@ -1034,11 +1033,11 @@ class Game:
         await self.interface.send_action_text_to_channel("couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{target1_id}>", user2=f"<@{target2_id}>")
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
-    
+
     async def hunt(self, author, target):
         if not isinstance(author, roles.Hunter):
             return text_templates.generate_text("invalid_author_text")
-        
+
         if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 

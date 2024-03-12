@@ -1,7 +1,9 @@
 from game.roles.villager import Villager
 
+
 class Hunter(Villager):
     ''' Hunter is basic Villager with ability to kill anyone on his death (die with him) '''
+
     def __init__(self, interface, player_id, player_name):
         super().__init__(interface, player_id, player_name)
         self.hunted_target = None
@@ -12,7 +14,6 @@ class Hunter(Villager):
 
     def get_hunted_target(self):
         return self.hunted_target
-    
+
     def set_hunted_target(self, hunted):
         self.hunted_target = hunted
-    
