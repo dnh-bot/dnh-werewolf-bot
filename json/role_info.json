@@ -101,7 +101,7 @@
   },
   "Cupid": {
     "name_vi": "Thần tình yêu",
-    "party": "Cupid",
+    "party": "Villager",
     "description": {
       "vi": "Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ thành phe thứ 3 với nhiệm vụ là hai người cuối cùng sống sót. Thần tình yêu có trách nhiệm đảm bảo cho cặp đôi giành chiến thắng",
       "en": "On the first day, Cupid can choose 2 players and make them to be a couple. If one of them is dead, the other will be also dead. If the couple belongs to different parties (Werewolf and Villager), then they become the third party. Their mission is to be the last stand players. Cupid is responsible for ensuring the couple wins"
