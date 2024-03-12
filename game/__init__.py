@@ -611,6 +611,15 @@ class Game:
                     "couple_died_on_day_text", config.GAMEPLAY_CHANNEL,
                     died_player=f"<@{lynched}>", follow_player=f"<@{cupid_couple}>"
                 )
+            
+            # Kill anyone who is hunted if hunter is lynched
+            if isinstance(self.players[lynched].get_role() == roles.Hunter):
+                hunted = self.players[lynched].get_hunted_target()
+                if hunted and hunted != lynched:
+                    await self.players[hunted].get_killed(True)
+                    await self.interface.send_action_text_to_channel(
+                        "hunter_killed_text", config.GAMEPLAY_CHANNEL, target=f"<@{hunted}>"
+                    )
         else:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
 
@@ -665,6 +674,14 @@ class Game:
                     final_kill_list.append(_id)
                     if self.cupid_dict.get(_id):
                         cupid_couple = self.cupid_dict[_id]
+
+                    # Kill anyone who is hunted if hunter is lynched
+                    if isinstance(self.players[_id].get_role() == roles.Hunter):
+                        hunted = self.players[_id].get_hunted_target()
+                        if hunted and hunted != _id:
+                            # We append to pending list to make it loop another round
+                            self.night_pending_kill_list.append(hunted)
+
 
             kills = ", ".join(f"<@{_id}>" for _id in final_kill_list)
             self.night_pending_kill_list = []  # Reset killed list for next day
@@ -1015,6 +1032,15 @@ class Game:
         await self.interface.send_action_text_to_channel("couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{target1_id}>", user2=f"<@{target2_id}>")
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
+    
+    async def hunt(self, author, target):
+        if not isinstance(author, roles.Hunter):
+            return text_templates.generate_text("invalid_author_text")
+
+        #author_id = author.player_id
+        target_id = target.player_id
+        author.set_hunted_target(target_id)
+        return text_templates.generate_text("hunt_after_voting_text", target=f"<@{target_id}>")
 
     async def register_auto(self, author, subcmd):
         def check(pred):

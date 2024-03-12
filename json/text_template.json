@@ -411,6 +411,44 @@
       "en": ["You protected this person yesterday. Let's change the target today!"]
     }
   },
+  "hunter_before_voting_text": {
+    "params": [],
+    "template": {
+      "vi": [
+        "Bạn muốn ai chết chung với mình? Hãy nhập `{bot_prefix}hunt ID` để chọn đối tượng.",
+        "Ví dụ: `{bot_prefix}hunter 2`",
+        "Bạn được sử dụng kỹ năng này bất kỳ lúc nào! Nhưng đừng giết bậy bạn nhé",
+        "Dùng kỹ năng lên bản thân nếu đổi ý."
+      ],
+      "en": [
+        "Choose someone to die with, enter `{bot_prefix}hunt ID` to let that person die with you.",
+        "Example: `{bot_prefix}hunt 2`",
+        "You can use this skill anytime!",
+        "Tagert yourself if you change your mind."
+      ]
+    }
+  },
+  "hunter_after_voting_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["Đã xác định đối tượng thành công {target}"],
+      "en": ["You have targeted {target}"]
+    }
+  },
+  "invalid_hunter_target_text": {
+    "params": [],
+    "template": {
+      "vi": ["Người ta đã chết rồi còn cố giết nữa 😡"],
+      "en": ["Don't target dead person 😡"]
+    }
+  },
+  "hunter_killed_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["Trước khi chết, thợ săn bắn phát súng cuối cùng vào {target}"],
+      "en": ["Before dying, the hunter shot {target}"]
+    }
+  },
   "witch_before_voting_text": {
     "params": [],
     "template": {
