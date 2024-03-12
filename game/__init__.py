@@ -613,7 +613,7 @@ class Game:
                 )
             
             # Kill anyone who is hunted if hunter is lynched
-            if isinstance(self.players[lynched].get_role() == roles.Hunter):
+            if isinstance(self.players[lynched], roles.Hunter):
                 hunted = self.players[lynched].get_hunted_target()
                 if hunted and hunted != lynched:
                     await self.players[hunted].get_killed(True)
@@ -676,7 +676,7 @@ class Game:
                         cupid_couple = self.cupid_dict[_id]
 
                     # Kill anyone who is hunted if hunter is lynched
-                    if isinstance(self.players[_id].get_role() == roles.Hunter):
+                    if isinstance(self.players[_id], roles.Hunter):
                         hunted = self.players[_id].get_hunted_target()
                         if hunted and hunted != _id:
                             # We append to pending list to make it loop another round

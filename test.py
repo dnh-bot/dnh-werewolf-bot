@@ -95,8 +95,10 @@ async def test_game():
 
     # Run single test
 
-    await test_case(game, "testcases/case-chief-vote-break-draw.json")
-
+    await test_case(game, "testcases/case-hunter-hunt-fox.json")
+    await test_case(game, "testcases/case-hunter-hunt-wolf.json")
+    await test_case(game, "testcases/case-hunter-simple.json")
+    await test_case(game, "testcases/case-hunter-hunt-night1.json")
     # Run all tests
     directory = "testcases"
     for filename in os.listdir(directory):

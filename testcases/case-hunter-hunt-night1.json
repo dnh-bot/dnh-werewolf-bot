@@ -1,5 +1,5 @@
 {
-	"name": "Hunter hunt other test",
+	"name": "Hunter hunt night1 test",
 	"player_list": {
 		"w1": "Werewolf",
 		"f1": "Fox",
@@ -20,7 +20,7 @@
 			"action": [
 				"w1 vote h1",
 				"f1 vote f1",
-				"g1 vote h1",
+				"g1 vote f1",
 				"h1 vote f1",
 				"wi1 vote h1"
 			]
@@ -30,13 +30,13 @@
 			"alive": [
 				"w1",
 				"g1",
-				"f1",
+				"h1",
 				"wi1"
 			],
 			"action": [
 				"w1 kill g1",
 				"g1 guard g1",
-				"wi1 reborn h1"
+				"h1 hunt w1"
 			]
 		},
 		{
@@ -45,12 +45,11 @@
 				"w1",
 				"wi1",
 				"h1",
-				"f1",
 				"g1"
 			],
 			"action": [
 				"g1 vote g1",
-				"f1 vote wi1",
+				"h1 vote wi1",
 				"wi1 vote wi1"
 			]
 		},
@@ -59,14 +58,12 @@
 			"alive": [
 				"w1",
 				"g1",
-				"h1",
-				"f1"
+				"h1"
 			],
 			"action": [
-				"w1 kill h1",
-				"h1 hunt w1"
+				"w1 kill h1"
 			]
 		}
 	],
-	"win": "Fox"
+	"win": "Villager"
 }
