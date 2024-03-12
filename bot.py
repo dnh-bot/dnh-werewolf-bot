@@ -34,7 +34,7 @@ async def process_message(discord_client, message):
         game = game_list.get_game(message.guild.id)
         if game is None:
             # Init game_list
-            init_setup(True)
+            await init_setup(True)
             game = game_list.get_game(message.guild.id)
 
         await command.parse_command(discord_client, game, message)
