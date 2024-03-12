@@ -46,7 +46,7 @@
       "vi": "Bất kỳ lúc nào cũng có thể chọn 1 người khác để chết chung với mình. Ghi nhận lệnh cuối cùng.",
       "en": "Target a player anytime to die together. Accept latest command."
     },
-    "daytime_command": ["vote", "hunt"],
+    "daytime_command": "vote",
     "nighttime_commands": ["hunt"]
   },
   "Lycan": {

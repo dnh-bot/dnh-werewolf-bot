@@ -861,6 +861,8 @@ class Game:
             return await self.kill(author, targets[0])
         if cmd == "guard":
             return await self.guard(author, targets[0])
+        if cmd == "hunt":
+            return await self.hunt(author, targets[0])
         if cmd == "seer":
             return await self.seer(author, targets[0])
         if cmd == "reborn":
@@ -1036,6 +1038,9 @@ class Game:
     async def hunt(self, author, target):
         if not isinstance(author, roles.Hunter):
             return text_templates.generate_text("invalid_author_text")
+        
+        if self.game_phase != const.GamePhase.NIGHT:
+            return text_templates.generate_text("invalid_nighttime_text")
 
         #author_id = author.player_id
         target_id = target.player_id
