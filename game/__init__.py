@@ -685,7 +685,6 @@ class Game:
                     if hunted:
                         final_kill_list.append(hunted)
 
-
             kills = ", ".join(f"<@{_id}>" for _id in final_kill_list)
             self.night_pending_kill_list = []  # Reset killed list for next day
 
@@ -1052,7 +1051,7 @@ class Game:
         target_id = target.player_id
         author.set_hunted_target(target_id)
         return text_templates.generate_text("hunter_after_voting_text", target=f"<@{target_id}>")
-    
+
     # Kill anyone who is hunted
     async def get_hunted_target_on_hunter_death(self, hunter):
         if isinstance(self.players[hunter], roles.Hunter):
@@ -1061,7 +1060,6 @@ class Game:
                 if await self.players[hunted].get_killed():
                     return hunted
         return None
-
 
     async def register_auto(self, author, subcmd):
         def check(pred):
