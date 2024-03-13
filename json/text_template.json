@@ -431,8 +431,8 @@
   "hunter_after_voting_text": {
     "params": ["target"],
     "template": {
-      "vi": ["Đã xác định đối tượng thành công {target}"],
-      "en": ["You have targeted {target}"]
+      "vi": ["Thợ săn đã xác định đối tượng thành công {target}"],
+      "en": ["Hunter has targeted victim {target}"]
     }
   },
   "invalid_hunter_target_text": {
