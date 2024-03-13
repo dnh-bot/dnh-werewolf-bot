@@ -43,8 +43,8 @@
     "name_vi": "Thợ săn",
     "party": "Villager",
     "description": {
-      "vi": "Bất kỳ lúc nào cũng có thể chọn 1 người khác để chết chung với mình. Ghi nhận lệnh cuối cùng.",
-      "en": "Target a player anytime to die together. Accept latest command."
+      "vi": "Vào ban đêm, chọn 1 người khác để chết chung với mình. Ghi nhận lệnh cuối cùng.",
+      "en": "Target a player to die together at night. Accept latest command."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["hunt"]

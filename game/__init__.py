@@ -611,15 +611,17 @@ class Game:
                     "couple_died_on_day_text", config.GAMEPLAY_CHANNEL,
                     died_player=f"<@{lynched}>", follow_player=f"<@{cupid_couple}>"
                 )
-
-            # Kill anyone who is hunted if hunter is lynched
-            if isinstance(self.players[lynched], roles.Hunter):
-                hunted = self.players[lynched].get_hunted_target()
-                if hunted and hunted != lynched:
-                    await self.players[hunted].get_killed(True)
+                # Kill anyone who is hunted if hunter dies with his couple
+                hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
+                if hunted:
                     await self.interface.send_action_text_to_channel(
                         "hunter_killed_text", config.GAMEPLAY_CHANNEL, target=f"<@{hunted}>"
                     )
+            hunted = await self.get_hunted_target_on_hunter_death(lynched)
+            if hunted:
+                await self.interface.send_action_text_to_channel(
+                    "hunter_killed_text", config.GAMEPLAY_CHANNEL, target=f"<@{hunted}>"
+                )
         else:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
 
@@ -674,13 +676,15 @@ class Game:
                     final_kill_list.append(_id)
                     if self.cupid_dict.get(_id):
                         cupid_couple = self.cupid_dict[_id]
+                        hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
+                        if hunted:
+                            final_kill_list.append(hunted)
 
-                    # Kill anyone who is hunted if hunter is lynched
-                    if isinstance(self.players[_id], roles.Hunter):
-                        hunted = self.players[_id].get_hunted_target()
-                        if hunted and hunted != _id:
-                            # We append to pending list to make it loop another round
-                            self.night_pending_kill_list.append(hunted)
+                    # Kill anyone who is hunted if hunter is killed
+                    hunted = await self.get_hunted_target_on_hunter_death(_id)
+                    if hunted:
+                        final_kill_list.append(hunted)
+
 
             kills = ", ".join(f"<@{_id}>" for _id in final_kill_list)
             self.night_pending_kill_list = []  # Reset killed list for next day
@@ -1041,10 +1045,23 @@ class Game:
         if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
-        #author_id = author.player_id
+        if not target.is_alive():
+            return text_templates.generate_text("invalid_hunter_target_text", user=f"<@{target_id}>")
+
+        # author_id = author.player_id
         target_id = target.player_id
         author.set_hunted_target(target_id)
-        return text_templates.generate_text("hunt_after_voting_text", target=f"<@{target_id}>")
+        return text_templates.generate_text("hunter_after_voting_text", target=f"<@{target_id}>")
+    
+    # Kill anyone who is hunted
+    async def get_hunted_target_on_hunter_death(self, hunter):
+        if isinstance(self.players[hunter], roles.Hunter):
+            hunted = self.players[hunter].get_hunted_target()
+            if hunted and hunted != hunter:
+                if await self.players[hunted].get_killed():
+                    return hunted
+        return None
+
 
     async def register_auto(self, author, subcmd):
         def check(pred):

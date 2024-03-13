@@ -94,7 +94,8 @@ async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
 
     # Run single test
-
+    await test_case(game, "testcases/case-hunter-couple-die-together-by-kill.json")
+    await test_case(game, "testcases/case-hunter-couple-die-together-by-vote.json")
     await test_case(game, "testcases/case-hunter-hunt-fox.json")
     await test_case(game, "testcases/case-hunter-hunt-wolf.json")
     await test_case(game, "testcases/case-hunter-simple.json")

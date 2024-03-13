@@ -1,10 +1,11 @@
 {
-	"name": "Hunter hunt fox test",
+	"name": "Hunter die together by kill",
 	"player_list": {
 		"w1": "Werewolf",
-		"f1": "Fox",
-		"g1": "Guard",
+		"s1": "Seer",
 		"h1": "Hunter",
+		"c1": "Cupid",
+		"sw1": "Superwolf",
 		"wi1": "Witch"
 	},
 	"timeline": [
@@ -12,59 +13,60 @@
 			"time": "day1",
 			"alive": [
 				"w1",
-				"f1",
-				"g1",
 				"h1",
-				"wi1"
+				"c1",
+				"sw1",
+				"wi1",
+				"s1"
 			],
 			"action": [
 				"w1 vote h1",
-				"f1 vote f1",
-				"g1 vote h1",
-				"h1 vote f1",
-				"wi1 vote h1"
+				"h1 vote w1",
+				"c1 ship h1 s1",
+				"sw1 vote c1",
+				"wi1 vote sw1"
 			]
 		},
 		{
 			"time": "night1",
 			"alive": [
 				"w1",
-				"g1",
-				"f1",
-				"wi1"
+				"s1",
+				"h1",
+				"c1",
+				"wi1",
+				"sw1"
 			],
 			"action": [
-				"w1 kill g1",
-				"g1 guard g1",
-				"wi1 reborn h1"
+				"w1 kill wi1",
+				"s1 seer h1",
+				"h1 hunt c1"
 			]
 		},
 		{
 			"time": "day2",
 			"alive": [
 				"w1",
-				"wi1",
+				"s1",
 				"h1",
-				"f1",
-				"g1"
+				"c1",
+				"sw1"
 			],
 			"action": [
-				"g1 vote g1",
-				"f1 vote wi1",
-				"wi1 vote wi1"
+				"w1 vote sw1",
+				"c1 vote sw1"
 			]
 		},
 		{
 			"time": "night2",
 			"alive": [
 				"w1",
-				"g1",
+				"s1",
 				"h1",
-				"f1"
+				"c1"
 			],
 			"action": [
-				"w1 kill h1",
-				"h1 hunt f1"
+				"w1 kill s1"
 			]
 		}
 	],
