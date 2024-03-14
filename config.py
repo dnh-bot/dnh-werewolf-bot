@@ -31,11 +31,11 @@ ALERT_PERIOD = 30   # 20s
 """ Non-configurable value """
 GAME_CATEGORY = os.getenv("GAME_CATEGORY") if os.getenv("GAME_CATEGORY") else "GAME"
 
-LEADERBOARD_CHANNEL = "leaderboard"
-LOBBY_CHANNEL = "lobby"
-GAMEPLAY_CHANNEL = "gameplay"
-WEREWOLF_CHANNEL = "werewolf"
-CEMETERY_CHANNEL = "cemetery"
-COUPLE_CHANNEL = "couple"
+LEADERBOARD_CHANNEL = "🏆leaderboard"
+LOBBY_CHANNEL = "🏠lobby"
+GAMEPLAY_CHANNEL = "🎯gameplay"
+WEREWOLF_CHANNEL = "🐺werewolf"
+CEMETERY_CHANNEL = "💀cemetery"
+COUPLE_CHANNEL = "💘couple"
 
 TEXT_LANGUAGE = "vi"

@@ -128,57 +128,57 @@
   "gameplay_join_text": {
     "params": ["player_id"],
     "template": {
-      "vi": ["Chào <@{player_id}>"],
-      "en": ["Hi <@{player_id}>"]
+      "vi": ["👋🏻 Chào <@{player_id}>"],
+      "en": ["👋🏻 Hi <@{player_id}>"]
     }
   },
   "gameplay_leave_text": {
     "params": ["player_id"],
     "template": {
-      "vi": ["Bye <@{player_id}>"],
-      "en": ["Bye <@{player_id}>"]
+      "vi": ["🤜🏻 Bye <@{player_id}>"],
+      "en": ["🤜🏻 Bye <@{player_id}>"]
     }
   },
   "gameplay_watch_text": {
     "params": ["player_id"],
     "template": {
-      "vi": ["Người xem <@{player_id}> đã theo dõi game."],
-      "en": ["Viewer <@{player_id}> has watched the game."]
+      "vi": ["👀 Người xem <@{player_id}> đã theo dõi game."],
+      "en": ["👀 Viewer <@{player_id}> has watched the game."]
     }
   },
   "gameplay_unwatch_text": {
     "params": ["player_id"],
     "template": {
-      "vi": ["Người xem <@{player_id}> đã bỏ theo dõi game."],
-      "en": ["Viewer <@{player_id}> has unwatched the game."]
+      "vi": ["🫣 Người xem <@{player_id}> đã bỏ theo dõi game."],
+      "en": ["🫣 Viewer <@{player_id}> has unwatched the game."]
     }
   },
   "reply_join_text": {
     "params": ["user", "joined_players"],
     "template": {
-      "vi": ["Người chơi {user} đã tham gia ván đấu. Hiện có {joined_players} người chơi."],
-      "en": ["Player {user} has joined the game. There are now {joined_players} players."]
+      "vi": ["✅ Người chơi {user} đã tham gia ván đấu. Hiện có {joined_players} người chơi."],
+      "en": ["✅ Player {user} has joined the game. There are now {joined_players} players."]
     }
   },
   "reply_leave_text": {
     "params": ["user", "joined_players"],
     "template": {
-      "vi": ["Người chơi {user} đã rời ván đấu. Hiện có {joined_players} người chơi."],
-      "en": ["Player {user} has left the game. There are now {joined_players} players."]
+      "vi": ["❌ Người chơi {user} đã rời ván đấu. Hiện có {joined_players} người chơi."],
+      "en": ["❌ Player {user} has left the game. There are now {joined_players} players."]
     }
   },
   "reply_watch_text": {
     "params": ["user", "watched_players"],
     "template": {
-      "vi": ["Người xem {user} đã xem ván đấu. Hiện có {watched_players} người xem."],
-      "en": ["Viewer {user} has watched the game. There are now {watched_players} viewers."]
+      "vi": ["👀 Người xem {user} đã xem ván đấu. Hiện có {watched_players} người xem."],
+      "en": ["👀 Viewer {user} has watched the game. There are now {watched_players} viewers."]
     }
   },
   "reply_unwatch_text": {
     "params": ["user", "watched_players"],
     "template": {
-      "vi": ["Người xem {user} đã bỏ xem ván đấu. Hiện có {watched_players} người xem."],
-      "en": ["Viewer {user} has unwatched the game. There are now {watched_players} viewers."]
+      "vi": ["🫣 Người xem {user} đã bỏ xem ván đấu. Hiện có {watched_players} người xem."],
+      "en": ["🫣 Viewer {user} has unwatched the game. There are now {watched_players} viewers."]
     }
   },
   "reply_in_game_watch_text": {
@@ -198,8 +198,8 @@
   "personal_channel_welcome_text": {
     "params": ["player_id", "player_role"],
     "template": {
-      "vi": ["Chào mừng <@{player_id}> tham gia game!\nVai của bạn là {player_role}"],
-      "en": ["Welcome <@{player_id}> to the game!\nYour role is {player_role}"]
+      "vi": ["🔰 Chào mừng <@{player_id}> tham gia game!\n🎲 Vai trò của bạn là {player_role}"],
+      "en": ["🔰 Welcome <@{player_id}> to the game!\n🎲 Your role is {player_role}"]
     }
   },
   "too_quick_text": {
@@ -212,47 +212,47 @@
   "start_text": {
     "params": [],
     "template": {
-      "vi": ["Tất cả người chơi đã sẵn sàng. Hệ thống tiến hành phân vai và trò chơi sẽ bắt đầu ngay sau đây!"],
-      "en": ["All players are ready. The system will assign roles and the game will begin soon!"]
+      "vi": ["🔥 Tất cả người chơi đã sẵn sàng. Hệ thống tiến hành phân vai và trò chơi sẽ bắt đầu ngay sau đây!"],
+      "en": ["🔥 All players are ready. The system will assign roles and the game will begin soon!"]
     }
   },
   "self_check_text": {
     "params": [],
     "template": {
-      "vi": ["Tất cả channel người chơi đã được kiểm tra!"],
-      "en": ["Player channels have been checked!"]
+      "vi": ["👤 Tất cả channel người chơi đã được kiểm tra!"],
+      "en": ["👤 Player channels have been checked!"]
     }
   },
   "end_text": {
     "params": [],
     "template": {
-      "vi": ["Trò chơi đã kết thúc."],
-      "en": ["Game ended."]
+      "vi": ["🎮 Trò chơi đã kết thúc."],
+      "en": ["🎮 Game ended."]
     }
   },
   "role_list_text": {
     "params": ["roles_data"],
     "template": {
-      "vi": ["Nhân vật: {roles_data}"],
-      "en": ["Roles: {roles_data}"]
+      "vi": ["📍 Nhân vật: {roles_data}"],
+      "en": ["📍 Roles: {roles_data}"]
     }
   },
   "hidden_role_warning_text": {
     "params": [],
     "template": {
-      "vi": ["Cảnh báo: hidden_role đang bật, không hiện danh sách"],
-      "en": ["Warning: hidden_role is ON, do not show list"]
+      "vi": ["⚠️ Cảnh báo: hidden_role đang bật, không hiện danh sách"],
+      "en": ["⚠️ Warning: hidden_role is ON, do not show list"]
     }
   },
   "execution_player_text": {
     "params": ["voted_user", "highest_vote_number"],
     "template": {
       "vi": [
-        "Thời gian quyết định đã hết. Người chơi {voted_user} đã bị đưa lên máy chém với số phiếu bầu là {highest_vote_number}. Hy vọng tình thế của làng có thể thay đổi sau quyết định này.",
+        "🔴 Thời gian quyết định đã hết. Người chơi {voted_user} đã bị đưa lên máy chém với số phiếu bầu là {highest_vote_number}. Hy vọng tình thế của làng có thể thay đổi sau quyết định này.",
         "===========================================================================\n"
       ],
       "en": [
-         "The time to decide has expired. Player {voted_user} has been sent to the guillotine with {highest_vote_number} votes. Hope that something could be changed after this decision.",
+         "🔴 The time to decide has expired. Player {voted_user} has been sent to the guillotine with {highest_vote_number} votes. Hope that something could be changed after this decision.",
          "==========================================================================\n"
        ]
     }
@@ -261,11 +261,11 @@
     "params": [],
     "template": {
       "vi": [
-        "Không có ai bị hành hình. Trò chơi sẽ tiếp tục. Hãy cẩn thận để sống sót!",
+        "🟢 Không có ai bị hành hình. Trò chơi sẽ tiếp tục. Hãy cẩn thận để sống sót!",
         "===========================================================================\n"
       ],
       "en": [
-        "No one will be executed. The game will continue. Be careful to survive!",
+        "🟢 No one will be executed. The game will continue. Be careful to survive!",
         "===========================================================================\n"
       ]
     }
@@ -274,12 +274,12 @@
     "params": ["day"],
     "template": {
       "vi": [
-        "Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:",
+        "☀️ Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:",
         "- Hãy nhập `{bot_prefix}vote ID` để bỏ phiếu cho người bạn nghi là Sói!",
         "- Nhập `{bot_prefix}status` để xem trạng thái bỏ phiếu hiện tại."
       ],
       "en": [
-        "A new day begins, everyone wakes up. Report the situation of the day {day}:",
+        "☀️ A new day begins, everyone wakes up. Report the situation of the day {day}:",
         "- Enter `{bot_prefix}vote ID` to vote for the person you suspect is a Werewolf!",
         "- Type `{bot_prefix}status` to see the current voting status."
       ]
@@ -288,8 +288,8 @@
   "night_phase_beginning_text": {
     "params": [],
     "template": {
-      "vi": ["Đêm đã tới. Cảnh vật hóa tĩnh lặng, mọi người an giấc. Liệu đêm nay có xảy ra chuyện gì không?"],
-      "en": ["Night has come. The scenery is quiet, everyone is asleep. Will something happen tonight?"]
+      "vi": ["🌙 Đêm đã tới. Cảnh vật hóa tĩnh lặng, mọi người an giấc. Liệu đêm nay có xảy ra chuyện gì không?"],
+      "en": ["🌙 Night has come. The scenery is quiet, everyone is asleep. Will something happen tonight?"]
     }
   },
   "player_list_description_text": {
@@ -302,35 +302,35 @@
   "werewolf_welcome_text": {
     "params": ["user"],
     "template": {
-      "vi": ["Chào sói {user}"],
-      "en": ["Hi Werewolf {user}"]
+      "vi": ["🐺 Chào sói {user}"],
+      "en": ["🐺 Hi Werewolf {user}"]
     }
   },
   "werewolf_list_text": {
     "params": ["werewolf_str"],
     "template": {
-      "vi": ["Danh sách Sói: {werewolf_str}"],
-      "en": ["Werewolf list: {werewolf_str}"]
+      "vi": ["🐺 Danh sách Sói: {werewolf_str}"],
+      "en": ["🐺 Werewolf list: {werewolf_str}"]
     }
   },
   "werewolf_before_voting_text": {
     "params": [],
     "template": {
       "vi": [
-        "Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{bot_prefix}kill ID` để lặng lẽ xử lý nạn nhân.",
-        "Ví dụ: `{bot_prefix}kill 2`\n"
+        "🐺 Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{bot_prefix}kill ID` để lặng lẽ xử lý nạn nhân.",
+        "💡 Ví dụ: `{bot_prefix}kill 2`\n"
       ],
       "en": [
-        "Who does Werewolf want to kill tonight? Enter `{bot_prefix}kill ID` to quietly kill the victim.",
-        "Example: `{bot_prefix}kill 2`\n"
+        "🐺 Who does Werewolf want to kill tonight? Enter `{bot_prefix}kill ID` to quietly kill the victim.",
+        "💡 Example: `{bot_prefix}kill 2`\n"
       ]
     }
   },
   "werewolf_kill_text": {
     "params": ["werewolf", "target"],
     "template": {
-      "vi": ["Sói {werewolf} muốn xử lý {target} trong đêm nay"],
-      "en": ["Werewolf {werewolf} wants to bite {target} tonight"]
+      "vi": ["🐺 Sói {werewolf} muốn xử lý {target} trong đêm nay"],
+      "en": ["🐺 Werewolf {werewolf} wants to bite {target} tonight"]
     }
   },
   "werewolf_after_voting_text": {
@@ -343,58 +343,58 @@
   "vote_text": {
     "params": ["author", "target"],
     "template": {
-      "vi": ["{author} đã biểu quyết loại bỏ {target} khỏi làng"],
-      "en": ["{author} voted to remove {target} from the village"]
+      "vi": ["👉🏻 {author} đã biểu quyết loại bỏ {target} khỏi làng"],
+      "en": ["👉🏻 {author} voted to remove {target} from the village"]
     }
   },
   "vote_for_game_text": {
     "params": ["command", "author", "text"],
     "template": {
-      "vi": ["Người chơi {author} bỏ phiếu để {command} trò chơi. {text}"],
-      "en": ["Player {author} votes for {command} game. {text}"]
+      "vi": ["🙋🏻‍♂️ Người chơi {author} bỏ phiếu để {command} trò chơi. {text}"],
+      "en": ["🙋🏻‍♂️ Player {author} votes for {command} game. {text}"]
     }
   },
   "seer_before_voting_text": {
     "params": [],
     "template": {
-      "vi": ["Tiên tri muốn thấy gì, từ ai? Hãy làm phép bằng cách nhập `{bot_prefix}seer ID` để xem người chơi đó là ai."],
-      "en": ["What does the Seer want to see, from whom? Cast a spell by entering `{bot_prefix}seer ID` to see who that player is."]
+      "vi": ["🔮 Tiên tri muốn thấy gì, từ ai? Hãy làm phép bằng cách nhập `{bot_prefix}seer ID` để xem người chơi đó là ai."],
+      "en": ["🔮 What does the Seer want to see, from whom? Cast a spell by entering `{bot_prefix}seer ID` to see who that player is."]
     }
   },
   "seer_after_voting_werewolf_text": {
     "params": ["target"],
     "template": {
-      "vi": ["Ồ, {target} là Sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."],
-      "en": ["Oh, {target} is a Werewolf. Magic power is exhausted, Seer needs to go to sleep to restore energy."]
+      "vi": ["👍🏻 Ồ, {target} là Sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."],
+      "en": ["👍🏻 Oh, {target} is a Werewolf. Magic power is exhausted, Seer needs to go to sleep to restore energy."]
     }
   },
   "seer_after_voting_not_werewolf_text": {
     "params": ["target"],
     "template": {
-      "vi": ["Ồ, {target} không phải là Sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."],
-      "en": ["Oh, {target} is not a Werewolf. Magic power is exhausted, Seer needs to go to sleep to restore energy."]
+      "vi": ["👎🏻 Ồ, {target} không phải là Sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."],
+      "en": ["👎🏻 Oh, {target} is not a Werewolf. Magic power is exhausted, Seer needs to go to sleep to restore energy."]
     }
   },
   "guard_before_voting_text": {
     "params": [],
     "template": {
       "vi": [
-        "Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{bot_prefix}guard ID` để người đó qua đêm an bình.",
-        "Ví dụ: `{bot_prefix}guard 2`",
-        "Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm. Hãy cẩn trọng!"
+        "🛡️ Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{bot_prefix}guard ID` để người đó qua đêm an bình.",
+        "💡 Ví dụ: `{bot_prefix}guard 2`",
+        "⚠️ Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm. Hãy cẩn trọng!"
       ],
       "en": [
-        "The guard wants someone to live tonight, enter `{bot_prefix}guard ID` to let that person spend the night peacefully.",
-        "Example: `{bot_prefix}guard 2`",
-        "You can only use the skill once per night. Be careful!"
+        "🛡️ The guard wants someone to live tonight, enter `{bot_prefix}guard ID` to let that person spend the night peacefully.",
+        "💡 Example: `{bot_prefix}guard 2`",
+        "⚠️ You can only use the skill once per night. Be careful!"
       ]
     }
   },
   "guard_after_voting_text": {
     "params": ["target"],
     "template": {
-      "vi": ["Đã bảo vệ thành công {target}"],
-      "en": ["You have guarded {target}"]
+      "vi": ["🛡️ Đã bảo vệ thành công {target}"],
+      "en": ["🛡️ You have guarded {target}"]
     }
   },
   "invalid_guard_selfprotection_text": {
@@ -451,94 +451,94 @@
     "params": [],
     "template": {
       "vi": [
-        "Bạn có thể cứu 1 người và giết 1 người. Bạn chỉ được dùng mỗi kỹ năng 1 lần.",
-        "Nhập `{bot_prefix}reborn ID` để cứu người.",
-        "Nhập `{bot_prefix}curse ID` để nguyền rủa 1 người.\n"
+        "🧙🏻‍♀️ Bạn có thể cứu 1 người và giết 1 người. Bạn chỉ được dùng mỗi kỹ năng 1 lần.",
+        "🧪 Nhập `{bot_prefix}reborn ID` để cứu người.",
+        "🩸 Nhập `{bot_prefix}curse ID` để nguyền rủa 1 người.\n"
       ],
       "en": [
-        "You can save 1 person and curse 1 person. You can only use each skill once.",
-        "Enter `{bot_prefix}reborn ID` to save 1 person.",
-        "Enter `{bot_prefix}curse ID` to curse 1 person.\n"
+        "🧙🏻‍♀️ You can save 1 person and curse 1 person. You can only use each skill once.",
+        "🧪 Enter `{bot_prefix}reborn ID` to save 1 person.",
+        "🩸 Enter `{bot_prefix}curse ID` to curse 1 person.\n"
       ]
     }
   },
   "witch_after_reborn_text": {
     "params": ["target"],
     "template": {
-      "vi": ["Bạn đã phục sinh thành công {target}"],
-      "en": ["You have reborn {target}"]
+      "vi": ["🧪 Bạn đã phục sinh thành công {target}"],
+      "en": ["🧪 You have reborn {target}"]
     }
   },
   "witch_after_curse_text": {
     "params": ["target"],
     "template": {
-      "vi": ["Bạn đã nguyền rủa thành công {target}"],
-      "en": ["You have cursed {target}"]
+      "vi": ["🩸 Bạn đã nguyền rủa thành công {target}"],
+      "en": ["🩸 You have cursed {target}"]
     }
   },
   "zombie_before_voting_text": {
     "params": [],
     "template": {
       "vi": [
-        "Bạn có thể đội mồ sống dậy! Bạn chỉ có thể sử dụng kỹ năng này 1 lần.",
-        "Nhập `{bot_prefix}zombie` để trở lại cuộc đời.\n"
+        "🧟 Bạn có thể đội mồ sống dậy! Bạn chỉ có thể sử dụng kỹ năng này 1 lần.",
+        "💡 Nhập `{bot_prefix}zombie` để trở lại cuộc đời.\n"
       ],
       "en": [
-        "You can be reborn! You can only use this skill once.",
-        "Enter `{bot_prefix}zombie` to return to the life.\n"
+        "🧟 You can be reborn! You can only use this skill once.",
+        "💡 Enter `{bot_prefix}zombie` to return to the life.\n"
       ]
     }
   },
   "zombie_after_reborn_text": {
     "params": [],
     "template": {
-      "vi": ["Bạn đã đội mồ thành công"],
-      "en": ["You have successfully reborn"]
+      "vi": ["🧟 Bạn đã đội mồ thành công"],
+      "en": ["🧟 You have successfully reborn"]
     }
   },
   "cupid_start_game_text": {
     "params": [],
     "template": {
       "vi": [
-        "Cupid muốn cho cặp đôi nào được đồng sinh cộng tử?",
-        "Hãy làm phép bằng cách nhập `{bot_prefix}ship ID1 ID2` để ghép đôi."
+        "🏹 Cupid muốn cho cặp đôi nào được đồng sinh cộng tử?",
+        "💡 Hãy làm phép bằng cách nhập `{bot_prefix}ship ID1 ID2` để ghép đôi."
       ],
       "en": [
-        "Which couple does Cupid want to ship?",
-        "Make a spell by entering `{bot_prefix}ship ID1 ID2` to pair."
+        "🏹 Which couple does Cupid want to ship?",
+        "💡 Make a spell by entering `{bot_prefix}ship ID1 ID2` to pair."
       ]
     }
   },
   "cupid_after_ship_text": {
     "params": ["target1", "target2"],
     "template": {
-      "vi": ["Bạn đã ghép đôi thành công {target1} và {target2}."],
-      "en": ["You have successfully paired {target1} and {target2}."]
+      "vi": ["💘 Bạn đã ghép đôi thành công {target1} và {target2}."],
+      "en": ["💘 You have successfully paired {target1} and {target2}."]
     }
   },
   "couple_shipped_with_text": {
     "params": ["target"],
     "template": {
-      "vi": ["Bạn và {target} đã được thần tình yêu chọn làm cặp đôi đồng sinh cộng tử."],
-      "en": ["You and {target} have been chosen by the cupid to be a couple."]
+      "vi": ["👩🏻‍❤️‍👨🏻 Bạn và {target} đã được thần tình yêu chọn làm cặp đôi đồng sinh cộng tử."],
+      "en": ["👩🏻‍❤️‍👨🏻 You and {target} have been chosen by the cupid to be a couple."]
     }
   },
   "couple_welcome_text": {
     "params": ["user1", "user2"],
     "template": {
-      "vi": ["Chào mừng cặp đôi {user1} - {user2}!"],
-      "en": ["Welcome {user1} - {user2} couple!"]
+      "vi": ["💘 Chào mừng cặp đôi {user1} - {user2}!"],
+      "en": ["💘 Welcome {user1} - {user2} couple!"]
     }
   },
   "couple_died_on_day_text": {
     "params": ["died_player", "follow_player"],
     "template": {
       "vi": [
-        "Do {died_player} đã chết nên {follow_player} cũng đã treo cổ tự vẫn đi theo tình yêu của đời mình.",
+        "😇 Do {died_player} đã chết nên {follow_player} cũng đã treo cổ tự vẫn đi theo tình yêu của đời mình.",
         "===========================================================================\n"
       ],
       "en": [
-        "Because {died_player} died, {follow_player} also hanged themself to follow the love of their life.",
+        "😇 Because {died_player} died, {follow_player} also hanged themself to follow the love of their life.",
         "===========================================================================\n"
       ]
     }
@@ -547,11 +547,11 @@
     "params": ["died_player", "follow_player"],
     "template": {
       "vi": [
-        "{follow_player} đã dừng cuộc chơi và bước trên con đường tìm kiếm {died_player}.",
+        "😇 {follow_player} đã dừng cuộc chơi và bước trên con đường tìm kiếm {died_player}.",
         "===========================================================================\n"
       ],
       "en": [
-        "{follow_player} has given up and is on the way to finding {died_player}.",
+        "😇 {follow_player} has given up and is on the way to finding {died_player}.",
         "===========================================================================\n"
       ]
     }
@@ -581,11 +581,11 @@
     "params": ["user"],
     "template": {
       "vi": [
-        "Đêm qua, {user} đã bị mất tích một cách bí ẩn.",
+        "☀️ Đêm qua, {user} đã bị mất tích một cách bí ẩn.",
         "===========================================================================\n"
       ],
       "en": [
-        "Last night, {user} was mysteriously missing.",
+        "☀️ Last night, {user} was mysteriously missing.",
         "===========================================================================\n"
       ]
     }
@@ -594,11 +594,11 @@
     "params": [],
     "template": {
       "vi": [
-        "Đêm qua, mọi người đều bình an.",
+        "☀️ Đêm qua, mọi người đều bình an.",
         "===========================================================================\n"
       ],
       "en": [
-        "Last night, everyone was safe.",
+        "☀️ Last night, everyone was safe.",
         "===========================================================================\n"
       ]
     }
@@ -606,15 +606,15 @@
   "after_death_text": {
     "params": ["user"],
     "template": {
-      "vi": ["Chào mừng {user} đến với nghĩa trang vui vẻ ^^"],
-      "en": ["Welcome {user} to the cemetery ^^"]
+      "vi": ["🪦 Chào mừng {user} đến với nghĩa trang vui vẻ ^^"],
+      "en": ["🪦 Welcome {user} to the cemetery ^^"]
     }
   },
   "after_reborn_text": {
     "params": ["user"],
     "template": {
-      "vi": ["Chào mừng {user} đã trở lại cuộc đời! Hãy trân trọng cơ hội thứ 2 này!"],
-      "en": ["Welcome back to the world, {user}!"]
+      "vi": ["💫 Chào mừng {user} đã trở lại cuộc đời! Hãy trân trọng cơ hội thứ 2 này!"],
+      "en": ["💫 Welcome back to the world, {user}!"]
     }
   },
   "lynch_text": {
@@ -683,15 +683,15 @@
   "invalid_ship_with_random_couple_text": {
     "params": [],
     "template": {
-      "en": ["Sorry. You cannot use power in couple random enable mode."],
-      "vi": ["Bạn không được ghép đôi 2 người vì máy đã random couple rồi."]
+      "vi": ["Bạn không được ghép đôi 2 người vì máy đã random couple rồi."],
+      "en": ["Sorry. You cannot use power in couple random enable mode."]
     }
   },
   "game_started_text": {
     "params": [],
     "template": {
-      "vi": ["Trò chơi đã bắt đầu ở #{gameplay_channel}!"],
-      "en": ["Game started in #{gameplay_channel}! (Only Player can view)"]
+      "vi": ["🎮 Trò chơi đã bắt đầu ở #{gameplay_channel}!"],
+      "en": ["🎮 Game started in #{gameplay_channel}! (Only Player can view)"]
     }
   },
   "game_not_started_text": {
@@ -732,8 +732,8 @@
   "endgame_text": {
     "params": ["winner"],
     "template": {
-      "vi": ["Trò chơi kết thúc với chiến thắng thuộc về phe {winner}."],
-      "en": ["The game ends with victory for the {winner} side."]
+      "vi": ["🎉 Trò chơi kết thúc với chiến thắng thuộc về phe {winner}."],
+      "en": ["🎉 The game ends with victory for the {winner} side."]
     }
   },
   "not_in_game_text": {
@@ -795,15 +795,15 @@
   "timer_start_text": {
     "params": [],
     "template": {
-      "vi": ["Đồng hồ bắt đầu chạy!"],
-      "en": ["Timer start!"]
+      "vi": ["⏰ Đồng hồ bắt đầu chạy!"],
+      "en": ["⏰ Timer start!"]
     }
   },
   "timer_stop_text": {
     "params": [],
     "template": {
-      "vi": ["Đồng hồ dừng!"],
-      "en": ["Timer stopped!"]
+      "vi": ["⏰ Đồng hồ dừng!"],
+      "en": ["⏰ Timer stopped!"]
     }
   },
   "count_days_text": {
@@ -850,7 +850,7 @@
   },
   "help_embed": {
     "params": [],
-    "color": "0xffffff",
+    "color": "0xf1c40f",
     "template": {
       "vi": {
         "title": "Werewolf Bot Help",
@@ -866,7 +866,7 @@
   },
   "help_command_all_embed": {
     "params": [],
-    "color": "0xffffff",
+    "color": "0x11806a",
     "template": {
       "vi": {
         "title": "Werewolf Bot Help for commands",
@@ -898,7 +898,7 @@
   },
   "help_role_all_embed": {
     "params": [],
-    "color": "0xffffff",
+    "color": "0x206694",
     "template": {
       "vi": {
         "title": "Werewolf Bot Help for roles",
@@ -977,8 +977,8 @@
   "show_modes_title": {
     "params": [],
     "template": {
-      "vi": ["Chế độ chơi"],
-      "en": ["Game modes"]
+      "vi": ["🕹️ Chế độ chơi"],
+      "en": ["🕹️ Game modes"]
     }
   },
   "set_mode_successful_text": {
@@ -1054,29 +1054,29 @@
   "play_time_without_utc_text": {
     "params": ["time_range_str"],
     "template": {
-      "vi": ["Bạn sẽ được chơi {time_range_str}."],
-      "en": ["You will be playing {time_range_str}."]
+      "vi": ["⏳ Bạn sẽ được chơi {time_range_str}."],
+      "en": ["⏳ You will be playing {time_range_str}."]
     }
   },
   "play_time_with_utc_text": {
     "params": ["time_range_str", "utc_time_range_str"],
     "template": {
-      "vi": ["Bạn sẽ được chơi {time_range_str}, hay {utc_time_range_str}."],
-      "en": ["You will be playing {time_range_str}, or {utc_time_range_str}."]
+      "vi": ["⏳ Bạn sẽ được chơi {time_range_str}, hay {utc_time_range_str}."],
+      "en": ["⏳ You will be playing {time_range_str}, or {utc_time_range_str}."]
     }
   },
   "play_time_in_range_alert_text": {
     "params": ["text_day", "timer_remaining_text"],
     "template": {
-      "vi": ["Đã đến giờ chơi, đồng hồ trò chơi tiếp tục đếm. Hiện tại là {text_day}. Còn {timer_remaining_text}"],
-      "en": ["It's time to play, the game timer will continue! It's {text_day}. {timer_remaining_text} remaining"]
+      "vi": ["🕰️ Đã đến giờ chơi, đồng hồ trò chơi tiếp tục đếm. Hiện tại là {text_day}. Còn {timer_remaining_text}"],
+      "en": ["🕰️ It's time to play, the game timer will continue! It's {text_day}. {timer_remaining_text} remaining"]
     }
   },
   "play_time_out_range_alert_text": {
     "params": ["text_day", "timer_remaining_text"],
     "template": {
-      "vi": ["Hiện đã ngoài giờ chơi, đồng hồ trò chơi sẽ được dừng lại! Hiện tại là {text_day}. Còn {timer_remaining_text}"],
-      "en": ["It's out of playtime, the game timer will be stopped! It's {text_day}. {timer_remaining_text} remaining"]
+      "vi": ["🕰️ Hiện đã ngoài giờ chơi, đồng hồ trò chơi sẽ được dừng lại! Hiện tại là {text_day}. Còn {timer_remaining_text}"],
+      "en": ["🕰️ It's out of playtime, the game timer will be stopped! It's {text_day}. {timer_remaining_text} remaining"]
     }
   },
   "all_player_list_embed": {
@@ -1113,7 +1113,7 @@
   },
   "dead_player_list_embed": {
     "params": [],
-    "color": "0xffffff",
+    "color": "0x546e7a",
     "template": {
       "vi": {
         "title": "Danh sách người chơi đã chết",
@@ -1137,8 +1137,8 @@
   "game_status_new_game_phase_table_headers": {
     "params": [],
     "template": {
-      "vi": ["👍 đã vào", "👎 chỉ xem", "👍 muốn bắt đầu chơi"],
-      "en": ["👍 joined", "👎 watched", "👍 voted start"]
+      "vi": ["✌🏻 đã vào", "👀 chỉ xem", "🙌🏻 muốn bắt đầu chơi"],
+      "en": ["✌🏻 joined", "👀 watched", "🙌🏻 voted start"]
     }
   },
   "game_status_with_table_embed": {
