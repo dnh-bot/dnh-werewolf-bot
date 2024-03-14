@@ -150,8 +150,10 @@ class Game:
 
         ids = list(ids)
         try:
-            game_role = random.choice([dict_to_list(role_dict)
-                                      for role_dict in role_config if sum(role_dict.values()) == len(ids)])
+            game_role = random.choice([
+                dict_to_list(role_dict)
+                for role_dict in role_config if sum(role_dict.values()) == len(ids)
+            ])
         except IndexError:
             game_role = dict_to_list(role_config[-1], len(ids))
 
@@ -162,8 +164,10 @@ class Game:
             game_role = map(lambda role: role if role != 'Cupid' else 'Villager', game_role)
             # print("DEBUG----", game_role)
 
-        r = {id_: roles.get_role_type(role_name)(
-            interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
+        r = {
+            id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_])
+            for id_, role_name in zip(ids, game_role)
+        }
         print("Player list:", r)
         return r
 
@@ -547,18 +551,21 @@ class Game:
                 voted_list.append(voted)
         return voted_list
 
-    async def handle_party_channel(self, mute=False):
-        # Mute/Unmute all alive players in config.WEREWOLF_CHANNEL
-        await asyncio.gather(
-            *[self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=not mute)
-                for _id, player in self.players.items() if player.is_alive() and isinstance(player, roles.Werewolf)]
-        )
+    async def control_muting_party_channel(self, is_muted):
+        """
+        Mute/Unmute all alive players in party channel (e.g. config.WEREWOLF_CHANNEL, config.COUPLE_CHANNEL)
+        """
+        await asyncio.gather(*[
+            self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=not is_muted)
+            for _id, player in self.players.items()
+            if player.is_alive() and isinstance(player, roles.Werewolf)
+        ])
 
-        # Mute/Unmute all alive players in config.COUPLE_CHANNEL
-        await asyncio.gather(
-            *[self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=not mute)
-                for _id, player in self.players.items() if player.is_alive() and _id in self.cupid_dict]
-        )
+        await asyncio.gather(*[
+            self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=not is_muted)
+            for _id, player in self.players.items()
+            if player.is_alive() and _id in self.cupid_dict
+        ])
 
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
@@ -577,7 +584,7 @@ class Game:
                 )
 
             # Mute all party channels
-            await self.handle_party_channel(True)
+            await self.control_muting_party_channel(True)
 
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
             await asyncio.gather(
@@ -644,7 +651,7 @@ class Game:
         await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
 
         # Unmute all party channels
-        await self.handle_party_channel()
+        await self.control_muting_party_channel(False)
 
         # Mute all players in config.GAMEPLAY_CHANNEL
         await asyncio.gather(
