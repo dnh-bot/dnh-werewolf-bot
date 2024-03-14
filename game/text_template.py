@@ -122,6 +122,8 @@ def generate_help_command_embed(command=None):
             example_args_list = [{"dayphase": 60, "nightphase": 30, "alertperiod": 20}]
         elif command == "setmode":
             example_args_list = [{"mode_id": "2", "on_str": "on"}]
+        elif command == "setroles":
+            example_args_list = [{"role_dict": '''[{{"Werewolf": 1, "Seer": 1, "Guard": 1, "Chief": 1, "Witch": 1}}]'''}]
         elif command == "setplaytime":
             example_args_list = [
                 {"time_start": "00:00", "time_end": "23:59", "time_zone": ""},
