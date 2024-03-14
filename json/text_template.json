@@ -814,7 +814,7 @@
   },
   "help_embed": {
     "params": [],
-    "color": "0xffffff",
+    "color": "0xf1c40f",
     "template": {
       "vi": {
         "title": "Werewolf Bot Help",
@@ -830,7 +830,7 @@
   },
   "help_command_all_embed": {
     "params": [],
-    "color": "0xffffff",
+    "color": "0x11806a",
     "template": {
       "vi": {
         "title": "Werewolf Bot Help for commands",
@@ -862,7 +862,7 @@
   },
   "help_role_all_embed": {
     "params": [],
-    "color": "0xffffff",
+    "color": "0x206694",
     "template": {
       "vi": {
         "title": "Werewolf Bot Help for roles",
@@ -1032,15 +1032,15 @@
   "play_time_in_range_alert_text": {
     "params": ["text_day", "timer_remaining_text"],
     "template": {
-      "vi": ["Đã đến giờ chơi, đồng hồ trò chơi tiếp tục đếm. Hiện tại là {text_day}. Còn {timer_remaining_text}"],
-      "en": ["It's time to play, the game timer will continue! It's {text_day}. {timer_remaining_text} remaining"]
+      "vi": ["🕰️ Đã đến giờ chơi, đồng hồ trò chơi tiếp tục đếm. Hiện tại là {text_day}. Còn {timer_remaining_text}"],
+      "en": ["🕰️ It's time to play, the game timer will continue! It's {text_day}. {timer_remaining_text} remaining"]
     }
   },
   "play_time_out_range_alert_text": {
     "params": ["text_day", "timer_remaining_text"],
     "template": {
-      "vi": ["Hiện đã ngoài giờ chơi, đồng hồ trò chơi sẽ được dừng lại! Hiện tại là {text_day}. Còn {timer_remaining_text}"],
-      "en": ["It's out of playtime, the game timer will be stopped! It's {text_day}. {timer_remaining_text} remaining"]
+      "vi": ["🕰️ Hiện đã ngoài giờ chơi, đồng hồ trò chơi sẽ được dừng lại! Hiện tại là {text_day}. Còn {timer_remaining_text}"],
+      "en": ["🕰️ It's out of playtime, the game timer will be stopped! It's {text_day}. {timer_remaining_text} remaining"]
     }
   },
   "all_player_list_embed": {
@@ -1077,7 +1077,7 @@
   },
   "dead_player_list_embed": {
     "params": [],
-    "color": "0xffffff",
+    "color": "0x546e7a",
     "template": {
       "vi": {
         "title": "Danh sách người chơi đã chết",
@@ -1101,8 +1101,8 @@
   "game_status_new_game_phase_table_headers": {
     "params": [],
     "template": {
-      "vi": ["👍🏻 đã vào", "👀 chỉ xem", "👍🏻 muốn bắt đầu chơi"],
-      "en": ["👍🏻 joined", "👀 watched", "👍🏻 voted start"]
+      "vi": ["✌🏻 đã vào", "👀 chỉ xem", "🙌🏻 muốn bắt đầu chơi"],
+      "en": ["✌🏻 joined", "👀 watched", "🙌🏻 voted start"]
     }
   },
   "game_status_with_table_embed": {
