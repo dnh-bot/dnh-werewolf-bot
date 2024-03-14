@@ -39,6 +39,16 @@
     "daytime_command": "vote",
     "nighttime_commands": ["guard"]
   },
+  "Hunter": {
+    "name_vi": "Thợ săn",
+    "party": "Villager",
+    "description": {
+      "vi": "Vào ban đêm, chọn 1 người khác để chết chung với mình. Ghi nhận lệnh cuối cùng.",
+      "en": "Target a player to die together at night. Accept latest command."
+    },
+    "daytime_command": "vote",
+    "nighttime_commands": ["hunt"]
+  },
   "Lycan": {
     "name_vi": "Người hóa sói",
     "party": "Villager",

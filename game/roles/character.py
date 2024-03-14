@@ -64,7 +64,7 @@ class Character:
     def get_mana(self):
         return self.mana
 
-    async def create_personal_channel(self, self_check = False):
+    async def create_personal_channel(self, self_check=False):
         await self.interface.create_channel(self.channel_name)
         await self.interface.add_user_to_channel(self.player_id, self.channel_name, is_read=True, is_send=True)
         if not self_check:
