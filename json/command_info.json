@@ -156,6 +156,14 @@
     "exclusive_roles": ["Guard"],
     "required_params": ["player_id"]
   },
+  "hunt": {
+    "description": {
+      "vi": "Săn một ai đó.",
+      "en": "Hunt a player."
+    },
+    "exclusive_roles": ["Hunter"],
+    "required_params": ["player_id"]
+  },
   "seer": {
     "description": {
       "vi": "Soi một người bất kỳ.",

@@ -1,0 +1,84 @@
+{
+	"name": "Hunter simple test",
+	"player_list": {
+		"w1": "Werewolf",
+		"f1": "Fox",
+		"g1": "Guard",
+		"h1": "Hunter",
+		"wi1": "Witch"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"f1",
+				"g1",
+				"h1",
+				"wi1"
+			],
+			"action": [
+				"w1 vote h1",
+				"f1 vote f1",
+				"g1 vote h1",
+				"h1 vote f1",
+				"wi1 vote h1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"g1",
+				"f1",
+				"wi1"
+			],
+			"action": [
+				"w1 kill g1",
+				"g1 guard g1",
+				"wi1 reborn h1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"wi1",
+				"h1",
+				"f1",
+				"g1"
+			],
+			"action": [
+				"g1 vote g1",
+				"f1 vote wi1",
+				"wi1 vote wi1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"g1",
+				"h1",
+				"f1"
+			],
+			"action": [
+				"w1 kill f1",
+				"g1 guard h1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"h1",
+				"g1"
+			],
+			"action": [
+				"w1 vote w1",
+				"h1 vote w1"
+			]
+		}
+	],
+	"win": "Villager"
+}

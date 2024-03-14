@@ -20,10 +20,11 @@ Vậy bên nào sẽ chiến thắng, Thường dân, Werewolf, hay là phe Ph�
 ### I. Phe dân: Chiến thắng nếu sống sót và tiêu diệt được hết Sói và Cáo. Không thể nhận biết được người cùng phe.
 
 - [Villager] Dân làng: Không có chức năng đặc biệt.
-- [Villager Chief] Trưởng làng: Được vote tính 2 phiếu.
+- [Villager Chief] Trưởng làng: Được vote tính bí mật 2 phiếu.
 - [Seer] Tiên tri: Soi một người chơi có phải là sói hay không. Có thể giết chết Cáo nếu soi trúng Cáo.
 - [Guard] Bảo vệ: Bảo vệ được chọn 1 người khác nhau mỗi đêm trừ bản thân và người được chọn sẽ bất tử đêm đó.
 - [Lycan] Người hóa sói: Người hóa sói thuộc Phe dân làng, nhưng nếu được chỉ định bởi Tiên tri, thì sẽ bị thông báo là Sói.
+- [Hunter] Thợ săn: Vào ban đêm, được chọn một người chơi khác để chết chung nếu bản thân bị giết.
 
 ### II. Phe sói: Chiến thắng nếu giết hết dân làng. Nhận biết được **sói** cùng phe.
 
@@ -31,10 +32,10 @@ Vậy bên nào sẽ chiến thắng, Thường dân, Werewolf, hay là phe Ph�
 - [Superwolf] Sói già: Chọn 1 người để giết mỗi đêm. Sói già có khả năng che giấu Tiên tri và không bị soi ra là sói.
 - [Betrayer] Kẻ phản bội: Là **người** nhưng bị mua chuộc theo phe sói. Betrayer biết ai là sói nhưng phe sói không biết ai là Betrayer.
 
-### III. Phe thứ 3: Chiến thắng khi sống sót cuối cùng. Không thể nhận biết được người cùng phe.
+### III. Phe thứ 3: Chiến thắng với những điều kiện đặc biệt
 
 - [Fox] Cáo: Thuộc phe thứ ba, cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.
-- [Cupid] Thần tình yêu: Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ thành phe thứ 3 với nhiệm vụ là hai người cuối cùng sống sót.
+- [Cupid] Thần tình yêu: Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ sẽ chiến thắng khi là hai người cuối cùng sống sót (hoặc khi phe của họ thắng). Thần tình yêu có thể chiến thắng cùng cặp đôi hoặc khi dân làng thắng.
 
 
 

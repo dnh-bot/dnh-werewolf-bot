@@ -11,6 +11,7 @@ from game.roles.witch import Witch
 from game.roles.zombie import Zombie
 from game.roles.cupid import Cupid
 from game.roles.chief import Chief
+from game.roles.hunter import Hunter
 import utils
 
 
@@ -18,7 +19,7 @@ role_info = utils.common.read_json_file("json/role_info.json")
 
 
 def get_all_roles():
-    return Villager, Werewolf, Seer, Guard, Lycan, Betrayer, Superwolf, Fox, Witch, Zombie, Cupid, Chief
+    return Villager, Werewolf, Seer, Guard, Lycan, Betrayer, Superwolf, Fox, Witch, Zombie, Cupid, Chief, Hunter
 
 
 def get_role_type(name):

@@ -39,6 +39,16 @@
     "daytime_command": "vote",
     "nighttime_commands": ["guard"]
   },
+  "Hunter": {
+    "name_vi": "Thợ săn",
+    "party": "Villager",
+    "description": {
+      "vi": "Vào ban đêm, chọn 1 người khác để chết chung với mình. Ghi nhận lệnh cuối cùng.",
+      "en": "Target a player to die together at night. Accept latest command."
+    },
+    "daytime_command": "vote",
+    "nighttime_commands": ["hunt"]
+  },
   "Lycan": {
     "name_vi": "Người hóa sói",
     "party": "Villager",
@@ -101,10 +111,10 @@
   },
   "Cupid": {
     "name_vi": "Thần tình yêu",
-    "party": "Cupid",
+    "party": "Villager",
     "description": {
-      "vi": "Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ thành phe thứ 3 với nhiệm vụ là hai người cuối cùng sống sót.",
-      "en": "On the first day, Cupid can choose 2 players and make them to be a couple. If one of them is dead, the other will be also dead. If the couple belongs to different parties (Werewolf and Villager), then they become the third party. Their mission is to be the last stand players."
+      "vi": "Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ sẽ chiến thắng khi là hai người cuối cùng sống sót (hoặc khi phe của họ thắng). Thần tình yêu có thể chiến thắng cùng cặp đôi hoặc khi dân làng thắng.",
+      "en": "On the first day, Cupid can choose 2 players and make them to be a couple. If one of them is dead, the other will be also dead. If the couple belongs to different parties (Werewolf and Villager), then they will win if they are the last stand players (or when their own team win). Cupid may win together with the couple or the Villagers."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["ship"]
@@ -113,8 +123,8 @@
     "name_vi": "Trưởng làng",
     "party": "Villager",
     "description": {
-      "vi": "Vào ban ngày, phiếu bầu của Trưởng làng được tính là 2",
-      "en": "On dayphase, the Chief's vote is counted as 2"
+      "vi": "Vào ban ngày, phiếu bầu của Trưởng làng được bí mật tính là 2.",
+      "en": "On dayphase, the Chief's vote is secretly counted as 2."
     },
     "daytime_command": "vote",
     "nighttime_commands": []

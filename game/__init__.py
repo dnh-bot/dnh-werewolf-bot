@@ -547,6 +547,19 @@ class Game:
                 voted_list.append(voted)
         return voted_list
 
+    async def handle_party_channel(self, mute=False):
+        # Mute/Unmute all alive players in config.WEREWOLF_CHANNEL
+        await asyncio.gather(
+            *[self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=not mute)
+                for _id, player in self.players.items() if player.is_alive() and isinstance(player, roles.Werewolf)]
+        )
+
+        # Mute/Unmute all alive players in config.COUPLE_CHANNEL
+        await asyncio.gather(
+            *[self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=not mute)
+                for _id, player in self.players.items() if player.is_alive() and _id in self.cupid_dict]
+        )
+
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
         self.day += 1
@@ -562,6 +575,9 @@ class Game:
                     config.GAMEPLAY_CHANNEL,
                     event_name=self.new_moon_mode.get_current_event_name()
                 )
+
+            # Mute all party channels
+            await self.handle_party_channel(True)
 
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
             await asyncio.gather(
@@ -610,11 +626,25 @@ class Game:
                     "couple_died_on_day_text", config.GAMEPLAY_CHANNEL,
                     died_player=f"<@{lynched}>", follow_player=f"<@{cupid_couple}>"
                 )
+                # Kill anyone who is hunted if hunter dies with his couple
+                hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
+                if hunted:
+                    await self.interface.send_action_text_to_channel(
+                        "hunter_killed_text", config.GAMEPLAY_CHANNEL, target=f"<@{hunted}>"
+                    )
+            hunted = await self.get_hunted_target_on_hunter_death(lynched)
+            if hunted:
+                await self.interface.send_action_text_to_channel(
+                    "hunter_killed_text", config.GAMEPLAY_CHANNEL, target=f"<@{hunted}>"
+                )
         else:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
 
         players_embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
         await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
+
+        # Unmute all party channels
+        await self.handle_party_channel()
 
         # Mute all players in config.GAMEPLAY_CHANNEL
         await asyncio.gather(
@@ -664,6 +694,14 @@ class Game:
                     final_kill_list.append(_id)
                     if self.cupid_dict.get(_id):
                         cupid_couple = self.cupid_dict[_id]
+                        hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
+                        if hunted:
+                            final_kill_list.append(hunted)
+
+                    # Kill anyone who is hunted if hunter is killed
+                    hunted = await self.get_hunted_target_on_hunter_death(_id)
+                    if hunted:
+                        final_kill_list.append(hunted)
 
             kills = ", ".join(f"<@{_id}>" for _id in final_kill_list)
             self.night_pending_kill_list = []  # Reset killed list for next day
@@ -840,7 +878,7 @@ class Game:
         if not targets[0].is_alive() and cmd != "reborn":
             return text_templates.generate_text("dead_target_text" if cmd == "vote" else "invalid_target_text")
 
-        if cmd in ("vote", "kill", "guard", "seer", "reborn", "curse"):
+        if cmd in ("vote", "kill", "guard", "hunt", "seer", "reborn", "curse"):
             return await getattr(self, cmd)(author, targets[0])
 
         if cmd == "ship":
@@ -1006,6 +1044,31 @@ class Game:
         await self.interface.send_action_text_to_channel("couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{target1_id}>", user2=f"<@{target2_id}>")
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
+
+    async def hunt(self, author, target):
+        if not isinstance(author, roles.Hunter):
+            return text_templates.generate_text("invalid_author_text")
+
+        if self.game_phase != const.GamePhase.NIGHT:
+            return text_templates.generate_text("invalid_nighttime_text")
+
+        # author_id = author.player_id
+        target_id = target.player_id
+
+        if not target.is_alive():
+            return text_templates.generate_text("invalid_hunter_target_text", user=f"<@{target_id}>")
+
+        author.set_hunted_target(target_id)
+        return text_templates.generate_text("hunter_after_voting_text", target=f"<@{target_id}>")
+
+    # Kill anyone who is hunted
+    async def get_hunted_target_on_hunter_death(self, hunter):
+        if isinstance(self.players[hunter], roles.Hunter):
+            hunted = self.players[hunter].get_hunted_target()
+            if hunted and hunted != hunter:
+                if await self.players[hunted].get_killed():
+                    return hunted
+        return None
 
     async def register_auto(self, author, subcmd):
         def check(pred):

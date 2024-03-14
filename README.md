@@ -186,6 +186,7 @@ https://dev.to/12944qwerty/hosting-a-discord-py-bot-with-repl-it-3l5a
 Explanation: Your bot will be alive because the monitoring services request(ping) every 5-10 minutes and keeps our website running up.
 
 Alternatives: Some deployment services may block request from UptimeRobot, please consider others website:
+https://www.fastcron.com/
 https://cron-job.org/en/
 https://uptime.com/
 https://uptime-monitor.io/

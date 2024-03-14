@@ -208,7 +208,8 @@ def generate_winner_list(reveal_list, game_winner, cupid_dict):
     winner_list = []
     for player_id, role in reveal_list:
         party_victory = roles.get_role_party(role) == game_winner
-        cupid_victory = game_winner == 'Cupid' and player_id in cupid_dict
+        # Cupid is in Villager team. Win with either couple or Villager
+        cupid_victory = game_winner == 'Cupid' and (player_id in cupid_dict or role == 'Cupid')
 
         if party_victory or cupid_victory:
             emoji = '🥳'
