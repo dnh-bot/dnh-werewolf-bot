@@ -548,6 +548,19 @@ class Game:
                 voted_list.append(voted)
         return voted_list
 
+    async def handle_party_channel(self, mute=False):
+        # Mute/Unmute all alive players in config.WEREWOLF_CHANNEL
+        await asyncio.gather(
+            *[self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=not mute)
+                for _id, player in self.players.items() if player.is_alive() and isinstance(player, roles.Werewolf)]
+        )
+
+        # Mute/Unmute all alive players in config.COUPLE_CHANNEL
+        await asyncio.gather(
+            *[self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=not mute)
+                for _id, player in self.players.items() if player.is_alive() and _id in self.cupid_dict]
+        )
+
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
         self.day += 1
@@ -563,6 +576,9 @@ class Game:
                     config.GAMEPLAY_CHANNEL,
                     event_name=self.new_moon_mode.get_current_event_name()
                 )
+
+            # Mute all party channels
+            await self.handle_party_channel(True)
 
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
             await asyncio.gather(
@@ -616,6 +632,9 @@ class Game:
 
         players_embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
         await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
+
+        # Unmute all party channels
+        await self.handle_party_channel()
 
         # Mute all players in config.GAMEPLAY_CHANNEL
         await asyncio.gather(
