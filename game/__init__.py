@@ -1044,11 +1044,12 @@ class Game:
         if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
+        # author_id = author.player_id
+        target_id = target.player_id
+
         if not target.is_alive():
             return text_templates.generate_text("invalid_hunter_target_text", user=f"<@{target_id}>")
 
-        # author_id = author.player_id
-        target_id = target.player_id
         author.set_hunted_target(target_id)
         return text_templates.generate_text("hunter_after_voting_text", target=f"<@{target_id}>")
 
