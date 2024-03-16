@@ -4,7 +4,9 @@ This provides APIs for Player role
 import time
 import math
 
+import commands
 import config
+from commands import admin
 from game import text_template
 import text_templates
 
@@ -154,6 +156,52 @@ async def do_stop(game, message, force=False):
                     await message.reply(text_templates.generate_text("vote_for_game_text", command="stop", author=message.author.display_name, text=text))
     else:
         await message.reply(text_templates.generate_text("game_not_started_text"))
+
+
+async def do_character_cmd(game, message, cmd, parameters):
+    if not game.is_started():
+        # prevent user uses command before game starts
+        await message.reply(text_templates.generate_text("game_not_started_text"))
+        return
+
+    if not game.is_in_play_time():
+        await message.reply(text_templates.generate_text("game_not_playing_text"))
+        return
+
+    if not commands.is_command_in_valid_channel(cmd, message.channel.name):
+        real_channel = commands.get_command_valid_channel_name(cmd)
+
+        await admin.send_text_to_channel(
+            message.guild, text_templates.generate_text("invalid_channel_text", channel=real_channel),
+            message.channel.name
+        )
+        return
+
+    author = message.author
+    required_param_number = len(commands.get_command_required_params(cmd))
+
+    if cmd == "auto":
+        msg = await game.do_player_action(cmd, author.id, *parameters)
+        await message.reply(msg)
+
+    elif len(message.raw_mentions) == required_param_number:
+        msg = await game.do_player_action(cmd, author.id, *message.raw_mentions)
+        await message.reply(msg)
+
+    elif len(parameters) == required_param_number:
+        is_valid_command = False
+        if all(param.isdigit() for param in parameters):
+            targets_index = [int(param) - 1 for param in parameters]
+            id_players = game.get_dead_players() if cmd == "reborn" else game.get_alive_players()
+            if all(0 <= i < len(id_players) for i in targets_index):
+                is_valid_command = True
+                msg = await game.do_player_action(cmd, author.id, *[id_players[i].player_id for i in targets_index])
+                await message.reply(msg)
+
+        if not is_valid_command:
+            await message.reply(text_template.generate_invalid_command_text(cmd))
+    else:
+        await message.reply(text_templates.generate_text("not_vote_n_player_text", num=required_param_number))
 
 
 async def test_player_command(_):
