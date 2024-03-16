@@ -6,7 +6,6 @@ import math
 
 import commands
 import config
-from commands import admin
 from game import text_template
 import text_templates
 

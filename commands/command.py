@@ -40,9 +40,8 @@ async def parse_command(client, game, message):
     if cmd.startswith('f'):
         # Admin/Bot commands - User should not directly use these commands
         await do_admin_cmd(client, game, message, cmd, parameters)
-    else:
-        # Game commands only valid under GAME CATEGORY:
-        is_valid_channel = commands.is_command_in_valid_channel(cmd, message.channel.name)
+    elif admin.is_valid_category(message):
+        # Game commands only valid under GAME CATEGORY
 
         if cmd == "help":
             await admin.send_embed_to_channel(
@@ -58,9 +57,6 @@ async def parse_command(client, game, message):
 
 
 async def do_game_cmd(game, message, cmd, parameters, force=False):
-    if not admin.is_valid_category(message):
-        return
-
     if not commands.is_command_in_valid_channel(cmd, message.channel.name):
         real_channel = commands.get_command_valid_channel_name(cmd)
         await message.reply(text_templates.generate_text("invalid_channel_text", channel=real_channel))
@@ -89,37 +85,7 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         await message.reply(msg)
 
     elif cmd == "status":
-        if game.is_ended():
-            await admin.send_text_to_channel(
-                message.guild, text_templates.generate_text("end_text"), message.channel.name
-            )
-            return
-
-        status_description, remaining_time, vote_table, table_title, author_status = game.get_game_status(
-            message.channel.name, message.author.id
-        )
-        print(
-            status_description, remaining_time, vote_table,
-            text_template.generate_vote_field(vote_table), table_title, author_status
-        )
-        embed_data = text_templates.generate_embed(
-            "game_status_with_table_embed",
-            [
-                [text_template.generate_timer_remaining_text(remaining_time)],
-                text_template.generate_vote_field(vote_table),
-                [author_status]
-            ],
-            status_description=status_description,
-            phase_str=text_templates.get_word_in_language(str(game.game_phase)),
-            table_title=table_title
-        )
-        await admin.send_embed_to_channel(message.channel.guild, embed_data, message.channel.name)
-
-        role_list = [game.get_role_list()]
-        players_embed_data = text_template.generate_player_list_embed(
-            game.get_all_players(), None, role_list, game.modes.get("reveal_role", False)
-        )
-        await admin.send_embed_to_channel(message.channel.guild, players_embed_data, message.channel.name)
+        do_status(game, message)
 
     elif cmd == "timer":
         # Usage:`!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
@@ -177,6 +143,40 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
             await message.reply('Invalid usage.')
 
 
+def do_status(game, message):
+    if game.is_ended():
+        await admin.send_text_to_channel(
+            message.guild, text_templates.generate_text("end_text"), message.channel.name
+        )
+        return
+
+    status_description, remaining_time, vote_table, table_title, author_status = game.get_game_status(
+        message.channel.name, message.author.id
+    )
+    print(
+        status_description, remaining_time, vote_table,
+        text_template.generate_vote_field(vote_table), table_title, author_status
+    )
+    embed_data = text_templates.generate_embed(
+        "game_status_with_table_embed",
+        [
+            [text_template.generate_timer_remaining_text(remaining_time)],
+            text_template.generate_vote_field(vote_table),
+            [author_status]
+        ],
+        status_description=status_description,
+        phase_str=text_templates.get_word_in_language(str(game.game_phase)),
+        table_title=table_title
+    )
+    await admin.send_embed_to_channel(message.channel.guild, embed_data, message.channel.name)
+
+    role_list = [game.get_role_list()]
+    players_embed_data = text_template.generate_player_list_embed(
+        game.get_all_players(), None, role_list, game.modes.get("reveal_role", False)
+    )
+    await admin.send_embed_to_channel(message.channel.guild, players_embed_data, message.channel.name)
+
+
 def parse_setplaytime_params(parameters):
     # Usage: `!setplaytime 10:00 21:00 UTC+7` -> start_time = 10:00, end_time = 21:00, zone=UTC+7
     if len(parameters) < 2:
@@ -218,7 +218,7 @@ async def do_admin_cmd(client, game, message, cmd, parameters):
     elif cmd == "fdebug":
         await do_fdebug()
     elif cmd in ("fjoin", "fleave", "fstart", "fnext", "fstopgame"):
-        await do_game_cmd(client, game, message, cmd[1:], parameters, True)
+        await do_game_cmd(game, message, cmd[1:], parameters, True)
 
 
 async def do_fclean(client, message):
