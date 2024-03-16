@@ -168,15 +168,6 @@ async def do_character_cmd(game, message, cmd, parameters):
         await message.reply(text_templates.generate_text("game_not_playing_text"))
         return
 
-    if not commands.is_command_in_valid_channel(cmd, message.channel.name):
-        real_channel = commands.get_command_valid_channel_name(cmd)
-
-        await admin.send_text_to_channel(
-            message.guild, text_templates.generate_text("invalid_channel_text", channel=real_channel),
-            message.channel.name
-        )
-        return
-
     author = message.author
     required_param_number = len(commands.get_command_required_params(cmd))
 
