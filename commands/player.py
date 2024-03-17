@@ -136,7 +136,7 @@ async def do_next(game, message, force=False):
 
 # Player can call stop game when they want to finish game regardless current game state
 # Need 2/3 players type: `!stopgame` to end the game
-async def do_stop(game, message, force=False):
+async def do_stopgame(game, message, force=False):
     """Stop game"""
     if game.is_started():
         if force:

@@ -654,10 +654,10 @@ class Game:
         await self.control_muting_party_channel(False)
 
         # Mute all players in config.GAMEPLAY_CHANNEL
-        await asyncio.gather(
-            *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
-                for _id, player in self.players.items() if player.is_alive()]
-        )
+        await asyncio.gather(*[
+            self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
+            for _id, player in self.players.items() if player.is_alive()
+        ])
 
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")

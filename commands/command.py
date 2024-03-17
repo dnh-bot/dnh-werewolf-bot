@@ -66,12 +66,9 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         command_function = getattr(player, f"do_{cmd}")
         await command_function(game, message)
 
-    elif cmd in ("join", "leave", "start", "next"):
+    elif cmd in ("join", "leave", "start", "next", "stopgame"):
         command_function = getattr(player, f"do_{cmd}")
         await command_function(game, message, force=force)
-
-    elif cmd == "stopgame":
-        await player.do_stop(game, message, force=force)
 
     elif cmd in ("vote", "kill", "guard", "seer", "hunt", "reborn", "curse", "zombie", "ship", "auto"):
         await player.do_character_cmd(game, message, cmd, parameters)
@@ -85,7 +82,7 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         await message.reply(msg)
 
     elif cmd == "status":
-        do_status(game, message)
+        await do_status(game, message)
 
     elif cmd == "timer":
         # Usage:`!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
@@ -143,7 +140,7 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
             await message.reply('Invalid usage.')
 
 
-def do_status(game, message):
+async def do_status(game, message):
     if game.is_ended():
         await admin.send_text_to_channel(
             message.guild, text_templates.generate_text("end_text"), message.channel.name
