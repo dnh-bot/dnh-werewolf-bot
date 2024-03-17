@@ -33,13 +33,16 @@ class Character:
         return self.status != CharacterStatus.KILLED
 
     async def get_killed(self, is_suicide=False):
-        if self.status == CharacterStatus.PROTECTED and not is_suicide:
+        # Suicide means the couple follows lover death
+        # Do nothing if already dead
+        if self.status == CharacterStatus.KILLED or (self.status == CharacterStatus.PROTECTED and not is_suicide):
             return False
         self.status = CharacterStatus.KILLED
         # Mute player in config.GAMEPLAY_CHANNEL
         await asyncio.gather(
             self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False),
             self.interface.add_user_to_channel(self.player_id, config.CEMETERY_CHANNEL, is_read=True, is_send=True),
+            # Welcome text in Cemetery
             self.interface.send_action_text_to_channel(
                 "after_death_text", config.CEMETERY_CHANNEL, user=f"<@{self.player_id}>"),
             self.interface.add_user_to_channel(self.player_id, config.COUPLE_CHANNEL, is_read=False, is_send=False)
