@@ -57,16 +57,14 @@ async def parse_command(client, game, message):
 
 
 async def do_game_cmd(game, message, cmd, parameters, force=False):
+    # FIXME
+    # pylint: disable=too-many-branches
     if not commands.is_command_in_valid_channel(cmd, message.channel.name):
         real_channel = commands.get_command_valid_channel_name(cmd)
         await message.reply(text_templates.generate_text("invalid_channel_text", channel=real_channel))
         return
 
-    if cmd in ("watch", "unwatch"):
-        command_function = getattr(player, f"do_{cmd}")
-        await command_function(game, message)
-
-    elif cmd in ("join", "leave", "start", "next", "stopgame"):
+    if cmd in ("watch", "unwatch", "join", "leave", "start", "next", "stopgame"):
         command_function = getattr(player, f"do_{cmd}")
         await command_function(game, message, force=force)
 
