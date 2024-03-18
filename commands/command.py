@@ -51,7 +51,7 @@ def check_set_timer_input(input_string):
         timer = int(value) * pow(60, power)
         timer_phase.append(timer)
     return timer_phase
-        
+
 async def parse_command(client, game, message):
     # FIXME:
     # pylint: disable=too-many-nested-blocks, too-many-branches
@@ -195,7 +195,7 @@ async def parse_command(client, game, message):
                     )
                 )
             else:
-                # check input setting 
+                # check input setting
                 timer_phase = check_set_timer_input(parameters)
                 # Check if any timer phase is too short (<= 5 seconds):
                 if not timer_phase or any(map(lambda x: x <= 5, timer_phase)):
