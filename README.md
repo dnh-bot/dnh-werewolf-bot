@@ -43,6 +43,12 @@ Follow guide to create a new Discord bot and how to add it into your Discord ser
 Note: You may need Priviledged Gateway Intents permissions to get the bot work properly due to Discord bug
 ![Alt text](docs/DiscordCreateBot1.png)
 
+You need to set bot's permission to allow it to create channel and run game.
+
+In OAuth2 tab, choose bot in Scopes, then choose Adminstrator permission.
+
+![Alt text](docs/DiscordSetPermission.jpg)
+
 ## Run bot
 Simply run:
 ```bash
@@ -191,15 +197,19 @@ https://cron-job.org/en/
 https://uptime.com/
 https://uptime-monitor.io/
 
-# Contact
-It's open source and free to use Discord bot.
-
-Don't hesitate to contact us for guiding setup.
-Discord chat group: https://discordapp.com/invite/jHwsRAN
-
 # Known issue
 
 ## Library bug
 A library bug while adding member to `gameplay` channel if using `discord.py==2.2.2`
 
 Prefer to use `discord.py==1.7.3`
+
+# Game Rules
+## Vietnamese
+[STORY_VN.md](STORY_VN.md)
+
+# Contact
+It's open source and free to use Discord bot.
+
+Don't hesitate to contact us for guiding setup.
+Discord chat group: https://discord.gg/ceJAgPEMCw
