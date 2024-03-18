@@ -39,17 +39,20 @@ def check_set_timer_input(input_string):
     # example hour to seconds <=> 60 * 60  <=> 60^2 = 3600
     timer_phase = []
     # phase = value(passed parameter) * converter value
-    value, power = 0, 0
-    for phase in input_string:
-        key = phase[-1]
-        if key in converter:
-            power = converter[key]
-            value = phase[:-1]
-        else:
-            power = 0
-            value = phase
-        timer = int(value) * pow(60, power)
-        timer_phase.append(timer)
+    try:
+        value, power = 0, 0
+        for phase in input_string:
+            key = phase[-1]
+            if key in converter:
+                power = converter[key]
+                value = phase[:-1]
+            else:
+                power = 0
+                value = phase
+            timer = int(value) * pow(60, power)
+            timer_phase.append(timer)
+    except Exception:
+        return   
     return timer_phase
 
 async def parse_command(client, game, message):
@@ -197,8 +200,11 @@ async def parse_command(client, game, message):
             else:
                 # check input setting
                 timer_phase = check_set_timer_input(parameters)
+                if not timer_phase:
+                    await message.reply("Invalid input for timer")
+                    return
                 # Check if any timer phase is too short (<= 5 seconds):
-                if not timer_phase or any(map(lambda x: x <= 5, timer_phase)):
+                if any(map(lambda x: x <= 5, timer_phase)):
                     await message.reply("Config must greater than 5s")
                     return
                 await message.reply(
@@ -208,7 +214,7 @@ async def parse_command(client, game, message):
                         day_phase=timer_phase[0],
                         night_phase=timer_phase[1],
                         alert_period=timer_phase[2]
-                    )
+                    )   
                 )
             game.set_timer_phase(timer_phase)
 
