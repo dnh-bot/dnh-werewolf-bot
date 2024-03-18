@@ -34,7 +34,6 @@ class Character:
 
     async def get_killed(self, is_suicide=False):
         # Suicide means the couple follows lover death
-        # Do nothing if already dead
         if self.status == CharacterStatus.KILLED or (self.status == CharacterStatus.PROTECTED and not is_suicide):
             return False
         self.status = CharacterStatus.KILLED
