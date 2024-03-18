@@ -36,10 +36,10 @@ def check_set_timer_input(input_string):
         'm': 1,
         'h': 2
     }
-    # convert value equal pow function
-    # example hour to seconds <=> 60 * 60  <=> 60^2 = 3600
+    # Convert value equal pow function
+    # Example hour to seconds <=> 60 * 60  <=> 60^2 = 3600
     timer_phase = []
-    # phase = value(passed parameter) * converter value
+    # Formular: phase = value(passed parameter) * converter value
     value, power = 0, 0
     for phase in input_string:
         key = phase[-1]
@@ -198,7 +198,7 @@ async def parse_command(client, game, message):
                     )
                 )
             else:
-                # check input setting
+                # Check input setting
                 timer_phase = check_set_timer_input(parameters)
                 if not timer_phase:
                     await message.reply("Invalid input for timer")
