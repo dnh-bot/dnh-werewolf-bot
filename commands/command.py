@@ -52,7 +52,7 @@ def check_set_timer_input(input_string):
             timer = int(value) * pow(60, power)
             timer_phase.append(timer)
     except Exception:
-        return   
+        return []
     return timer_phase
 
 async def parse_command(client, game, message):
@@ -214,7 +214,7 @@ async def parse_command(client, game, message):
                         day_phase=timer_phase[0],
                         night_phase=timer_phase[1],
                         alert_period=timer_phase[2]
-                    )   
+                    )
                 )
             game.set_timer_phase(timer_phase)
 
