@@ -66,7 +66,7 @@ async def parse_command(client, game, message):
         elif cmd == "stopgame":
             await player.do_stop(game, message, force=False)
 
-        elif cmd in ("vote", "kill", "guard", "seer", "reborn", "curse", "zombie", "ship", "auto"):
+        elif cmd in ("vote", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto"):
             if not game.is_started():
                 # prevent user uses command before game starts
                 await message.reply(text_templates.generate_text("game_not_started_text"))
@@ -79,7 +79,7 @@ async def parse_command(client, game, message):
             is_valid_channel = \
                 (cmd == "vote" and message.channel.name == config.GAMEPLAY_CHANNEL) or\
                 (cmd == "kill" and message.channel.name == config.WEREWOLF_CHANNEL) or\
-                (cmd in ("guard", "seer", "reborn", "curse", "zombie", "ship", "auto")
+                (cmd in ("guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto")
                  and message.channel.name.strip().startswith("personal"))
 
             if is_valid_channel:

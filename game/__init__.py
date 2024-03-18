@@ -861,7 +861,7 @@ class Game:
         author = self.players.get(author_id)
         if author is None or not author.is_alive():
             if cmd != "zombie":  # Zombie can use skill after death
-                return text_templates.generate_text("invalid_alive_author_text")
+                return text_templates.generate_text("invalid_alive_author_text", cmd=cmd)
 
         if cmd == "auto":
             return await self.register_auto(author, *targets_id)
@@ -882,8 +882,8 @@ class Game:
             return await self.kill(author, targets[0])
         if cmd == "guard":
             return await self.guard(author, targets[0])
-        if cmd == "hunt":
-            return await self.hunt(author, targets[0])
+        if cmd == "hunter":
+            return await self.hunter(author, targets[0])
         if cmd == "seer":
             return await self.seer(author, targets[0])
         if cmd == "reborn":
@@ -1056,7 +1056,7 @@ class Game:
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
 
-    async def hunt(self, author, target):
+    async def hunter(self, author, target):
         if not isinstance(author, roles.Hunter):
             return text_templates.generate_text("invalid_author_text")
 
