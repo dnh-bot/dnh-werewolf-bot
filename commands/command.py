@@ -30,7 +30,28 @@ def parse_time_str(time_str):
 
     return None
 
-
+def check_set_timer_input(input_string):
+    converter = {'s': 0,
+                 'm': 1,
+                 'h': 2
+                }
+    # convert value equal pow function
+    # example hour to seconds <=> 60 * 60  <=> 60^2 = 3600
+    timer_phase = []
+    # phase = value(passed parameter) * converter value
+    value, power = 0, 0
+    for phase in input_string:
+        key = phase[-1]
+        if key in converter:
+            power = converter[key]
+            value = phase[:-1]
+        else:
+            power = 0
+            value = phase
+        timer = int(value) * pow(60, power)
+        timer_phase.append(timer)
+    return timer_phase
+        
 async def parse_command(client, game, message):
     # FIXME:
     # pylint: disable=too-many-nested-blocks, too-many-branches
@@ -174,7 +195,8 @@ async def parse_command(client, game, message):
                     )
                 )
             else:
-                timer_phase = list(map(int, parameters))
+                # check input setting 
+                timer_phase = check_set_timer_input(parameters)
                 # Check if any timer phase is too short (<= 5 seconds):
                 if not timer_phase or any(map(lambda x: x <= 5, timer_phase)):
                     await message.reply("Config must greater than 5s")
