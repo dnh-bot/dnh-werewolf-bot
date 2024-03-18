@@ -204,8 +204,8 @@ async def parse_command(client, game, message):
                     await message.reply("Invalid input for timer")
                     return
                 # Check if any timer phase is too short (<= 5 seconds):
-                if any(map(lambda x: x <= 5, timer_phase)):
-                    await message.reply("Config must greater than 5s")
+                if any(map(lambda x: x <= 30, timer_phase)):
+                    await message.reply("Config must greater than 30s")
                     return
                 await message.reply(
                     text_templates.generate_text(
