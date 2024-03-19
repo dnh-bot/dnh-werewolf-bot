@@ -746,24 +746,25 @@ class Game:
 
         cupid_couple = None
         if self.night_pending_kill_list:
-            final_kill_list = []
+            final_kill_set = set()
             for _id in self.night_pending_kill_list:
                 if await self.players[_id].get_killed():  # Guard can protect Fox from Seer kill
-                    final_kill_list.append(_id)
+                    final_kill_set.add(_id)
                     if self.cupid_dict.get(_id):
                         cupid_couple = self.cupid_dict[_id]
                         hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
                         if hunted:
-                            final_kill_list.append(hunted)
+                            final_kill_set.add(hunted)
 
                     # Kill anyone who is hunted if hunter is killed
                     hunted = await self.get_hunted_target_on_hunter_death(_id)
                     if hunted:
-                        final_kill_list.append(hunted)
+                        final_kill_set.add(hunted)
 
-            kills = ", ".join(f"<@{_id}>" for _id in final_kill_list)
+            kills = ", ".join(f"<@{_id}>" for _id in final_kill_set)
             self.night_pending_kill_list = []  # Reset killed list for next day
 
+        # Morning deaths announcement
         await self.interface.send_action_text_to_channel(
             "killed_users_text" if kills else "killed_none_text", config.GAMEPLAY_CHANNEL,
             user=kills
@@ -918,7 +919,7 @@ class Game:
         author = self.players.get(author_id)
         if author is None or not author.is_alive():
             if cmd != "zombie":  # Zombie can use skill after death
-                return text_templates.generate_text("invalid_alive_author_text")
+                return text_templates.generate_text("invalid_alive_author_text", cmd=cmd)
 
         if cmd == "auto":
             return await self.register_auto(author, *targets_id)
@@ -936,7 +937,7 @@ class Game:
         if not targets[0].is_alive() and cmd != "reborn":
             return text_templates.generate_text("dead_target_text" if cmd == "vote" else "invalid_target_text")
 
-        if cmd in ("vote", "kill", "guard", "hunt", "seer", "reborn", "curse"):
+        if cmd in ("vote", "kill", "guard", "hunter", "seer", "reborn", "curse"):
             return await getattr(self, cmd)(author, targets[0])
 
         if cmd == "ship":
@@ -1103,7 +1104,7 @@ class Game:
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
 
-    async def hunt(self, author, target):
+    async def hunter(self, author, target):
         if not isinstance(author, roles.Hunter):
             return text_templates.generate_text("invalid_author_text")
 

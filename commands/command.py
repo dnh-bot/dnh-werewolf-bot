@@ -31,6 +31,32 @@ def parse_time_str(time_str):
     return None
 
 
+def check_set_timer_input(input_string):
+    converter = {
+        's': 0,
+        'm': 1,
+        'h': 2
+    }
+    # Convert value equal pow function
+    # Example hour to seconds <=> 60 * 60  <=> 60^2 = 3600
+    timer_phase = []
+    # Formular: phase = value(passed parameter) * converter value
+    value, power = 0, 0
+    for phase in input_string:
+        key = phase[-1]
+        if key in converter:
+            power = converter[key]
+            value = phase[:-1]
+        else:
+            power = 0
+            value = phase
+        if not value.isnumeric():
+            return None
+        timer = int(value) * pow(60, power)
+        timer_phase.append(timer)
+    return timer_phase
+
+
 async def parse_command(client, game, message):
     # FIXME:
     # pylint: disable=too-many-nested-blocks, too-many-branches
@@ -68,7 +94,7 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         command_function = getattr(player, f"do_{cmd}")
         await command_function(game, message, force=force)
 
-    elif cmd in ("vote", "kill", "guard", "seer", "hunt", "reborn", "curse", "zombie", "ship", "auto"):
+    elif cmd in ("vote", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto"):
         await player.do_character_cmd(game, message, cmd, parameters)
 
     elif cmd == "selfcheck":
@@ -88,11 +114,14 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
             timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
             settings_name = "default"
         else:
-            timer_phase = list(map(int, parameters[:3]))
+            timer_phase = check_set_timer_input(parameters)
             settings_name = "new"
-            # Check if any timer phase is too short (<= 5 seconds):
-            if any(x <= 5 for x in timer_phase):
-                await message.reply("Config must greater than 5s")
+            if not timer_phase:
+                await message.reply("Invalid input for timer")
+                return
+            # Check if any timer phase is too short (<= 30 seconds):
+            if any(map(lambda x: x <= 30, timer_phase)):
+                await message.reply("Config must greater than 30s")
                 return
 
         await message.reply(
