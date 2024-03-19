@@ -27,7 +27,7 @@ async def do_join(game, message, force=False):
         if force:
             user_list = message.mentions
             if not user_list:
-                await message.reply(text_template.generate_invalid_command_text("fjoin"))
+                await message.reply(text_template.generate_invalid_command_text(config.ADMIN_CMD_PREFIX + "join"))
         else:
             user_list = [message.author]
 
@@ -47,7 +47,7 @@ async def do_leave(game, message, force=False):
         if force:
             user_list = message.mentions
             if not user_list:
-                await message.reply(text_template.generate_invalid_command_text("fleave"))
+                await message.reply(text_template.generate_invalid_command_text(config.ADMIN_CMD_PREFIX + "leave"))
         else:
             user_list = [message.author]
 

@@ -61,7 +61,7 @@ async def parse_command(client, game, message):
     message_parts = message.content.strip()[len(config.BOT_PREFIX):].split(" ")
     cmd, parameters = message_parts[0], message_parts[1:]
 
-    if cmd.startswith('f'):
+    if cmd.startswith(config.ADMIN_CMD_PREFIX):
         # Admin/Bot commands - User should not directly use these commands
         await do_admin_cmd(client, game, message, cmd, parameters)
     elif admin.is_valid_category(message):
@@ -196,30 +196,32 @@ async def do_admin_cmd(client, game, message, cmd, parameters):
             await message.reply("You do not have Admin role.")
         return
 
-    if cmd == "fcreate":
-        await do_fcreate(client, message)
-    elif cmd == "fdelete":
-        await do_fdelete(client, message)
-    elif cmd == "fclean":
-        await do_fclean(client, message)
-    elif cmd == "fdebug":
-        await do_fdebug()
-    elif cmd in ("fjoin", "fleave", "fstart", "fnext", "fstopgame"):
-        await do_game_cmd(game, message, cmd[1:], parameters, True)
+    cmd_content = cmd[len(config.ADMIN_CMD_PREFIX):]
+
+    if cmd_content == "create":
+        await do_force_create(client, message)
+    elif cmd_content == "delete":
+        await do_force_delete(client, message)
+    elif cmd_content == "clean":
+        await do_force_clean(client, message)
+    elif cmd_content == "debug":
+        await do_force_debug()
+    elif cmd_content in ("join", "leave", "start", "next", "stopgame"):
+        await do_game_cmd(game, message, cmd_content, parameters, True)
 
 
-async def do_fclean(client, message):
+async def do_force_clean(client, message):
     """Delete all private channels under config.GAME_CATEGORY"""
     await admin.clean_game_category(message.guild, client.user, False)
 
 
-async def do_fdebug():
+async def do_force_debug():
     # print(asyncio.all_tasks())
     # exec(" ".join(parameters))
     pass
 
 
-async def do_fcreate(client, message):
+async def do_force_create(client, message):
     """Create game channels"""
     if not message.mentions:
         await message.reply("Missing @bot_name")
@@ -229,7 +231,7 @@ async def do_fcreate(client, message):
         await admin.create_game_category(message.guild, client.user)
 
 
-async def do_fdelete(client, message):
+async def do_force_delete(client, message):
     """Delete all channels and category under config.GAME_CATEGORY"""
     if not message.mentions:
         await message.reply("Missing @bot_name")

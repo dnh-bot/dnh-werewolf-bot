@@ -48,7 +48,7 @@ def get_command_additional_params(command):
 
 
 def get_command_usages(command, **kwargs):
-    if command in ("fjoin", "fleave"):
+    if command in (config.ADMIN_CMD_PREFIX + "join", config.ADMIN_CMD_PREFIX + "leave"):
         return [f"`{BOT_PREFIX}{command} @user1 @user2 ...`"]
 
     if command in command_info:

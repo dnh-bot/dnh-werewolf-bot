@@ -38,4 +38,6 @@ WEREWOLF_CHANNEL = "🐺werewolf"
 CEMETERY_CHANNEL = "💀cemetery"
 COUPLE_CHANNEL = "💘couple"
 
+ADMIN_CMD_PREFIX = "f_"
+
 TEXT_LANGUAGE = "vi"
