@@ -47,7 +47,7 @@
       "en": "Target a player to die together at night. Accept latest command."
     },
     "daytime_command": "vote",
-    "nighttime_commands": ["hunt"]
+    "nighttime_commands": ["hunter"]
   },
   "Lycan": {
     "name_vi": "Người hóa sói",
