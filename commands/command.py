@@ -37,11 +37,9 @@ def check_set_timer_input(input_string):
         'm': 1,
         'h': 2
     }
-    # Convert value equal pow function
-    # Example hour to seconds <=> 60 * 60  <=> 60^2 = 3600
+    # Convert value equal pow function (1h = 3600s = 60**2 s)
+    # Formula: phase = value(passed parameter) * converter value
     timer_phase = []
-    # Formular: phase = value(passed parameter) * converter value
-    value, power = 0, 0
     for phase in input_string:
         key = phase[-1]
         if key in converter:
@@ -68,7 +66,6 @@ async def parse_command(client, game, message):
         await do_admin_cmd(client, game, message, cmd, parameters)
     elif admin.is_valid_category(message):
         # Game commands only valid under GAME CATEGORY
-
         if cmd == "help":
             await admin.send_embed_to_channel(
                 message.guild, text_template.generate_help_embed(*parameters), message.channel.name, False
@@ -120,7 +117,7 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
                 await message.reply("Invalid input for timer")
                 return
             # Check if any timer phase is too short (<= 30 seconds):
-            if any(map(lambda x: x <= 30, timer_phase)):
+            if any(x <= 30 for x in timer_phase):
                 await message.reply("Config must greater than 30s")
                 return
 
