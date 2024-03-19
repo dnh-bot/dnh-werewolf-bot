@@ -1,5 +1,5 @@
 """Add cmd decorator here for parsing command parameters"""
-
+import text_templates
 from config import BOT_PREFIX, TEXT_LANGUAGE
 import utils
 
@@ -74,3 +74,32 @@ def get_command_usages(command, **kwargs):
         ]
 
     return []
+
+
+def get_command_example_args_list(command):
+    if command in command_info:
+        required_params = get_command_required_params(command)
+        additional_params = get_command_additional_params(command)
+        command_params = required_params + additional_params
+        return [
+            dict(zip(command_params, example_argv + [""] * len(additional_params)))
+            for example_argv in command_info[command]["example_list"]
+        ]
+
+    return []
+
+
+def get_command_examples(command):
+    return [
+        example_text
+        for example_args in get_command_example_args_list(command)
+        for example_text in get_command_usages(command, **example_args)
+    ]
+
+
+def get_command_usage_string(command, **kwargs):
+    return f" {text_templates.get_word_in_language('or')} ".join(get_command_usages(command, **kwargs))
+
+
+def get_command_example_string(command):
+    return f" {text_templates.get_word_in_language('or')} ".join(get_command_examples(command))
