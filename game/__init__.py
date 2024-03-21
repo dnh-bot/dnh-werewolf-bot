@@ -256,6 +256,10 @@ class Game:
 
         self.reset_game_state(True)
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
+        # Add current players to Gameplay
+        await asyncio.gather(
+            *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True) for _id in self.players]
+        )
         await asyncio.sleep(0)
 
     async def delete_channel(self):
