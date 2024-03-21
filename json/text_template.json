@@ -722,6 +722,13 @@
       "en": ["Game stopped!"]
     }
   },
+  "rematch_text": {
+    "params": [],
+    "template": {
+      "vi": ["🔄 Đang tái tạo trò chơi..."],
+      "en": ["🔄 Recreating the game..."]
+    }
+  },
   "game_not_playing_text": {
     "params": [],
     "template": {

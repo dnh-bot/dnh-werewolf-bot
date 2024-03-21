@@ -163,6 +163,7 @@ async def do_rematch(game, message):
         if message.author.id not in game.players:
             await message.reply(text_templates.generate_text("not_in_game_text"))
         else:
+            await message.reply(text_templates.generate_text("rematch_text"))
             await game.rematch(message.author.id)
     else:
         await message.reply(text_templates.generate_text("game_not_started_text"))
