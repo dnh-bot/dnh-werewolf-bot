@@ -415,14 +415,14 @@
     "params": [],
     "template": {
       "vi": [
-        "🔫 Bạn muốn ai chết chung với mình? Hãy nhập `{bot_prefix}hunt ID` để chọn đối tượng.",
+        "🔫 Bạn muốn ai chết chung với mình? Hãy nhập `{bot_prefix}hunter ID` để chọn đối tượng.",
         "💡 Ví dụ: `{bot_prefix}hunter 2`",
-        "⚠️ Bạn được sử dụng kỹ năng này bất kỳ lúc nào, có thể dùng lên bản thân nếu đổi ý. Nhưng đừng giết bậy bạn nhé!"
+        "⚠️ Bạn được sử dụng kỹ năng này bất kỳ lúc nào vào ban đêm, có thể dùng lên bản thân nếu đổi ý. Nhưng đừng giết bậy bạn nhé!"
       ],
       "en": [
-        "🔫 Choose someone to die with, enter `{bot_prefix}hunt ID` to let that person die with you.",
-        "💡 Example: `{bot_prefix}hunt 2`",
-        "⚠️ You can use this skill anytime! Tagert yourself if you change your mind."
+        "🔫 Choose someone to die with, enter `{bot_prefix}hunter ID` to let that person die with you.",
+        "💡 Example: `{bot_prefix}hunter 2`",
+        "⚠️ You can use this skill anytime at night. Target yourself if you change your mind."
       ]
     }
   },
