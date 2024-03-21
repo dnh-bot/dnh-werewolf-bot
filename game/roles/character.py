@@ -23,7 +23,7 @@ class Character:
         player_name = player_name.replace("-", " ")
         valid_channel_name = "".join(c for c in player_name if c not in BANNED_CHARS).lower()
         valid_channel_name = "-".join(valid_channel_name.split())
-        self.channel_name = f"personal-{valid_channel_name}"
+        self.channel_name = f"{config.PERSONAL}-{valid_channel_name}"
         self.mana = 0
 
     def get_role(self):

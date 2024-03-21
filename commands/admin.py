@@ -184,7 +184,7 @@ async def send_embed_to_channel(guild, embed_data, channel_name, *_):
 async def delete_all_personal_channel(guild):
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     if category:
-        personal_channels = [c for c in category.channels if c.name.startswith("personal")]
+        personal_channels = [c for c in category.channels if c.name.startswith(config.PERSONAL)]
         await asyncio.gather(*[c.delete() for c in personal_channels])
 
 

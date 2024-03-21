@@ -371,7 +371,7 @@ class Game:
                 pass
 
             elif author.is_alive():
-                is_personal_channel = channel_name.startswith("personal")
+                is_personal_channel = channel_name.startswith(config.PERSONAL)
 
                 if isinstance(author, roles.Werewolf) and (channel_name == config.WEREWOLF_CHANNEL or is_personal_channel):
                     vote_table = {f'<@{k}>': v for k, v in self.get_vote_status(self.wolf_kill_dict).items()}
@@ -389,7 +389,7 @@ class Game:
         if self.is_ended() or not author:
             return author_status
 
-        is_channel_for_author = channel_name.startswith("personal")
+        is_channel_for_author = channel_name.startswith(config.PERSONAL)
         if self.game_phase == const.GamePhase.NIGHT and is_channel_for_author:
             if author.is_alive():
                 if isinstance(author, (roles.Seer, roles.Guard)):
