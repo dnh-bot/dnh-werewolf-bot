@@ -89,6 +89,11 @@ async def parse_command(client, game, message):
             await player.do_next(game, message, force=False)
         elif cmd == "stopgame":
             await player.do_stop(game, message, force=False)
+        elif cmd == "rematch":
+            if message.channel.name not in (config.LOBBY_CHANNEL):  # Any player can request rematch, so only allow in Lobby
+                await message.reply(text_templates.generate_text("invalid_channel_text", channel=f"#{config.LOBBY_CHANNEL}"))
+                return
+            await player.do_rematch(game, message)
 
         elif cmd in ("vote", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto"):
             if not game.is_started():

@@ -1173,6 +1173,22 @@
       }
     }
   },
+  "rematch_embed": {
+    "params": ["rematch_player_id", "total_players"],
+    "color": "0xe67e22",
+    "template": {
+      "vi": {
+        "title": "Trận tái đấu",
+        "description": "<@{rematch_player_id}> cay cú đã yêu cầu một trận tái đấu 😡😤",
+        "content_headers": ["\u200B\nDanh sách {total_players} người chơi hiện tại"]
+      },
+      "en": {
+        "title": "Rematch",
+        "description": "<@{rematch_player_id}> was so bitter that he asked for a rematch 😡😤",
+        "content_headers": ["\u200B\nList of {total_players} current players"]
+      }
+    }
+  },
   "new_moon_no_event_text": {
     "params": [],
     "template": {

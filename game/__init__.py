@@ -40,12 +40,15 @@ class Game:
         self.async_lock = asyncio.Lock()
         self.reset_game_state()  # Init other game variables every end game.
 
-    def reset_game_state(self):
+    def reset_game_state(self, rematch=False):
         print("reset_game_state")
         self.is_stopped = True
         self.start_time = None
-        self.players = {}  # id: Player
-        self.playersname = {}  # id: username
+        if rematch:
+            self.players = {player_id: None for player_id in self.players}
+        else:
+            self.players = {}  # id: Player
+            self.playersname = {}  # id: username
         self.watchers = set()  # set of id
         self.game_phase = const.GamePhase.NEW_GAME
         self.wolf_kill_dict = {}  # dict[wolf] -> player
@@ -225,6 +228,33 @@ class Game:
             await self.delete_channel()
         self.reset_game_state()
         await self.interface.send_action_text_to_channel("end_text", config.LOBBY_CHANNEL)
+        await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
+        await asyncio.sleep(0)
+
+    async def rematch(self, rematch_player_id):
+        print("======= Game rematched =======")
+        if self.is_stopped:
+            return
+
+        self.next_flag.clear()
+        await self.cancel_running_task(self.task_game_loop)
+        await self.cancel_running_task(self.task_run_timer_phase)
+
+        if self.players:
+            await self.delete_channel()
+
+        current_players = ", ".join(f"<@{_id}>" for _id in self.players)
+        rematch_data = text_templates.generate_embed(
+            "rematch_embed",
+            [
+                [current_players]
+            ],
+            rematch_player_id=rematch_player_id,
+            total_players=len(self.players)
+        )
+        await self.interface.send_embed_to_channel(rematch_data, config.LOBBY_CHANNEL)
+ 
+        self.reset_game_state(True)
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
         await asyncio.sleep(0)
 
