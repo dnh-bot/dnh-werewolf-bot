@@ -253,7 +253,7 @@ class Game:
             total_players=len(self.players)
         )
         await self.interface.send_embed_to_channel(rematch_data, config.LOBBY_CHANNEL)
- 
+
         self.reset_game_state(True)
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
         await asyncio.sleep(0)
