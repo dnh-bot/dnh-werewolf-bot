@@ -734,7 +734,7 @@ class Game:
         is_twin_flame_announced = False
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.TWIN_FLAME.value and _id in self.cupid_dict:          
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.TWIN_FLAME.value and _id in self.cupid_dict:
             if not is_twin_flame_announced:
                 await self.interface.send_action_text_to_channel("new_moon_twin_flame_result_text", config.GAMEPLAY_CHANNEL)
                 is_twin_flame_announced = True
