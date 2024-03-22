@@ -68,7 +68,7 @@ class Game:
         self.prev_playtime = self.is_in_play_time()
         self.new_moon_mode.set_random_event()
         self.auto_hook = defaultdict(list)
-        self.tanner_id = None
+        self.tanner_is_lynced = False
 
     def get_winner(self):
         if self.winner is None:
@@ -165,10 +165,6 @@ class Game:
 
         r = {id_: roles.get_role_type(role_name)(
             interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
-        # Find tanner player's id
-        for _id, player in r.items():
-            if isinstance(player, roles.Tanner):
-                self.tanner_id = _id
         print("Player list:", r)
         return r
 
@@ -511,14 +507,12 @@ class Game:
         alives = self.get_alive_players()
         num_players = len(alives)
         num_werewolf = sum(isinstance(p, roles.Werewolf) for p in alives)
-        tanner = self.players[self.tanner_id] if self.tanner_id is not None else None
 
         print("DEBUG: ", num_players, num_werewolf)
 
-        # check if has tanner
-        if tanner is not None:
-            if not tanner.is_alive() and tanner.is_lynched:
-                return roles.Tanner
+        # check tanner
+        if self.tanner_is_lynced:
+            return roles.Tanner
 
         # check end game
         if num_werewolf != 0 and num_werewolf * 2 < num_players:
@@ -632,7 +626,7 @@ class Game:
             )
 
             if isinstance(self.players[lynched], roles.Tanner):
-                self.players[lynched].is_lynched = True
+                self.tanner_is_lynced = True
 
             cupid_couple = self.cupid_dict.get(lynched)
             if cupid_couple is not None:
