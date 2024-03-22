@@ -374,13 +374,14 @@ class Game:
         author status.
         """
         status_description = ""
+        passed_days = str(self.day) if self.day > 0 else ""
         remaining_time = None
         vote_table = None
         table_title = ""
         author_status = ""
 
         if self.is_ended() or not isinstance(self.game_phase, const.GamePhase):
-            return status_description, remaining_time, vote_table, table_title, author_status
+            return status_description, passed_days, remaining_time, vote_table, table_title, author_status
 
         if self.game_phase == const.GamePhase.NEW_GAME:
             status_description = text_templates.get_label_in_language("new_game_phase_status")
@@ -433,7 +434,7 @@ class Game:
                 # TODO: future features in #cemetery channel
                 author_status = text_templates.get_label_in_language("author_dead_status")
 
-        return status_description, remaining_time, vote_table, table_title, author_status
+        return status_description, passed_days, remaining_time, vote_table, table_title, author_status
 
     def get_vote_status(self, voter_dict=None):
         # From {"u1":"u2", "u2":"u1", "u3":"u1"}
