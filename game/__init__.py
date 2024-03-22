@@ -591,6 +591,8 @@ class Game:
             await self.stop()
 
     async def do_end_daytime_phase(self):
+        # FIXME:
+        # pylint: disable=too-many-branches
         await self.do_run_auto_hook()
         print("do_end_daytime_phase")
         lynched, votes = None, 0
