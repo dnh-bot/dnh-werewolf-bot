@@ -120,6 +120,14 @@
     "exclusive_roles": [],
     "required_params": []
   },
+  "rematch": {
+    "description": {
+      "vi": "Yêu cầu chơi lại cùng những người chơi hiện tại",
+      "en": "Request a rematch with current players"
+    },
+    "exclusive_roles": [],
+    "required_params": []
+  },
   "status": {
     "description": {
       "vi": "Xem trạng thái trò chơi trong buổi hiện tại.",

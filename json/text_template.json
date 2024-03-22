@@ -722,6 +722,13 @@
       "en": ["Game stopped!"]
     }
   },
+  "rematch_text": {
+    "params": [],
+    "template": {
+      "vi": ["🔄 Đang tái tạo trò chơi..."],
+      "en": ["🔄 Recreating the game..."]
+    }
+  },
   "game_not_playing_text": {
     "params": [],
     "template": {
@@ -1148,12 +1155,12 @@
       "vi": {
         "title": "Trạng thái trò chơi",
         "description": "{status_description}",
-        "content_headers": ["⏰ Thời gian còn lại của {phase_str}", "{table_title}", "Trạng thái của bạn"]
+        "content_headers": ["Số ngày đã trải qua", "⏰ Thời gian còn lại của {phase_str}", "{table_title}", "Trạng thái của bạn"]
       },
       "en": {
         "title": "Game status",
         "description": "{status_description}",
-        "content_headers": ["⏰ Remaining time of {phase_str}", "{table_title}", "Your status"]
+        "content_headers": ["Number of days", "⏰ Remaining time of {phase_str}", "{table_title}", "Your status"]
       }
     }
   },
@@ -1170,6 +1177,22 @@
         "title": "Game result",
         "description": "Game has been started at {start_time_str}.",
         "content_headers": ["Number of days", "\u200B\n🏆 The Winner", "\u200B\n📝 Player list", "💘 Couple"]
+      }
+    }
+  },
+  "rematch_embed": {
+    "params": ["rematch_player_id", "total_players"],
+    "color": "0xe67e22",
+    "template": {
+      "vi": {
+        "title": "Trận tái đấu",
+        "description": "<@{rematch_player_id}> cay cú đã yêu cầu một trận tái đấu 😡😤",
+        "content_headers": ["\u200B\nDanh sách {total_players} người chơi hiện tại"]
+      },
+      "en": {
+        "title": "Rematch",
+        "description": "<@{rematch_player_id}> was so bitter that he asked for a rematch 😡😤",
+        "content_headers": ["\u200B\nList of {total_players} current players"]
       }
     }
   },

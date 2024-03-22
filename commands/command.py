@@ -89,6 +89,11 @@ async def parse_command(client, game, message):
             await player.do_next(game, message, force=False)
         elif cmd == "stopgame":
             await player.do_stop(game, message, force=False)
+        elif cmd == "rematch":
+            if message.channel.name != config.LOBBY_CHANNEL:  # Any player can request rematch, so only allow in Lobby
+                await message.reply(text_templates.generate_text("invalid_channel_text", channel=f"#{config.LOBBY_CHANNEL}"))
+                return
+            await player.do_rematch(game, message)
 
         elif cmd in ("vote", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto"):
             if not game.is_started():
@@ -163,7 +168,7 @@ async def parse_command(client, game, message):
                     message.guild, text_templates.generate_text("end_text"), message.channel.name
                 )
             else:
-                status_description, remaining_time, vote_table, table_title, author_status = game.get_game_status(
+                status_description, passed_days, remaining_time, vote_table, table_title, author_status = game.get_game_status(
                     message.channel.name, message.author.id
                 )
                 print(status_description, remaining_time, vote_table,
@@ -171,6 +176,7 @@ async def parse_command(client, game, message):
                 embed_data = text_templates.generate_embed(
                     "game_status_with_table_embed",
                     [
+                        [passed_days],
                         [text_template.generate_timer_remaining_text(remaining_time)],
                         text_template.generate_vote_field(vote_table),
                         [author_status]

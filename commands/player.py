@@ -156,6 +156,19 @@ async def do_stop(game, message, force=False):
         await message.reply(text_templates.generate_text("game_not_started_text"))
 
 
+# Player can call to rematch when they want without voting
+async def do_rematch(game, message):
+    """Rematch game"""
+    if game.is_started():
+        if message.author.id not in game.players:
+            await message.reply(text_templates.generate_text("not_in_game_text"))
+        else:
+            await message.reply(text_templates.generate_text("rematch_text"))
+            await game.rematch(message.author.id)
+    else:
+        await message.reply(text_templates.generate_text("game_not_started_text"))
+
+
 async def test_player_command(_):
     # TODO:
     pass
