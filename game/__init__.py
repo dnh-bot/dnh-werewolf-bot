@@ -580,7 +580,7 @@ class Game:
             embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
-            self.new_moon_mode.set_random_event()           
+            self.new_moon_mode.set_random_event()
             await self.announce_current_new_moon_event()
 
             # Mute all party channels
@@ -734,8 +734,7 @@ class Game:
         is_twin_flame_announced = False
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.TWIN_FLAME.value and _id in self.cupid_dict:
-                    
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.TWIN_FLAME.value and _id in self.cupid_dict:          
             if not is_twin_flame_announced:
                 await self.interface.send_action_text_to_channel("new_moon_twin_flame_result_text", config.GAMEPLAY_CHANNEL)
                 is_twin_flame_announced = True
