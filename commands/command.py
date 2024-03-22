@@ -55,12 +55,20 @@ def check_set_timer_input(input_string):
     return timer_phase
 
 
-async def parse_command(client, game, message):
-    # FIXME:
-    # pylint: disable=too-many-nested-blocks, too-many-branches
+async def process_command(client, game, message):
     message_parts = message.content.strip()[len(config.BOT_PREFIX):].split(" ")
     cmd, parameters = message_parts[0], message_parts[1:]
+    try:
+        await parse_command(client, game, message, cmd, parameters)
+        # TODO: reply message here
+    except Exception as e:
+        print(f"Error in process_command with cmd={cmd}:", e)
 
+
+async def parse_command(client, game, message, cmd, parameters):
+    # TODO: Return True/False (if it's a valid and authorized command name) and message to be replied.
+    # FIXME:
+    # pylint: disable=too-many-nested-blocks, too-many-branches
     if cmd.startswith(config.ADMIN_CMD_PREFIX):
         # Admin/Bot commands - User should not directly use these commands
         await do_admin_cmd(client, game, message, cmd, parameters)

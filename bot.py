@@ -33,7 +33,7 @@ async def process_message(discord_client, message):
             await init_setup(True)
             game = game_list.get_game(message.guild.id)
 
-        await command.parse_command(discord_client, game, message)
+        await command.process_command(discord_client, game, message)
 
 
 def verify_ok(_):
