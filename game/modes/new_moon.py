@@ -39,7 +39,7 @@ class NewMoonMode:
 
     def get_current_event_name(self):
         return NewMoonMode.ALL_EVENTS[self.current_event]["title"][TEXT_LANGUAGE]
-  
+
     def get_current_event_description(self):
         return NewMoonMode.ALL_EVENTS[self.current_event]["description"][TEXT_LANGUAGE]
 

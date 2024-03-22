@@ -681,6 +681,8 @@ class Game:
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])
 
     async def do_end_nighttime_phase(self):
+        # FIXME:
+        # pylint: disable=too-many-branches
         await self.do_run_auto_hook()
         print("do_end_nighttime_phase")
         kills = None
