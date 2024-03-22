@@ -40,11 +40,11 @@ class Game:
         self.async_lock = asyncio.Lock()
         self.reset_game_state()  # Init other game variables every end game.
 
-    def reset_game_state(self, rematch=False):
+    def reset_game_state(self, is_rematching=False):
         print("reset_game_state")
         self.is_stopped = True
         self.start_time = None
-        if rematch:
+        if is_rematching:
             self.players = {player_id: None for player_id in self.players}
         else:
             self.players = {}  # id: Player
