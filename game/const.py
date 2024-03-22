@@ -11,11 +11,8 @@ class GamePhase(Enum):
 
 
 class NewMoonEvent(Enum):
-    NO_EVENT = 0
-    HEADS_OR_TAILS = 1
-    TWIN_FLAME = 2
-    SOMNAMBULISM = 3
-    FULL_MOON_VEGETARIAN = 4
-
-    def __str__(self):
-        return self.name.lower()
+    NO_EVENT = "no_event"
+    HEADS_OR_TAILS = "heads_or_tails"
+    TWIN_FLAME = "twin_flame"
+    SOMNAMBULISM = "somnambulism"
+    FULL_MOON_VEGETARIAN = "full_moon_vegetarian"

@@ -288,8 +288,8 @@
   "night_phase_beginning_text": {
     "params": [],
     "template": {
-      "vi": ["🌙 Đêm đã tới. Cảnh vật hóa tĩnh lặng, mọi người an giấc. Liệu đêm nay có xảy ra chuyện gì không?"],
-      "en": ["🌙 Night has come. The scenery is quiet, everyone is asleep. Will something happen tonight?"]
+      "vi": ["\u200B\n🌙 Đêm đã tới. Cảnh vật hóa tĩnh lặng, mọi người an giấc. Liệu đêm nay có xảy ra chuyện gì không?"],
+      "en": ["\u200B\n🌙 Night has come. The scenery is quiet, everyone is asleep. Will something happen tonight?"]
     }
   },
   "player_list_description_text": {
