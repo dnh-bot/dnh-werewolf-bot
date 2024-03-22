@@ -574,7 +574,8 @@ class Game:
                 await self.interface.send_action_text_to_channel(
                     f"new_moon_{'special' if self.new_moon_mode.has_special_event() else 'no'}_event_text",
                     config.GAMEPLAY_CHANNEL,
-                    event_name=self.new_moon_mode.get_current_event_name()
+                    event_name=self.new_moon_mode.get_current_event_name(),
+                    event_description=self.new_moon_mode.get_current_event_description()
                 )
 
             # Mute all party channels
@@ -599,7 +600,7 @@ class Game:
             self.voter_dict = {}
 
         if self.modes.get("new_moon", False):
-            if self.new_moon_mode.current_event == "heads_or_tails":
+            if self.new_moon_mode.current_event == const.NewMoonEvent.HEADS_OR_TAILS:
                 coin_toss_value = self.new_moon_mode.do_coin_toss()
                 print("coin toss value =", coin_toss_value)
                 if coin_toss_value != 0:
@@ -720,8 +721,17 @@ class Game:
                 died_player=f"<@{self.cupid_dict[cupid_couple]}>", follow_player=f"<@{cupid_couple}>"
             )
 
+        is_twin_flame_announced = False
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
+            if self.modes.get("new_moon", False):
+                if self.new_moon_mode.current_event == const.NewMoonEvent.TWIN_FLAME:
+                    if _id in self.cupid_dict:
+                        if not is_twin_flame_announced:
+                            await self.interface.send_action_text_to_channel("new_moon_twin_flame_result_text", config.GAMEPLAY_CHANNEL)
+                            is_twin_flame_announced = True
+                        await self.players[self.cupid_dict[_id]].on_reborn()
+
         self.reborn_set = set()
 
     async def new_phase(self):
@@ -909,6 +919,10 @@ class Game:
         return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
     async def kill(self, author, target):
+        if self.modes.get("new_moon", False):
+            if self.new_moon_mode.current_event == const.NewMoonEvent.FULL_MOON_VEGETARIAN:
+                return text_templates.generate_text("new_moon_vegetarian_result_text")
+
         if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
@@ -960,6 +974,14 @@ class Game:
         author.on_use_mana()
         if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
             self.night_pending_kill_list.append(target_id)
+
+        if self.modes.get("new_moon", False):
+            if self.new_moon_mode.current_event == const.NewMoonEvent.SOMNAMBULISM:
+                await self.interface.send_action_text_to_channel(
+                    "new_moon_somnambulism_result_text",
+                    config.GAMEPLAY_CHANNEL,
+                    target_role=self.players[target_id].get_role()
+                )
 
         return text_templates.generate_text(
             f"seer_after_voting_{'' if target.seer_seen_as_werewolf() else 'not_'}werewolf_text",

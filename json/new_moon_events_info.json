@@ -12,7 +12,7 @@
   },
   "heads_or_tails": {
     "title": {
-      "vi": "Sấp ngửa",
+      "vi": "Sấp Ngửa",
       "en": "Heads or Tails"
     },
     "description": {
@@ -21,16 +21,38 @@
     },
     "rate": 1
   },
+  "twin_flame": {
+    "title": {
+      "vi": "Linh Hồn Song Sinh",
+      "en": "Twin Flame"
+    },
+    "description": {
+      "vi": "Hồi sinh sẽ có tác dụng cho cả 2 người trong cặp đôi. Đồng sinh, đồng tử!",
+      "en": "Reborn will affect both people in the couple. Love is undead!"
+    },
+    "rate": 1
+  },
+  "full_moon_vegetarian": {
+    "title": {
+      "vi": "Ăn Chay Ngày Rằm",
+      "en": "Full Moon Vegetarian"
+    },
+    "description": {
+      "vi": "Trong ngày diễn ra sự kiện này, Sói sẽ không ăn thịt ai cả.",
+      "en": "During this event, the Werewolves will not kill anyone."
+    },
+    "rate": 1
+  },
   "somnambulism": {
     "title": {
-      "vi": "Mộng du",
+      "vi": "Mộng Du",
       "en": "Somnambulism"
     },
     "description": {
       "vi": "Tiên tri soi ai thì quản trò sẽ la lớn chức năng người được coi.",
-      "en": ""
+      "en": "When seer reveals someone, that person's role will be announced to everyone."
     },
-    "rate": 0
+    "rate": 1
   },
   "dissatisfaction": {
     "title": {
