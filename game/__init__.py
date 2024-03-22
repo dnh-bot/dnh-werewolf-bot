@@ -602,7 +602,7 @@ class Game:
             self.voter_dict = {}
 
         if self.modes.get("new_moon", False):
-            if self.new_moon_mode.current_event == const.NewMoonEvent.HEADS_OR_TAILS:
+            if self.new_moon_mode.current_event == str(const.NewMoonEvent.HEADS_OR_TAILS):
                 coin_toss_value = self.new_moon_mode.do_coin_toss()
                 print("coin toss value =", coin_toss_value)
                 if coin_toss_value != 0:
@@ -729,7 +729,7 @@ class Game:
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
             if self.modes.get("new_moon", False):
-                if self.new_moon_mode.current_event == const.NewMoonEvent.TWIN_FLAME:
+                if self.new_moon_mode.current_event == str(const.NewMoonEvent.TWIN_FLAME):
                     if _id in self.cupid_dict:
                         if not is_twin_flame_announced:
                             await self.interface.send_action_text_to_channel("new_moon_twin_flame_result_text", config.GAMEPLAY_CHANNEL)
@@ -924,7 +924,7 @@ class Game:
 
     async def kill(self, author, target):
         if self.modes.get("new_moon", False):
-            if self.new_moon_mode.current_event == const.NewMoonEvent.FULL_MOON_VEGETARIAN:
+            if self.new_moon_mode.current_event == str(const.NewMoonEvent.FULL_MOON_VEGETARIAN):
                 return text_templates.generate_text("new_moon_vegetarian_result_text")
 
         if self.game_phase != const.GamePhase.NIGHT:
@@ -980,7 +980,7 @@ class Game:
             self.night_pending_kill_list.append(target_id)
 
         if self.modes.get("new_moon", False):
-            if self.new_moon_mode.current_event == const.NewMoonEvent.SOMNAMBULISM:
+            if self.new_moon_mode.current_event == str(const.NewMoonEvent.SOMNAMBULISM):
                 await self.interface.send_action_text_to_channel(
                     "new_moon_somnambulism_result_text",
                     config.GAMEPLAY_CHANNEL,
