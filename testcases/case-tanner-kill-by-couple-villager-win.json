@@ -5,7 +5,7 @@
 		"s1": "Seer",
 		"g1": "Guard",
 		"v1": "Villager",
-        "c1": "Cupid",
+		"c1": "Cupid",
 		"t1": "Tanner"
 	},
 	"timeline": [
@@ -17,11 +17,9 @@
 				"g1",
 				"v1",
 				"t1",
-                "c1"
+				"c1"
 			],
-			"action": [
-
-			]
+			"action": []
 		},
 		{
 			"time": "night1",
@@ -31,10 +29,10 @@
 				"g1",
 				"v1",
 				"t1",
-                "c1"
+				"c1"
 			],
 			"action": [
-                "c1 ship t1 v1",
+				"c1 ship t1 v1",
 				"w1 kill c1"
 			]
 		},
@@ -48,12 +46,12 @@
 				"t1"
 			],
 			"action": [
-                "w1 vote v1",
-                "t1 vote w1",
-                "g1 vote v1"
+				"w1 vote v1",
+				"t1 vote w1",
+				"g1 vote v1"
 			]
 		},
-        {
+		{
 			"time": "night2",
 			"alive": [
 				"w1",
@@ -61,11 +59,11 @@
 				"g1"
 			],
 			"action": [
-                "g1 guard s1",
+				"g1 guard s1",
 				"w1 kill s1"
 			]
 		},
-        {
+		{
 			"time": "day3",
 			"alive": [
 				"w1",
@@ -73,7 +71,7 @@
 				"g1"
 			],
 			"action": [
-                "g1 vote w1",
+				"g1 vote w1",
 				"s1 vote w1"
 			]
 		}

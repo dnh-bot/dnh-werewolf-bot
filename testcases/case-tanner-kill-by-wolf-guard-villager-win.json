@@ -17,9 +17,7 @@
 				"v1",
 				"t1"
 			],
-			"action": [
-
-			]
+			"action": []
 		},
 		{
 			"time": "night1",
@@ -45,10 +43,10 @@
 			],
 			"action": [
 				"s1 vote w1",
-                "g1 vote s1"
+				"g1 vote s1"
 			]
 		},
-        {
+		{
 			"time": "night2",
 			"alive": [
 				"w1",
@@ -57,11 +55,11 @@
 				"t1"
 			],
 			"action": [
-                "g1 guard t1",
+				"g1 guard t1",
 				"w1 kill t1"
 			]
 		},
-        {
+		{
 			"time": "day3",
 			"alive": [
 				"w1",
@@ -71,8 +69,8 @@
 			],
 			"action": [
 				"w1 vote t1",
-                "g1 vote w1",
-                "s1 vote w1"
+				"g1 vote w1",
+				"s1 vote w1"
 			]
 		}
 	],

@@ -6,7 +6,7 @@
 		"g1": "Guard",
 		"v1": "Villager",
 		"t1": "Tanner",
-        "wi1": "Witch"
+		"wi1": "Witch"
 	},
 	"timeline": [
 		{
@@ -17,7 +17,7 @@
 				"g1",
 				"v1",
 				"t1",
-                "wi1"
+				"wi1"
 			],
 			"action": [
 				"w1 vote s1",
@@ -32,7 +32,7 @@
 				"g1",
 				"v1",
 				"t1",
-                "wi1"
+				"wi1"
 			],
 			"action": [
 				"w1 kill v1",
@@ -49,7 +49,7 @@
 			],
 			"action": [
 				"wi1 vote w1",
-                "g1 vote w1"
+				"g1 vote w1"
 			]
 		}
 	],

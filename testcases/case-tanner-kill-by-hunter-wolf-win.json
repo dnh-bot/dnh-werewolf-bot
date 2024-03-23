@@ -17,9 +17,7 @@
 				"h1",
 				"t1"
 			],
-			"action": [
-
-			]
+			"action": []
 		},
 		{
 			"time": "night1",
@@ -33,7 +31,7 @@
 			"action": [
 				"w1 kill s1",
 				"h1 hunter t1",
-                "g1 guard g1"
+				"g1 guard g1"
 			]
 		},
 		{
@@ -41,14 +39,12 @@
 			"alive": [
 				"w1",
 				"g1",
-                "h1",
+				"h1",
 				"t1"
 			],
-			"action": [
-
-			]
+			"action": []
 		},
-        {
+		{
 			"time": "night2",
 			"alive": [
 				"w1",
@@ -57,7 +53,7 @@
 				"t1"
 			],
 			"action": [
-                "g1 guard w1",
+				"g1 guard w1",
 				"w1 kill h1"
 			]
 		}
