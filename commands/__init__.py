@@ -4,12 +4,25 @@ import config
 from config import BOT_PREFIX, TEXT_LANGUAGE
 import utils
 import text_templates
+from game.const import CommandType, ChannelType
 
 command_info = utils.common.read_json_file("json/command_info.json")
 
 
 def get_all_commands():
     return [*command_info.keys()]
+
+
+def get_all_commands_with_type():
+    commands_filter_by_type = {}
+    for command, command_dict in command_info.items():
+        command_type = CommandType[command_dict["type"]]
+        if command_type not in commands_filter_by_type:
+            commands_filter_by_type[command_type] = []
+
+        commands_filter_by_type[command_type].append(command)
+
+    return sorted(commands_filter_by_type.items())
 
 
 def get_command_description(command):
@@ -19,11 +32,11 @@ def get_command_description(command):
     return None
 
 
-def get_command_valid_channels(command):
-    if command in command_info:
-        return command_info[command].get("valid_channels", [])
-
-    return []
+def get_command_type(command):
+    try:
+        return CommandType[command_info[command]["type"]]
+    except KeyError:
+        return CommandType.PUBLIC
 
 
 def get_command_exclusive_roles(command):
@@ -85,22 +98,38 @@ def get_command_usages(command, **kwargs):
     return []
 
 
-def is_command_in_valid_channel(command, channel_name):
-    valid_channels = get_command_valid_channels(command)
-    if not valid_channels:
-        return True
+def get_channel_type(channel_name):
+    if channel_name.startswith(config.PERSONAL):
+        return ChannelType.PERSONAL
+    if channel_name == config.WEREWOLF_CHANNEL:
+        return ChannelType.WEREWOLF
+    if channel_name == config.LOBBY_CHANNEL:
+        return ChannelType.LOBBY
+    if channel_name == config.GAMEPLAY_CHANNEL:
+        return ChannelType.GAMEPLAY
 
-    return any(
-        channel_name.strip().startswith("personal") if valid_channel_name == "PERSONAL" else
-        channel_name == getattr(config, f"{valid_channel_name}_CHANNEL", "")
-        for valid_channel_name in valid_channels
-    )
+    return ChannelType.PUBLIC
+
+
+def is_command_in_valid_channel(command, channel_name):
+    return get_command_type(command) == CommandType.PUBLIC \
+        or get_command_type(command) == get_channel_type(channel_name)
+
+
+def get_command_valid_channels(command):
+    command_type = get_command_type(command)
+    if command_type == CommandType.PERSONAL:
+        return [text_templates.get_word_in_language("personal")]
+    if command_type == CommandType.WEREWOLF:
+        return [config.WEREWOLF_CHANNEL]
+    if command_type == ChannelType.LOBBY:
+        return [config.LOBBY_CHANNEL]
+    if command_type == ChannelType.GAMEPLAY:
+        return [config.GAMEPLAY_CHANNEL]
+
+    return []  # public channels
 
 
 def get_command_valid_channel_name(command):
     valid_channels = get_command_valid_channels(command)
-    return f' {text_templates.get_word_in_language("or")} '.join(
-        text_templates.get_word_in_language("personal") if valid_channel_name == "PERSONAL" else
-        f'#{getattr(config, f"{valid_channel_name}_CHANNEL", "")}'
-        for valid_channel_name in valid_channels
-    )
+    return f' {text_templates.get_word_in_language("or")} '.join(valid_channels)

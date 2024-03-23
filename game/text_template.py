@@ -105,7 +105,8 @@ def generate_help_command_embed(command=None):
     if command is None:
         help_embed_data = text_templates.generate_embed("help_command_all_embed", [])
         help_embed_data["content"] = [
-            ("List", [" | ".join(f"`{cmd}`" for cmd in all_commands)])
+            (str(command_type), [" | ".join(f"`{cmd}`" for cmd in command_list)])
+            for command_type, command_list in commands.get_all_commands_with_type()
         ]
 
     elif command in all_commands:

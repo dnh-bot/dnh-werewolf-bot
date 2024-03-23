@@ -1,10 +1,21 @@
 {
+  "help": {
+    "description": {
+      "vi": "Trợ giúp về mọi thứ.",
+      "en": "Full list of things."
+    },
+    "type": "PUBLIC",
+    "exclusive_roles": [],
+    "required_params": [],
+    "additional_params": ["type", "name"]
+  },
   "timer": {
     "description": {
       "vi": "Thiết lập đồng hồ đếm ngược.",
       "en": "Set the current timer."
     },
     "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": ["dayphase", "nightphase", "alertperiod"]
   },
@@ -14,6 +25,7 @@
       "en": "Start the current timer."
     },
     "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -23,6 +35,7 @@
       "en": "Stop the current timer."
     },
     "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -32,6 +45,7 @@
       "en": "Set the playing time in a day. Time must be in HH:MM format."
     },
     "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": ["time_start", "time_end"],
     "additional_params": ["time_zone"]
@@ -42,6 +56,7 @@
       "en": "Set default player roles for a new game"
     },
     "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": ["role_dict"]
   },
@@ -51,6 +66,7 @@
       "en": "Display mode setting"
     },
     "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "PUBLIC",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -60,6 +76,7 @@
       "en": "Enable/Disable game modes."
     },
     "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "PUBLIC",
     "exclusive_roles": [],
     "required_params": ["mode_id", "on_str"]
   },
@@ -69,6 +86,7 @@
       "en": "Join a game."
     },
     "valid_channels": ["LOBBY", "GAMEPLAY"],
+    "type": "LOBBY",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -78,6 +96,7 @@
       "en": "Leave a game."
     },
     "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "PUBLIC",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -87,6 +106,7 @@
       "en": "Watch a game."
     },
     "valid_channels": ["LOBBY"],
+    "type": "PUBLIC",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -96,6 +116,7 @@
       "en": "Unwatch a game."
     },
     "valid_channels": ["LOBBY", "GAMEPLAY"],
+    "type": "PUBLIC",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -105,6 +126,7 @@
       "en": "Start a game."
     },
     "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "PUBLIC",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -113,7 +135,7 @@
       "vi": "Kiểm tra lại tất cả channel người chơi.",
       "en": "Re-check all player channels."
     },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -123,6 +145,7 @@
       "en": "Jump to next phase."
     },
     "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -132,6 +155,7 @@
       "en": "Stop a game."
     },
     "valid_channels": ["LOBBY"],
+    "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -140,7 +164,7 @@
       "vi": "Yêu cầu chơi lại cùng những người chơi hiện tại",
       "en": "Request a rematch with current players"
     },
-    "valid_channels": ["LOBBY"],
+    "type": "LOBBY",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -159,6 +183,7 @@
       "en": "Show ranking board."
     },
     "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "PUBLIC",
     "exclusive_roles": [],
     "required_params": []
   },
@@ -167,7 +192,7 @@
       "vi": "Lựa chọn một người sẽ bị đưa lên máy chém.",
       "en": "Vote a player."
     },
-    "valid_channels": ["GAMEPLAY"],
+    "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": ["player_id"]
   },
@@ -185,7 +210,7 @@
       "vi": "Lựa chọn một người sẽ bị ăn thịt trong đêm.",
       "en": "Kill a player."
     },
-    "valid_channels": ["WEREWOLF"],
+    "type": "WEREWOLF",
     "exclusive_roles": ["Werewolf", "Superwolf"],
     "required_params": ["player_id"]
   },
@@ -194,7 +219,7 @@
       "vi": "Bảo vệ một ai đó trong đêm.",
       "en": "Guard a player."
     },
-    "valid_channels": ["PERSONAL"],
+    "type": "PERSONAL",
     "exclusive_roles": ["Guard"],
     "required_params": ["player_id"]
   },
@@ -204,6 +229,7 @@
       "en": "Hunt a player."
     },
     "valid_channels": ["PERSONAL"],
+    "type": "PERSONAL",
     "exclusive_roles": ["Hunter"],
     "required_params": ["player_id"]
   },
@@ -212,7 +238,7 @@
       "vi": "Soi một người bất kỳ.",
       "en": "Seer a player."
     },
-    "valid_channels": ["PERSONAL"],
+    "type": "PERSONAL",
     "exclusive_roles": ["Seer"],
     "required_params": ["player_id"]
   },
@@ -221,7 +247,7 @@
       "vi": "Hồi sinh một người đã chết.",
       "en": "Reborn a player."
     },
-    "valid_channels": ["PERSONAL"],
+    "type": "PERSONAL",
     "exclusive_roles": ["Witch"],
     "required_params": ["player_id"]
   },
@@ -230,7 +256,7 @@
       "vi": "Nguyền rủa một người còn sống.",
       "en": "Curse a player."
     },
-    "valid_channels": ["PERSONAL"],
+    "type": "PERSONAL",
     "exclusive_roles": ["Witch"],
     "required_params": ["player_id"]
   },
@@ -257,7 +283,7 @@
       "vi": "Tự đội mồ sống dậy.",
       "en": "Reborn yourself."
     },
-    "valid_channels": ["PERSONAL"],
+    "type": "PERSONAL",
     "exclusive_roles": ["Zombie"],
     "required_params": []
   },
@@ -266,7 +292,7 @@
       "vi": "Ghép đôi 2 người.",
       "en": "Match 2 players together as a couple."
     },
-    "valid_channels": ["PERSONAL"],
+    "type": "PERSONAL",
     "exclusive_roles": ["Cupid"],
     "required_params": ["player_id1", "player_id2"]
   },
@@ -278,5 +304,8 @@
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Seer", "Guard"],
     "required_params": ["cmd"]
+    "type": "PERSONAL",
+    "exclusive_roles": [],
+    "required_params": []
   }
 }

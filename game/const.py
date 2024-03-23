@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum, IntEnum, auto
 
 
 class GamePhase(Enum):
@@ -59,3 +59,17 @@ class RebornReason(StatusChangeReason):
             return "couple_reborn_text"
 
         return "after_reborn_text"
+
+
+class CommandType(IntEnum):
+    PUBLIC = 0
+    LOBBY = auto()
+    GAMEPLAY = auto()
+    WEREWOLF = auto()
+    PERSONAL = auto()
+
+    def __str__(self):
+        return self.name.lower() + " commands"
+
+
+ChannelType = CommandType
