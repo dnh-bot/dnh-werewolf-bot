@@ -7,7 +7,8 @@
     "type": "PUBLIC",
     "exclusive_roles": [],
     "required_params": [],
-    "additional_params": ["type", "name"]
+    "additional_params": ["type", "name"],
+    "examples": [[], ["cmd"], ["cmd", "vote"], ["role"], ["role", "Villager"]]
   },
   "timer": {
     "description": {
@@ -17,7 +18,8 @@
     "valid_channels": ["GAMEPLAY", "LOBBY"],
     "type": "GAMEPLAY",
     "exclusive_roles": [],
-    "required_params": ["dayphase", "nightphase", "alertperiod"]
+    "required_params": ["dayphase", "nightphase", "alertperiod"],
+    "examples": [[60, 30, 20]]
   },
   "timerstart": {
     "description": {
@@ -48,7 +50,8 @@
     "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": ["time_start", "time_end"],
-    "additional_params": ["time_zone"]
+    "additional_params": ["time_zone"],
+    "examples": [["00:00", "23:59"], ["00:00", "23:59", "UTC+7"]]
   },
   "setroles": {
     "description": {
@@ -58,7 +61,8 @@
     "valid_channels": ["GAMEPLAY", "LOBBY"],
     "type": "GAMEPLAY",
     "exclusive_roles": [],
-    "required_params": ["role_dict"]
+    "required_params": ["role_dict"],
+    "examples": [["[{{\"Werewolf\": 1, \"Seer\": 1, \"Guard\": 1, \"Chief\": 1, \"Witch\": 1}}]"]]
   },
   "showmodes": {
     "description": {
@@ -78,7 +82,8 @@
     "valid_channels": ["GAMEPLAY", "LOBBY"],
     "type": "PUBLIC",
     "exclusive_roles": [],
-    "required_params": ["mode_id", "on_str"]
+    "required_params": ["mode_id", "on_str"],
+    "examples": [[2, "on"]]
   },
   "join": {
     "description": {
@@ -194,7 +199,8 @@
     },
     "type": "GAMEPLAY",
     "exclusive_roles": [],
-    "required_params": ["player_id"]
+    "required_params": ["player_id"],
+    "examples": [[2]]
   },
   "punish": {
     "description": {
@@ -212,7 +218,8 @@
     },
     "type": "WEREWOLF",
     "exclusive_roles": ["Werewolf", "Superwolf"],
-    "required_params": ["player_id"]
+    "required_params": ["player_id"],
+    "examples": [[2]]
   },
   "guard": {
     "description": {
@@ -221,7 +228,8 @@
     },
     "type": "PERSONAL",
     "exclusive_roles": ["Guard"],
-    "required_params": ["player_id"]
+    "required_params": ["player_id"],
+    "examples": [[2]]
   },
   "hunter": {
     "description": {
@@ -231,7 +239,8 @@
     "valid_channels": ["PERSONAL"],
     "type": "PERSONAL",
     "exclusive_roles": ["Hunter"],
-    "required_params": ["player_id"]
+    "required_params": ["player_id"],
+    "examples": [[2]]
   },
   "seer": {
     "description": {
@@ -240,7 +249,8 @@
     },
     "type": "PERSONAL",
     "exclusive_roles": ["Seer"],
-    "required_params": ["player_id"]
+    "required_params": ["player_id"],
+    "examples": [[2]]
   },
   "reborn": {
     "description": {
@@ -249,7 +259,8 @@
     },
     "type": "PERSONAL",
     "exclusive_roles": ["Witch"],
-    "required_params": ["player_id"]
+    "required_params": ["player_id"],
+    "examples": [[2]]
   },
   "curse": {
     "description": {
@@ -258,7 +269,8 @@
     },
     "type": "PERSONAL",
     "exclusive_roles": ["Witch"],
-    "required_params": ["player_id"]
+    "required_params": ["player_id"],
+    "examples": [[2]]
   },
   "autopsy": {
     "description": {
@@ -294,7 +306,8 @@
     },
     "type": "PERSONAL",
     "exclusive_roles": ["Cupid"],
-    "required_params": ["player_id1", "player_id2"]
+    "required_params": ["player_id1", "player_id2"],
+    "examples": [[2, 3]]
   },
   "auto": {
     "description": {

@@ -60,6 +60,13 @@ def get_command_additional_params(command):
     return []
 
 
+def get_command_examples_argv_list(command):
+    if command in command_info:
+        return command_info[command].get("examples", [])
+
+    return []
+
+
 def get_command_usages(command, **kwargs):
     if command in (config.ADMIN_CMD_PREFIX + "join", config.ADMIN_CMD_PREFIX + "leave"):
         return [f"`{BOT_PREFIX}{command} @user1 @user2 ...`"]
@@ -96,6 +103,21 @@ def get_command_usages(command, **kwargs):
         ]
 
     return []
+
+
+def get_command_examples(command):
+    required_params = get_command_required_params(command)
+    additional_params = get_command_additional_params(command)
+    params = required_params + additional_params
+
+    example_args_list = get_command_examples_argv_list(command)
+    return [
+        example_text
+        for example_args in example_args_list
+        for example_text in get_command_usages(
+            command, **dict(zip(params, example_args + [""] * len(additional_params)))
+        )
+    ]
 
 
 def get_channel_type(channel_name):

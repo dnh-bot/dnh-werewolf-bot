@@ -117,37 +117,11 @@ def generate_help_command_embed(command=None):
         else:
             command_exclusive_roles_str = text_templates.get_word_in_language("everyone")
 
-        usage_str = ["- " + usage_text for usage_text in commands.get_command_usages(command)]
-
-        if command == "timer":
-            example_args_list = [{"dayphase": 60, "nightphase": 30, "alertperiod": 20}]
-        elif command == "setmode":
-            example_args_list = [{"mode_id": "2", "on_str": "on"}]
-        elif command == "setroles":
-            example_args_list = [{"role_dict": '''[{{"Werewolf": 1, "Seer": 1, "Guard": 1, "Chief": 1, "Witch": 1}}]'''}]
-        elif command == "setplaytime":
-            example_args_list = [
-                {"time_start": "00:00", "time_end": "23:59", "time_zone": ""},
-                {"time_start": "00:00", "time_end": "23:59", "time_zone": "UTC+7"}
-            ]
-        elif command == "auto":
-            example_args_list = [
-                {"cmd": "seer"},
-                {"cmd": "guard"},
-                {"cmd": "off"}
-            ]
-        else:
-            example_args_list = [{"player_id": 2, "player_id1": 2, "player_id2": 3}]
-
         help_embed_data = text_templates.generate_embed(
             "help_command_embed", [
                 [command_exclusive_roles_str],
-                usage_str,
-                [
-                    "- " + example_text
-                    for example_args in example_args_list
-                    for example_text in commands.get_command_usages(command, **example_args)
-                ]
+                ["- " + usage_text for usage_text in commands.get_command_usages(command)],
+                ["- " + example_text for example_text in commands.get_command_examples(command)]
             ],
             command=command, command_description=command_description
         )
