@@ -126,6 +126,7 @@
       "vi": "Yêu cầu chơi lại cùng những người chơi hiện tại",
       "en": "Request a rematch with current players"
     },
+    "valid_channels": ["LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
