@@ -1,0 +1,65 @@
+{
+	"name": "Tanner killed by werewolf, werewolf wins",
+	"player_list": {
+		"w1": "Werewolf",
+		"s1": "Seer",
+		"g1": "Guard",
+		"v1": "Villager",
+		"t1": "Tanner"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"s1",
+				"g1",
+				"v1",
+				"t1"
+			],
+			"action": [
+				"w1 vote s1",
+				"v1 vote w1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"s1",
+				"g1",
+				"v1",
+				"t1"
+			],
+			"action": [
+				"w1 kill t1",
+				"g1 guard g1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"s1",
+				"g1",
+				"v1"
+			],
+			"action": [
+				"w1 vote v1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"s1",
+				"g1"
+			],
+			"action": [
+				"w1 kill g1",
+				"g1 guard s1"
+			]
+		}
+	],
+	"win": "Werewolf"
+}

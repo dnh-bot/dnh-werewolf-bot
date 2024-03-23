@@ -48,8 +48,8 @@ class Game:
             self.players = {player_id: None for player_id in self.players}
         else:
             self.players = {}  # id: Player
-            self.playersname = {}  # id: username
-        self.watchers = set()  # set of id
+            self.playersname = {}  # id: Username
+        self.watchers = set()  # Set of id
         self.game_phase = const.GamePhase.NEW_GAME
         self.wolf_kill_dict = {}  # dict[wolf] -> player
         self.reborn_set = set()
@@ -71,6 +71,7 @@ class Game:
         self.prev_playtime = self.is_in_play_time()
         self.new_moon_mode.set_random_event()
         self.auto_hook = defaultdict(list)
+        self.tanner_is_lynched = False
 
     def get_winner(self):
         if self.winner is None:
@@ -544,11 +545,15 @@ class Game:
 
         print("DEBUG: ", num_players, num_werewolf)
 
-        # check end game
+        # Check Tanner
+        if self.tanner_is_lynched:
+            return roles.Tanner
+
+        # Check end game
         if num_werewolf != 0 and num_werewolf * 2 < num_players:
             return None
 
-        # check cupid
+        # Check Cupid
         couple = [self.players[i] for i in self.cupid_dict]
         if num_players == 2 and \
                 any(isinstance(p, roles.Werewolf) for p in couple) and \
@@ -556,11 +561,11 @@ class Game:
                 all(p in alives for p in couple):
             return roles.Cupid
 
-        # werewolf still alive then werewolf win
+        # Werewolf still alive then werewolf win
         if num_werewolf != 0:
             return roles.Werewolf
 
-        # werewolf died and fox still alive
+        # Werewolf died and fox still alive
         if any(isinstance(p, roles.Fox) for p in alives):
             return roles.Fox
 
@@ -654,6 +659,9 @@ class Game:
                 "execution_player_text", config.GAMEPLAY_CHANNEL,
                 voted_user=f"<@{lynched}>", highest_vote_number=votes
             )
+
+            if isinstance(self.players[lynched], roles.Tanner):
+                self.tanner_is_lynched = True
 
             cupid_couple = self.cupid_dict.get(lynched)
             if cupid_couple is not None:

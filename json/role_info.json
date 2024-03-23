@@ -128,5 +128,15 @@
     },
     "daytime_command": "vote",
     "nighttime_commands": []
+  },
+  "Tanner": {
+    "name_vi": "Kẻ chán đời",
+    "party": "Tanner",
+    "description": {
+      "vi": "Kẻ chán đời sẽ chỉ chiến thắng nếu bị dân làng bỏ phiếu để tử hình.",
+      "en": "Tanner only wins if he is voted out during the dayphase."
+    },
+    "daytime_command": "vote",
+    "nighttime_commands": []
   }
 }
