@@ -10,7 +10,7 @@ import commands
 
 def get_full_cmd_description(cmd):
     description = commands.get_command_description(cmd)
-    usage_text = f" {text_templates.get_word_in_language('or')} ".join(commands.get_command_usages(cmd))
+    usage_text = commands.get_command_usages_str(cmd)
     return f"{description} {text_templates.get_word_in_language('use_command')} {usage_text}."
 
 

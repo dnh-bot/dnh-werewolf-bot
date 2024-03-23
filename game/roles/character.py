@@ -87,7 +87,9 @@ class Character:
     async def send_before_voting_text(cls, interface, channel_name, *cmds):
         is_having_idx = len(cmds) > 1
         usages_kwargs = {
-            f'cmd{f"_{i}" if is_having_idx else ""}_usages': commands.get_command_usages_str(cmd, player_id="ID", player_id1="ID1", player_id2="ID2")
+            f'cmd{f"_{i}" if is_having_idx else ""}_usages': commands.get_command_usages_str(
+                cmd, player_id="ID", player_id1="ID1", player_id2="ID2"
+            )
             for i, cmd in enumerate(cmds, 1)
         }
         examples_kwargs = {
