@@ -71,6 +71,7 @@ class Game:
         self.prev_playtime = self.is_in_play_time()
         self.new_moon_mode.set_random_event()
         self.auto_hook = defaultdict(list)
+        self.tanner_is_lynced = False
 
     def get_winner(self):
         if self.winner is None:
@@ -544,6 +545,10 @@ class Game:
 
         print("DEBUG: ", num_players, num_werewolf)
 
+        # check tanner
+        if self.tanner_is_lynced:
+            return roles.Tanner
+
         # check end game
         if num_werewolf != 0 and num_werewolf * 2 < num_players:
             return None
@@ -654,6 +659,9 @@ class Game:
                 "execution_player_text", config.GAMEPLAY_CHANNEL,
                 voted_user=f"<@{lynched}>", highest_vote_number=votes
             )
+
+            if isinstance(self.players[lynched], roles.Tanner):
+                self.tanner_is_lynced = True
 
             cupid_couple = self.cupid_dict.get(lynched)
             if cupid_couple is not None:
