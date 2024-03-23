@@ -6,8 +6,6 @@ from game import roles
 from game.roles.character import CharacterStatus
 import text_templates
 import commands
-from config import TEXT_LANGUAGE
-import utils
 
 
 def get_full_cmd_description(cmd):
@@ -33,7 +31,8 @@ def generate_id_player_list(player_list, alive_status, reveal_role=False):
     for user in player_list:
         if alive_status is None and user.status == CharacterStatus.KILLED:
             # Handle for dead players in All list
-            id_player_list.append(f"💀 -> <@{user.player_id}>" + (f" - {user.get_role()}" if reveal_role else ""))  # Do not increase row_id when user is dead
+            # Do not increase row_id when user is dead
+            id_player_list.append(f"💀 -> <@{user.player_id}>" + (f" - {user.get_role()}" if reveal_role else ""))
         else:
             # Show player id for: alive players in All list, Alive list; dead players in Dead list.
             # Also show role info if it's a dead list reveal mode is enabled.
@@ -194,29 +193,6 @@ def generate_help_embed(*args):
         help_embed_data = text_templates.generate_embed("help_invalid_embed", [], args=args[0])
 
     return help_embed_data
-
-
-def generate_on_off_value(str_value):
-    if str_value in ['True', 'on']:
-        return text_templates.get_word_in_language("turn_on").capitalize()
-
-    if str_value in ['False', 'off']:
-        return text_templates.get_word_in_language("turn_off").capitalize()
-
-    return "None"
-
-
-def generate_modes(modes_dict):
-    print(modes_dict)
-    mode_info = utils.common.read_json_file("json/mode_info.json")
-
-    return "===========================================================================\n" +\
-        f"{text_templates.generate_text('show_modes_title')}: \n" +\
-        "".join(
-            f"- {i}. {mode_info[mode_str]['title'][TEXT_LANGUAGE]}: `{generate_on_off_value(modes_dict.get(mode_str))}`\n"
-            for i, mode_str in enumerate(modes_dict.keys(), 1)
-        ) +\
-        "===========================================================================\n"
 
 
 def generate_reveal_str_list(reveal_list, game_winner, cupid_dict):

@@ -12,7 +12,7 @@ from functools import reduce
 import config
 import utils
 import text_templates
-from game import const, roles, text_template
+from game import const, roles, text_template, modes
 from game.modes.new_moon import NewMoonMode
 
 
@@ -111,14 +111,14 @@ class Game:
                 self.new_moon_mode.turn_on()
             else:
                 self.new_moon_mode.turn_off()
-        status_str = text_template.generate_on_off_value(status)
+        status_str = modes.generate_on_off_value(status)
 
         return text_templates.generate_text("set_mode_successful_text", mode_str=mode_str, status_str=status_str)
 
     def read_modes(self):
-        modes = utils.common.read_json_file("json/game_config.json")
+        game_modes = utils.common.read_json_file("json/game_config.json")
         # Read json dict into runtime dict modes
-        for k, v in modes.items():
+        for k, v in game_modes.items():
             self.modes[k] = v == "True"
 
         if self.modes.get("new_moon", False):
@@ -154,8 +154,10 @@ class Game:
 
         ids = list(ids)
         try:
-            game_role = random.choice([dict_to_list(role_dict)
-                                      for role_dict in role_config if sum(role_dict.values()) == len(ids)])
+            game_role = random.choice([
+                dict_to_list(role_dict)
+                for role_dict in role_config if sum(role_dict.values()) == len(ids)
+            ])
         except IndexError:
             game_role = dict_to_list(role_config[-1], len(ids))
 
@@ -166,8 +168,10 @@ class Game:
             game_role = map(lambda role: role if role != 'Cupid' else 'Villager', game_role)
             # print("DEBUG----", game_role)
 
-        r = {id_: roles.get_role_type(role_name)(
-            interface, id_, names_dict[id_]) for id_, role_name in zip(ids, game_role)}
+        r = {
+            id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_])
+            for id_, role_name in zip(ids, game_role)
+        }
         print("Player list:", r)
         return r
 
@@ -193,7 +197,7 @@ class Game:
 
             await self.create_channel()
             await self.interface.send_text_to_channel(
-                text_template.generate_modes({mode: str(value) for mode, value in self.modes.items()}),
+                modes.generate_modes_text({mode: str(value) for mode, value in self.modes.items()}),
                 config.GAMEPLAY_CHANNEL
             )
 
@@ -280,7 +284,6 @@ class Game:
             await asyncio.gather(
                 *[player.create_personal_channel(self_check=True) for player in self.players.values()]
             )
-
             return text_templates.generate_text('self_check_text')
         except Exception as e:
             print(e)
@@ -364,78 +367,94 @@ class Game:
         await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
         return len(self.watchers)  # Return number of current watchers
 
-    def get_game_status(self, channel_name, author_id):
-        # FIXME
-        # pylint: disable=too-many-branches
-        """
-        Returns:
-        game status description,
-        a phase's remaining time,
-        vote table (if any) with its description,
-        author status.
-        """
-        status_description = ""
-        passed_days = str(self.day) if self.day > 0 else ""
-        remaining_time = None
-        vote_table = None
-        table_title = ""
-        author_status = ""
-
-        if self.is_ended() or not isinstance(self.game_phase, const.GamePhase):
-            return status_description, passed_days, remaining_time, vote_table, table_title, author_status
+    def get_game_status_description(self):
+        if self.is_ended():
+            return text_templates.generate_text("end_text")
 
         if self.game_phase == const.GamePhase.NEW_GAME:
-            status_description = text_templates.get_label_in_language("new_game_phase_status")
+            return text_templates.get_label_in_language("new_game_phase_status")
+
+        if self.is_in_play_time():
+            return text_templates.get_label_in_language(
+                f"in_playing_time_{'paused' if self.timer_stopped else 'playing'}_status"
+            )
+
+        return text_templates.get_label_in_language("out_of_playing_time_status")
+
+    def get_channel_vote_table(self, author_id, channel_name):
+        vote_table = None
+        table_title = ""
+
+        if self.is_ended():
+            return vote_table, table_title
+
+        if self.game_phase == const.GamePhase.NEW_GAME:
             status_table_headers = text_templates.generate_table_headers("game_status_new_game_phase_table_headers")
             vote_table = {
                 header: [*value]
                 for header, value in zip(status_table_headers, [self.players.keys(), self.watchers, self.vote_start])
             }
             table_title = text_templates.get_label_in_language("waiting_list_title")
-        else:
-            remaining_time = self.timecounter
 
-            if self.is_in_play_time():
-                if self.timer_stopped:
-                    status_description = text_templates.get_label_in_language("in_playing_time_paused_status")
-                else:
-                    status_description = text_templates.get_label_in_language("in_playing_time_playing_status")
-            else:
-                status_description = text_templates.get_label_in_language("out_of_playing_time_status")
-
-        if self.game_phase == const.GamePhase.DAY:
+        elif self.game_phase == const.GamePhase.DAY:
             vote_table = {f'<@{k}>': v for k, v in self.get_vote_status().items()}
             table_title = text_templates.get_label_in_language("vote_list_title")
 
         elif self.game_phase == const.GamePhase.NIGHT:
             author = self.players.get(author_id)
             if not author:
-                author_status = "Chưa có gì để xem đâu :>"
+                pass
 
             elif author.is_alive():
-                if isinstance(author, roles.Werewolf) and (channel_name == config.WEREWOLF_CHANNEL or channel_name.startswith("personal")):
+                is_personal_channel = channel_name.startswith(config.PERSONAL)
+
+                if isinstance(author, roles.Werewolf) and (channel_name == config.WEREWOLF_CHANNEL or is_personal_channel):
                     vote_table = {f'<@{k}>': v for k, v in self.get_vote_status(self.wolf_kill_dict).items()}
                     table_title = text_templates.get_label_in_language("kill_list_title")
+            else:
+                # TODO: future features in #cemetery channel
+                pass
 
-                elif isinstance(author, (roles.Seer, roles.Guard)) and channel_name.startswith("personal"):
-                    if author.get_mana() > 0:
-                        author_status = text_templates.get_label_in_language("author_not_use_mana_status")
-                    else:
-                        author_status = text_templates.get_label_in_language("author_used_mana_status")
+        return vote_table, table_title
 
-                elif isinstance(author, (roles.Zombie, roles.Cupid)) and channel_name.startswith("personal"):
-                    if author.get_power() > 0:
-                        author_status = text_templates.get_label_in_language("author_not_use_power_status")
-                    else:
-                        author_status = text_templates.get_label_in_language("author_used_power_status")
+    def get_author_status(self, author_id, channel_name):
+        author_status = ""
 
-                else:
+        author = self.players.get(author_id)
+        if self.is_ended() or not author:
+            return author_status
+
+        is_channel_for_author = channel_name.startswith(config.PERSONAL)
+        if self.game_phase == const.GamePhase.NIGHT and is_channel_for_author:
+            if author.is_alive():
+                if isinstance(author, (roles.Seer, roles.Guard)):
+                    author_status = text_templates.get_label_in_language(
+                        f"author_{'not_use' if author.get_mana() > 0 else 'used'}_mana_status"
+                    )
+                elif isinstance(author, (roles.Zombie, roles.Cupid)):
+                    author_status = text_templates.get_label_in_language(
+                        f"author_{'not_use' if author.get_power() > 0 else 'used'}_power_status"
+                    )
+                elif isinstance(author, roles.Witch):
+                    author_status = text_templates.get_label_in_language(
+                        f"author_{'not_use' if author.get_power() > 0 else 'used'}_reborn_power_status"
+                    ) + "\n"
+                    author_status += text_templates.get_label_in_language(
+                        f"author_{'not_use' if author.get_curse_power() > 0 else 'used'}_curse_power_status"
+                    )
+                elif not isinstance(author, roles.Werewolf):
                     author_status = text_templates.get_label_in_language("author_sleeping_status")
             else:
                 # TODO: future features in #cemetery channel
                 author_status = text_templates.get_label_in_language("author_dead_status")
 
-        return status_description, passed_days, remaining_time, vote_table, table_title, author_status
+        return author_status
+
+    def get_timer_remaining_time(self):
+        if not self.is_ended() and self.game_phase != const.GamePhase.NEW_GAME:
+            return self.timecounter
+
+        return None
 
     def get_vote_status(self, voter_dict=None):
         # From {"u1":"u2", "u2":"u1", "u3":"u1"}
@@ -446,6 +465,42 @@ class Game:
         table_dict = reduce(lambda d, k: d.setdefault(k[1], set()).add(k[0]) or d, voter_dict.items(), {})
         print(table_dict)
         return table_dict
+
+    async def show_status(self, author, channel_name):
+        status_description = self.get_game_status_description()
+
+        if self.is_ended():
+            await self.interface.send_text_to_channel(status_description, channel_name)
+            return
+
+        passed_days = str(self.day) if self.day > 0 else ""
+        remaining_time = self.get_timer_remaining_time()
+        vote_table, table_title = self.get_channel_vote_table(author.id, channel_name)
+        author_status = self.get_author_status(author.id, channel_name)
+
+        print(
+            status_description, passed_days, remaining_time, vote_table,
+            text_template.generate_vote_field(vote_table), table_title, author_status
+        )
+        status_embed_data = text_templates.generate_embed(
+            "game_status_with_table_embed",
+            [
+                [passed_days],
+                [text_template.generate_timer_remaining_text(remaining_time)],
+                text_template.generate_vote_field(vote_table),
+                [author_status]
+            ],
+            status_description=status_description,
+            phase_str=text_templates.get_word_in_language(str(self.game_phase)),
+            table_title=table_title
+        )
+        await self.interface.send_embed_to_channel(status_embed_data, channel_name)
+
+        role_list = [self.get_role_list()]
+        players_embed_data = text_template.generate_player_list_embed(
+            self.get_all_players(), None, role_list, self.modes.get("reveal_role", False)
+        )
+        await self.interface.send_embed_to_channel(players_embed_data, channel_name)
 
     async def run_game_loop(self):
         print("Starting game loop")
@@ -588,18 +643,21 @@ class Game:
                 voted_list.append(voted)
         return voted_list
 
-    async def handle_party_channel(self, mute=False):
-        # Mute/Unmute all alive players in config.WEREWOLF_CHANNEL
-        await asyncio.gather(
-            *[self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=not mute)
-                for _id, player in self.players.items() if player.is_alive() and isinstance(player, roles.Werewolf)]
-        )
+    async def control_muting_party_channel(self, is_muted):
+        """
+        Mute/Unmute all alive players in party channel (e.g. config.WEREWOLF_CHANNEL, config.COUPLE_CHANNEL)
+        """
+        await asyncio.gather(*[
+            self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=not is_muted)
+            for _id, player in self.players.items()
+            if player.is_alive() and isinstance(player, roles.Werewolf)
+        ])
 
-        # Mute/Unmute all alive players in config.COUPLE_CHANNEL
-        await asyncio.gather(
-            *[self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=not mute)
-                for _id, player in self.players.items() if player.is_alive() and _id in self.cupid_dict]
-        )
+        await asyncio.gather(*[
+            self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=not is_muted)
+            for _id, player in self.players.items()
+            if player.is_alive() and _id in self.cupid_dict
+        ])
 
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
@@ -618,7 +676,7 @@ class Game:
                 )
 
             # Mute all party channels
-            await self.handle_party_channel(True)
+            await self.control_muting_party_channel(True)
 
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
             await asyncio.gather(
@@ -688,13 +746,13 @@ class Game:
         await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
 
         # Unmute all party channels
-        await self.handle_party_channel()
+        await self.control_muting_party_channel(False)
 
         # Mute all players in config.GAMEPLAY_CHANNEL
-        await asyncio.gather(
-            *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
-                for _id, player in self.players.items() if player.is_alive()]
-        )
+        await asyncio.gather(*[
+            self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
+            for _id, player in self.players.items() if player.is_alive()
+        ])
 
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
@@ -917,25 +975,15 @@ class Game:
                 return text_templates.generate_text("invalid_target_text")
             targets.append(target)
 
-        if cmd != "zombie" and not targets[0].is_alive() and cmd != "reborn":
-            return text_templates.generate_text("dead_target_text" if cmd == "vote" else "invalid_target_text")
-
-        if cmd == "vote":
-            return await self.vote(author, targets[0])
-        if cmd == "kill":
-            return await self.kill(author, targets[0])
-        if cmd == "guard":
-            return await self.guard(author, targets[0])
-        if cmd == "hunter":
-            return await self.hunter(author, targets[0])
-        if cmd == "seer":
-            return await self.seer(author, targets[0])
-        if cmd == "reborn":
-            return await self.reborn(author, targets[0])
-        if cmd == "curse":
-            return await self.curse(author, targets[0])
         if cmd == "zombie":
             return await self.zombie(author)
+
+        if not targets[0].is_alive() and cmd != "reborn":
+            return text_templates.generate_text("dead_target_text" if cmd == "vote" else "invalid_target_text")
+
+        if cmd in ("vote", "kill", "guard", "hunter", "seer", "reborn", "curse"):
+            return await getattr(self, cmd)(author, targets[0])
+
         if cmd == "ship":
             if self.modes.get("couple_random"):
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")

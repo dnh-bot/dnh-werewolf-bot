@@ -4,6 +4,7 @@ This provides APIs for Player role
 import time
 import math
 
+import commands
 import config
 from game import text_template
 import text_templates
@@ -26,7 +27,7 @@ async def do_join(game, message, force=False):
         if force:
             user_list = message.mentions
             if not user_list:
-                await message.reply(text_template.generate_invalid_command_text("fjoin"))
+                await message.reply(text_template.generate_invalid_command_text(config.ADMIN_CMD_PREFIX + "join"))
         else:
             user_list = [message.author]
 
@@ -46,7 +47,7 @@ async def do_leave(game, message, force=False):
         if force:
             user_list = message.mentions
             if not user_list:
-                await message.reply(text_template.generate_invalid_command_text("fleave"))
+                await message.reply(text_template.generate_invalid_command_text(config.ADMIN_CMD_PREFIX + "leave"))
         else:
             user_list = [message.author]
 
@@ -135,7 +136,7 @@ async def do_next(game, message, force=False):
 
 # Player can call stop game when they want to finish game regardless current game state
 # Need 2/3 players type: `!stopgame` to end the game
-async def do_stop(game, message, force=False):
+async def do_stopgame(game, message, force=False):
     """Stop game"""
     if game.is_started():
         if force:
@@ -167,6 +168,43 @@ async def do_rematch(game, message):
             await game.rematch(message.author.id)
     else:
         await message.reply(text_templates.generate_text("game_not_started_text"))
+
+
+async def do_character_cmd(game, message, cmd, parameters):
+    if not game.is_started():
+        # prevent user uses command before game starts
+        await message.reply(text_templates.generate_text("game_not_started_text"))
+        return
+
+    if not game.is_in_play_time():
+        await message.reply(text_templates.generate_text("game_not_playing_text"))
+        return
+
+    author = message.author
+    required_param_number = len(commands.get_command_required_params(cmd))
+
+    if cmd == "auto":
+        msg = await game.do_player_action(cmd, author.id, *parameters)
+        await message.reply(msg)
+
+    elif len(message.raw_mentions) == required_param_number:
+        msg = await game.do_player_action(cmd, author.id, *message.raw_mentions)
+        await message.reply(msg)
+
+    elif len(parameters) == required_param_number:
+        is_valid_command = False
+        if all(param.isdigit() for param in parameters):
+            targets_index = [int(param) - 1 for param in parameters]
+            id_players = game.get_dead_players() if cmd == "reborn" else game.get_alive_players()
+            if all(0 <= i < len(id_players) for i in targets_index):
+                is_valid_command = True
+                msg = await game.do_player_action(cmd, author.id, *[id_players[i].player_id for i in targets_index])
+                await message.reply(msg)
+
+        if not is_valid_command:
+            await message.reply(text_template.generate_invalid_command_text(cmd))
+    else:
+        await message.reply(text_templates.generate_text("not_vote_n_player_text", num=required_param_number))
 
 
 async def test_player_command(_):
