@@ -23,8 +23,8 @@ class Guard(Villager):
 
     async def on_night_start(self, alive_embed_data, _):
         if self.is_alive():
-            await self.interface.send_action_text_to_channel("guard_before_voting_text", self.channel_name)
-            await self.interface.send_embed_to_channel(alive_embed_data, self.channel_name)
+            await self.__class__.send_before_voting_text(self.interface, self.channel_name, "guard")
+            await self.interface.send_embed_to_channel(embed_data, self.channel_name)
 
     def is_yesterday_target(self, target_id):
         return self.yesterday_target == target_id

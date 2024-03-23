@@ -2,6 +2,7 @@ import asyncio
 from enum import Enum
 
 import text_templates
+import commands
 from game import const
 import config
 
@@ -144,6 +145,21 @@ class Character:
 
     def seer_seen_as_werewolf(self):
         pass
+
+    @classmethod
+    async def send_before_voting_text(cls, interface, channel_name, *cmds):
+        is_having_idx = len(cmds) > 1
+        usages_kwargs = {
+            f'cmd{f"_{i}" if is_having_idx else ""}_usages': commands.get_command_usages_str(cmd, player_id="ID", player_id1="ID1", player_id2="ID2")
+            for i, cmd in enumerate(cmds, 1)
+        }
+        examples_kwargs = {
+            f'cmd{f"_{i}" if is_having_idx else ""}_examples': commands.get_command_examples_str(cmd)
+            for i, cmd in enumerate(cmds, 1)
+        }
+        await interface.send_action_text_to_channel(
+            cls.__name__.lower() + "_before_voting_text", channel_name, **usages_kwargs, **examples_kwargs
+        )
 
     async def on_phase(self, phase):
         # Reset Guard protection

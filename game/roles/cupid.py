@@ -1,3 +1,4 @@
+import commands
 from game.roles.villager import Villager
 
 

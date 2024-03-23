@@ -349,15 +349,15 @@
     }
   },
   "werewolf_before_voting_text": {
-    "params": [],
+    "params": ["cmd_usages", "cmd_examples"],
     "template": {
       "vi": [
-        "🐺 Đêm nay, Sói muốn lấy mạng ai? Hãy nhập `{bot_prefix}kill ID` để lặng lẽ xử lý nạn nhân.",
-        "💡 Ví dụ: `{bot_prefix}kill 2`\n"
+        "🐺 Đêm nay, Sói muốn lấy mạng ai? Hãy nhập {cmd_usages} để lặng lẽ xử lý nạn nhân.",
+        "💡 Ví dụ: {cmd_examples}\n"
       ],
       "en": [
-        "🐺 Who does Werewolf want to kill tonight? Enter `{bot_prefix}kill ID` to quietly kill the victim.",
-        "💡 Example: `{bot_prefix}kill 2`\n"
+        "🐺 Who does Werewolf want to kill tonight? Enter {cmd_usages} to quietly kill the victim.",
+        "💡 Example: {cmd_examples}\n"
       ]
     }
   },
@@ -390,10 +390,16 @@
     }
   },
   "seer_before_voting_text": {
-    "params": [],
+    "params": ["cmd_usages", "cmd_examples"],
     "template": {
-      "vi": ["🔮 Tiên tri muốn thấy gì, từ ai? Hãy làm phép bằng cách nhập `{bot_prefix}seer ID` để xem người chơi đó là ai."],
-      "en": ["🔮 What does the Seer want to see, from whom? Cast a spell by entering `{bot_prefix}seer ID` to see who that player is."]
+      "vi": [
+        "🔮 Tiên tri muốn thấy gì, từ ai? Hãy làm phép bằng cách nhập {cmd_usages} để xem người chơi đó là ai.",
+        "💡 Ví dụ: {cmd_examples}\n"
+      ],
+      "en": [
+        "🔮 What does the Seer want to see, from whom? Cast a spell by entering {cmd_usages} to see who that player is.",
+        "💡 Example: {cmd_examples}\n"
+      ]
     }
   },
   "seer_after_voting_text": {
@@ -418,16 +424,16 @@
     }
   },
   "guard_before_voting_text": {
-    "params": [],
+    "params": ["cmd_usages", "cmd_examples"],
     "template": {
       "vi": [
-        "🛡️ Bảo vệ muốn ai sống qua đêm nay, hãy nhập `{bot_prefix}guard ID` để người đó qua đêm an bình.",
-        "💡 Ví dụ: `{bot_prefix}guard 2`",
+        "🛡️ Bảo vệ muốn ai sống qua đêm nay, hãy nhập {cmd_usages} để người đó qua đêm an bình.",
+        "💡 Ví dụ: {cmd_examples}",
         "⚠️ Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm. Hãy cẩn trọng!"
       ],
       "en": [
-        "🛡️ The guard wants someone to live tonight, enter `{bot_prefix}guard ID` to let that person spend the night peacefully.",
-        "💡 Example: `{bot_prefix}guard 2`",
+        "🛡️ The guard wants someone to live tonight, enter {cmd_usages} to let that person spend the night peacefully.",
+        "💡 Example: {cmd_examples}",
         "⚠️ You can only use the skill once per night. Be careful!"
       ]
     }
@@ -461,16 +467,16 @@
     }
   },
   "hunter_before_voting_text": {
-    "params": [],
+    "params": ["cmd_usages", "cmd_examples"],
     "template": {
       "vi": [
-        "🔫 Bạn muốn ai chết chung với mình? Hãy nhập `{bot_prefix}hunter ID` để chọn đối tượng.",
-        "💡 Ví dụ: `{bot_prefix}hunter 2`",
+        "🔫 Bạn muốn ai chết chung với mình? Hãy nhập {cmd_usages} để chọn đối tượng.",
+        "💡 Ví dụ: {cmd_examples}",
         "⚠️ Bạn được sử dụng kỹ năng này bất kỳ lúc nào vào ban đêm, có thể dùng lên bản thân nếu đổi ý. Nhưng đừng giết bậy bạn nhé!"
       ],
       "en": [
-        "🔫 Choose someone to die with, enter `{bot_prefix}hunter ID` to let that person die with you.",
-        "💡 Example: `{bot_prefix}hunter 2`",
+        "🔫 Choose someone to die with, enter {cmd_usages} to let that person die with you.",
+        "💡 Example: {cmd_examples}",
         "⚠️ You can use this skill anytime at night. Target yourself if you change your mind."
       ]
     }
@@ -478,8 +484,8 @@
   "hunter_after_voting_text": {
     "params": ["target"],
     "template": {
-      "vi": ["🔫 Thợ săn đã xác định đối tượng thành công {target}"],
-      "en": ["🔫 Hunter has targeted victim {target}"]
+      "vi": ["🔫 Thợ săn đã xác định đối tượng {target} thành công"],
+      "en": ["🔫 Hunter has targeted {target}"]
     }
   },
   "hunter_killed_text": {
@@ -489,29 +495,20 @@
       "en": ["🔫 Before dying, the hunter shot {target}"]
     }
   },
-  "witch_before_reborn_text": {
-    "params": [],
+  "witch_before_voting_text": {
+    "params": ["cmd_1_usages", "cmd_1_examples", "cmd_2_usages", "cmd_2_examples"],
     "template": {
       "vi": [
-        "🧙🏻‍♀️ Bạn có thể cứu 1 người. Bạn chỉ được dùng kỹ năng này 1 lần.",
-        "🧪 Nhập `{bot_prefix}reborn ID` để cứu người.\n"
+        "🧙🏻‍♀️ Bạn có thể cứu 1 người và giết 1 người. Bạn chỉ được dùng mỗi kỹ năng 1 lần.",
+        "🧪 Nhập {cmd_1_usages} để cứu người.",
+        "🩸 Nhập {cmd_2_usages} để nguyền rủa 1 người.",
+        "💡 Ví dụ:\n- {cmd_1_examples}\n- {cmd_2_examples}"
       ],
       "en": [
-        "🧙🏻‍♀️ You can save 1 person. You can only use this skill once.",
-        "🧪 Enter `{bot_prefix}reborn ID` to save 1 person.\n"
-      ]
-    }
-  },
-  "witch_before_curse_text": {
-    "params": [],
-    "template": {
-      "vi": [
-        "🧙🏻‍♀️ Bạn có thể giết 1 người. Bạn chỉ được dùng kỹ năng này 1 lần.",
-        "🩸 Nhập `{bot_prefix}curse ID` để nguyền rủa 1 người.\n"
-      ],
-      "en": [
-        "🧙🏻‍♀️ You can curse 1 person. You can only use this skill once.",
-        "🩸 Enter `{bot_prefix}curse ID` to curse 1 person.\n"
+        "🧙🏻‍♀️ You can save 1 person and curse 1 person. You can only use each skill once.",
+        "🧪 Enter {cmd_1_usages} to save 1 person.",
+        "🩸 Enter {cmd_2_usages} to curse 1 person.",
+        "💡 Ví dụ:\n- {cmd_1_examples}\n- {cmd_2_examples}"
       ]
     }
   },
@@ -565,15 +562,15 @@
     }
   },
   "zombie_before_voting_text": {
-    "params": [],
+    "params": ["cmd_usages"],
     "template": {
       "vi": [
         "🧟 Bạn có thể đội mồ sống dậy! Bạn chỉ có thể sử dụng kỹ năng này 1 lần.",
-        "💡 Nhập `{bot_prefix}zombie` để trở lại cuộc đời.\n"
+        "💡 Nhập {cmd_usages} để trở lại cuộc đời.\n"
       ],
       "en": [
         "🧟 You can be reborn! You can only use this skill once.",
-        "💡 Enter `{bot_prefix}zombie` to return to the life.\n"
+        "💡 Enter {cmd_usages} to return to the life.\n"
       ]
     }
   },
@@ -585,15 +582,17 @@
     }
   },
   "cupid_start_game_text": {
-    "params": [],
+    "params": ["cmd_usages", "cmd_examples"],
     "template": {
       "vi": [
         "🏹 Cupid muốn cho cặp đôi nào được đồng sinh cộng tử?",
-        "💡 Hãy làm phép bằng cách nhập `{bot_prefix}ship ID1 ID2` để ghép đôi."
+        "💡 Hãy làm phép bằng cách nhập {cmd_usages} để ghép đôi.",
+        "💡 Ví dụ: {cmd_examples}"
       ],
       "en": [
         "🏹 Which couple does Cupid want to ship?",
-        "💡 Make a spell by entering `{bot_prefix}ship ID1 ID2` to pair."
+        "💡 Make a spell by entering {cmd_usages} to pair.",
+        "💡 Example: {cmd_examples}"
       ]
     }
   },

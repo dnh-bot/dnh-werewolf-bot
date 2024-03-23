@@ -120,6 +120,14 @@ def get_command_examples(command):
     ]
 
 
+def get_command_usages_str(cmd, **kwargs):
+    return f' {text_templates.get_word_in_language("or")} '.join(get_command_usages(cmd, **kwargs))
+
+
+def get_command_examples_str(cmd):
+    return f' {text_templates.get_word_in_language("or")} '.join(get_command_examples(cmd))
+
+
 def get_channel_type(channel_name):
     if channel_name.startswith(config.PERSONAL):
         return ChannelType.PERSONAL

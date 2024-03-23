@@ -19,4 +19,4 @@ class Zombie(Villager):
 
     async def on_night_start(self, *_):
         if not self.is_alive() and self.get_power():
-            await self.interface.send_action_text_to_channel("zombie_before_voting_text", self.channel_name)
+            await self.__class__.send_before_voting_text(self.interface, self.channel_name, "zombie")

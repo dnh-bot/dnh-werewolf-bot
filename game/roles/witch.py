@@ -1,4 +1,5 @@
 import text_templates
+import commands
 from game.roles.villager import Villager
 
 
@@ -38,6 +39,7 @@ class Witch(Villager):
 
     async def on_night_start(self, alive_embed_data, dead_embed_data):
         if self.is_alive():
+            """
             if self.get_reborn_power():
                 await self.interface.send_action_text_to_channel("witch_before_reborn_text", self.channel_name)
                 await self.interface.send_embed_to_channel(dead_embed_data, self.channel_name)
@@ -45,6 +47,9 @@ class Witch(Villager):
             if Witch.is_can_kill() and self.get_curse_power():
                 await self.interface.send_action_text_to_channel("witch_before_curse_text", self.channel_name)
                 await self.interface.send_embed_to_channel(alive_embed_data, self.channel_name)
+            """
+            await self.__class__.send_before_voting_text(self.interface, self.channel_name, "reborn", "curse")
+            await self.interface.send_embed_to_channel(embed_data, self.channel_name)
 
     def get_reborn_target(self):
         return self.reborn_target
