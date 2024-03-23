@@ -761,10 +761,7 @@ class Game:
                 "night_phase_beginning_text",
                 config.GAMEPLAY_CHANNEL
             )
-            await self.interface.send_action_text_to_channel(
-                "werewolf_before_voting_text",
-                config.WEREWOLF_CHANNEL
-            )
+            await roles.Werewolf.send_before_voting_text(self.interface, config.WEREWOLF_CHANNEL, "kill")
             embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
             # Send alive player list to all skilled characters (guard, seer, etc.)
