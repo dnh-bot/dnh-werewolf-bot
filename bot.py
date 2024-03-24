@@ -17,11 +17,7 @@ async def init_setup(init_game_list=False):
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id, " Game Category: ", config.GAME_CATEGORY)
         if init_game_list is False:
-            # Create GAME_CATEGORY if not existing
-            await admin.create_category(guild, client.user, config.GAME_CATEGORY)
-            await admin.create_channel(guild, client.user, config.LOBBY_CHANNEL, is_public=True)
-            await admin.create_channel(guild, client.user, config.GAMEPLAY_CHANNEL, is_public=False)
-            await admin.create_channel(guild, client.user, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
+            await admin.create_game_category(guild, client.user)
         # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
         game_list.add_game(guild.id, Game(guild, interface.DiscordInterface(guild, client)))
 
@@ -37,7 +33,7 @@ async def process_message(discord_client, message):
             await init_setup(True)
             game = game_list.get_game(message.guild.id)
 
-        await command.parse_command(discord_client, game, message)
+        await command.process_command(discord_client, game, message)
 
 
 def verify_ok(_):

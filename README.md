@@ -63,7 +63,7 @@ The bot should connect to your Discord server and online:
 You MUST create these `Admin` role and `Members` role to play the game.
 
 - Admin role: 
-    - User with Admin role can use super command to control the bot. The super commands start with prefix `f`. Eg: `fjoin`, `fcreate`, `fdelete`.
+    - User with Admin role can use super command to control the bot. The super commands start with prefix `f_`. Eg: `f_join`, `f_create`, `f_delete`.
 You can see list of available commands in [label](commands/command.py) or [label](json/command_info.json). 
     - It's not neccessary to have Admin as a player in game.
     - Admin role can view all game channels including private and public channels.
@@ -110,7 +110,7 @@ You can custom langauge under  [./json](json) directory.
 
 # Gameplay
 
-User can join game via `!join` command or `!fjoin` by Admin:
+User can join game via `!join` command or `!f_join` by Admin:
 
 ![Alt text](docs/Gameplay_JoinGame.png)
 

@@ -37,5 +37,8 @@ GAMEPLAY_CHANNEL = "🎯gameplay"
 WEREWOLF_CHANNEL = "🐺werewolf"
 CEMETERY_CHANNEL = "💀cemetery"
 COUPLE_CHANNEL = "💘couple"
+PERSONAL = "personal"
+
+ADMIN_CMD_PREFIX = "f_"
 
 TEXT_LANGUAGE = "vi"

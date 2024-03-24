@@ -103,6 +103,22 @@
       "vi": "Bạn đã sử dụng quyền năng của mình :>",
       "en": "You have used your powers :>"
     },
+    "author_not_use_reborn_power_status": {
+      "vi": "Bạn vẫn chưa sử dụng quyền năng hồi sinh của mình :<",
+      "en": "You haven't used your reborn powers yet :<"
+    },
+    "author_used_reborn_power_status": {
+      "vi": "Bạn đã sử dụng quyền năng hồi sinh của mình :>",
+      "en": "You have used your reborn powers :>"
+    },
+    "author_not_use_curse_power_status": {
+      "vi": "Bạn vẫn chưa sử dụng quyền năng nguyền rủa của mình :<",
+      "en": "You haven't used your curse powers yet :<"
+    },
+    "author_used_curse_power_status": {
+      "vi": "Bạn đã sử dụng quyền năng nguyền rủa của mình :>",
+      "en": "You have used your curse powers :>"
+    },
     "author_sleeping_status": {
       "vi": "Đêm rồi, đi ngủ đi :>",
       "en": "Go to sleep :>"
