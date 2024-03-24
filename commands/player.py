@@ -206,7 +206,7 @@ async def do_character_cmd(game, message, cmd, parameters):
     else:
         await message.reply(text_templates.generate_text("not_vote_n_player_text", num=required_param_number))
 
-        
+
 async def test_player_command(_):
     # TODO:
     pass
