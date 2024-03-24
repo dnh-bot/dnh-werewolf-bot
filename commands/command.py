@@ -56,7 +56,7 @@ def check_set_timer_input(input_string):
 
 
 async def process_command(client, game, message):
-    message_parts = message.content.strip()[len(config.BOT_PREFIX):].split(" ")
+    message_parts = message.content.strip()[len(config.BOT_PREFIX):].split()
     cmd, parameters = message_parts[0], message_parts[1:]
     try:
         await parse_command(client, game, message, cmd, parameters)
