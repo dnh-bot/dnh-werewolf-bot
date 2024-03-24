@@ -40,13 +40,16 @@ class Game:
         self.async_lock = asyncio.Lock()
         self.reset_game_state()  # Init other game variables every end game.
 
-    def reset_game_state(self):
+    def reset_game_state(self, is_rematching=False):
         print("reset_game_state")
         self.is_stopped = True
         self.start_time = None
-        self.players = {}  # id: Player
-        self.playersname = {}  # id: username
-        self.watchers = set()  # set of id
+        if is_rematching:
+            self.players = {player_id: None for player_id in self.players}
+        else:
+            self.players = {}  # id: Player
+            self.playersname = {}  # id: Username
+        self.watchers = set()  # Set of id
         self.game_phase = const.GamePhase.NEW_GAME
         self.wolf_kill_dict = {}  # dict[wolf] -> player
         self.reborn_set = set()
@@ -68,6 +71,7 @@ class Game:
         self.prev_playtime = self.is_in_play_time()
         self.new_moon_mode.set_random_event()
         self.auto_hook = defaultdict(list)
+        self.tanner_is_lynched = False
 
     def get_winner(self):
         if self.winner is None:
@@ -230,6 +234,37 @@ class Game:
         self.reset_game_state()
         await self.interface.send_action_text_to_channel("end_text", config.LOBBY_CHANNEL)
         await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
+        await asyncio.sleep(0)
+
+    async def rematch(self, rematch_player_id):
+        print("======= Game rematched =======")
+        if self.is_stopped:
+            return
+
+        self.next_flag.clear()
+        await self.cancel_running_task(self.task_game_loop)
+        await self.cancel_running_task(self.task_run_timer_phase)
+
+        if self.players:
+            await self.delete_channel()
+
+        current_players = ", ".join(f"<@{_id}>" for _id in self.players)
+        rematch_data = text_templates.generate_embed(
+            "rematch_embed",
+            [
+                [current_players]
+            ],
+            rematch_player_id=rematch_player_id,
+            total_players=len(self.players)
+        )
+        await self.interface.send_embed_to_channel(rematch_data, config.LOBBY_CHANNEL)
+
+        self.reset_game_state(True)
+        await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
+        # Add current players to Gameplay
+        await asyncio.gather(
+            *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True) for _id in self.players]
+        )
         await asyncio.sleep(0)
 
     async def delete_channel(self):
@@ -438,17 +473,19 @@ class Game:
             await self.interface.send_text_to_channel(status_description, channel_name)
             return
 
+        passed_days = str(self.day) if self.day > 0 else ""
         remaining_time = self.get_timer_remaining_time()
         vote_table, table_title = self.get_channel_vote_table(author.id, channel_name)
         author_status = self.get_author_status(author.id, channel_name)
 
         print(
-            status_description, remaining_time, vote_table,
+            status_description, passed_days, remaining_time, vote_table,
             text_template.generate_vote_field(vote_table), table_title, author_status
         )
         status_embed_data = text_templates.generate_embed(
             "game_status_with_table_embed",
             [
+                [passed_days],
                 [text_template.generate_timer_remaining_text(remaining_time)],
                 text_template.generate_vote_field(vote_table),
                 [author_status]
@@ -533,8 +570,10 @@ class Game:
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
         reveal_list = [(_id, player.__class__.__name__) for _id, player in self.players.items()]
+        couple_reveal_text = "\n\n" + "💘 " + " x ".join(f"<@{player_id}>" for player_id in self.cupid_dict) if self.cupid_dict else ""
         await self.interface.send_text_to_channel(
-            "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict)), config.GAMEPLAY_CHANNEL
+            "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict)) + couple_reveal_text,
+            config.GAMEPLAY_CHANNEL
         )
 
         # write to leaderboard
@@ -563,11 +602,15 @@ class Game:
 
         print("DEBUG: ", num_players, num_werewolf)
 
-        # check end game
+        # Check Tanner
+        if self.tanner_is_lynched:
+            return roles.Tanner
+
+        # Check end game
         if num_werewolf != 0 and num_werewolf * 2 < num_players:
             return None
 
-        # check cupid
+        # Check Cupid
         couple = [self.players[i] for i in self.cupid_dict]
         if num_players == 2 and \
                 any(isinstance(p, roles.Werewolf) for p in couple) and \
@@ -575,11 +618,11 @@ class Game:
                 all(p in alives for p in couple):
             return roles.Cupid
 
-        # werewolf still alive then werewolf win
+        # Werewolf still alive then werewolf win
         if num_werewolf != 0:
             return roles.Werewolf
 
-        # werewolf died and fox still alive
+        # Werewolf died and fox still alive
         if any(isinstance(p, roles.Fox) for p in alives):
             return roles.Fox
 
@@ -618,6 +661,15 @@ class Game:
             if player.is_alive() and _id in self.cupid_dict
         ])
 
+    async def announce_current_new_moon_event(self):
+        if self.modes.get("new_moon", False):
+            await self.interface.send_action_text_to_channel(
+                f"new_moon_{'special' if self.new_moon_mode.has_special_event() else 'no'}_event_text",
+                config.GAMEPLAY_CHANNEL,
+                event_name=self.new_moon_mode.get_current_event_name(),
+                event_description=self.new_moon_mode.get_current_event_description()
+            )
+
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
         self.day += 1
@@ -626,13 +678,8 @@ class Game:
             embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
-            if self.modes.get("new_moon", False):
-                self.new_moon_mode.set_random_event()
-                await self.interface.send_action_text_to_channel(
-                    f"new_moon_{'special' if self.new_moon_mode.has_special_event() else 'no'}_event_text",
-                    config.GAMEPLAY_CHANNEL,
-                    event_name=self.new_moon_mode.get_current_event_name()
-                )
+            self.new_moon_mode.set_random_event()
+            await self.announce_current_new_moon_event()
 
             # Mute all party channels
             await self.control_muting_party_channel(True)
@@ -647,6 +694,8 @@ class Game:
             await self.stop()
 
     async def do_end_daytime_phase(self):
+        # FIXME:
+        # pylint: disable=too-many-branches
         await self.do_run_auto_hook()
         print("do_end_daytime_phase")
         lynched, votes = None, 0
@@ -655,20 +704,19 @@ class Game:
             print("lynched list:", self.voter_dict)
             self.voter_dict = {}
 
-        if self.modes.get("new_moon", False):
-            if self.new_moon_mode.current_event == "heads_or_tails":
-                coin_toss_value = self.new_moon_mode.do_coin_toss()
-                print("coin toss value =", coin_toss_value)
-                if coin_toss_value != 0:
-                    coin_value_str = text_templates.get_word_in_language("coin_head")
-                    lynched, votes = None, 0
-                else:
-                    coin_value_str = text_templates.get_word_in_language("coin_tail")
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.HEADS_OR_TAILS.value:
+            coin_toss_value = self.new_moon_mode.do_coin_toss()
+            print("coin toss value =", coin_toss_value)
+            if coin_toss_value != 0:
+                coin_value_str = text_templates.get_word_in_language("coin_head")
+                lynched, votes = None, 0
+            else:
+                coin_value_str = text_templates.get_word_in_language("coin_tail")
 
-                await self.interface.send_action_text_to_channel(
-                    "new_moon_heads_or_tails_result_text", config.GAMEPLAY_CHANNEL,
-                    coin_value_str=coin_value_str
-                )
+            await self.interface.send_action_text_to_channel(
+                "new_moon_heads_or_tails_result_text", config.GAMEPLAY_CHANNEL,
+                coin_value_str=coin_value_str
+            )
 
         if lynched:
             await self.players[lynched].get_killed()
@@ -676,6 +724,9 @@ class Game:
                 "execution_player_text", config.GAMEPLAY_CHANNEL,
                 voted_user=f"<@{lynched}>", highest_vote_number=votes
             )
+
+            if isinstance(self.players[lynched], roles.Tanner):
+                self.tanner_is_lynched = True
 
             cupid_couple = self.cupid_dict.get(lynched)
             if cupid_couple is not None:
@@ -700,6 +751,8 @@ class Game:
 
         players_embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
         await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
+
+        await self.announce_current_new_moon_event()
 
         # Unmute all party channels
         await self.control_muting_party_channel(False)
@@ -735,6 +788,8 @@ class Game:
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])
 
     async def do_end_nighttime_phase(self):
+        # FIXME:
+        # pylint: disable=too-many-branches
         await self.do_run_auto_hook()
         print("do_end_nighttime_phase")
         kills = None
@@ -777,8 +832,15 @@ class Game:
                 died_player=f"<@{self.cupid_dict[cupid_couple]}>", follow_player=f"<@{cupid_couple}>"
             )
 
+        is_twin_flame_announced = False
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.TWIN_FLAME.value and _id in self.cupid_dict:
+            if not is_twin_flame_announced:
+                await self.interface.send_action_text_to_channel("new_moon_twin_flame_result_text", config.GAMEPLAY_CHANNEL)
+                is_twin_flame_announced = True
+            await self.players[self.cupid_dict[_id]].on_reborn()
+
         self.reborn_set = set()
 
     async def new_phase(self):
@@ -956,6 +1018,9 @@ class Game:
         return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
     async def kill(self, author, target):
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.FULL_MOON_VEGETARIAN.value:
+            return text_templates.generate_text("new_moon_vegetarian_result_text")
+
         if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
 
@@ -1007,6 +1072,13 @@ class Game:
         author.on_use_mana()
         if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
             self.night_pending_kill_list.append(target_id)
+
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.SOMNAMBULISM.value:
+            await self.interface.send_action_text_to_channel(
+                "new_moon_somnambulism_result_text",
+                config.GAMEPLAY_CHANNEL,
+                target_role=self.players[target_id].get_role()
+            )
 
         return text_templates.generate_text(
             f"seer_after_voting_{'' if target.seer_seen_as_werewolf() else 'not_'}werewolf_text",

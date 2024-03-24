@@ -49,6 +49,8 @@ class Character:
         return True
 
     async def on_reborn(self):
+        if self.status == CharacterStatus.ALIVE:
+            return False
         self.status = CharacterStatus.ALIVE
         await asyncio.gather(
             self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True),

@@ -304,8 +304,8 @@
   "night_phase_beginning_text": {
     "params": [],
     "template": {
-      "vi": ["🌙 Đêm đã tới. Cảnh vật hóa tĩnh lặng, mọi người an giấc. Liệu đêm nay có xảy ra chuyện gì không?"],
-      "en": ["🌙 Night has come. The scenery is quiet, everyone is asleep. Will something happen tonight?"]
+      "vi": ["\u200B\n🌙 Đêm đã tới. Cảnh vật hóa tĩnh lặng, mọi người an giấc. Liệu đêm nay có xảy ra chuyện gì không?"],
+      "en": ["\u200B\n🌙 Night has come. The scenery is quiet, everyone is asleep. Will something happen tonight?"]
     }
   },
   "player_list_description_text": {
@@ -738,6 +738,13 @@
       "en": ["Game stopped!"]
     }
   },
+  "rematch_text": {
+    "params": [],
+    "template": {
+      "vi": ["🔄 Đang tái tạo trò chơi..."],
+      "en": ["🔄 Recreating the game..."]
+    }
+  },
   "game_not_playing_text": {
     "params": [],
     "template": {
@@ -1164,12 +1171,12 @@
       "vi": {
         "title": "Trạng thái trò chơi",
         "description": "{status_description}",
-        "content_headers": ["⏰ Thời gian còn lại của {phase_str}", "{table_title}", "Trạng thái của bạn"]
+        "content_headers": ["Số ngày đã trải qua", "⏰ Thời gian còn lại của {phase_str}", "{table_title}", "Trạng thái của bạn"]
       },
       "en": {
         "title": "Game status",
         "description": "{status_description}",
-        "content_headers": ["⏰ Remaining time of {phase_str}", "{table_title}", "Your status"]
+        "content_headers": ["Number of days", "⏰ Remaining time of {phase_str}", "{table_title}", "Your status"]
       }
     }
   },
@@ -1189,25 +1196,62 @@
       }
     }
   },
+  "rematch_embed": {
+    "params": ["rematch_player_id", "total_players"],
+    "color": "0xe67e22",
+    "template": {
+      "vi": {
+        "title": "Trận tái đấu",
+        "description": "<@{rematch_player_id}> cay cú đã yêu cầu một trận tái đấu 😡😤",
+        "content_headers": ["\u200B\nDanh sách {total_players} người chơi hiện tại"]
+      },
+      "en": {
+        "title": "Rematch",
+        "description": "<@{rematch_player_id}> was so bitter that he asked for a rematch 😡😤",
+        "content_headers": ["\u200B\nList of {total_players} current players"]
+      }
+    }
+  },
   "new_moon_no_event_text": {
     "params": [],
     "template": {
-      "vi": ["📆 Ngày hôm nay không có sự kiện đặc biệt nào."],
-      "en": ["📆 No special event today."]
+      "vi": ["\u200B\n📆 Ngày hôm nay không có sự kiện đặc biệt nào."],
+      "en": ["\u200B\n📆 No special event today."]
     }
   },
   "new_moon_special_event_text": {
-    "params": ["event_name"],
+    "params": ["event_name", "event_description"],
     "template": {
-      "vi": ["📆 Sự kiện đặc biệt của ngày hôm nay là {event_name}."],
-      "en": ["📆 Today's special event is {event_name}."]
+      "vi": ["\u200B\n📆 Sự kiện đặc biệt của ngày hôm nay là {event_name}.\n❓ {event_description}"],
+      "en": ["\u200B\n📆 Today's special event is {event_name}.\n❓ {event_description}"]
     }
   },
   "new_moon_heads_or_tails_result_text": {
     "params": ["coin_value_str"],
     "template": {
-      "vi": ["Vũ trụ đã tung đồng xu và kết quả là {coin_value_str}."],
-      "en": ["The universe has flipped a coin and the result was {coin_value_str}."]
+      "vi": ["🪙 Vũ trụ đã tung đồng xu và kết quả là {coin_value_str}."],
+      "en": ["🪙 The universe has flipped a coin and the result was {coin_value_str}."]
+    }
+  },
+  "new_moon_twin_flame_result_text": {
+    "params": [],
+    "template": {
+      "vi": ["💞 Khi 2 linh hồn hoà làm một, họ nguyện sống chết cùng nhau."],
+      "en": ["💞 When two souls become one, nothing can separate them."]
+    }
+  },
+  "new_moon_somnambulism_result_text": {
+    "params": ["target_role"],
+    "template": {
+      "vi": ["👁️ Tiên tri đã nhìn thấy nhân vật {target_role} trong cơn mộng du!"],
+      "en": ["👁️ The seer saw the character {target_role} while sleepwalking!"]
+    }
+  },
+  "new_moon_vegetarian_result_text": {
+    "params": ["target_role"],
+    "template": {
+      "vi": ["🌕 Hôm nay là ngày rằm, nghỉ ăn thịt một bữa nha bạn ơi!"],
+      "en": ["🌕 Today is the full moon day, please stop killing!"]
     }
   }
 }

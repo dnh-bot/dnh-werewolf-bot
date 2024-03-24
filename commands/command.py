@@ -82,7 +82,6 @@ async def parse_command(client, game, message, cmd, parameters):
             tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
             name = os.getenv("BOT_NAME")
             await message.reply(f"{name}-{tag}".rstrip('\n'))  # prevent bug of name's or tag's type
-
         else:
             await do_game_cmd(game, message, cmd, parameters)
 
@@ -98,6 +97,12 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
     if cmd in ("watch", "unwatch", "join", "leave", "start", "next", "stopgame"):
         command_function = getattr(player, f"do_{cmd}")
         await command_function(game, message, force=force)
+
+    elif cmd == "rematch":
+        if message.channel.name != config.LOBBY_CHANNEL:  # Any player can request rematch, so only allow in Lobby
+            await message.reply(text_templates.generate_text("invalid_channel_text", channel=f"#{config.LOBBY_CHANNEL}"))
+            return
+        await player.do_rematch(game, message)
 
     elif cmd in ("vote", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto"):
         await player.do_character_cmd(game, message, cmd, parameters)
