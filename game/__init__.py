@@ -980,7 +980,7 @@ class Game:
         # print(self.players)
         author = self.players.get(author_id)
         if author is None or not author.is_alive():
-            if cmd != "zombie":  # Zombie can use skill after death
+            if cmd not in ["zombie", "punish"]:  # User can use these commands after death
                 return text_templates.generate_text("invalid_alive_author_text", cmd=cmd)
 
         if cmd == "auto":
@@ -1021,8 +1021,9 @@ class Game:
 
     async def punish(self, author, target):
         new_moon_punishment_event = self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT
-        # May also check if author is dead or not
-        if not new_moon_punishment_event:
+        is_day_time = self.game_phase == const.GamePhase.DAY
+        # May also check if author is dead or not?
+        if not (new_moon_punishment_event or is_day_time):
             return text_templates.generate_text("invalid_punish_in_cemetery_text")
 
         author_id = author.player_id
