@@ -1307,9 +1307,9 @@ class Game:
             real_id[4]: roles.Villager(self.interface, real_id[4], "v2"),
         }
         await self.start(players)
-        print(await self.vote(real_id[1], real_id[2]))
-        print(await self.vote(real_id[3], real_id[2]))
-        print(await self.vote(real_id[4], real_id[1]))
+        print(await self.vote(real_id[1], real_id[2], config.GAMEPLAY_CHANNEL))
+        print(await self.vote(real_id[3], real_id[2], config.GAMEPLAY_CHANNEL))
+        print(await self.vote(real_id[4], real_id[1], config.GAMEPLAY_CHANNEL))
 
         await self.next_phase()  # go NIGHT
         time.sleep(delay_time)
