@@ -1,6 +1,7 @@
 import random
 
-from config import TEXT_LANGUAGE
+import text_templates
+from config import TEXT_LANGUAGE, GAMEPLAY_CHANNEL
 import utils
 
 new_moon_event_dict = utils.common.read_json_file("json/new_moon_events_info.json")
@@ -51,3 +52,38 @@ class NewMoonMode:
 
     def do_coin_toss(self):
         return random.randint(0, 1)
+
+    async def send_result_text(self, interface, channel_name, **kwargs):
+        if self.has_special_event():
+            await interface.send_action_text_to_channel(
+                f"new_moon_{self.current_event}_result_text", channel_name, **kwargs
+            )
+
+    async def do_action(self, interface, **kwargs):
+        if self.current_event == NewMoonMode.HEADS_OR_TAILS:
+            await self.do_heads_or_tails_action(interface, kwargs.get("coin_toss_value"))
+
+        elif self.current_event == NewMoonMode.TWIN_FLAME:
+            await self.do_twin_flame_action(interface, kwargs.get("cupid_target"))
+
+        elif self.current_event == NewMoonMode.SOMNAMBULISM:
+            await self.do_somnambulism_action(interface, kwargs.get("target"))
+
+    async def do_heads_or_tails_action(self, interface, coin_toss_value):
+        if coin_toss_value != 0:
+            coin_value_str = text_templates.get_word_in_language("coin_head")
+        else:
+            coin_value_str = text_templates.get_word_in_language("coin_tail")
+
+        await self.send_result_text(interface, GAMEPLAY_CHANNEL, coin_value_str=coin_value_str)
+
+    async def do_twin_flame_action(self, interface, cupid_target):
+        if cupid_target:
+            await cupid_target.on_reborn()
+            await self.send_result_text(interface, GAMEPLAY_CHANNEL)
+
+    async def do_somnambulism_action(self, interface, target):
+        if target is None:
+            return
+
+        await self.send_result_text(interface, GAMEPLAY_CHANNEL, target_role=target.get_role())
