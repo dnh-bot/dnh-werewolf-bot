@@ -148,6 +148,13 @@
       "en": ["👋🏻 Hi <@{player_id}>"]
     }
   },
+  "gameplay_welcome_rematch_text": {
+    "params": ["rematch_players"],
+    "template": {
+      "vi": ["👋🏻 Chào mừng trở lại {rematch_players}"],
+      "en": ["👋🏻 Welcome back {rematch_players}"]
+    }
+  },
   "gameplay_leave_text": {
     "params": ["player_id"],
     "template": {
@@ -591,6 +598,13 @@
     "template": {
       "vi": ["{user} còn sống mà bạn!"],
       "en": ["{user} is still alive."]
+    }
+  },
+  "invalid_vote_in_cemetery_text": {
+    "params": [],
+    "template": {
+      "vi": ["Chết rồi mà còn đam mê bỏ phiếu nữa 👻"],
+      "en": ["Don't vote when you are already dead 👻"]
     }
   },
   "killed_users_text": {
@@ -1252,6 +1266,13 @@
     "template": {
       "vi": ["🌕 Hôm nay là ngày rằm, nghỉ ăn thịt một bữa nha bạn ơi!"],
       "en": ["🌕 Today is the full moon day, please stop killing!"]
+    }
+  },
+  "new_moon_punishment_result_text": {
+    "params": ["author", "target"],
+    "template": {
+      "vi": ["👹 {author} đã biểu quyết trừng phạt {target}"],
+      "en": ["👹 {author} voted to punish {target}"]
     }
   }
 }

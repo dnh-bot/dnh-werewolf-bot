@@ -142,7 +142,7 @@
       "vi": "Lựa chọn một người sẽ bị đưa lên máy chém.",
       "en": "Vote a player."
     },
-    "valid_channels": ["GAMEPLAY"],
+    "valid_channels": ["GAMEPLAY", "CEMETERY"],
     "exclusive_roles": [],
     "required_params": ["player_id"]
   },

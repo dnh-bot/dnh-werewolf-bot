@@ -265,6 +265,7 @@ class Game:
         await asyncio.gather(
             *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True) for _id in self.players]
         )
+        await self.interface.send_action_text_to_channel("gameplay_welcome_rematch_text", config.GAMEPLAY_CHANNEL, rematch_players=current_players)
         await asyncio.sleep(0)
 
     async def delete_channel(self):
@@ -496,11 +497,12 @@ class Game:
         )
         await self.interface.send_embed_to_channel(status_embed_data, channel_name)
 
-        role_list = [self.get_role_list()]
-        players_embed_data = text_template.generate_player_list_embed(
-            self.get_all_players(), None, role_list, self.modes.get("reveal_role", False)
-        )
-        await self.interface.send_embed_to_channel(players_embed_data, channel_name)
+        if self.is_started():
+            role_list = [self.get_role_list()]
+            players_embed_data = text_template.generate_player_list_embed(
+                self.get_all_players(), None, role_list, self.modes.get("reveal_role", False)
+            )
+            await self.interface.send_embed_to_channel(players_embed_data, channel_name)
 
     async def run_game_loop(self):
         print("Starting game loop")
@@ -973,7 +975,7 @@ class Game:
         # TODO
         return None
 
-    async def do_player_action(self, cmd, author_id, *targets_id):
+    async def do_player_action(self, cmd, author_id, *targets_id, **kwargs):
         # FIXME
         # pylint: disable=too-many-return-statements, too-many-branches
         assert self.players is not None
@@ -999,8 +1001,11 @@ class Game:
         if not targets[0].is_alive() and cmd != "reborn":
             return text_templates.generate_text("dead_target_text" if cmd == "vote" else "invalid_target_text")
 
-        if cmd in ("vote", "kill", "guard", "hunter", "seer", "reborn", "curse"):
+        if cmd in ("kill", "guard", "hunter", "seer", "reborn", "curse"):
             return await getattr(self, cmd)(author, targets[0])
+
+        if cmd == "vote":
+            return await self.vote(author, targets[0], kwargs.get("channel_name"))
 
         if cmd == "ship":
             if self.modes.get("couple_random"):
@@ -1009,13 +1014,28 @@ class Game:
 
         return text_templates.generate_text("invalid_command_text")
 
-    async def vote(self, author, target):
+    async def vote(self, author, target, channel_name):
+        new_moon_punishment_event = self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.PUNISHMENT.value
+        is_cemetery_channel = channel_name == config.CEMETERY_CHANNEL
+        # May also check if author is dead or not?
+        if is_cemetery_channel and not new_moon_punishment_event:
+            return text_templates.generate_text("invalid_vote_in_cemetery_text")
+
         author_id = author.player_id
         target_id = target.player_id
 
         # Vote for target user
         self.voter_dict[author_id] = target_id
-        return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
+
+        if is_cemetery_channel and new_moon_punishment_event:
+            await self.interface.send_action_text_to_channel(
+                "new_moon_punishment_result_text",
+                config.GAMEPLAY_CHANNEL,
+                author=f"<@{author_id}>",
+                target=f"<@{target_id}>"
+            )
+
+        return text_templates.generate_text("new_moon_punishment_result_text" if is_cemetery_channel and new_moon_punishment_event else "vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
     async def kill(self, author, target):
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.FULL_MOON_VEGETARIAN.value:

@@ -16,3 +16,4 @@ class NewMoonEvent(Enum):
     TWIN_FLAME = "twin_flame"
     SOMNAMBULISM = "somnambulism"
     FULL_MOON_VEGETARIAN = "full_moon_vegetarian"
+    PUNISHMENT = "punishment"

@@ -54,6 +54,17 @@
     },
     "rate": 1
   },
+  "punishment": {
+    "title": {
+      "vi": "Trừng phạt",
+      "en": "Punishment"
+    },
+    "description": {
+      "vi": "Những người đã chết ở #💀cemetery cũng có thể tham gia vote treo cổ 1 người",
+      "en": "People who have died in #💀cemetery can also vote to lynch 1 person"
+    },
+    "rate": 1
+  },
   "dissatisfaction": {
     "title": {
       "vi": "Sự không hài lòng",
@@ -94,17 +105,6 @@
     },
     "description": {
       "vi": "vai trò của tất cả người chơi sẽ xáo trộn lẫn nhau",
-      "en": ""
-    },
-    "rate": 0
-  },
-  "punishment": {
-    "title": {
-      "vi": "Trừng phạt",
-      "en": "Punishment"
-    },
-    "description": {
-      "vi": "những người bị giết có thể vote 1 người để treo cố",
       "en": ""
     },
     "rate": 0
