@@ -20,7 +20,6 @@
 			"action": [
 				"w1 vote v1",
 				"s1 vote w1",
-				"v1 vote v1",
 				"v2 vote s1"
 			]
 		},

@@ -18,8 +18,6 @@
 				"wi1"
 			],
 			"action": [
-				"w1 vote w1",
-				"f1 vote f1",
 				"g1 vote s1",
 				"s1 vote f1",
 				"wi1 vote s1"
@@ -49,9 +47,6 @@
 				"g1"
 			],
 			"action": [
-				"g1 vote g1",
-				"f1 vote f1",
-				"wi1 vote wi1"
 			]
 		},
 		{
@@ -78,7 +73,6 @@
 			],
 			"action": [
 				"w1 vote f1",
-				"f1 vote f1"
 			]
 		},
 		{
