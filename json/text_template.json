@@ -675,6 +675,13 @@
       "en": ["Nobody here :("]
     }
   },
+  "prevent_self_voting_text": {
+    "params": [],
+    "template": {
+      "vi": ["Đừng có tự vote mình bạn ơi :(. Bạn có ổn không? :("],
+      "en": ["Don't vote yourself :(. Are you okay? :("]
+    }
+  },
   "invalid_channel_text": {
     "params": ["channel"],
     "template": {

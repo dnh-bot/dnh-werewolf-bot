@@ -1018,6 +1018,8 @@ class Game:
     async def vote(self, author, target):
         author_id = author.player_id
         target_id = target.player_id
+        if author_id == target_id:
+            return text_templates.generate_text("prevent_self_voting_text")
 
         # Vote for target user
         self.voter_dict[author_id] = target_id
