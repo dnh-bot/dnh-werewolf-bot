@@ -1275,11 +1275,11 @@
       "en": ["🌕 Today is the full moon day, please stop killing!"]
     }
   },
-  "new_moon_punishment_annoucement_text": {
-    "params": ["cmd_guide"],
+  "new_moon_punishment_announcement_text": {
+    "params": ["cmd_usages"],
     "template": {
-      "vi": ["👹 Sự kiện new moon **Trừng Phạt**: Hãy sử dụng lệnh `{cmd_guide}` để vote 1 người"],
-      "en": ["👹 New moon event **Punishment**: Use command `{cmd_guide}` to vote 1 person"]
+      "vi": ["👹 Sự kiện new moon **Trừng Phạt**: Hãy sử dụng lệnh {cmd_usages} để vote 1 người"],
+      "en": ["👹 New moon event **Punishment**: Use command {cmd_usages} to vote 1 person"]
     }
   },
   "new_moon_punishment_result_text": {
