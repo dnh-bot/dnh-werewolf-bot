@@ -63,7 +63,7 @@ async def do_leave(game, message, force=False):
 
 async def do_watch(game, message, force=False):
     """Watch game"""
-    print("Force: ", force)
+    print("watch with force=", force)
     watched_players = await game.add_watcher(message.author.id)
     if watched_players > 0:
         await message.channel.send(text_templates.generate_text("reply_watch_text", user=message.author.display_name, watched_players=watched_players))
@@ -78,7 +78,7 @@ async def do_watch(game, message, force=False):
 
 async def do_unwatch(game, message, force=False):
     """Unwatch game"""
-    print("Force: ", force)
+    print("unwatch with force=", force)
     watched_players = await game.remove_watcher(message.author.id)
     if watched_players >= 0:
         await message.channel.send(text_templates.generate_text("reply_unwatch_text", user=message.author.display_name, watched_players=watched_players))
@@ -200,7 +200,7 @@ async def do_character_cmd(game, message, cmd, parameters):
             id_players = game.get_dead_players() if cmd == "reborn" else game.get_alive_players()
             if all(0 <= i < len(id_players) for i in targets_index):
                 is_valid_command = True
-                msg = await game.do_player_action(cmd, author.id, *[id_players[i].player_id for i in targets_index], channel_name=message.channel.name)
+                msg = await game.do_player_action(cmd, author.id, *[id_players[i].player_id for i in targets_index])
                 await message.reply(msg)
 
         if not is_valid_command:

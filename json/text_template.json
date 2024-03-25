@@ -600,11 +600,11 @@
       "en": ["{user} is still alive."]
     }
   },
-  "invalid_vote_in_cemetery_text": {
+  "invalid_punish_in_cemetery_text": {
     "params": [],
     "template": {
-      "vi": ["Chết rồi mà còn đam mê bỏ phiếu nữa 👻"],
-      "en": ["Don't vote when you are already dead 👻"]
+      "vi": ["Hiện tại chưa có sự kiện new moon Trừng Phạt!"],
+      "en": ["Currently there is no new moon event Punishment!"]
     }
   },
   "killed_users_text": {
@@ -1266,6 +1266,13 @@
     "template": {
       "vi": ["🌕 Hôm nay là ngày rằm, nghỉ ăn thịt một bữa nha bạn ơi!"],
       "en": ["🌕 Today is the full moon day, please stop killing!"]
+    }
+  },
+  "new_moon_punishment_annoucement_text": {
+    "params": ["cmd_guide"],
+    "template": {
+      "vi": ["👹 Sự kiện new moon **Trừng Phạt**: Hãy sử dụng lệnh `{cmd_guide}` để vote 1 người"],
+      "en": ["👹 New moon event **Punishment**: Use command `{cmd_guide}` to vote 1 person"]
     }
   },
   "new_moon_punishment_result_text": {

@@ -142,7 +142,16 @@
       "vi": "Lựa chọn một người sẽ bị đưa lên máy chém.",
       "en": "Vote a player."
     },
-    "valid_channels": ["GAMEPLAY", "CEMETERY"],
+    "valid_channels": ["GAMEPLAY"],
+    "exclusive_roles": [],
+    "required_params": ["player_id"]
+  },
+  "punish": {
+    "description": {
+      "vi": "Lựa chọn một người sẽ bị đưa lên máy chém, sử dụng khi có sự kiện new moon Trừng Phạt",
+      "en": "Vote a player, use on when new moon event Punishment"
+    },
+    "valid_channels": ["CEMETERY"],
     "exclusive_roles": [],
     "required_params": ["player_id"]
   },
