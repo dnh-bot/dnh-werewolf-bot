@@ -18,8 +18,8 @@
 				"l1"
 			],
 			"action": [
-				"w1 vote f1",
-				"f1 vote w1",
+				"w1 vote w1",
+				"f1 vote f1",
 				"g1 vote s1",
 				"s1 vote f1",
 				"l1 vote s1"
