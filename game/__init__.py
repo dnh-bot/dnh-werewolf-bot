@@ -685,6 +685,8 @@ class Game:
 
             # Annouce Punishment event in Cemetery
             if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.PUNISHMENT.value:
+                alive_players_embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
+                await self.interface.send_embed_to_channel(alive_players_embed_data, config.CEMETERY_CHANNEL)
                 await self.interface.send_action_text_to_channel("new_moon_punishment_annoucement_text", config.CEMETERY_CHANNEL, cmd_guide=f"{config.BOT_PREFIX}punish")
 
             # Mute all party channels
