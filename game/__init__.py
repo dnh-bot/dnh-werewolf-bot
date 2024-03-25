@@ -684,7 +684,7 @@ class Game:
             await self.announce_current_new_moon_event()
 
             # Annouce Punishment event in Cemetery
-            if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.PUNISHMENT.value:
+            if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT:
                 alive_players_embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
                 await self.interface.send_embed_to_channel(alive_players_embed_data, config.CEMETERY_CHANNEL)
                 await self.interface.send_action_text_to_channel("new_moon_punishment_annoucement_text", config.CEMETERY_CHANNEL, cmd_guide=f"{config.BOT_PREFIX}punish")
@@ -712,7 +712,7 @@ class Game:
             print("lynched list:", self.voter_dict)
             self.voter_dict = {}
 
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.HEADS_OR_TAILS.value:
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.HEADS_OR_TAILS:
             coin_toss_value = self.new_moon_mode.do_coin_toss()
             print("coin toss value =", coin_toss_value)
             if coin_toss_value != 0:
@@ -843,11 +843,11 @@ class Game:
         is_twin_flame_announced = False
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.TWIN_FLAME.value and _id in self.cupid_dict:
-            if not is_twin_flame_announced:
-                await self.interface.send_action_text_to_channel("new_moon_twin_flame_result_text", config.GAMEPLAY_CHANNEL)
-                is_twin_flame_announced = True
-            await self.players[self.cupid_dict[_id]].on_reborn()
+            if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME and _id in self.cupid_dict:
+                if not is_twin_flame_announced:
+                    await self.interface.send_action_text_to_channel("new_moon_twin_flame_result_text", config.GAMEPLAY_CHANNEL)
+                    is_twin_flame_announced = True
+                await self.players[self.cupid_dict[_id]].on_reborn()
 
         self.reborn_set = set()
 
@@ -1028,7 +1028,7 @@ class Game:
         return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
     async def punish(self, author, target):
-        new_moon_punishment_event = self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.PUNISHMENT.value
+        new_moon_punishment_event = self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT
         # May also check if author is dead or not?
         if not new_moon_punishment_event:
             return text_templates.generate_text("invalid_punish_in_cemetery_text")
@@ -1049,7 +1049,7 @@ class Game:
         return text_templates.generate_text("new_moon_punishment_result_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
     async def kill(self, author, target):
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.FULL_MOON_VEGETARIAN.value:
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
             return text_templates.generate_text("new_moon_vegetarian_result_text")
 
         if self.game_phase != const.GamePhase.NIGHT:
@@ -1104,7 +1104,7 @@ class Game:
         if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
             self.night_pending_kill_list.append(target_id)
 
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.SOMNAMBULISM.value:
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.SOMNAMBULISM:
             await self.interface.send_action_text_to_channel(
                 "new_moon_somnambulism_result_text",
                 config.GAMEPLAY_CHANNEL,

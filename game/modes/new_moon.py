@@ -8,6 +8,12 @@ new_moon_event_dict = utils.common.read_json_file("json/new_moon_events_info.jso
 
 class NewMoonMode:
     NO_EVENT = "no_event"
+    HEADS_OR_TAILS = "heads_or_tails"
+    TWIN_FLAME = "twin_flame"
+    SOMNAMBULISM = "somnambulism"
+    FULL_MOON_VEGETARIAN = "full_moon_vegetarian"
+    PUNISHMENT = "punishment"
+
     ALL_EVENTS = new_moon_event_dict
 
     def __init__(self, is_on=False):
