@@ -19,7 +19,6 @@
 			],
 			"action": [
 				"w1 vote c1",
-				"g1 vote c1",
 				"c1 vote f1"
 			]
 		},
