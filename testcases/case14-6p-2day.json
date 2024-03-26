@@ -20,8 +20,7 @@
 			"action": [
 				"w1 vote g1",
 				"g1 vote v3",
-				"v1 vote v2",
-				"v2 vote g1",
+				"v1 vote v2"
 			]
 		},
 		{
@@ -55,5 +54,6 @@
 				"v3 vote g1"
 			]
 		}
-	]
+	],
+	"win": "Villager"
 }

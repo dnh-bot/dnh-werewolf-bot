@@ -21,7 +21,7 @@
 				"w1 vote v1",
 				"g1 vote v1",
 				"v1 vote v2",
-				"v2 vote g1",
+				"v2 vote g1"
 			]
 		},
 		{
@@ -50,5 +50,6 @@
 				"v3 vote w1"
 			]
 		}
-	]
+	],
+	"win": "Villager"
 }
