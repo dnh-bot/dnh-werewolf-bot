@@ -20,7 +20,7 @@
 			"action": [
 				"g1 vote s1",
 				"s1 vote f1",
-				"wi1 vote s1"
+				"wi1 vote w1"
 			]
 		},
 		{
@@ -46,8 +46,7 @@
 				"wi1",
 				"g1"
 			],
-			"action": [
-			]
+			"action": []
 		},
 		{
 			"time": "night2",
@@ -63,7 +62,8 @@
 				"s1 seer w1",
 				"g1 guard g1"
 			]
-		},{
+		},
+		{
 			"time": "day3",
 			"alive": [
 				"w1",
@@ -76,7 +76,20 @@
 				"f1 vote w1",
 				"g1 vote s1",
 				"s1 vote w1",
-				"wi1 vote s1"
+				"wi1 vote s1",
+				"w1 vote s1"
+			]
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"w1",
+				"f1",
+				"g1",
+				"wi1"
+			],
+			"action": [
+				"wi1 curse w1"
 			]
 		}
 	],
