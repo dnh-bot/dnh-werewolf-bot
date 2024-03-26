@@ -72,6 +72,8 @@ class Game:
         self.new_moon_mode.set_random_event()
         self.auto_hook = defaultdict(list)
         self.tanner_is_lynched = False
+        self.guard_target = None
+        self.witch_target = None
 
     def get_winner(self):
         if self.winner is None:
@@ -805,16 +807,19 @@ class Game:
             for _id in self.night_pending_kill_list:
                 if await self.players[_id].get_killed():  # Guard can protect Fox from Seer kill
                     final_kill_set.add(_id)
-                    if self.cupid_dict.get(_id):
-                        cupid_couple = self.cupid_dict[_id]
+                    hunted = await self.get_hunted_target_on_hunter_death(_id)
+                    if hunted: # Hunter hunted one in couple
+                        final_kill_set.add(hunted)
+                        if self.cupid_dict.get(hunted):
+                            cupid_couple = self.cupid_dict[hunted]
+                            final_kill_set.add(cupid_couple)
+
+                    if self.cupid_dict.get(_id): 
+                        cupid_couple = self.cupid_dict[_id]    # Hunter is one in couple
                         hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
                         if hunted:
                             final_kill_set.add(hunted)
 
-                    # Kill anyone who is hunted if hunter is killed
-                    hunted = await self.get_hunted_target_on_hunter_death(_id)
-                    if hunted:
-                        final_kill_set.add(hunted)
 
             kills = ", ".join(f"<@{_id}>" for _id in final_kill_set)
             self.night_pending_kill_list = []  # Reset killed list for next day
