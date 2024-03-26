@@ -100,6 +100,7 @@ async def test_game():
     await test_case(game, "testcases/case-hunter-hunt-wolf.json")
     await test_case(game, "testcases/case-hunter-simple.json")
     await test_case(game, "testcases/case-hunter-hunt-night1.json")
+    await test_case(game, "testcases/case-hunter-hunted-one-in-couple.json")
     await test_case(game, "testcases/case-tanner-win-simple.json")
     await test_case(game, "testcases/case-tanner-killed-by-wolf-wolf-win.json")
     await test_case(game, "testcases/case-tanner-killed-by-witch-villager-win.json")
