@@ -834,7 +834,6 @@ class Game:
                 died_player=f"<@{self.cupid_dict[cupid_couple]}>", follow_player=f"<@{cupid_couple}>"
             )
 
-        is_twin_flame_announced = False
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
             if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME:
@@ -1023,7 +1022,7 @@ class Game:
         new_moon_punishment_event = self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT
         is_day_time = self.game_phase == const.GamePhase.DAY
         # May also check if author is dead or not?
-        if not (new_moon_punishment_event or is_day_time):
+        if not (new_moon_punishment_event and is_day_time):
             return text_templates.generate_text("invalid_punish_in_cemetery_text")
 
         author_id = author.player_id
@@ -1031,11 +1030,12 @@ class Game:
 
         # Punish for target user
         self.voter_dict[author_id] = target_id
-        return text_templates.generate_text("new_moon_punishment_result_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
+
+        return await self.new_moon_mode.do_action(self.interface, author=f"<@{author_id}>", target=f"<@{target_id}>")
 
     async def kill(self, author, target):
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
-            return text_templates.generate_text("new_moon_vegetarian_result_text")
+            return await self.new_moon_mode.do_action(self.interface)
 
         if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")

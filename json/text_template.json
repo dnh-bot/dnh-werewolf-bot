@@ -603,8 +603,8 @@
   "invalid_punish_in_cemetery_text": {
     "params": [],
     "template": {
-      "vi": ["Chỉ sử dụng trong buổi sáng của sự kiện new moon Trừng Phạt!"],
-      "en": ["Only use in the morning of new moon event Punishment!"]
+      "vi": ["Chỉ sử dụng trong buổi sáng của sự kiện new moon **Trừng Phạt**!"],
+      "en": ["Only use in the morning of new moon event **Punishment**!"]
     }
   },
   "killed_users_text": {
@@ -1268,7 +1268,7 @@
       "en": ["👁️ The seer saw the character {target_role} while sleepwalking!"]
     }
   },
-  "new_moon_vegetarian_result_text": {
+  "new_moon_full_moon_vegetarian_result_text": {
     "params": ["target_role"],
     "template": {
       "vi": ["🌕 Hôm nay là ngày rằm, nghỉ ăn thịt một bữa nha bạn ơi!"],
