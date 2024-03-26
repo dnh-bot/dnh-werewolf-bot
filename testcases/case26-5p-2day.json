@@ -21,8 +21,8 @@
 				"w1 vote v1",
 				"v1 vote l2",
 				"l2 vote s1",
-				"s1 vote v1",
-				"l1 vote s1"
+				"s1 vote l1",
+				"l1 vote w1"
 			]
 		},
 		{
@@ -48,7 +48,7 @@
 				"s1"
 			],
 			"action": [
-				"v1 vote w1",
+				"v1 vote l2",
 				"s1 vote l2"
 			]
 		},
