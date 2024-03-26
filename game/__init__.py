@@ -814,7 +814,7 @@ class Game:
                             cupid_couple = self.cupid_dict[hunted]
                             final_kill_set.add(cupid_couple)
 
-                    if self.cupid_dict.get(_id): 
+                    if self.cupid_dict.get(_id):
                         cupid_couple = self.cupid_dict[_id]    # Hunter is one in couple
                         hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
                         if hunted:
