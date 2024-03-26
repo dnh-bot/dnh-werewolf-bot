@@ -21,8 +21,7 @@
 				"w1 vote v1",
 				"g1 vote v1",
 				"v1 vote v2",
-				"v2 vote g1",
-				"v3 vote v3"
+				"v2 vote g1"
 			]
 		},
 		{
@@ -34,7 +33,7 @@
 				"v3"
 			],
 			"action": [
-				"w1 kill g1",
+				"w1 kill v2",
 				"g1 guard g1"
 			]
 		},
@@ -42,15 +41,14 @@
 			"time": "day2",
 			"alive": [
 				"w1",
-				"v2",
 				"v3",
 				"g1"
 			],
 			"action": [
-				"w1 vote w1",
-				"g1 vote w1",
-				"v3 vote g1"
+				"g1 vote v3",
+				"w1 vote v3"
 			]
 		}
-	]
+	],
+	"win": "Werewolf"
 }
