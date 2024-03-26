@@ -126,5 +126,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(test_game(), debug=True)
+    asyncio.run(test_game())
     print("\n\nFINISH ALL TEST CASES SUCCESSFULLY")

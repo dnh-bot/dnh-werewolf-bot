@@ -72,8 +72,6 @@ class Game:
         self.new_moon_mode.set_random_event()
         self.auto_hook = defaultdict(list)
         self.tanner_is_lynched = False
-        self.guard_target = None
-        self.witch_target = None
 
     def get_winner(self):
         if self.winner is None:
