@@ -20,10 +20,8 @@
 				"s1"
 			],
 			"action": [
-				"w1 vote w1",
 				"l1 vote w1",
 				"c1 ship l1 sw1",
-				"sw1 vote w1",
 				"f1 vote w1"
 			]
 		},

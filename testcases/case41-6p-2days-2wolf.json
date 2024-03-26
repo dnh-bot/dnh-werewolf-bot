@@ -21,7 +21,7 @@
 			],
 			"action": [
 				"w1 vote f1",
-				"f1 vote w1",
+				"f1 vote sw1",
 				"g1 vote sw1",
 				"sw1 vote g1",
 				"wi1 vote sw1"
