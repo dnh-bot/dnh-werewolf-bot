@@ -806,14 +806,14 @@ class Game:
                 if await self.players[_id].get_killed():  # Guard can protect Fox from Seer kill
                     final_kill_set.add(_id)
                     hunted = await self.get_hunted_target_on_hunter_death(_id)
-                    if hunted: # Hunter hunted one in couple
+                    if hunted:  # Hunter hunted one in couple
                         final_kill_set.add(hunted)
                         if self.cupid_dict.get(hunted):
                             cupid_couple = self.cupid_dict[hunted]
                             final_kill_set.add(cupid_couple)
 
                     if self.cupid_dict.get(_id):
-                        cupid_couple = self.cupid_dict[_id]    # Hunter is one in couple
+                        cupid_couple = self.cupid_dict[_id]  # Hunter is one in couple
                         hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
                         if hunted:
                             final_kill_set.add(hunted)
