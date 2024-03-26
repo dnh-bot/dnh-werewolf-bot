@@ -84,17 +84,21 @@ class NewMoonMode:
         await self.send_result_text(interface, GAMEPLAY_CHANNEL, coin_value_str=coin_value_str)
 
     async def do_twin_flame_action(self, interface, cupid_target):
-        if cupid_target:
-            await cupid_target.on_reborn()
-            await self.send_result_text(interface, GAMEPLAY_CHANNEL)
+        if cupid_target is None:
+            return
+
+        await cupid_target.on_reborn()
+        await self.send_result_text(interface, GAMEPLAY_CHANNEL)
 
     async def do_full_moon_vegetarian_action(self, interface):
         await self.send_result_text(interface, WEREWOLF_CHANNEL)
 
     async def do_punishment_action(self, interface, author, target):
-        if author and target:
-            await self.send_result_text(interface, GAMEPLAY_CHANNEL, author=author, target=target)
-            await self.send_result_text(interface, CEMETERY_CHANNEL, author=author, target=target)
+        if not (author and target):
+            return
+
+        await self.send_result_text(interface, GAMEPLAY_CHANNEL, author=author, target=target)
+        await self.send_result_text(interface, CEMETERY_CHANNEL, author=author, target=target)
 
     async def do_somnambulism_action(self, interface, target):
         if target is None:
