@@ -36,9 +36,7 @@ Vậy bên nào sẽ chiến thắng, Thường dân, Werewolf, hay là phe Ph�
 
 - [Fox] Cáo: Thuộc phe thứ ba, cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.
 - [Cupid] Thần tình yêu: Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ sẽ chiến thắng khi là hai người cuối cùng sống sót (hoặc khi phe của họ thắng). Thần tình yêu có thể chiến thắng cùng cặp đôi hoặc khi dân làng thắng.
-
-
-
+- [Tanner] Kẻ chán đời: Thuộc phe thứ ba, kẻ chán đời sẽ chiến thắng nếu bị dân làng vote treo cổ. Nếu kẻ chán đời bị sói hoặc phù thủy giết cũng sẽ chết như dân làng bình thường.
 
 Hệ thống nhân vật này sẽ được cập nhật sau.
 
@@ -56,24 +54,5 @@ Hệ thống nhân vật này sẽ được cập nhật sau.
 - [N] Sói tiên tri: Mỗi đêm được chọn 1 người để xem vai trò.
 - [D] Thằng ngố: Chiến thắng nếu bị dân làng treo cổ.
 - [N] Sát nhân: Chọn 1 người để giết mỗi đêm. Không bị Sói giết.
-
-
-## Số lượng vai trò
-
-| Tổng số người chơi | Dân | Sói | Bảo vệ | Tiên tri | Khác |
-|----|---|---|---|---|---|
-| 4  | 3 | 1 | 0 | 0 |   |
-| 5  | 4 | 1 | 0 | 0 |   |
-| 6  | 4 | 1 | 1 | 0 |   |
-| 7  | 4 | 1 | 1 | 1 |   |
-| 8  | 5 | 1 | 1 | 1 |   |
-| 9  | 5 | 2 | 1 | 1 |   |
-| 10 | 6 | 2 | 1 | 1 |   |
-| 11 | 7 | 2 | 1 | 1 |   |
-| 12 | 5 | 3 | 1 | 1 | 1 thợ săn, 1 cupid |
-| 13 | 6 | 3 | 1 | 1 | 1 thợ săn, 1 cupid |
-| 14 | 5 | 3 | 1 | 1 | 1 thợ săn, 1 cupid, 1 phù thủy, 1 phản bội |
-| 15 | 6 | 4 | 1 | 1 | 1 thợ săn, 1 cupid, 1 phù thủy |
-| 16+ | 6 | 4 | 1 | 1 | 1 thợ săn, 1 cupid, 1 phù thủy, 1 già làng,... |
 
 Nhóm có tham khảo cách chơi tại: https://thuthuatchoi.com/danh-sach-cac-nhan-vat-trong-ma-soi-ultimate-ultimate-werewolf-deluxe-edition.html
