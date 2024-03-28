@@ -1,7 +1,7 @@
 import random
 
 import text_templates
-from config import CEMETERY_CHANNEL, TEXT_LANGUAGE, GAMEPLAY_CHANNEL, WEREWOLF_CHANNEL
+from config import BOT_PREFIX, CEMETERY_CHANNEL, TEXT_LANGUAGE, GAMEPLAY_CHANNEL, WEREWOLF_CHANNEL
 import utils
 
 new_moon_event_dict = utils.common.read_json_file("json/new_moon_events_info.json")
@@ -59,21 +59,33 @@ class NewMoonMode:
                 f"new_moon_{self.current_event}_result_text", channel_name, **kwargs
             )
 
+    async def do_new_daytime_phase(self, interface, **kwargs):
+        if self.current_event == NewMoonMode.PUNISHMENT:
+            await interface.send_embed_to_channel(kwargs.get("alive_players_embed_data"), CEMETERY_CHANNEL)
+            await interface.send_action_text_to_channel("new_moon_punishment_announcement_text", CEMETERY_CHANNEL, cmd_usages=f"`{BOT_PREFIX}punish`")
+            return
+
+    async def do_end_nighttime_phase(self, interface, **kwargs):
+        if self.current_event == NewMoonMode.TWIN_FLAME:
+            await interface.send_action_text_to_channel("new_moon_twin_flame_announcement_text", GAMEPLAY_CHANNEL)
+            return
+
     async def do_action(self, interface, **kwargs):
         if self.current_event == NewMoonMode.HEADS_OR_TAILS:
             await self.do_heads_or_tails_action(interface, kwargs.get("coin_toss_value"))
+            return
 
-        elif self.current_event == NewMoonMode.TWIN_FLAME:
-            await self.do_twin_flame_action(interface, kwargs.get("cupid_target"))
-
-        elif self.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
+        if self.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
             await self.do_full_moon_vegetarian_action(interface)
+            return
 
-        elif self.current_event == NewMoonMode.SOMNAMBULISM:
+        if self.current_event == NewMoonMode.SOMNAMBULISM:
             await self.do_somnambulism_action(interface, kwargs.get("target"))
+            return
 
-        elif self.current_event == NewMoonMode.PUNISHMENT:
+        if self.current_event == NewMoonMode.PUNISHMENT:
             await self.do_punishment_action(interface, kwargs.get("author"), kwargs.get("target"))
+            return
 
     async def do_heads_or_tails_action(self, interface, coin_toss_value):
         if coin_toss_value != 0:
@@ -82,13 +94,6 @@ class NewMoonMode:
             coin_value_str = text_templates.get_word_in_language("coin_tail")
 
         await self.send_result_text(interface, GAMEPLAY_CHANNEL, coin_value_str=coin_value_str)
-
-    async def do_twin_flame_action(self, interface, cupid_target):
-        if cupid_target is None:
-            return
-
-        await cupid_target.on_reborn()
-        await self.send_result_text(interface, GAMEPLAY_CHANNEL)
 
     async def do_full_moon_vegetarian_action(self, interface):
         await self.send_result_text(interface, WEREWOLF_CHANNEL)

@@ -1254,7 +1254,7 @@
       "en": ["🪙 The universe has flipped a coin and the result was {coin_value_str}."]
     }
   },
-  "new_moon_twin_flame_result_text": {
+  "new_moon_twin_flame_announcement_text": {
     "params": [],
     "template": {
       "vi": ["💞 Khi 2 linh hồn hoà làm một, họ nguyện sống chết cùng nhau."],

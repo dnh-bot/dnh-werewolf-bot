@@ -344,6 +344,9 @@ class Game:
             "\n"
         ))
 
+    def get_following_players_set(self, player_set, cupid_dict):
+        return set(cupid_dict[_id] for _id in player_set)
+
     async def add_watcher(self, id_):
         if id_ in self.players:
             return -2
@@ -683,11 +686,9 @@ class Game:
             self.new_moon_mode.set_random_event()
             await self.announce_current_new_moon_event()
 
-            # Announce Punishment event in Cemetery
-            if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT:
+            if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT and len(self.get_dead_players()):
                 alive_players_embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
-                await self.interface.send_embed_to_channel(alive_players_embed_data, config.CEMETERY_CHANNEL)
-                await self.interface.send_action_text_to_channel("new_moon_punishment_announcement_text", config.CEMETERY_CHANNEL, cmd_usages=f"`{config.BOT_PREFIX}punish`")
+                await self.new_moon_mode.do_new_daytime_phase(self.interface, alive_players_embed_data=alive_players_embed_data)
 
             # Mute all party channels
             await self.control_muting_party_channel(True)
@@ -837,11 +838,12 @@ class Game:
                 died_player=f"<@{self.cupid_dict[cupid_couple]}>", follow_player=f"<@{cupid_couple}>"
             )
 
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME and self.cupid_dict:
+            await self.new_moon_mode.do_end_nighttime_phase(self.interface)
+            self.reborn_set = self.reborn_set.update(self.get_following_players_set(self.reborn_set, self.cupid_dict))
+
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
-            if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME:
-                if _id in self.cupid_dict:
-                    await self.new_moon_mode.do_action(self.interface, cupid_target=self.players[self.cupid_dict[_id]])
 
         self.reborn_set = set()
 
