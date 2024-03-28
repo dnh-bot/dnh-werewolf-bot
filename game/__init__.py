@@ -345,7 +345,7 @@ class Game:
         ))
 
     def get_following_players_set(self, player_set, cupid_dict):
-        return set(cupid_dict[_id] for _id in player_set)
+        return set(cupid_dict[_id] for _id in player_set if _id in cupid_dict)
 
     async def add_watcher(self, id_):
         if id_ in self.players:
