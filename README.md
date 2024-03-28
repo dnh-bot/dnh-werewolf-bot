@@ -236,6 +236,4 @@ Discord chat group: https://discord.gg/ceJAgPEMCw
 
 - [Ginny Nguyen](https://github.com/giinnynguyen)
 
-- [tinywanderer](https://github.com/tinywanderer)
-
 - [maidxn](https://github.com/maidxn)
