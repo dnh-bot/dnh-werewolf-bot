@@ -61,8 +61,9 @@ async def do_leave(game, message, force=False):
         await message.reply(text_templates.generate_text("game_already_started_text"))
 
 
-async def do_watch(game, message):
+async def do_watch(game, message, force=False):
     """Watch game"""
+    print("watch with force=", force)
     watched_players = await game.add_watcher(message.author.id)
     if watched_players > 0:
         await message.channel.send(text_templates.generate_text("reply_watch_text", user=message.author.display_name, watched_players=watched_players))
@@ -75,8 +76,9 @@ async def do_watch(game, message):
         )
 
 
-async def do_unwatch(game, message):
+async def do_unwatch(game, message, force=False):
     """Unwatch game"""
+    print("unwatch with force=", force)
     watched_players = await game.remove_watcher(message.author.id)
     if watched_players >= 0:
         await message.channel.send(text_templates.generate_text("reply_unwatch_text", user=message.author.display_name, watched_players=watched_players))

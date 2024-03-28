@@ -146,6 +146,15 @@
     "exclusive_roles": [],
     "required_params": ["player_id"]
   },
+  "punish": {
+    "description": {
+      "vi": "Lựa chọn một người sẽ bị đưa lên máy chém, sử dụng khi có sự kiện new moon Trừng Phạt",
+      "en": "Vote a player, use on when new moon event Punishment"
+    },
+    "valid_channels": ["CEMETERY"],
+    "exclusive_roles": [],
+    "required_params": ["player_id"]
+  },
   "kill": {
     "description": {
       "vi": "Lựa chọn một người sẽ bị ăn thịt trong đêm.",

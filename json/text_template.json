@@ -148,6 +148,13 @@
       "en": ["👋🏻 Hi <@{player_id}>"]
     }
   },
+  "gameplay_welcome_rematch_text": {
+    "params": ["rematch_players"],
+    "template": {
+      "vi": ["👋🏻 Chào mừng trở lại {rematch_players}"],
+      "en": ["👋🏻 Welcome back {rematch_players}"]
+    }
+  },
   "gameplay_leave_text": {
     "params": ["player_id"],
     "template": {
@@ -593,6 +600,13 @@
       "en": ["{user} is still alive."]
     }
   },
+  "invalid_punish_in_cemetery_text": {
+    "params": [],
+    "template": {
+      "vi": ["Chỉ sử dụng trong buổi sáng của sự kiện new moon **Trừng Phạt**!"],
+      "en": ["Only use in the morning of new moon event **Punishment**!"]
+    }
+  },
   "killed_users_text": {
     "params": ["user"],
     "template": {
@@ -659,6 +673,13 @@
     "template": {
       "vi": ["Vẫn chưa có ai cả :("],
       "en": ["Nobody here :("]
+    }
+  },
+  "prevent_self_voting_text": {
+    "params": [],
+    "template": {
+      "vi": ["Đừng có tự vote mình bạn ơi :(. Bạn có ổn không? :("],
+      "en": ["Don't vote yourself :(. Are you okay? :("]
     }
   },
   "invalid_channel_text": {
@@ -1233,7 +1254,7 @@
       "en": ["🪙 The universe has flipped a coin and the result was {coin_value_str}."]
     }
   },
-  "new_moon_twin_flame_result_text": {
+  "new_moon_twin_flame_announcement_text": {
     "params": [],
     "template": {
       "vi": ["💞 Khi 2 linh hồn hoà làm một, họ nguyện sống chết cùng nhau."],
@@ -1247,11 +1268,25 @@
       "en": ["👁️ The seer saw the character {target_role} while sleepwalking!"]
     }
   },
-  "new_moon_vegetarian_result_text": {
+  "new_moon_full_moon_vegetarian_result_text": {
     "params": ["target_role"],
     "template": {
       "vi": ["🌕 Hôm nay là ngày rằm, nghỉ ăn thịt một bữa nha bạn ơi!"],
       "en": ["🌕 Today is the full moon day, please stop killing!"]
+    }
+  },
+  "new_moon_punishment_announcement_text": {
+    "params": ["cmd_usages"],
+    "template": {
+      "vi": ["👹 Sự kiện **Trừng Phạt**: Hãy sử dụng lệnh {cmd_usages} để vote 1 người trong buổi sáng nay"],
+      "en": ["👹 Event **Punishment**: Use command {cmd_usages} to vote 1 person in this morning"]
+    }
+  },
+  "new_moon_punishment_result_text": {
+    "params": ["author", "target"],
+    "template": {
+      "vi": ["👹 {author} đã biểu quyết trừng phạt {target}"],
+      "en": ["👹 {author} voted to punish {target}"]
     }
   }
 }

@@ -13,10 +13,10 @@ def get_mode_title(key):
 
 
 def generate_on_off_value(str_value):
-    if str_value in ['True', 'on']:
+    if str_value in ["True", "on"]:
         return text_templates.get_word_in_language("turn_on").capitalize()
 
-    if str_value in ['False', 'off']:
+    if str_value in ["False", "off"]:
         return text_templates.get_word_in_language("turn_off").capitalize()
 
     return "None"

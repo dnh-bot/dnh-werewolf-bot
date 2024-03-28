@@ -100,7 +100,7 @@ class Game:
             return "Mode ID must be a valid number."
         if int(mode_id) < 1 or int(mode_id) > len(modes_list):
             return f"Mode ID must be between 1 and {len(modes_list)}"
-        if status not in ['on', 'off']:
+        if status not in ["on", "off"]:
             return "Set mode value must be `on` or `off`"
 
         mode_str = modes_list[int(mode_id) - 1]
@@ -265,6 +265,7 @@ class Game:
         await asyncio.gather(
             *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True) for _id in self.players]
         )
+        await self.interface.send_action_text_to_channel("gameplay_welcome_rematch_text", config.GAMEPLAY_CHANNEL, rematch_players=current_players)
         await asyncio.sleep(0)
 
     async def delete_channel(self):
@@ -342,6 +343,9 @@ class Game:
             ),
             "\n"
         ))
+
+    def get_following_players_set(self, player_set, cupid_dict):
+        return set(cupid_dict[_id] for _id in player_set if _id in cupid_dict)
 
     async def add_watcher(self, id_):
         if id_ in self.players:
@@ -496,11 +500,12 @@ class Game:
         )
         await self.interface.send_embed_to_channel(status_embed_data, channel_name)
 
-        role_list = [self.get_role_list()]
-        players_embed_data = text_template.generate_player_list_embed(
-            self.get_all_players(), None, role_list, self.modes.get("reveal_role", False)
-        )
-        await self.interface.send_embed_to_channel(players_embed_data, channel_name)
+        if self.is_started():
+            role_list = [self.get_role_list()]
+            players_embed_data = text_template.generate_player_list_embed(
+                self.get_all_players(), None, role_list, self.modes.get("reveal_role", False)
+            )
+            await self.interface.send_embed_to_channel(players_embed_data, channel_name)
 
     async def run_game_loop(self):
         print("Starting game loop")
@@ -681,14 +686,18 @@ class Game:
             self.new_moon_mode.set_random_event()
             await self.announce_current_new_moon_event()
 
+            if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT and len(self.get_dead_players()):
+                alive_players_embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
+                await self.new_moon_mode.do_new_daytime_phase(self.interface, alive_players_embed_data=alive_players_embed_data)
+
             # Mute all party channels
             await self.control_muting_party_channel(True)
 
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
-            await asyncio.gather(
-                *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
-                  for _id, player in self.players.items() if player.is_alive()]
-            )
+            await asyncio.gather(*[
+                self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
+                for _id, player in self.players.items() if player.is_alive()
+            ])
         else:
             print("Error no player in game.")
             await self.stop()
@@ -704,19 +713,13 @@ class Game:
             print("lynched list:", self.voter_dict)
             self.voter_dict = {}
 
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.HEADS_OR_TAILS.value:
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.HEADS_OR_TAILS:
             coin_toss_value = self.new_moon_mode.do_coin_toss()
             print("coin toss value =", coin_toss_value)
             if coin_toss_value != 0:
-                coin_value_str = text_templates.get_word_in_language("coin_head")
                 lynched, votes = None, 0
-            else:
-                coin_value_str = text_templates.get_word_in_language("coin_tail")
 
-            await self.interface.send_action_text_to_channel(
-                "new_moon_heads_or_tails_result_text", config.GAMEPLAY_CHANNEL,
-                coin_value_str=coin_value_str
-            )
+            await self.new_moon_mode.do_action(self.interface, coin_toss_value=coin_toss_value)
 
         if lynched:
             await self.players[lynched].get_killed()
@@ -835,14 +838,12 @@ class Game:
                 died_player=f"<@{self.cupid_dict[cupid_couple]}>", follow_player=f"<@{cupid_couple}>"
             )
 
-        is_twin_flame_announced = False
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME and self.cupid_dict:
+            await self.new_moon_mode.do_end_nighttime_phase(self.interface)
+            self.reborn_set.update(self.get_following_players_set(self.reborn_set, self.cupid_dict))
+
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.TWIN_FLAME.value and _id in self.cupid_dict:
-            if not is_twin_flame_announced:
-                await self.interface.send_action_text_to_channel("new_moon_twin_flame_result_text", config.GAMEPLAY_CHANNEL)
-                is_twin_flame_announced = True
-            await self.players[self.cupid_dict[_id]].on_reborn()
 
         self.reborn_set = set()
 
@@ -983,7 +984,7 @@ class Game:
         # print(self.players)
         author = self.players.get(author_id)
         if author is None or not author.is_alive():
-            if cmd != "zombie":  # Zombie can use skill after death
+            if cmd not in ["zombie", "punish"]:  # User can use these commands after death
                 return text_templates.generate_text("invalid_alive_author_text", cmd=cmd)
 
         if cmd == "auto":
@@ -1000,9 +1001,9 @@ class Game:
             return await self.zombie(author)
 
         if not targets[0].is_alive() and cmd != "reborn":
-            return text_templates.generate_text("dead_target_text" if cmd == "vote" else "invalid_target_text")
+            return text_templates.generate_text("dead_target_text" if cmd in ["vote", "punish"] else "invalid_target_text")
 
-        if cmd in ("vote", "kill", "guard", "hunter", "seer", "reborn", "curse"):
+        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse"):
             return await getattr(self, cmd)(author, targets[0])
 
         if cmd == "ship":
@@ -1015,14 +1016,31 @@ class Game:
     async def vote(self, author, target):
         author_id = author.player_id
         target_id = target.player_id
+        if author_id == target_id:
+            return text_templates.generate_text("prevent_self_voting_text")
 
         # Vote for target user
         self.voter_dict[author_id] = target_id
         return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
+    async def punish(self, author, target):
+        new_moon_punishment_event = self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT
+        is_day_time = self.game_phase == const.GamePhase.DAY
+        # May also check if author is dead or not?
+        if not (new_moon_punishment_event and is_day_time):
+            return text_templates.generate_text("invalid_punish_in_cemetery_text")
+
+        author_id = author.player_id
+        target_id = target.player_id
+
+        # Punish for target user
+        self.voter_dict[author_id] = target_id
+
+        return await self.new_moon_mode.do_action(self.interface, author=f"<@{author_id}>", target=f"<@{target_id}>")
+
     async def kill(self, author, target):
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.FULL_MOON_VEGETARIAN.value:
-            return text_templates.generate_text("new_moon_vegetarian_result_text")
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
+            return await self.new_moon_mode.do_action(self.interface)
 
         if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
@@ -1076,12 +1094,8 @@ class Game:
         if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
             self.night_pending_kill_list.append(target_id)
 
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == const.NewMoonEvent.SOMNAMBULISM.value:
-            await self.interface.send_action_text_to_channel(
-                "new_moon_somnambulism_result_text",
-                config.GAMEPLAY_CHANNEL,
-                target_role=self.players[target_id].get_role()
-            )
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.SOMNAMBULISM:
+            await self.new_moon_mode.do_action(self.interface, target=target)
 
         return text_templates.generate_text(
             f"seer_after_voting_{'' if target.seer_seen_as_werewolf() else 'not_'}werewolf_text",
@@ -1180,11 +1194,11 @@ class Game:
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
 
     async def hunter(self, author, target):
-        if not isinstance(author, roles.Hunter):
-            return text_templates.generate_text("invalid_author_text")
-
         if self.game_phase != const.GamePhase.NIGHT:
             return text_templates.generate_text("invalid_nighttime_text")
+
+        if not isinstance(author, roles.Hunter):
+            return text_templates.generate_text("invalid_author_text")
 
         # author_id = author.player_id
         target_id = target.player_id
