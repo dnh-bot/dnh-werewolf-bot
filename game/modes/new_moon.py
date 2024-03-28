@@ -66,6 +66,7 @@ class NewMoonMode:
             return
 
     async def do_end_nighttime_phase(self, interface, **kwargs):
+        print("New Moon do_end_nighttime_phase kwargs", kwargs)
         if self.current_event == NewMoonMode.TWIN_FLAME:
             await interface.send_action_text_to_channel("new_moon_twin_flame_announcement_text", GAMEPLAY_CHANNEL)
             return
