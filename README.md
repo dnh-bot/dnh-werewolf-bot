@@ -213,3 +213,27 @@ It's open source and free to use Discord bot.
 
 Don't hesitate to contact us for guiding setup.
 Discord chat group: https://discord.gg/ceJAgPEMCw
+
+# Contributors
+
+- [nitro2](https://github.com/nitro2)
+
+- [Hello World](https://github.com/neihousaigaai)
+
+- [Stanley00](https://github.com/Stanley00)
+
+- [huybt22](https://github.com/huybt22)
+
+- [Sherly1001](https://github.com/Sherly1001)
+
+- [Alaire Sena](https://github.com/alaireselene)
+
+- [vankhanh97](https://github.com/vankhanh97)
+
+- [tranduynam2904](https://github.com/tranduynam2904)
+
+- [hthanhdev](https://github.com/hthanhdev)
+
+- [Ginny Nguyen](https://github.com/giinnynguyen)
+
+- [maidxn](https://github.com/maidxn)
