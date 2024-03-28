@@ -840,7 +840,7 @@ class Game:
 
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME and self.cupid_dict:
             await self.new_moon_mode.do_end_nighttime_phase(self.interface)
-            self.reborn_set = self.reborn_set.update(self.get_following_players_set(self.reborn_set, self.cupid_dict))
+            self.reborn_set.update(self.get_following_players_set(self.reborn_set, self.cupid_dict))
 
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
