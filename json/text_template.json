@@ -384,18 +384,25 @@
       "en": ["🔮 What does the Seer want to see, from whom? Cast a spell by entering `{bot_prefix}seer ID` to see who that player is."]
     }
   },
-  "seer_after_voting_werewolf_text": {
+  "seer_after_voting_text": {
     "params": ["target"],
     "template": {
-      "vi": ["👍🏻 Ồ, {target} là Sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."],
-      "en": ["👍🏻 Oh, {target} is a Werewolf. Magic power is exhausted, Seer needs to go to sleep to restore energy."]
+      "vi": ["👀 Đêm nay, Tiên tri muốn soi {target}."],
+      "en": ["👀 This night, Seer wants to see {target}."]
     }
   },
-  "seer_after_voting_not_werewolf_text": {
+  "seer_result_werewolf_text": {
     "params": ["target"],
     "template": {
-      "vi": ["👎🏻 Ồ, {target} không phải là Sói. Pháp lực đã hết, tiên tri cần đi ngủ để hồi phục năng lượng."],
-      "en": ["👎🏻 Oh, {target} is not a Werewolf. Magic power is exhausted, Seer needs to go to sleep to restore energy."]
+      "vi": ["👍🏻 Ồ, {target} là Sói."],
+      "en": ["👍🏻 Oh, {target} is a Werewolf."]
+    }
+  },
+  "seer_result_not_werewolf_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["👎🏻 Ồ, {target} không phải là Sói."],
+      "en": ["👎🏻 Oh, {target} is not a Werewolf."]
     }
   },
   "guard_before_voting_text": {
@@ -414,6 +421,13 @@
     }
   },
   "guard_after_voting_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🛡️ Đêm nay, Bảo vệ muốn bảo vệ {target}"],
+      "en": ["🛡️ This night, Guard wants to guard {target}"]
+    }
+  },
+  "guard_result_text": {
     "params": ["target"],
     "template": {
       "vi": ["🛡️ Đã bảo vệ thành công {target}"],

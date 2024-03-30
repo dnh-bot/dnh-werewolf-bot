@@ -795,6 +795,30 @@ class Game:
         # pylint: disable=too-many-branches
         await self.do_run_auto_hook()
         print("do_end_nighttime_phase")
+
+        # TODO: move to Player class
+        seer_author, seer_target_id = None, None
+        guard_author, guard_target_id = None, None
+
+        for player in self.get_alive_players():
+            if isinstance(player, roles.Seer):
+                seer_author, seer_target_id = player, player.get_target()
+            elif isinstance(player, roles.Guard):
+                guard_author, guard_target_id = player, player.get_target()
+
+        if seer_target_id:
+            await seer_author.send_to_personal_channel(
+                text_templates.generate_text(
+                    f"seer_result_{'' if self.players[seer_target_id].seer_seen_as_werewolf() else 'not_'}werewolf_text",
+                    target=f"<@{seer_target_id}>"
+                )
+            )
+
+        if guard_target_id:
+            await guard_author.send_to_personal_channel(
+                text_templates.generate_text("guard_result_text", target=f"<@{guard_target_id}>")
+            )
+
         kills = None
         if self.wolf_kill_dict:
             killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
@@ -1072,8 +1096,7 @@ class Game:
         if author.is_yesterday_target(target_id):
             return text_templates.generate_text("invalid_guard_yesterdaytarget_text")
 
-        author.on_use_mana()
-        author.set_guard_target(target_id)
+        author.set_target(target_id)
         target.get_protected()
         return text_templates.generate_text("guard_after_voting_text", target=f"<@{target_id}>")
 
@@ -1090,17 +1113,14 @@ class Game:
         if author.get_mana() == 0:
             return text_templates.generate_text("out_of_mana_text")
 
-        author.on_use_mana()
+        author.set_target(target_id)
         if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
             self.night_pending_kill_list.append(target_id)
 
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.SOMNAMBULISM:
             await self.new_moon_mode.do_action(self.interface, target=target)
 
-        return text_templates.generate_text(
-            f"seer_after_voting_{'' if target.seer_seen_as_werewolf() else 'not_'}werewolf_text",
-            target=f"<@{target_id}>"
-        )
+        return text_templates.generate_text(f"seer_after_voting_text", target=f"<@{target_id}>")
 
     async def reborn(self, author, target):
         if self.game_phase != const.GamePhase.NIGHT:
