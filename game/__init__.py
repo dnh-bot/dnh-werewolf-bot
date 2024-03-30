@@ -797,38 +797,11 @@ class Game:
         print("do_end_nighttime_phase")
 
         # TODO: move to Player class
-        seer_author, seer_target_id = None, None
-        guard_author, guard_target_id = None, None
-
         for player in self.get_alive_players():
             if isinstance(player, roles.Seer):
-                seer_author, seer_target_id = player, player.get_target()
+                await self.seer_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Guard):
-                guard_author, guard_target_id = player, player.get_target()
-
-        if seer_target_id:
-            seer_target = self.players[seer_target_id]
-
-            if self.modes.get("seer_can_kill_fox") and isinstance(seer_target, roles.Fox):
-                self.night_pending_kill_list.append(seer_target_id)
-
-            if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.SOMNAMBULISM:
-                await self.new_moon_mode.do_action(self.interface, target=seer_target)
-
-            await seer_author.send_to_personal_channel(
-                text_templates.generate_text(
-                    f"seer_result_{'' if seer_target.seer_seen_as_werewolf() else 'not_'}werewolf_text",
-                    target=f"<@{seer_target_id}>"
-                )
-            )
-
-        if guard_target_id:
-            guard_target = self.players[guard_target_id]
-            guard_target.get_protected()
-
-            await guard_author.send_to_personal_channel(
-                text_templates.generate_text("guard_result_text", target=f"<@{guard_target_id}>")
-            )
+                await self.guard_do_end_nighttime_phase(player)
 
         kills = None
         if self.wolf_kill_dict:
@@ -856,7 +829,6 @@ class Game:
                         if hunted:
                             final_kill_set.add(hunted)
 
-
             kills = ", ".join(f"<@{_id}>" for _id in final_kill_set)
             self.night_pending_kill_list = []  # Reset killed list for next day
 
@@ -881,6 +853,32 @@ class Game:
             await self.players[_id].on_reborn()
 
         self.reborn_set = set()
+
+    async def guard_do_end_nighttime_phase(self, author):
+        target_id = author.get_target()
+        target = self.players[target_id]
+        target.get_protected()
+
+        await author.send_to_personal_channel(
+            text_templates.generate_text("guard_result_text", target=f"<@{target_id}>")
+        )
+
+    async def seer_do_end_nighttime_phase(self, author):
+        target_id = author.get_target()
+        target = self.players[target_id]
+
+        if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
+            self.night_pending_kill_list.append(target_id)
+
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.SOMNAMBULISM:
+            await self.new_moon_mode.do_action(self.interface, target=target)
+
+        await author.send_to_personal_channel(
+            text_templates.generate_text(
+                f"seer_result_{'' if target.seer_seen_as_werewolf() else 'not_'}werewolf_text",
+                target=f"<@{target_id}>"
+            )
+        )
 
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
