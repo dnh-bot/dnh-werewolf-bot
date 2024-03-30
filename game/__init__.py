@@ -1047,9 +1047,15 @@ class Game:
         assert self.players is not None
         # print(self.players)
         author = self.players.get(author_id)
-        if author is None or not author.is_alive():
-            if cmd not in ["zombie", "punish"]:  # User can use these commands after death
-                return text_templates.generate_text("invalid_alive_author_text", cmd=cmd)
+        if author is None:
+            return text_templates.generate_text("invalid_author_text")
+
+        is_alive_author_command = cmd not in ["zombie", "punish"]
+        if is_alive_author_command != author.is_alive():
+            return text_templates.generate_text(
+                "invalid_author_status_text",
+                status=text_templates.get_word_in_language("alive" if is_alive_author_command else "dead")
+            )
 
         if cmd == "auto":
             return await self.register_auto(author, *targets_id)
@@ -1064,8 +1070,12 @@ class Game:
         if cmd == "zombie":
             return await self.zombie(author)
 
-        if not targets[0].is_alive() and cmd != "reborn":
-            return text_templates.generate_text("dead_target_text" if cmd in ["vote", "punish"] else "invalid_target_text")
+        is_alive_target_command = cmd != "reborn"
+        if is_alive_target_command != targets[0].is_alive():
+            return text_templates.generate_text(
+                "invalid_target_status_text",
+                status=text_templates.get_word_in_language("alive" if is_alive_target_command else "dead")
+            )
 
         if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse"):
             return await getattr(self, cmd)(author, targets[0])
@@ -1170,9 +1180,6 @@ class Game:
         if author.get_power() == 0:
             return text_templates.generate_text("out_of_power_text")
 
-        if target.is_alive():
-            return text_templates.generate_text("invalid_player_alive_text", user=f"<@{target_id}>")
-
         author.set_reborn_target(target_id)
 
         return text_templates.generate_text("witch_after_reborn_text", target=f"<@{target_id}>")
@@ -1254,9 +1261,6 @@ class Game:
 
         # author_id = author.player_id
         target_id = target.player_id
-
-        if not target.is_alive():
-            return text_templates.generate_text("invalid_hunter_target_text", user=f"<@{target_id}>")
 
         author.set_hunted_target(target_id)
         return text_templates.generate_text("hunter_after_voting_text", target=f"<@{target_id}>")

@@ -48,6 +48,14 @@
     "turn_off": {
       "vi": "tắt",
       "en": "off"
+    },
+    "alive": {
+      "vi": "còn sống",
+      "en": "alive"
+    },
+    "dead": {
+      "vi": "đã chết",
+      "en": "dead"
     }
   },
   "LABEL": {
@@ -470,13 +478,6 @@
       "en": ["🔫 Hunter has targeted victim {target}"]
     }
   },
-  "invalid_hunter_target_text": {
-    "params": [],
-    "template": {
-      "vi": ["Người ta đã chết rồi còn cố giết nữa 😡"],
-      "en": ["Don't target dead person 😡"]
-    }
-  },
   "hunter_killed_text": {
     "params": ["target"],
     "template": {
@@ -621,13 +622,6 @@
       "en": ["You can only use your skill once!"]
     }
   },
-  "invalid_player_alive_text": {
-    "params": ["user"],
-    "template": {
-      "vi": ["{user} còn sống mà bạn!"],
-      "en": ["{user} is still alive."]
-    }
-  },
   "invalid_punish_in_cemetery_text": {
     "params": [],
     "template": {
@@ -682,13 +676,6 @@
       "en": ["The villagers have unanimously removed {user} from the village"]
     }
   },
-  "dead_target_text": {
-    "params": [],
-    "template": {
-      "vi": ["Người ta đã hẹo rồi, đừng có vote nữa. Vote người nào còn sống thôi :3"],
-      "en": ["That people have already dead, don't vote anymore. Please vote who is still alive :3"]
-    }
-  },
   "nobody_voted_text": {
     "params": [],
     "template": {
@@ -724,6 +711,13 @@
       "en": ["Use your skills to the right people!"]
     }
   },
+  "invalid_target_status_text": {
+    "params": ["status"],
+    "template": {
+      "vi": ["Dùng kỹ năng này đến người {status} bạn êy!"],
+      "en": ["Use this skill to {status} people!"]
+    }
+  },
   "invalid_author_text": {
     "params": [],
     "template": {
@@ -731,11 +725,18 @@
       "en": ["You are currently not allowed to use this skill!"]
     }
   },
-  "invalid_alive_author_text": {
-    "params": ["cmd"],
+  "invalid_author_status_text": {
+    "params": ["status"],
     "template": {
-      "vi": ["Bạn phải sống thì mới được dùng lệnh {cmd}!"],
-      "en": ["You must be alive in-game to {cmd}!"]
+      "vi": ["Bạn phải {status} thì mới được dùng kỹ năng này!"],
+      "en": ["You must be {status} in-game to use this skill!"]
+    }
+  },
+  "invalid_phase_text": {
+    "params": ["phase"],
+    "template": {
+      "vi": ["Ráng đợi tới {phase} bạn êy!"],
+      "en": ["Please wait until the {phase}, my friend!"]
     }
   },
   "invalid_nighttime_text": {
