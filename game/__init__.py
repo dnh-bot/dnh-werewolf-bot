@@ -855,6 +855,7 @@ class Game:
         self.reborn_set = set()
 
     async def guard_do_end_nighttime_phase(self, author):
+        author.on_use_mana()
         target_id = author.get_target()
         target = self.players[target_id]
         target.get_protected()
@@ -864,6 +865,7 @@ class Game:
         )
 
     async def seer_do_end_nighttime_phase(self, author):
+        author.on_use_mana()
         target_id = author.get_target()
         target = self.players[target_id]
 
