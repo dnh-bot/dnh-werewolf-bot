@@ -802,6 +802,8 @@ class Game:
                 await self.seer_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Guard):
                 await self.guard_do_end_nighttime_phase(player)
+            elif isinstance(player, roles.Witch):
+                await self.witch_do_end_nighttime_phase(player)
 
         kills = None
         if self.wolf_kill_dict:
@@ -855,8 +857,12 @@ class Game:
         self.reborn_set = set()
 
     async def guard_do_end_nighttime_phase(self, author):
-        author.on_use_mana()
         target_id = author.get_target()
+        if author.get_mana() == 0 or target_id is None:
+            return
+
+        author.on_use_mana()
+
         target = self.players[target_id]
         target.get_protected()
 
@@ -865,8 +871,12 @@ class Game:
         )
 
     async def seer_do_end_nighttime_phase(self, author):
-        author.on_use_mana()
         target_id = author.get_target()
+        if author.get_mana() == 0 or target_id is None:
+            return
+
+        author.on_use_mana()
+
         target = self.players[target_id]
 
         if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
@@ -881,6 +891,25 @@ class Game:
                 target=f"<@{target_id}>"
             )
         )
+
+    async def witch_do_end_nighttime_phase(self, author):
+        reborn_target_id = author.get_reborn_target()
+        if author.get_power() > 0 and reborn_target_id:
+            author.on_use_power()
+            self.reborn_set.add(reborn_target_id)
+
+            await author.send_to_personal_channel(
+                text_templates.generate_text("witch_reborn_result_text", target=f"<@{reborn_target_id}>")
+            )
+
+        curse_target_id = author.get_curse_target()
+        if author.get_curse_power() > 0 and curse_target_id:
+            author.on_use_curse_power()
+            self.night_pending_kill_list.append(curse_target_id)
+
+            await author.send_to_personal_channel(
+                text_templates.generate_text("witch_curse_result_text", target=f"<@{curse_target_id}>")
+            )
 
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
@@ -1144,8 +1173,7 @@ class Game:
         if target.is_alive():
             return text_templates.generate_text("invalid_player_alive_text", user=f"<@{target_id}>")
 
-        author.on_use_power()
-        self.reborn_set.add(target_id)
+        author.set_reborn_target(target_id)
 
         return text_templates.generate_text("witch_after_reborn_text", target=f"<@{target_id}>")
 
@@ -1165,9 +1193,7 @@ class Game:
         if author.get_curse_power() == 0:
             return text_templates.generate_text("out_of_power_text")
 
-        author.on_use_curse_power()
-        # Kill someone
-        self.night_pending_kill_list.append(target_id)
+        author.set_curse_target(target_id)
 
         return text_templates.generate_text("witch_after_curse_text", target=f"<@{target_id}>")
 

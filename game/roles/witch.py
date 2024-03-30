@@ -8,6 +8,8 @@ class Witch(Villager):
         super().__init__(interface, player_id, player_name)
         self.power = 1
         self.curse_power = 1
+        self.reborn_target = None
+        self.curse_target = None
 
     def get_power(self):
         return self.power
@@ -27,3 +29,15 @@ class Witch(Villager):
     async def on_action(self, embed_data):
         await self.interface.send_action_text_to_channel("witch_before_voting_text", self.channel_name)
         await self.interface.send_embed_to_channel(embed_data, self.channel_name)
+
+    def get_reborn_target(self):
+        return self.reborn_target
+
+    def set_reborn_target(self, target_id):
+        self.reborn_target = target_id
+
+    def get_curse_target(self):
+        return self.curse_target
+
+    def set_curse_target(self, target_id):
+        self.curse_target = target_id
