@@ -32,3 +32,5 @@ class Guard(Villager):
             return text_templates.generate_text("invalid_guard_selfprotection_text")
         if self.is_yesterday_target(target_id):
             return text_templates.generate_text("invalid_guard_yesterdaytarget_text")
+
+        return ""

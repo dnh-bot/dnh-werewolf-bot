@@ -70,7 +70,7 @@ class Character:
         self.target = target_id
 
     def generate_invalid_target_text(self, target_id):
-        return ""
+        pass
 
     def register_target(self, target):
         target_id = target.player_id

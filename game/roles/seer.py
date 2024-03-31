@@ -1,11 +1,8 @@
-import text_templates
 from game.roles.villager import Villager
 
 
 class Seer(Villager):
-    # Seer can check 1 person each night to see if they are villager/werewolf
-    def __init__(self, interface, player_id, player_name):
-        super().__init__(interface, player_id, player_name)
+    """Seer can check 1 person each night to see if they are villager/werewolf"""
 
     async def on_night(self):
         self.target = None
