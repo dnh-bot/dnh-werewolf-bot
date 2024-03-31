@@ -1,3 +1,4 @@
+import text_templates
 from game.roles.villager import Villager
 
 
@@ -28,3 +29,18 @@ class Guard(Villager):
 
     def set_target(self, target_id):
         self.target = target_id
+
+    def register_target(self, target, allow_guard_self_protection):
+        if self.get_mana() == 0:
+            return text_templates.generate_text("out_of_mana_text")
+
+        target_id = target.player_id
+
+        if not allow_guard_self_protection and self.player_id == target_id:
+            return text_templates.generate_text("invalid_guard_selfprotection_text")
+        if self.is_yesterday_target(target_id):
+            return text_templates.generate_text("invalid_guard_yesterdaytarget_text")
+
+        self.set_target(target_id)
+
+        return text_templates.generate_text("guard_after_voting_text", target=f"<@{target_id}>")

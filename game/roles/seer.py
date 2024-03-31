@@ -1,3 +1,4 @@
+import text_templates
 from game.roles.villager import Villager
 
 
@@ -21,3 +22,12 @@ class Seer(Villager):
 
     def set_target(self, target_id):
         self.target = target_id
+
+    def register_target(self, target):
+        if self.get_mana() == 0:
+            return text_templates.generate_text("out_of_mana_text")
+
+        target_id = target.player_id
+        self.set_target(target_id)
+
+        return text_templates.generate_text("seer_after_voting_text", target=f"<@{target_id}>")

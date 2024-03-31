@@ -1135,20 +1135,7 @@ class Game:
         if not isinstance(author, roles.Guard):
             return text_templates.generate_text("invalid_author_text")
 
-        author_id = author.player_id
-        target_id = target.player_id
-
-        if author.get_mana() == 0:
-            return text_templates.generate_text("out_of_mana_text")
-
-        if not self.modes.get("allow_guard_self_protection") and author_id == target_id:
-            return text_templates.generate_text("invalid_guard_selfprotection_text")
-        if author.is_yesterday_target(target_id):
-            return text_templates.generate_text("invalid_guard_yesterdaytarget_text")
-
-        author.set_target(target_id)
-
-        return text_templates.generate_text("guard_after_voting_text", target=f"<@{target_id}>")
+        return author.register_target(target, self.modes.get("allow_guard_self_protection", False))
 
     async def seer(self, author, target):
         if self.game_phase != const.GamePhase.NIGHT:
@@ -1157,15 +1144,7 @@ class Game:
         if not isinstance(author, roles.Seer):
             return text_templates.generate_text("invalid_author_text")
 
-        # author_id = author.player_id
-        target_id = target.player_id
-
-        if author.get_mana() == 0:
-            return text_templates.generate_text("out_of_mana_text")
-
-        author.set_target(target_id)
-
-        return text_templates.generate_text("seer_after_voting_text", target=f"<@{target_id}>")
+        return author.register_target(target)
 
     async def reborn(self, author, target):
         if self.game_phase != const.GamePhase.NIGHT:
@@ -1174,15 +1153,7 @@ class Game:
         if not isinstance(author, roles.Witch):
             return text_templates.generate_text("invalid_author_text")
 
-        # author_id = author.player_id
-        target_id = target.player_id
-
-        if author.get_power() == 0:
-            return text_templates.generate_text("out_of_power_text")
-
-        author.set_reborn_target(target_id)
-
-        return text_templates.generate_text("witch_after_reborn_text", target=f"<@{target_id}>")
+        return author.register_reborn_target(target)
 
     async def curse(self, author, target):
         if not self.modes.get("witch_can_kill"):
@@ -1194,15 +1165,7 @@ class Game:
         if not isinstance(author, roles.Witch):
             return text_templates.generate_text("invalid_author_text")
 
-        # author_id = author.player_id
-        target_id = target.player_id
-
-        if author.get_curse_power() == 0:
-            return text_templates.generate_text("out_of_power_text")
-
-        author.set_curse_target(target_id)
-
-        return text_templates.generate_text("witch_after_curse_text", target=f"<@{target_id}>")
+        return author.register_curse_target(target)
 
     async def zombie(self, author):
         if self.game_phase != const.GamePhase.NIGHT:
@@ -1259,17 +1222,13 @@ class Game:
         if not isinstance(author, roles.Hunter):
             return text_templates.generate_text("invalid_author_text")
 
-        # author_id = author.player_id
-        target_id = target.player_id
+        return author.register_target(target)
 
-        author.set_hunted_target(target_id)
-        return text_templates.generate_text("hunter_after_voting_text", target=f"<@{target_id}>")
-
-    # Kill anyone who is hunted
     async def get_hunted_target_on_hunter_death(self, hunter):
+        """Kill anyone who is hunted"""
         if isinstance(self.players[hunter], roles.Hunter):
-            hunted = self.players[hunter].get_hunted_target()
-            if hunted and hunted != hunter:
+            hunted = self.players[hunter].get_target()
+            if self.players[hunter].is_valid_target(hunted):
                 if await self.players[hunted].get_killed():
                     return hunted
         return None
