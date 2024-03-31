@@ -16,6 +16,25 @@ from game import const, roles, text_template, modes
 from game.modes.new_moon import NewMoonMode
 
 
+def command_verify(valid_phase, valid_role):
+    def wrapper(cmd_func):
+        async def execute(game, author, *a, **kw):
+            if game.game_phase != valid_phase:
+                return text_templates.generate_text(
+                    "invalid_phase_text",
+                    phase=text_templates.get_word_in_language(str(valid_phase))
+                )
+
+            if not isinstance(author, valid_role):
+                return text_templates.generate_text("invalid_author_text")
+
+            return await cmd_func(game, author, *a, **kw)
+
+        return execute
+
+    return wrapper
+
+
 class Game:
     # FIXME:
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
@@ -1128,52 +1147,24 @@ class Game:
         self.wolf_kill_dict[author_id] = target_id
         return text_templates.generate_text("werewolf_kill_text", werewolf=f"<@{author_id}>", target=f"<@{target_id}>")
 
+    @command_verify(const.GamePhase.NIGHT, roles.Guard)
     async def guard(self, author, target):
-        if self.game_phase != const.GamePhase.NIGHT:
-            return text_templates.generate_text("invalid_nighttime_text")
-
-        if not isinstance(author, roles.Guard):
-            return text_templates.generate_text("invalid_author_text")
-
         return author.register_target(target, self.modes.get("allow_guard_self_protection", False))
 
+    @command_verify(const.GamePhase.NIGHT, roles.Seer)
     async def seer(self, author, target):
-        if self.game_phase != const.GamePhase.NIGHT:
-            return text_templates.generate_text("invalid_nighttime_text")
-
-        if not isinstance(author, roles.Seer):
-            return text_templates.generate_text("invalid_author_text")
-
         return author.register_target(target)
 
+    @command_verify(const.GamePhase.NIGHT, roles.Witch)
     async def reborn(self, author, target):
-        if self.game_phase != const.GamePhase.NIGHT:
-            return text_templates.generate_text("invalid_nighttime_text")
-
-        if not isinstance(author, roles.Witch):
-            return text_templates.generate_text("invalid_author_text")
-
         return author.register_reborn_target(target)
 
+    @command_verify(const.GamePhase.NIGHT, roles.Witch)
     async def curse(self, author, target):
-        if not self.modes.get("witch_can_kill"):
-            return text_templates.generate_text("mode_disabled_text")
-
-        if self.game_phase != const.GamePhase.NIGHT:
-            return text_templates.generate_text("invalid_nighttime_text")
-
-        if not isinstance(author, roles.Witch):
-            return text_templates.generate_text("invalid_author_text")
-
         return author.register_curse_target(target)
 
+    @command_verify(const.GamePhase.NIGHT, roles.Zombie)
     async def zombie(self, author):
-        if self.game_phase != const.GamePhase.NIGHT:
-            return text_templates.generate_text("invalid_nighttime_text")
-
-        if not isinstance(author, roles.Zombie):
-            return text_templates.generate_text("invalid_author_text")
-
         author_id = author.player_id
 
         if author.get_power() == 0:
@@ -1215,13 +1206,8 @@ class Game:
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
 
+    @command_verify(const.GamePhase.NIGHT, roles.Hunter)
     async def hunter(self, author, target):
-        if self.game_phase != const.GamePhase.NIGHT:
-            return text_templates.generate_text("invalid_nighttime_text")
-
-        if not isinstance(author, roles.Hunter):
-            return text_templates.generate_text("invalid_author_text")
-
         return author.register_target(target)
 
     async def get_hunted_target_on_hunter_death(self, hunter):
