@@ -14,6 +14,5 @@ disable=
     W0105, # pointless-string-statement
     W0201, # attribute-defined-outside-init
     W0612, # unused-variable
-    R0801, # duplicate-code
 
 ignore-paths=./web

@@ -452,7 +452,7 @@ class Game:
             if author.is_alive():
                 if isinstance(author, (roles.Seer, roles.Guard)):
                     author_status = text_templates.get_label_in_language(
-                        f"author_{'not_use' if author.get_mana() > 0 else 'used'}_mana_status"
+                        f"author_{'not_use' if author.get_target() is None else 'used'}_mana_status"
                     )
                 elif isinstance(author, (roles.Zombie, roles.Cupid)):
                     author_status = text_templates.get_label_in_language(
@@ -877,10 +877,8 @@ class Game:
 
     async def guard_do_end_nighttime_phase(self, author):
         target_id = author.get_target()
-        if author.get_mana() == 0 or target_id is None:
+        if target_id is None:
             return
-
-        author.on_use_mana()
 
         target = self.players[target_id]
         target.get_protected()
@@ -891,10 +889,8 @@ class Game:
 
     async def seer_do_end_nighttime_phase(self, author):
         target_id = author.get_target()
-        if author.get_mana() == 0 or target_id is None:
+        if target_id is None:
             return
-
-        author.on_use_mana()
 
         target = self.players[target_id]
 
@@ -1149,7 +1145,8 @@ class Game:
 
     @command_verify(const.GamePhase.NIGHT, roles.Guard)
     async def guard(self, author, target):
-        return author.register_target(target, self.modes.get("allow_guard_self_protection", False))
+        roles.Guard.set_allow_self_protection(self.modes.get("allow_guard_self_protection", False))
+        return author.register_target(target)
 
     @command_verify(const.GamePhase.NIGHT, roles.Seer)
     async def seer(self, author, target):
@@ -1214,7 +1211,7 @@ class Game:
         """Kill anyone who is hunted"""
         if isinstance(self.players[hunter], roles.Hunter):
             hunted = self.players[hunter].get_target()
-            if self.players[hunter].is_valid_target(hunted):
+            if hunted and hunted != hunter:
                 if await self.players[hunted].get_killed():
                     return hunted
         return None
