@@ -16,7 +16,20 @@ from game import const, roles, text_template, modes
 from game.modes.new_moon import NewMoonMode
 
 
-def command_verify(valid_phase, valid_role):
+def command_verify_author(valid_role):
+    def wrapper(cmd_func):
+        async def execute(game, author, *a, **kw):
+            if author is not None and not isinstance(author, valid_role):
+                return text_templates.generate_text("invalid_author_text")
+
+            return await cmd_func(game, author, *a, **kw)
+
+        return execute
+
+    return wrapper
+
+
+def command_verify_phase(valid_phase):
     def wrapper(cmd_func):
         async def execute(game, author, *a, **kw):
             if game.game_phase != valid_phase:
@@ -24,9 +37,6 @@ def command_verify(valid_phase, valid_role):
                     "invalid_phase_text",
                     phase=text_templates.get_word_in_language(str(valid_phase))
                 )
-
-            if not isinstance(author, valid_role):
-                return text_templates.generate_text("invalid_author_text")
 
             return await cmd_func(game, author, *a, **kw)
 
@@ -1127,15 +1137,11 @@ class Game:
 
         return await self.new_moon_mode.do_action(self.interface, author=f"<@{author_id}>", target=f"<@{target_id}>")
 
+    @command_verify_author(roles.Werewolf)
+    @command_verify_phase(const.GamePhase.NIGHT)
     async def kill(self, author, target):
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
             return await self.new_moon_mode.do_action(self.interface)
-
-        if self.game_phase != const.GamePhase.NIGHT:
-            return text_templates.generate_text("invalid_nighttime_text")
-
-        if not isinstance(author, roles.Werewolf):
-            return text_templates.generate_text("invalid_author_text")
 
         author_id = author.player_id
         target_id = target.player_id
@@ -1143,24 +1149,29 @@ class Game:
         self.wolf_kill_dict[author_id] = target_id
         return text_templates.generate_text("werewolf_kill_text", werewolf=f"<@{author_id}>", target=f"<@{target_id}>")
 
-    @command_verify(const.GamePhase.NIGHT, roles.Guard)
+    @command_verify_author(roles.Guard)
+    @command_verify_phase(const.GamePhase.NIGHT)
     async def guard(self, author, target):
         roles.Guard.set_allow_self_protection(self.modes.get("allow_guard_self_protection", False))
         return author.register_target(target)
 
-    @command_verify(const.GamePhase.NIGHT, roles.Seer)
+    @command_verify_author(roles.Seer)
+    @command_verify_phase(const.GamePhase.NIGHT)
     async def seer(self, author, target):
         return author.register_target(target)
 
-    @command_verify(const.GamePhase.NIGHT, roles.Witch)
+    @command_verify_author(roles.Witch)
+    @command_verify_phase(const.GamePhase.NIGHT)
     async def reborn(self, author, target):
         return author.register_reborn_target(target)
 
-    @command_verify(const.GamePhase.NIGHT, roles.Witch)
+    @command_verify_author(roles.Witch)
+    @command_verify_phase(const.GamePhase.NIGHT)
     async def curse(self, author, target):
         return author.register_curse_target(target)
 
-    @command_verify(const.GamePhase.NIGHT, roles.Zombie)
+    @command_verify_author(roles.Zombie)
+    @command_verify_phase(const.GamePhase.NIGHT)
     async def zombie(self, author):
         author_id = author.player_id
 
@@ -1172,11 +1183,9 @@ class Game:
 
         return text_templates.generate_text("zombie_after_reborn_text")
 
+    @command_verify_author(roles.Cupid)
     async def ship(self, author, target1, target2):
         if author is not None:  # quick adapt couple_random enable
-            if not isinstance(author, roles.Cupid):
-                return text_templates.generate_text("invalid_author_text")
-
             if author.get_power() == 0:
                 return text_templates.generate_text("out_of_power_text")
 
@@ -1203,7 +1212,8 @@ class Game:
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
 
-    @command_verify(const.GamePhase.NIGHT, roles.Hunter)
+    @command_verify_author(roles.Hunter)
+    @command_verify_phase(const.GamePhase.NIGHT)
     async def hunter(self, author, target):
         return author.register_target(target)
 
