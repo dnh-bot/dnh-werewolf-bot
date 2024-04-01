@@ -43,20 +43,18 @@ class Witch(Villager):
     def set_curse_target(self, target_id):
         self.curse_target = target_id
 
-    def register_reborn_target(self, target):
+    def register_reborn_target(self, target_id):
         if self.get_power() == 0:
             return text_templates.generate_text("out_of_power_text")
 
-        target_id = target.player_id
         self.set_reborn_target(target_id)
 
         return text_templates.generate_text("witch_after_reborn_text", target=f"<@{target_id}>")
 
-    def register_curse_target(self, target):
+    def register_curse_target(self, target_id):
         if self.get_curse_power() == 0:
             return text_templates.generate_text("out_of_power_text")
 
-        target_id = target.player_id
         self.set_curse_target(target_id)
 
         return text_templates.generate_text("witch_after_curse_text", target=f"<@{target_id}>")

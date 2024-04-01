@@ -1153,22 +1153,22 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def guard(self, author, target):
         roles.Guard.set_allow_self_protection(self.modes.get("allow_guard_self_protection", False))
-        return author.register_target(target)
+        return author.register_target(target.player_id)
 
     @command_verify_author(roles.Seer)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def seer(self, author, target):
-        return author.register_target(target)
+        return author.register_target(target.player_id)
 
     @command_verify_author(roles.Witch)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def reborn(self, author, target):
-        return author.register_reborn_target(target)
+        return author.register_reborn_target(target.player_id)
 
     @command_verify_author(roles.Witch)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def curse(self, author, target):
-        return author.register_curse_target(target)
+        return author.register_curse_target(target.player_id)
 
     @command_verify_author(roles.Zombie)
     @command_verify_phase(const.GamePhase.NIGHT)
@@ -1215,7 +1215,7 @@ class Game:
     @command_verify_author(roles.Hunter)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def hunter(self, author, target):
-        return author.register_target(target)
+        return author.register_target(target.player_id)
 
     async def get_hunted_target_on_hunter_death(self, hunter):
         """Kill anyone who is hunted"""

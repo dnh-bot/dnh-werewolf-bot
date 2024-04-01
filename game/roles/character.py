@@ -73,9 +73,7 @@ class Character:
         print("checking target_id =", target_id)
         return ""
 
-    def register_target(self, target):
-        target_id = target.player_id
-
+    def register_target(self, target_id):
         invalid_target_text = self.generate_invalid_target_text(target_id)
         if invalid_target_text:
             return invalid_target_text
