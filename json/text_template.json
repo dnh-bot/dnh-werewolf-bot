@@ -608,13 +608,6 @@
       ]
     }
   },
-  "out_of_mana_text": {
-    "params": [],
-    "template": {
-      "vi": ["Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm!"],
-      "en": ["You can only use the skill once per night!"]
-    }
-  },
   "out_of_power_text": {
     "params": [],
     "template": {
