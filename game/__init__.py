@@ -476,7 +476,7 @@ class Game:
                     )
                 elif isinstance(author, roles.Witch):
                     author_status = text_templates.get_label_in_language(
-                        f"author_{'not_use' if author.get_power() > 0 else 'used'}_reborn_power_status"
+                        f"author_{'not_use' if author.get_reborn_power() > 0 else 'used'}_reborn_power_status"
                     ) + "\n"
                     author_status += text_templates.get_label_in_language(
                         f"author_{'not_use' if author.get_curse_power() > 0 else 'used'}_curse_power_status"
@@ -929,8 +929,8 @@ class Game:
 
     async def witch_do_end_nighttime_phase(self, author):
         reborn_target_id = author.get_reborn_target()
-        if author.get_power() > 0 and reborn_target_id:
-            author.on_use_power()
+        if author.get_reborn_power() > 0 and reborn_target_id:
+            author.on_use_reborn_power()
             self.reborn_set.add(reborn_target_id)
 
             await author.send_to_personal_channel(

@@ -8,7 +8,7 @@ class Witch(Villager):
 
     def __init__(self, interface, player_id, player_name):
         super().__init__(interface, player_id, player_name)
-        self.power = 1
+        self.reborn_power = 1
         self.curse_power = 1
         self.reborn_target = None
         self.curse_target = None
@@ -21,11 +21,11 @@ class Witch(Villager):
     def is_can_kill():
         return Witch.can_kill
 
-    def get_power(self):
-        return self.power
+    def get_reborn_power(self):
+        return self.reborn_power
 
-    def on_use_power(self):
-        self.power = 0
+    def on_use_reborn_power(self):
+        self.reborn_power = 0
 
     def get_curse_power(self):
         return self.curse_power
@@ -53,7 +53,7 @@ class Witch(Villager):
         self.curse_target = target_id
 
     def register_reborn_target(self, target_id):
-        if self.get_power() == 0:
+        if self.get_reborn_power() == 0:
             return text_templates.generate_text("out_of_power_text")
 
         self.set_reborn_target(target_id)
