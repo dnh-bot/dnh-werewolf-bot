@@ -4,6 +4,7 @@ from game.roles.villager import Villager
 
 class Witch(Villager):
     # Witch can reborn a dead player 1 time in a game
+    can_kill = True
 
     def __init__(self, interface, player_id, player_name):
         super().__init__(interface, player_id, player_name)
@@ -11,6 +12,14 @@ class Witch(Villager):
         self.curse_power = 1
         self.reborn_target = None
         self.curse_target = None
+
+    @staticmethod
+    def set_can_kill(can_kill):
+        Witch.can_kill = can_kill
+
+    @staticmethod
+    def is_can_kill():
+        return Witch.can_kill
 
     def get_power(self):
         return self.power
@@ -52,6 +61,9 @@ class Witch(Villager):
         return text_templates.generate_text("witch_after_reborn_text", target=f"<@{target_id}>")
 
     def register_curse_target(self, target_id):
+        if not Witch.is_can_kill():
+            return text_templates.generate_text("invalid_author_text")
+
         if self.get_curse_power() == 0:
             return text_templates.generate_text("out_of_power_text")
 

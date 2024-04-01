@@ -140,6 +140,10 @@ class Game:
                 self.new_moon_mode.turn_on()
             else:
                 self.new_moon_mode.turn_off()
+
+        elif mode_str == "witch_can_kill":
+            roles.Witch.set_can_kill(status=="on")
+
         status_str = modes.generate_on_off_value(status)
 
         return text_templates.generate_text("set_mode_successful_text", mode_str=mode_str, status_str=status_str)
@@ -159,6 +163,8 @@ class Game:
         if "allow_guard_self_protection" not in self.modes and "prevent_guard_self_protection" in self.modes:
             self.modes["allow_guard_self_protection"] = not self.modes["prevent_guard_self_protection"]
             print("prevent_guard_self_protection is deprecated, please use allow_guard_self_protection in config file instead")
+
+        roles.Witch.set_can_kill(self.modes.get("witch_can_kill", False))
 
     def add_default_roles(self, role_json_in_string):
         try:
@@ -809,7 +815,7 @@ class Game:
             embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
             # Send alive player list to all skilled characters (guard, seer, etc.)
-            if self.modes.get("witch_can_kill"):
+            if roles.Witch.is_can_kill():
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players()])
             else:
                 await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if not isinstance(player, roles.Witch)])
@@ -927,14 +933,15 @@ class Game:
                 text_templates.generate_text("witch_reborn_result_text", target=f"<@{reborn_target_id}>")
             )
 
-        curse_target_id = author.get_curse_target()
-        if author.get_curse_power() > 0 and curse_target_id:
-            author.on_use_curse_power()
-            self.night_pending_kill_list.append(curse_target_id)
+        if roles.Witch.is_can_kill():
+            curse_target_id = author.get_curse_target()
+            if author.get_curse_power() > 0 and curse_target_id:
+                author.on_use_curse_power()
+                self.night_pending_kill_list.append(curse_target_id)
 
-            await author.send_to_personal_channel(
-                text_templates.generate_text("witch_curse_result_text", target=f"<@{curse_target_id}>")
-            )
+                await author.send_to_personal_channel(
+                    text_templates.generate_text("witch_curse_result_text", target=f"<@{curse_target_id}>")
+                )
 
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
@@ -1168,6 +1175,7 @@ class Game:
     @command_verify_author(roles.Witch)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def curse(self, author, target):
+        roles.Witch.set_can_kill(self.modes.get("witch_can_kill", False))
         return author.register_curse_target(target.player_id)
 
     @command_verify_author(roles.Zombie)
