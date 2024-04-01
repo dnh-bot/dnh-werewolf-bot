@@ -812,18 +812,22 @@ class Game:
                 "werewolf_before_voting_text",
                 config.WEREWOLF_CHANNEL
             )
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
+            is_reveal_role = self.modes.get("reveal_role", False)
+            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=is_reveal_role)
             await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
             # Send alive player list to all skilled characters (guard, seer, etc.)
-            if roles.Witch.is_can_kill():
-                await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players()])
-            else:
-                await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if not isinstance(player, roles.Witch)])
+            await asyncio.gather(*[
+                player.on_action(embed_data) for player in self.get_alive_players()
+                if not isinstance(player, roles.Witch) or (roles.Witch.is_can_kill() and player.get_curse_power())
+            ])
 
-            embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False, reveal_role=self.modes.get("reveal_role", False))
+            embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False, reveal_role=is_reveal_role)
             # Send dead player list to Witch if Witch has not used skill
             if embed_data:  # This table can be empty (No one is dead)
-                await asyncio.gather(*[player.on_action(embed_data) for player in self.get_alive_players() if isinstance(player, roles.Witch) and player.get_power()])
+                await asyncio.gather(*[
+                    player.on_action(embed_data) for player in self.get_alive_players()
+                    if isinstance(player, roles.Witch) and player.get_reborn_power()
+                ])
 
     async def do_end_nighttime_phase(self):
         # FIXME:
