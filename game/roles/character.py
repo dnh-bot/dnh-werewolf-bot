@@ -125,6 +125,6 @@ class Character:
         # Will be overloaded in Child Class
         pass
 
-    async def on_action(self, embed_data):
+    async def on_action(self, alive_embed_data, dead_embed_data):
         # Will be overloaded in Child Class
         pass

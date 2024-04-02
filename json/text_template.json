@@ -485,17 +485,28 @@
       "en": ["🔫 Before dying, the hunter shot {target}"]
     }
   },
-  "witch_before_voting_text": {
+  "witch_before_reborn_text": {
     "params": [],
     "template": {
       "vi": [
-        "🧙🏻‍♀️ Bạn có thể cứu 1 người và giết 1 người. Bạn chỉ được dùng mỗi kỹ năng 1 lần.",
-        "🧪 Nhập `{bot_prefix}reborn ID` để cứu người.",
+        "🧙🏻‍♀️ Bạn có thể cứu 1 người. Bạn chỉ được dùng kỹ năng này 1 lần.",
+        "🧪 Nhập `{bot_prefix}reborn ID` để cứu người.\n"
+      ],
+      "en": [
+        "🧙🏻‍♀️ You can save 1 person. You can only use this skill once.",
+        "🧪 Enter `{bot_prefix}reborn ID` to save 1 person.\n"
+      ]
+    }
+  },
+  "witch_before_curse_text": {
+    "params": [],
+    "template": {
+      "vi": [
+        "🧙🏻‍♀️ Bạn có thể giết 1 người. Bạn chỉ được dùng kỹ năng này 1 lần.",
         "🩸 Nhập `{bot_prefix}curse ID` để nguyền rủa 1 người.\n"
       ],
       "en": [
-        "🧙🏻‍♀️ You can save 1 person and curse 1 person. You can only use each skill once.",
-        "🧪 Enter `{bot_prefix}reborn ID` to save 1 person.",
+        "🧙🏻‍♀️ You can curse 1 person. You can only use this skill once.",
         "🩸 Enter `{bot_prefix}curse ID` to curse 1 person.\n"
       ]
     }
