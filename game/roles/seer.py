@@ -10,7 +10,7 @@ class Seer(Villager):
     async def on_day(self):
         self.target = None
 
-    async def on_action(self, alive_embed_data, *_):
+    async def on_action(self, alive_embed_data, _):
         if self.is_alive():
             await self.interface.send_action_text_to_channel("seer_before_voting_text", self.channel_name)
             await self.interface.send_embed_to_channel(alive_embed_data, self.channel_name)
