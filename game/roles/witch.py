@@ -36,9 +36,15 @@ class Witch(Villager):
     async def on_night(self):
         pass
 
-    async def on_action(self, embed_data):
-        await self.interface.send_action_text_to_channel("witch_before_voting_text", self.channel_name)
-        await self.interface.send_embed_to_channel(embed_data, self.channel_name)
+    async def on_action(self, dead_embed_data, alive_embed_data):
+        if self.is_alive():
+            if self.get_reborn_power():
+                await self.interface.send_action_text_to_channel("witch_before_reborn_text", self.channel_name)
+                await self.interface.send_embed_to_channel(dead_embed_data, self.channel_name)
+
+            if Witch.is_can_kill() and self.get_curse_power():
+                await self.interface.send_action_text_to_channel("witch_before_curse_text", self.channel_name)
+                await self.interface.send_embed_to_channel(alive_embed_data, self.channel_name)
 
     def get_reborn_target(self):
         return self.reborn_target

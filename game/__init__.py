@@ -813,21 +813,13 @@ class Game:
                 config.WEREWOLF_CHANNEL
             )
             is_reveal_role = self.modes.get("reveal_role", False)
-            embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=is_reveal_role)
-            await self.interface.send_embed_to_channel(embed_data, config.WEREWOLF_CHANNEL)
-            # Send alive player list to all skilled characters (guard, seer, etc.)
-            await asyncio.gather(*[
-                player.on_action(embed_data) for player in self.get_alive_players()
-                if not isinstance(player, roles.Witch) or (roles.Witch.is_can_kill() and player.get_curse_power())
-            ])
+            alive_embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=is_reveal_role)
+            dead_embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False, reveal_role=is_reveal_role)
 
-            embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False, reveal_role=is_reveal_role)
-            # Send dead player list to Witch if Witch has not used skill
-            if embed_data:  # This table can be empty (No one is dead)
-                await asyncio.gather(*[
-                    player.on_action(embed_data) for player in self.get_alive_players()
-                    if isinstance(player, roles.Witch) and player.get_reborn_power()
-                ])
+            await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
+            await asyncio.gather(*[
+                player.on_action(alive_embed_data, dead_embed_data) for player in self.get_all_players()
+            ])
 
     async def do_end_nighttime_phase(self):
         # FIXME:
@@ -1179,7 +1171,6 @@ class Game:
     @command_verify_author(roles.Witch)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def curse(self, author, target):
-        roles.Witch.set_can_kill(self.modes.get("witch_can_kill", False))
         return author.register_curse_target(target.player_id)
 
     @command_verify_author(roles.Zombie)
