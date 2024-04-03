@@ -1321,5 +1321,26 @@
       "vi": ["👹 {author} đã biểu quyết trừng phạt {target}"],
       "en": ["👹 {author} voted to punish {target}"]
     }
+  },
+  "ban_command_reply_text":{
+    "params": ["user", "duration", "reason"],
+    "template": {
+      "vi": ["Đã cấm {user} tham gia trò chơi trong {duration}\nLý do: {reason}."],
+      "en": ["Banned {user} from joining the game for {duration}\nReason: {reason}."]
+    }
+  },
+  "unban_command_reply_text":{
+    "params": ["user"],
+    "template": {
+      "vi": ["Đã bỏ lệnh cấm người chơi {user} thành công!"],
+      "en": ["Unbanned player {user} successfully!"]
+    }
+  },
+  "join_while_ban_reply_text":{
+    "params": ["duration"],
+    "template": {
+      "vi": ["Bạn không thể tham gia trò chơi vì đang bị cấm túc!\nThời gian còn lại: {duration}"],
+      "en": ["You can not join the game because you are banned!\nRemaining time: {duration}"]
+    }
   }
 }

@@ -3,6 +3,7 @@ import re
 from datetime import *
 import subprocess
 import os
+import time
 
 import discord
 from dateutil import parser, tz
@@ -31,28 +32,25 @@ def parse_time_str(time_str):
     return None
 
 
+UNITS = dict(zip("s m h d w y".split(), (1, 60, 60 * 60, 24 * 60 * 60, 7 * 24 * 60 * 60, 365 * 24 * 60 * 60)))
+
+
+def timeparse(string):
+    return int(''.join(c for c in string if c.isnumeric())) * UNITS.get(string[-1], 1)
+
+
+def time_string(sec):
+    for u in "y w d h m s".split():
+        if sec > UNITS[u]:
+            return f'{int(sec)//UNITS[u]}{u}'
+    return f'{sec}s'
+
+
 def check_set_timer_input(input_string):
-    converter = {
-        's': 0,
-        'm': 1,
-        'h': 2
-    }
-    # Convert value equal pow function (1h = 3600s = 60**2 s)
-    # Formula: phase = value(passed parameter) * converter value
-    timer_phase = []
-    for phase in input_string:
-        key = phase[-1]
-        if key in converter:
-            power = converter[key]
-            value = phase[:-1]
-        else:
-            power = 0
-            value = phase
-        if not value.isnumeric():
-            return None
-        timer = int(value) * pow(60, power)
-        timer_phase.append(timer)
-    return timer_phase
+    try:
+        return [timeparse(phase) for phase in input_string]
+    except:  # pylint: disable=bare-except
+        return None
 
 
 async def process_command(client, game, message):
@@ -94,7 +92,15 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         await message.reply(text_templates.generate_text("invalid_channel_text", channel=real_channel))
         return
 
-    if cmd in ("watch", "unwatch", "join", "leave", "start", "next", "stopgame"):
+    if cmd == "join":
+        if not force:
+            ban_remain = BAN_DICT.get(str(message.author.id), {"end_time": 0})["end_time"] - time.time()
+            if ban_remain > 0:
+                await message.reply(text_templates.generate_text("join_while_ban_reply_text", duration=time_string(ban_remain)))
+                return
+        await player.do_join(game, message, force=force)
+
+    elif cmd in ("watch", "unwatch", "leave", "start", "next", "stopgame"):
         command_function = getattr(player, f"do_{cmd}")
         await command_function(game, message, force=force)
 
@@ -222,6 +228,10 @@ async def do_admin_cmd(client, game, message, cmd, parameters):
         await do_force_clean(client, message)
     elif cmd_content == "debug":
         await do_force_debug()
+    elif cmd_content == "ban":
+        await do_ban(message, parameters)
+    elif cmd_content == "unban":
+        await do_unban(message)
     elif cmd_content in ("join", "leave", "start", "next", "stopgame"):
         await do_game_cmd(game, message, cmd_content, parameters, True)
 
@@ -255,6 +265,31 @@ async def do_force_delete(client, message):
     user = message.mentions[0]
     if user.id == client.user.id:
         await admin.clean_game_category(message.guild, client.user, True)
+
+
+BAN_FILE = "json/ban_list.json"
+BAN_DICT = utils.common.read_json_file(BAN_FILE)
+
+
+async def do_ban(message, params):
+    user = message.mentions[0]
+    ban_duration = timeparse(params[1]) if len(params) > 1 else 0
+    ban_reason = ' '.join(params[2:]) if len(params) > 2 else "(No reason given)"
+    if ban_duration == 0:
+        ban_duration = timeparse("1000y")
+    BAN_DICT[str(user.id)] = {
+        "end_time": time.time() + ban_duration,
+        "reason": ban_reason
+    }
+    utils.common.write_json_file(BAN_FILE, BAN_DICT)
+    await message.reply(text_templates.generate_text("ban_command_reply_text", user=user.mention, duration=time_string(ban_duration), reason=ban_reason))
+
+
+async def do_unban(message):
+    user = message.mentions[0]
+    del BAN_DICT[str(user.id)]
+    utils.common.write_json_file(BAN_FILE, BAN_DICT)
+    await message.reply(text_templates.generate_text("unban_command_reply_text", user=user.mention))
 
 
 async def test_commands(guild):
