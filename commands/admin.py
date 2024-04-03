@@ -122,13 +122,14 @@ async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=T
         await asyncio.sleep(1)  # Wait 1s here to wait for channel is ready
         channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
-        await channel.set_permissions(user, read_messages=is_read, send_messages=is_send, add_reactions=is_send, create_public_threads=is_send, create_private_threads=False)
+        await channel.set_permissions(user, read_messages=is_read, send_messages=is_send, add_reactions=is_send)
+        # await channel.set_permissions(user, create_public_threads=is_send, create_private_threads=False)  # discord.py >= 2.0
         print(f"Successfully added {user} to {channel_name} read={is_read} send={is_send}")
         return True
     except Exception as e:
         print(f"Failed to add {user} into #{channel_name}, {is_read} {is_send}")
         logger.logger_debug(guild.channels)
-        print(e)
+        print("add_user_to_channel:", e)
 
 
 async def remove_user_from_channel(guild, user, channel_name):
@@ -137,7 +138,8 @@ async def remove_user_from_channel(guild, user, channel_name):
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
-        await channel.set_permissions(user, read_messages=False, send_messages=False, add_reactions=False, create_public_threads=False, create_private_threads=False)
+        await channel.set_permissions(user, read_messages=False, send_messages=False, add_reactions=False)
+        # await channel.set_permissions(user, create_public_threads=False, create_private_threads=False)  # discord.py >= 2.0
         print("Successfully removed ", user, " from ", channel_name)
         return True
     except Exception as e:
@@ -156,7 +158,7 @@ async def send_text_to_channel(guild, text, channel_name):
         await channel.send(text)
         return True
     except Exception as e:
-        print(e)
+        print("send_text_to_channel:", e)
 
     return False
 
