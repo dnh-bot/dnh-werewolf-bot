@@ -79,7 +79,7 @@ class Character:
             return invalid_target_text
 
         self.set_target(target_id)
-        return text_templates.generate_text(f"{self.get_role()}_after_voting_text", target=f"<@{target_id}>")
+        return text_templates.generate_text(f"{self.get_role().lower()}_after_voting_text", target=f"<@{target_id}>")
 
     async def create_personal_channel(self, self_check=False):
         await self.interface.create_channel(self.channel_name)
