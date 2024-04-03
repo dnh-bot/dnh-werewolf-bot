@@ -3,6 +3,7 @@ import re
 from datetime import *
 import subprocess
 import os
+import time
 
 import discord
 from dateutil import parser, tz
@@ -13,7 +14,6 @@ import config
 from game import text_template, modes
 import text_templates
 import utils
-import time
 
 def parse_time_str(time_str):
     args_matches = re.findall(r"^([+-])*(\d{1,2}|\d{1,2}:?\d{2})$", time_str)
@@ -32,8 +32,8 @@ def parse_time_str(time_str):
 
 unit=dict(zip("s m h d w y".split(), (1, 60, 60*60, 24*60*60, 7*24*60*60, 365*24*60*60)))
 
-def timeparse(time_string):
-    return int(''.join(c for c in time_string if c.isnumeric()))*unit.get(time_string[-1], 1)
+def timeparse(string):
+    return int(''.join(c for c in string if c.isnumeric()))*unit.get(string[-1], 1)
 
 def time_string(sec):
     for u in "y w d h m s".split():
@@ -44,7 +44,7 @@ def time_string(sec):
 def check_set_timer_input(input_string):
     try:
         return [timeparse(phase) for phase in input_string]
-    except:
+    except: # pylint: disable=bare-except
         return None
 
 
@@ -221,9 +221,9 @@ async def do_admin_cmd(client, game, message, cmd, parameters):
     elif cmd_content == "debug":
         await do_force_debug()
     elif cmd_content == "ban":
-        await do_ban(client, message, parameters)
+        await do_ban(message, parameters)
     elif cmd_content == "unban":
-        await do_unban(client, message, parameters)
+        await do_unban(message)
     elif cmd_content in ("join", "leave", "start", "next", "stopgame"):
         await do_game_cmd(game, message, cmd_content, parameters, True)
 
@@ -261,11 +261,12 @@ async def do_force_delete(client, message):
 BAN_FILE = "json/ban_list.json"
 BAN_DICT = utils.common.read_json_file(BAN_FILE)
 
-async def do_ban(client, message, params):
+async def do_ban(message, params):
     user = message.mentions[0]
     ban_duration = timeparse(params[1]) if len(params)>1 else 0
     ban_reason = ' '.join(params[2:]) if len(params)>2 else "(No reason given)"
-    if ban_duration == 0: ban_duration=timeparse("1000y")
+    if ban_duration == 0:
+        ban_duration=timeparse("1000y")
     BAN_DICT[str(user.id)] = {
         "end_time": time.time()+ban_duration,
         "reason": ban_reason
@@ -273,7 +274,7 @@ async def do_ban(client, message, params):
     utils.common.write_json_file(BAN_FILE, BAN_DICT)
     await message.reply(text_templates.generate_text("ban_command_reply_text", user=user.mention, duration=time_string(ban_duration), reason = ban_reason))
 
-async def do_unban(client, message, params):
+async def do_unban(message):
     user = message.mentions[0]
     del BAN_DICT[str(user.id)]
     utils.common.write_json_file(BAN_FILE, BAN_DICT)
