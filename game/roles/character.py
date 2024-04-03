@@ -1,6 +1,7 @@
 import asyncio
 from enum import Enum
 
+import text_templates
 from game import const
 import config
 
@@ -24,7 +25,7 @@ class Character:
         valid_channel_name = "".join(c for c in player_name if c not in BANNED_CHARS).lower()
         valid_channel_name = "-".join(valid_channel_name.split())
         self.channel_name = f"{config.PERSONAL}-{valid_channel_name}"
-        self.mana = 0
+        self.target = None
 
     def get_role(self):
         return self.__class__.__name__
@@ -62,11 +63,23 @@ class Character:
     def get_protected(self):
         self.status = CharacterStatus.PROTECTED
 
-    def on_use_mana(self):
-        self.mana = 0
+    def get_target(self):
+        return self.target
 
-    def get_mana(self):
-        return self.mana
+    def set_target(self, target_id):
+        self.target = target_id
+
+    def generate_invalid_target_text(self, target_id):
+        print("checking target_id =", target_id)
+        return ""
+
+    def register_target(self, target_id):
+        invalid_target_text = self.generate_invalid_target_text(target_id)
+        if invalid_target_text:
+            return invalid_target_text
+
+        self.set_target(target_id)
+        return text_templates.generate_text(f"{self.get_role()}_after_voting_text", target=f"<@{target_id}>")
 
     async def create_personal_channel(self, self_check=False):
         await self.interface.create_channel(self.channel_name)
@@ -112,6 +125,6 @@ class Character:
         # Will be overloaded in Child Class
         pass
 
-    async def on_action(self, embed_data):
+    async def on_action(self, alive_embed_data, dead_embed_data):
         # Will be overloaded in Child Class
         pass
