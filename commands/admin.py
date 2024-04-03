@@ -5,7 +5,7 @@ This provides APIs for Admin role and bot role
 import asyncio
 
 import discord
-from utils import logger
+from utils import logger, common
 import config
 
 
@@ -17,9 +17,12 @@ def is_valid_category(message):
         return False
 
 
+USER_LIST = common.read_json_file("json/user_info.json")
+
+
 def is_admin(author):
     # Check if this user has "Admin" right
-    return discord.utils.get(author.roles, name="Admin") is not None
+    return str(author.id) in USER_LIST["dev"] or str(author.id) in USER_LIST["admin"] or discord.utils.get(author.roles, name="Admin") is not None
 
 
 def list_users(guild):
