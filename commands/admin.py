@@ -122,7 +122,7 @@ async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=T
         await asyncio.sleep(1)  # Wait 1s here to wait for channel is ready
         channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
-        await channel.set_permissions(user, read_messages=is_read, send_messages=is_send)
+        await channel.set_permissions(user, read_messages=is_read, send_messages=is_send, add_reactions=is_send)
         print(f"Successfully added {user} to {channel_name} read={is_read} send={is_send}")
         return True
     except Exception as e:
@@ -137,7 +137,7 @@ async def remove_user_from_channel(guild, user, channel_name):
     category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
-        await channel.set_permissions(user, read_messages=False, send_messages=False)
+        await channel.set_permissions(user, read_messages=False, send_messages=False, add_reactions=False)
         print("Successfully removed ", user, " from ", channel_name)
         return True
     except Exception as e:
