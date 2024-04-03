@@ -10,6 +10,13 @@ def read_json_file(filename):
         print("read json failed.", e)
         return {}
 
+def write_json_file(filename, data):
+    try:
+        with open(filename, "w", encoding="utf8") as f:
+            print(f"successfully write {filename}")
+            json.dump(data, f)
+    except Exception as e:
+        print("write json failed.", e)
 
 def update_json_file(filename, key, value):
     """
