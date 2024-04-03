@@ -1292,22 +1292,22 @@
   "ban_command_reply_text":{
     "params": ["user", "duration", "reason"],
     "template": {
-      "vi": ["Đã cấm {user} chơi game trong {duration} - Lý do: {reason}"],
-      "en": ["Ban {user} for {duration} - Reason: {reason}"]
+      "vi": ["Đã cấm {user} tham gia trò chơi trong {duration}\nLý do: {reason}."],
+      "en": ["Banned {user} from joining the game for {duration}\nReason: {reason}."]
     }
   },
   "unban_command_reply_text":{
     "params": ["user"],
     "template": {
-      "vi": ["Đã cho phép {user} chơi game"],
-      "en": ["Unban {user} success"]
+      "vi": ["Đã bỏ lệnh cấm người chơi {user} thành công!"],
+      "en": ["Unbanned player {user} successfully!"]
     }
   },
   "join_while_ban_reply_text":{
     "params": ["duration"],
     "template": {
-      "vi": ["Bạn không thể tham gia chơi game vì đang bị cấm túc, thời gian còn lại: {duration}"],
-      "en": ["Sorry, you cannot join the game because you are banned. Remain duration: {duration}"]
+      "vi": ["Bạn không thể tham gia trò chơi vì đang bị cấm túc!\nThời gian còn lại: {duration}"],
+      "en": ["You can not join the game because you are banned!\nRemaining time: {duration}"]
     }
   }
 }
