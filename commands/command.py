@@ -15,6 +15,7 @@ from game import text_template, modes
 import text_templates
 import utils
 
+
 def parse_time_str(time_str):
     args_matches = re.findall(r"^([+-])*(\d{1,2}|\d{1,2}:?\d{2})$", time_str)
     if len(args_matches):
@@ -30,21 +31,25 @@ def parse_time_str(time_str):
 
     return None
 
-unit=dict(zip("s m h d w y".split(), (1, 60, 60*60, 24*60*60, 7*24*60*60, 365*24*60*60)))
+
+UNITS = dict(zip("s m h d w y".split(), (1, 60, 60 * 60, 24 * 60 * 60, 7 * 24 * 60 * 60, 365 * 24 * 60 * 60)))
+
 
 def timeparse(string):
-    return int(''.join(c for c in string if c.isnumeric()))*unit.get(string[-1], 1)
+    return int(''.join(c for c in string if c.isnumeric())) * UNITS.get(string[-1], 1)
+
 
 def time_string(sec):
     for u in "y w d h m s".split():
-        if sec > unit[u]:
-            return f'{sec//unit[u]}{u}'
+        if sec > UNITS[u]:
+            return f'{int(sec)//UNITS[u]}{u}'
     return f'{sec}s'
+
 
 def check_set_timer_input(input_string):
     try:
         return [timeparse(phase) for phase in input_string]
-    except: # pylint: disable=bare-except
+    except:  # pylint: disable=bare-except
         return None
 
 
@@ -90,8 +95,8 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
     if cmd == "join":
         if not force:
             ban_remain = BAN_DICT.get(str(message.author.id), {"end_time": 0})["end_time"] - time.time()
-            if  ban_remain > 0:
-                await message.reply(text_templates.generate_text("join_while_ban_reply_text", duration = time_string(ban_remain)))
+            if ban_remain > 0:
+                await message.reply(text_templates.generate_text("join_while_ban_reply_text", duration=time_string(ban_remain)))
                 return
         await player.do_join(game, message, force=force)
 
@@ -258,27 +263,31 @@ async def do_force_delete(client, message):
     if user.id == client.user.id:
         await admin.clean_game_category(message.guild, client.user, True)
 
+
 BAN_FILE = "json/ban_list.json"
 BAN_DICT = utils.common.read_json_file(BAN_FILE)
 
+
 async def do_ban(message, params):
     user = message.mentions[0]
-    ban_duration = timeparse(params[1]) if len(params)>1 else 0
-    ban_reason = ' '.join(params[2:]) if len(params)>2 else "(No reason given)"
+    ban_duration = timeparse(params[1]) if len(params) > 1 else 0
+    ban_reason = ' '.join(params[2:]) if len(params) > 2 else "(No reason given)"
     if ban_duration == 0:
-        ban_duration=timeparse("1000y")
+        ban_duration = timeparse("1000y")
     BAN_DICT[str(user.id)] = {
-        "end_time": time.time()+ban_duration,
+        "end_time": time.time() + ban_duration,
         "reason": ban_reason
     }
     utils.common.write_json_file(BAN_FILE, BAN_DICT)
-    await message.reply(text_templates.generate_text("ban_command_reply_text", user=user.mention, duration=time_string(ban_duration), reason = ban_reason))
+    await message.reply(text_templates.generate_text("ban_command_reply_text", user=user.mention, duration=time_string(ban_duration), reason=ban_reason))
+
 
 async def do_unban(message):
     user = message.mentions[0]
     del BAN_DICT[str(user.id)]
     utils.common.write_json_file(BAN_FILE, BAN_DICT)
     await message.reply(text_templates.generate_text("unban_command_reply_text", user=user.mention))
+
 
 async def test_commands(guild):
     print("Testing admin command")
