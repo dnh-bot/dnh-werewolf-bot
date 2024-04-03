@@ -105,7 +105,10 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         await player.do_rematch(game, message)
 
     elif cmd in ("vote", "punish", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto"):
-        await player.do_character_cmd(game, message, cmd, parameters)
+        try:
+            await player.do_character_cmd(game, message, cmd, parameters)
+        except Exception as e:
+            print(f"Error in do_character_cmd with cmd={cmd}:", e)
 
     elif cmd == "selfcheck":
         if not game.is_started():

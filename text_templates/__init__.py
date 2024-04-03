@@ -54,6 +54,7 @@ def generate_text(action, **kwargs):
             bot_prefix=BOT_PREFIX, gameplay_channel=GAMEPLAY_CHANNEL, **kwargs
         ).rstrip()
 
+    print(f"Error in generate_text: action={action} not in text_template.json")
     return ""
 
 
@@ -86,4 +87,5 @@ def generate_embed(action, content_values: List[List[str]], **kwargs):
             ]
         }
 
+    print(f"Error in generate_embed: action={action} not in text_template.json")
     return None
