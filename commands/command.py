@@ -67,21 +67,23 @@ async def parse_command(client, game, message, cmd, parameters):
     # TODO: Return True/False (if it's a valid and authorized command name) and message to be replied.
     # FIXME:
     # pylint: disable=too-many-nested-blocks, too-many-branches
+    if not admin.is_valid_category(message):
+        return
+
+    # Game commands only valid under GAME CATEGORY
     if cmd.startswith(config.ADMIN_CMD_PREFIX):
         # Admin/Bot commands - User should not directly use these commands
         await do_admin_cmd(client, game, message, cmd, parameters)
-    elif admin.is_valid_category(message):
-        # Game commands only valid under GAME CATEGORY
-        if cmd == "help":
-            await admin.send_embed_to_channel(
-                message.guild, text_template.generate_help_embed(*parameters), message.channel.name, False
-            )
-        elif cmd == "version":
-            tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
-            name = os.getenv("BOT_NAME")
-            await message.reply(f"{name}-{tag}".rstrip('\n'))  # prevent bug of name's or tag's type
-        else:
-            await do_game_cmd(game, message, cmd, parameters)
+    elif cmd == "help":
+        await admin.send_embed_to_channel(
+            message.guild, text_template.generate_help_embed(*parameters), message.channel.name, False
+        )
+    elif cmd == "version":
+        tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
+        name = os.getenv("BOT_NAME")
+        await message.reply(f"{name}-{tag}".rstrip('\n'))  # prevent bug of name's or tag's type
+    else:
+        await do_game_cmd(game, message, cmd, parameters)
 
 
 async def do_game_cmd(game, message, cmd, parameters, force=False):
