@@ -685,20 +685,17 @@ class Game:
                 voted_list.append(voted)
         return voted_list
 
-    async def control_muting_party_channel(self, is_muted):
+    async def control_muting_party_channel(self, channel_name, is_muted, player_check_func=None):
         """
-        Mute/Unmute all alive players in party channel (e.g. config.WEREWOLF_CHANNEL, config.COUPLE_CHANNEL)
+        Mute/Unmute all alive players in party channel (e.g. GAMEPLAY_CHANNEL, WEREWOLF_CHANNEL, COUPLE_CHANNEL)
         """
-        await asyncio.gather(*[
-            self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=not is_muted)
-            for _id, player in self.players.items()
-            if player.is_alive() and isinstance(player, roles.Werewolf)
-        ])
+        if player_check_func is None:
+            player_check_func = lambda *_: True
 
         await asyncio.gather(*[
-            self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=not is_muted)
+            self.interface.add_user_to_channel(_id, channel_name, is_read=True, is_send=not is_muted)
             for _id, player in self.players.items()
-            if player.is_alive() and _id in self.cupid_dict
+            if player.is_alive() and player_check_func(player)
         ])
 
     async def announce_current_new_moon_event(self):
@@ -726,13 +723,10 @@ class Game:
                 await self.new_moon_mode.do_new_daytime_phase(self.interface, alive_players_embed_data=alive_players_embed_data)
 
             # Mute all party channels
-            await self.control_muting_party_channel(True)
-
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
-            await asyncio.gather(*[
-                self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
-                for _id, player in self.players.items() if player.is_alive()
-            ])
+            await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, True, lambda player: isinstance(player, roles.Werewolf))
+            await self.control_muting_party_channel(config.COUPLE_CHANNEL, True, lambda player: player.player_id in self.cupid_dict)
+            await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, False)
         else:
             print("Error no player in game.")
             await self.stop()
@@ -793,13 +787,10 @@ class Game:
         await self.announce_current_new_moon_event()
 
         # Unmute all party channels
-        await self.control_muting_party_channel(False)
-
         # Mute all players in config.GAMEPLAY_CHANNEL
-        await asyncio.gather(*[
-            self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
-            for _id, player in self.players.items() if player.is_alive()
-        ])
+        await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, False, lambda player: isinstance(player, roles.Werewolf))
+        await self.control_muting_party_channel(config.COUPLE_CHANNEL, False, lambda player: player.player_id in self.cupid_dict)
+        await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, True)
 
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
