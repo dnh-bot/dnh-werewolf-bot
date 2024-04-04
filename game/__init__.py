@@ -14,7 +14,6 @@ import utils
 import text_templates
 from game import const, roles, text_template, modes
 from game.modes.new_moon import NewMoonMode
-from game.text_template import generate_id_player_list
 
 
 def command_verify_author(valid_role):
@@ -234,7 +233,7 @@ class Game:
             role_list = [self.get_role_list()]
 
         if player_list:
-            id_player_list = generate_id_player_list(player_list, alive_status, reveal_role)
+            id_player_list = text_template.generate_id_player_list(player_list, alive_status, reveal_role)
             print("generate_player_list_embed", alive_status, reveal_role, player_list, id_player_list)
             embed_data = text_templates.generate_embed(action_name, [id_player_list, role_list])
             return embed_data
