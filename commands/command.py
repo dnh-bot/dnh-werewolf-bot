@@ -67,12 +67,12 @@ async def parse_command(client, game, message, cmd, parameters):
     # TODO: Return True/False (if it's a valid and authorized command name) and message to be replied.
     # FIXME:
     # pylint: disable=too-many-nested-blocks, too-many-branches
-    if cmd.startswith(config.ADMIN_CMD_PREFIX):
-        # Admin/Bot commands - User should not directly use these commands
-        await do_admin_cmd(client, game, message, cmd, parameters)
-    elif admin.is_valid_category(message):
+    if admin.is_valid_category(message):
         # Game commands only valid under GAME CATEGORY
-        if cmd == "help":
+        if cmd.startswith(config.ADMIN_CMD_PREFIX):
+            # Admin/Bot commands - User should not directly use these commands
+            await do_admin_cmd(client, game, message, cmd, parameters)
+        elif cmd == "help":
             await admin.send_embed_to_channel(
                 message.guild, text_template.generate_help_embed(*parameters), message.channel.name, False
             )
