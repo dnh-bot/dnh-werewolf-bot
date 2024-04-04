@@ -356,16 +356,10 @@ class Game:
         return self.get_alive_players() + self.get_dead_players()
 
     def get_alive_players(self):
-        return sorted(
-            [player for player in self.players.values() if player.is_alive()],
-            key=lambda player: player.player_id
-        )
+        return [player for player in self.players.values() if player.is_alive()]
 
     def get_dead_players(self):
-        return sorted(
-            [player for player in self.players.values() if not player.is_alive()],
-            key=lambda player: player.player_id
-        )
+        return [player for player in self.players.values() if not player.is_alive()]
 
     def display_alive_player(self):
         return "\n".join((
