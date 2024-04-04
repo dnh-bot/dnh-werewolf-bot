@@ -818,7 +818,7 @@ class Game:
 
             await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
             await asyncio.gather(*[
-                player.on_action(alive_embed_data, dead_embed_data) for player in self.get_all_players()
+                player.on_night_start(alive_embed_data, dead_embed_data) for player in self.get_all_players()
             ])
 
     async def do_end_nighttime_phase(self):

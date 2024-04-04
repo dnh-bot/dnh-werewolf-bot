@@ -36,7 +36,7 @@ class Witch(Villager):
     async def on_night(self):
         pass
 
-    async def on_action(self, alive_embed_data, dead_embed_data):
+    async def on_night_start(self, alive_embed_data, dead_embed_data):
         if self.is_alive():
             if self.get_reborn_power():
                 await self.interface.send_action_text_to_channel("witch_before_reborn_text", self.channel_name)
