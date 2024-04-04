@@ -689,13 +689,10 @@ class Game:
         """
         Mute/Unmute all alive players in party channel (e.g. GAMEPLAY_CHANNEL, WEREWOLF_CHANNEL, COUPLE_CHANNEL)
         """
-        if player_check_func is None:
-            player_check_func = lambda *_: True
-
         await asyncio.gather(*[
             self.interface.add_user_to_channel(_id, channel_name, is_read=True, is_send=not is_muted)
             for _id, player in self.players.items()
-            if player.is_alive() and player_check_func(player)
+            if player.is_alive() and (player_check_func is None or player_check_func(player))
         ])
 
     async def announce_current_new_moon_event(self):
