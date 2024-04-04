@@ -14,6 +14,7 @@ import utils
 import text_templates
 from game import const, roles, text_template, modes
 from game.modes.new_moon import NewMoonMode
+from game.text_template import generate_id_player_list
 
 
 def command_verify_author(valid_role):
@@ -216,6 +217,28 @@ class Game:
             formatted_roles = ", ".join(f"{role}: {count}" for role, count in role_list.items())
             return text_templates.generate_text("role_list_text", roles_data=formatted_roles)
         return text_templates.generate_text("hidden_role_warning_text")
+
+    def generate_player_list_embed(self, alive_status=None):
+        # Handle 3 types of list: All, Alive, Dead
+        reveal_role = self.modes.get("reveal_mode", False)
+        role_list = []
+        if alive_status is True:
+            player_list = self.get_alive_players()
+            action_name = "alive_player_list_embed"
+        elif alive_status is False:
+            player_list = self.get_dead_players()
+            action_name = "dead_player_list_embed"
+        else:
+            player_list = self.get_all_players()
+            action_name = "all_player_list_embed"
+            role_list = [self.get_role_list()]
+
+        if player_list:
+            id_player_list = generate_id_player_list(player_list, alive_status, reveal_role)
+            print("generate_player_list_embed", alive_status, reveal_role, player_list, id_player_list)
+            embed_data = text_templates.generate_embed(action_name, [id_player_list, role_list])
+            return embed_data
+        return None
 
     async def start(self, init_players=None):
         if self.is_stopped and self.game_phase == const.GamePhase.NEW_GAME:
@@ -536,10 +559,7 @@ class Game:
         await self.interface.send_embed_to_channel(status_embed_data, channel_name)
 
         if self.is_started():
-            role_list = [self.get_role_list()]
-            players_embed_data = text_template.generate_player_list_embed(
-                self.get_all_players(), None, role_list, self.modes.get("reveal_role", False)
-            )
+            players_embed_data = self.generate_player_list_embed()
             await self.interface.send_embed_to_channel(players_embed_data, channel_name)
 
     async def run_game_loop(self):
@@ -555,7 +575,7 @@ class Game:
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
 
-        embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
+        embed_data = self.generate_player_list_embed(True)
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
 
         info = text_templates.generate_text(
@@ -709,14 +729,14 @@ class Game:
         self.day += 1
         if self.players:
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
-            embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
+            embed_data = self.generate_player_list_embed()
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
             self.new_moon_mode.set_random_event()
             await self.announce_current_new_moon_event()
 
             if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT and len(self.get_dead_players()):
-                alive_players_embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
+                alive_players_embed_data = self.generate_player_list_embed(True)
                 await self.new_moon_mode.do_new_daytime_phase(self.interface, alive_players_embed_data=alive_players_embed_data)
 
             # Mute all party channels
@@ -778,7 +798,7 @@ class Game:
         else:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
 
-        players_embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
+        players_embed_data = self.generate_player_list_embed()
         await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
 
         await self.announce_current_new_moon_event()
@@ -796,14 +816,10 @@ class Game:
                 "night_phase_beginning_text",
                 config.GAMEPLAY_CHANNEL
             )
-            await self.interface.send_action_text_to_channel(
-                "werewolf_before_voting_text",
-                config.WEREWOLF_CHANNEL
-            )
-            is_reveal_role = self.modes.get("reveal_role", False)
-            alive_embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=is_reveal_role)
-            dead_embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False, reveal_role=is_reveal_role)
+            alive_embed_data = self.generate_player_list_embed(True)
+            dead_embed_data = self.generate_player_list_embed(False)
 
+            await self.interface.send_action_text_to_channel("werewolf_before_voting_text", config.WEREWOLF_CHANNEL)
             await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
             await asyncio.gather(*[
                 player.on_night_start(alive_embed_data, dead_embed_data) for player in self.get_all_players()
