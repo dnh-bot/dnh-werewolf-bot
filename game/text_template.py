@@ -14,17 +14,6 @@ def get_full_cmd_description(cmd):
     return f"{description} {text_templates.get_word_in_language('use_command')} {usage_text}."
 
 
-def generate_player_list_embed(player_list, alive_status=None, role_list=None, reveal_role=False):
-    # Handle 3 types of list: All, Alive, Dead
-    if player_list:
-        id_player_list = generate_id_player_list(player_list, alive_status, reveal_role)
-        action_name = f"{'all' if alive_status is None else 'alive' if alive_status else 'dead'}_player_list_embed"
-        embed_data = text_templates.generate_embed(
-            action_name, [id_player_list] if role_list is None else [id_player_list, role_list])
-        return embed_data
-    return None
-
-
 def generate_id_player_list(player_list, alive_status, reveal_role=False):
     id_player_list = []
     row_id = 1
@@ -32,12 +21,15 @@ def generate_id_player_list(player_list, alive_status, reveal_role=False):
         if alive_status is None and user.status == CharacterStatus.KILLED:
             # Handle for dead players in All list
             # Do not increase row_id when user is dead
-            id_player_list.append(f"💀 -> <@{user.player_id}>" + (f" - {user.get_role()}" if reveal_role else ""))
+            id_str = '💀'
         else:
             # Show player id for: alive players in All list, Alive list; dead players in Dead list.
-            # Also show role info if it's a dead list reveal mode is enabled.
-            id_player_list.append(f"{row_id} -> <@{user.player_id}>" + (f" - {user.get_role()}" if reveal_role and alive_status is False else ""))
+            id_str = str(row_id)
             row_id += 1
+
+        # Show role info if user is dead and reveal mode is enabled.
+        dead_player_role_str = f" - {user.get_role()}" if reveal_role and user.status == CharacterStatus.KILLED else ""
+        id_player_list.append(f"{id_str} -> <@{user.player_id}>{dead_player_role_str}")
 
     return id_player_list
 
