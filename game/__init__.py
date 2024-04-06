@@ -1116,7 +1116,7 @@ class Game:
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")
             return await self.ship(author, targets[0], targets[1])
 
-        return text_templates.generate_text("invalid_command_text")
+        return text_template.generate_invalid_command_text(cmd)
 
     async def vote(self, author, target):
         author_id = author.player_id
