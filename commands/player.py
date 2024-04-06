@@ -21,44 +21,55 @@ def check_vote_valid(num_votes, num_players, task_name):
     return True, text_templates.generate_text("vote_rate_enough_text", task_name=task_name)
 
 
+def verify_game_started(is_started):
+    def wrapper(cmd_func):
+        async def execute(game, message, *a, **kw):
+            if game.is_started() != is_started:
+                await message.reply(text_templates.generate_text(
+                    "game_already_started_text" if game.is_started() else "game_not_started_text"
+                ))
+            else:
+                await cmd_func(game, message, *a, **kw)
+
+        return execute
+
+    return wrapper
+
+
+@verify_game_started(False)
 async def do_join(game, message, force=False):
     """Join game"""
-    if not game.is_started():
-        if force:
-            user_list = message.mentions
-            if not user_list:
-                await message.reply(text_template.generate_invalid_command_text(config.ADMIN_CMD_PREFIX + "join"))
-        else:
-            user_list = [message.author]
-
-        for user in user_list:
-            joined_players = await game.add_player(user.id, user.name if force else f"{user.name}-{user.discriminator}")
-            if joined_players > 0:
-                await message.channel.send(text_templates.generate_text("reply_join_text", user=user.display_name, joined_players=joined_players))
-            else:
-                await message.channel.send(text_templates.generate_text("already_in_game_text"))
+    if force:
+        user_list = message.mentions
+        if not user_list:
+            await message.reply(text_template.generate_invalid_command_text(config.ADMIN_CMD_PREFIX + "join"))
     else:
-        await message.reply(text_templates.generate_text("game_already_started_text"))
+        user_list = [message.author]
+
+    for user in user_list:
+        joined_players = await game.add_player(user.id, user.name if force else f"{user.name}-{user.discriminator}")
+        if joined_players > 0:
+            await message.channel.send(text_templates.generate_text("reply_join_text", user=user.display_name, joined_players=joined_players))
+        else:
+            await message.channel.send(text_templates.generate_text("already_in_game_text"))
 
 
+@verify_game_started(False)
 async def do_leave(game, message, force=False):
     """Leave game"""
-    if not game.is_started():
-        if force:
-            user_list = message.mentions
-            if not user_list:
-                await message.reply(text_template.generate_invalid_command_text(config.ADMIN_CMD_PREFIX + "leave"))
-        else:
-            user_list = [message.author]
-
-        for user in user_list:
-            joined_players = await game.remove_player(user.id)
-            if joined_players >= 0:
-                await message.channel.send(text_templates.generate_text("reply_leave_text", user=user.display_name, joined_players=joined_players))
-            else:
-                await message.channel.send(text_templates.generate_text("not_in_game_text"))
+    if force:
+        user_list = message.mentions
+        if not user_list:
+            await message.reply(text_template.generate_invalid_command_text(config.ADMIN_CMD_PREFIX + "leave"))
     else:
-        await message.reply(text_templates.generate_text("game_already_started_text"))
+        user_list = [message.author]
+
+    for user in user_list:
+        joined_players = await game.remove_player(user.id)
+        if joined_players >= 0:
+            await message.channel.send(text_templates.generate_text("reply_leave_text", user=user.display_name, joined_players=joined_players))
+        else:
+            await message.channel.send(text_templates.generate_text("not_in_game_text"))
 
 
 async def do_watch(game, message, force=False):
@@ -92,92 +103,80 @@ async def do_unwatch(game, message, force=False):
 
 
 # Require at least 2 players to start the game
+@verify_game_started(False)
 async def do_start(game, message, force=False):
     """Start game"""
-    if not game.is_started():
-        if force:
-            await game.start()
-            await message.channel.send(text_templates.generate_text("game_started_text"))
+    if force:
+        await game.start()
+        await message.channel.send(text_templates.generate_text("game_started_text"))
+    else:
+        if message.author.id not in game.players:
+            await message.reply(text_templates.generate_text("not_in_game_text"))
         else:
+            game.vote_start.add(message.author.id)
+            valid, text = check_vote_valid(len(game.vote_start), len(game.players), "start")
+            if valid:
+                await game.start()
+                await message.channel.send(text_templates.generate_text("game_started_text"))
+            else:
+                await message.reply(text_templates.generate_text("vote_for_game_text", command="start", author=message.author.display_name, text=text))
+
+
+@verify_game_started(True)
+async def do_next(game, message, force=False):
+    """Next phase"""
+    if force:
+        await game.next_phase_cmd()
+    else:
+        if time.time() - game.get_last_nextcmd_time() > config.NEXT_CMD_DELAY:
+            # User needs to wait for next phase
             if message.author.id not in game.players:
                 await message.reply(text_templates.generate_text("not_in_game_text"))
             else:
-                game.vote_start.add(message.author.id)
-                valid, text = check_vote_valid(len(game.vote_start), len(game.players), "start")
+                game.vote_next.add(message.author.id)
+                valid, text = check_vote_valid(len(game.vote_next), len(game.get_alive_players()), "next")
                 if valid:
-                    await game.start()
-                    await message.channel.send(text_templates.generate_text("game_started_text"))
+                    await game.next_phase_cmd()
                 else:
-                    await message.reply(text_templates.generate_text("vote_for_game_text", command="start", author=message.author.display_name, text=text))
-    else:
-        await message.reply(text_templates.generate_text("game_already_started_text"))
-
-
-async def do_next(game, message, force=False):
-    """Next phase"""
-    if game.is_started():
-        if force:
-            await game.next_phase_cmd()
+                    await message.reply(text_templates.generate_text("vote_for_game_text", command="next", author=message.author.display_name, text=text))
         else:
-            if time.time() - game.get_last_nextcmd_time() > config.NEXT_CMD_DELAY:
-                # User needs to wait for next phase
-                if message.author.id not in game.players:
-                    await message.reply(text_templates.generate_text("not_in_game_text"))
-                else:
-                    game.vote_next.add(message.author.id)
-                    valid, text = check_vote_valid(len(game.vote_next), len(game.get_alive_players()), "next")
-                    if valid:
-                        await game.next_phase_cmd()
-                    else:
-                        await message.reply(text_templates.generate_text("vote_for_game_text", command="next", author=message.author.display_name, text=text))
-            else:
-                await message.reply(text_templates.generate_text("too_quick_text", wait_time=config.NEXT_CMD_DELAY - time.time() + game.get_last_nextcmd_time()))
-    else:
-        await message.reply(text_templates.generate_text("game_not_started_text"))
+            await message.reply(text_templates.generate_text("too_quick_text", wait_time=config.NEXT_CMD_DELAY - time.time() + game.get_last_nextcmd_time()))
 
 
 # Player can call stop game when they want to finish game regardless current game state
 # Need 2/3 players type: `!stopgame` to end the game
+@verify_game_started(True)
 async def do_stopgame(game, message, force=False):
     """Stop game"""
-    if game.is_started():
-        if force:
-            await message.channel.send(text_templates.generate_text("game_stop_text"))
-            await game.stop()
-        else:
-            if message.author.id not in game.players:
-                await message.reply(text_templates.generate_text("not_in_game_text"))
-            else:
-                game.vote_stop.add(message.author.id)
-                valid, text = check_vote_valid(len(game.vote_stop), 1 if game.is_ended() else 2, "stop")
-                if valid:
-                    await message.reply(text_templates.generate_text("game_stop_text"))
-                    await game.stop()
-                else:
-                    await message.reply(text_templates.generate_text("vote_for_game_text", command="stop", author=message.author.display_name, text=text))
+    if force:
+        await message.channel.send(text_templates.generate_text("game_stop_text"))
+        await game.stop()
     else:
-        await message.reply(text_templates.generate_text("game_not_started_text"))
-
-
-# Player can call to rematch when they want without voting
-async def do_rematch(game, message):
-    """Rematch game"""
-    if game.is_started():
         if message.author.id not in game.players:
             await message.reply(text_templates.generate_text("not_in_game_text"))
         else:
-            await message.reply(text_templates.generate_text("rematch_text"))
-            await game.rematch(message.author.id)
+            game.vote_stop.add(message.author.id)
+            valid, text = check_vote_valid(len(game.vote_stop), 1 if game.is_ended() else 2, "stop")
+            if valid:
+                await message.reply(text_templates.generate_text("game_stop_text"))
+                await game.stop()
+            else:
+                await message.reply(text_templates.generate_text("vote_for_game_text", command="stop", author=message.author.display_name, text=text))
+
+
+# Player can call to rematch when they want without voting
+@verify_game_started(True)
+async def do_rematch(game, message):
+    """Rematch game"""
+    if message.author.id not in game.players:
+        await message.reply(text_templates.generate_text("not_in_game_text"))
     else:
-        await message.reply(text_templates.generate_text("game_not_started_text"))
+        await message.reply(text_templates.generate_text("rematch_text"))
+        await game.rematch(message.author.id)
 
 
+@verify_game_started(True)
 async def do_character_cmd(game, message, cmd, parameters):
-    if not game.is_started():
-        # prevent user uses command before game starts
-        await message.reply(text_templates.generate_text("game_not_started_text"))
-        return
-
     if not game.is_in_play_time():
         await message.reply(text_templates.generate_text("game_not_playing_text"))
         return
