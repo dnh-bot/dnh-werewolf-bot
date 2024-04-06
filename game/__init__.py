@@ -196,6 +196,8 @@ class Game:
         except IndexError:
             game_role = dict_to_list(role_config[-1], len(ids))
 
+        game_role = list(game_role)
+        random.shuffle(game_role)
         random.shuffle(ids)
         if self.modes.get("couple_random"):
             # Replace Cupid by Villager:
