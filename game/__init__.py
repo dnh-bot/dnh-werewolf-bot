@@ -196,6 +196,11 @@ class Game:
         except IndexError:
             game_role = dict_to_list(role_config[-1], len(ids))
 
+        # Somehow python dict retain adding order
+        # So the Werewolf role will always at the begining of the dict
+        # Shuffle to make the Werewolf role appear randomly
+        game_role = list(game_role)
+        random.shuffle(game_role)
         random.shuffle(ids)
         if self.modes.get("couple_random"):
             # Replace Cupid by Villager:
