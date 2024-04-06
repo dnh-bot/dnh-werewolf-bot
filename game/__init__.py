@@ -16,6 +16,14 @@ from game import const, roles, text_template, modes
 from game.modes.new_moon import NewMoonMode
 
 
+def is_alive(author):
+    return author.is_alive()
+
+
+def is_dead(author):
+    return not author.is_alive()
+
+
 def command_verify_author(valid_role):
     def wrapper(cmd_func):
         async def execute(game, author, *a, **kw):
@@ -1072,44 +1080,59 @@ class Game:
         # TODO
         return None
 
+    def verify_player_id(self, player_label, player_id_list, player_status):
+        player_list = list(map(self.players.get, player_id_list))
+        if None in player_list:
+            return False, text_templates.generate_text(f"invalid_{player_label}_text")
+
+        invalid_players = [player for player in player_list if not player_status(player)]
+        if invalid_players:
+            return False, text_templates.generate_text(
+                f"invalid_{player_label}_status_text",
+                status=text_templates.get_word_in_language("alive" if invalid_players[0].is_dead() else "dead")
+            )
+
+        return True, player_list
+
+    async def do_auto(self, author_id, *parameters):
+        assert self.players is not None
+        # print(self.players)
+        is_valid_author, verified_author_data = self.verify_player_id(
+            "author", [author_id], is_alive
+        )
+        if not is_valid_author:
+            return verified_author_data
+
+        author = verified_author_data[0]
+
+        return await self.register_auto(author, *parameters)
+
     async def do_player_action(self, cmd, author_id, *targets_id):
         # FIXME
         # pylint: disable=too-many-return-statements, too-many-branches
         assert self.players is not None
         # print(self.players)
-        author = self.players.get(author_id)
-        if author is None:
-            return text_templates.generate_text("invalid_author_text")
+        is_valid_author, verified_author_data = self.verify_player_id(
+            "author", [author_id], is_alive if cmd not in ["zombie", "punish"] else is_dead
+        )
+        if not is_valid_author:
+            return verified_author_data
 
-        is_alive_author_command = cmd not in ["zombie", "punish"]
-        if is_alive_author_command != author.is_alive():
-            return text_templates.generate_text(
-                "invalid_author_status_text",
-                status=text_templates.get_word_in_language("alive" if is_alive_author_command else "dead")
-            )
+        author = verified_author_data[0]
 
-        if cmd == "auto":
-            return await self.register_auto(author, *targets_id)
+        is_valid_target, verified_target_data = self.verify_player_id(
+            "target", targets_id, is_alive if cmd != "reborn" else is_dead
+        )
+        if not is_valid_target:
+            return verified_target_data
 
-        targets = []
-        for target_id in targets_id:
-            target = self.players.get(target_id)
-            if target is None:
-                return text_templates.generate_text("invalid_target_text")
-            targets.append(target)
+        targets = verified_target_data
 
-        if cmd == "zombie":
-            return await self.zombie(author)
-
-        is_alive_target_command = cmd != "reborn"
-        if is_alive_target_command != targets[0].is_alive():
-            return text_templates.generate_text(
-                "invalid_target_status_text",
-                status=text_templates.get_word_in_language("alive" if is_alive_target_command else "dead")
-            )
-
-        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse"):
-            return await getattr(self, cmd)(author, targets[0])
+        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse", "zombie"):
+            try:
+                return await getattr(self, cmd)(author, *targets)
+            except Exception as e:
+                print(f"Error in do_player_action with cmd={cmd}:", e)
 
         if cmd == "ship":
             if self.modes.get("couple_random"):
