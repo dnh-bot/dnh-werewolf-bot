@@ -514,15 +514,15 @@
   "witch_after_reborn_text": {
     "params": ["target"],
     "template": {
-      "vi": ["👀 Bạn muốn phục sinh {target}"],
-      "en": ["👀 You want to reborn {target}"]
+      "vi": ["🧪 Bạn muốn phục sinh {target}"],
+      "en": ["🧪 You want to reborn {target}"]
     }
   },
   "witch_after_curse_text": {
     "params": ["target"],
     "template": {
-      "vi": ["👀 Bạn muốn nguyền rủa {target}"],
-      "en": ["👀 You want to curse {target}"]
+      "vi": ["🩸 Bạn muốn nguyền rủa {target}"],
+      "en": ["🩸 You want to curse {target}"]
     }
   },
   "witch_reborn_result_text": {
