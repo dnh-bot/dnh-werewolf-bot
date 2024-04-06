@@ -16,11 +16,11 @@ from game import const, roles, text_template, modes
 from game.modes.new_moon import NewMoonMode
 
 
-def is_alive(author):
+def is_author_alive(author):
     return author.is_alive()
 
 
-def is_dead(author):
+def is_author_dead(author):
     return not author.is_alive()
 
 
@@ -1098,7 +1098,7 @@ class Game:
         assert self.players is not None
         # print(self.players)
         is_valid_author, verified_author_data = self.verify_player_id(
-            "author", [author_id], is_alive
+            "author", [author_id], is_author_alive
         )
         if not is_valid_author:
             return verified_author_data
@@ -1113,7 +1113,7 @@ class Game:
         assert self.players is not None
         # print(self.players)
         is_valid_author, verified_author_data = self.verify_player_id(
-            "author", [author_id], is_alive if cmd not in ["zombie", "punish"] else is_dead
+            "author", [author_id], is_author_alive if cmd not in ["zombie", "punish"] else is_author_dead
         )
         if not is_valid_author:
             return verified_author_data
@@ -1121,7 +1121,7 @@ class Game:
         author = verified_author_data[0]
 
         is_valid_target, verified_target_data = self.verify_player_id(
-            "target", targets_id, is_alive if cmd != "reborn" else is_dead
+            "target", targets_id, is_author_alive if cmd != "reborn" else is_author_dead
         )
         if not is_valid_target:
             return verified_target_data
