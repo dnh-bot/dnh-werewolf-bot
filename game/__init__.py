@@ -208,8 +208,7 @@ class Game:
             game_role = map(lambda role: role if role != 'Cupid' else 'Villager', game_role)
             # print("DEBUG----", game_role)
 
-        # To make sure player roles and display roles are not in the same order
-        sample_times = 5
+        sample_times = 3
         for _ in range(sample_times):
             assigning_roles = random.sample(game_role, len(game_role))
         r = {
@@ -222,7 +221,10 @@ class Game:
     def get_role_list(self):
         role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
         if not self.modes.get("hidden_role"):
-            formatted_roles = ", ".join(f"{role}: {count}" for role, count in role_list.items())
+            roles_text_list = list((f"{role}: {count}" for role, count in role_list.items()))
+            # To make sure player roles and display roles are not in the same order
+            random.shuffle(roles_text_list)
+            formatted_roles = ", ".join(roles_text_list)
             return text_templates.generate_text("role_list_text", roles_data=formatted_roles)
         return text_templates.generate_text("hidden_role_warning_text")
 
