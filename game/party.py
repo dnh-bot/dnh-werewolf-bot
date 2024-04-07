@@ -1,9 +1,3 @@
-from collections import Counter
-from functools import reduce
-
-import text_templates
-
-
 class Party:
     def __init__(self, interface, channel_name, welcome_text_label):
         self.interface = interface
@@ -41,4 +35,3 @@ class Party:
     def on_player_reborn(self, player_id):
         if player_id in self.player_set:
             self.interface.add_user_to_channel(player_id, self.channel_name, is_read=True, is_send=True)
-
