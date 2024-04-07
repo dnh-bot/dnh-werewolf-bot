@@ -233,8 +233,8 @@
   "personal_channel_welcome_text": {
     "params": ["player_id", "player_role"],
     "template": {
-      "vi": ["🔰 Chào mừng <@{player_id}> tham gia game!\n🎲 Vai trò của bạn là {player_role}"],
-      "en": ["🔰 Welcome <@{player_id}> to the game!\n🎲 Your role is {player_role}"]
+      "vi": ["🔰 Chào mừng <@{player_id}> tham gia game!", "🎲 Vai trò của bạn là {player_role}"],
+      "en": ["🔰 Welcome <@{player_id}> to the game!", "🎲 Your role is {player_role}"]
     }
   },
   "too_quick_text": {
@@ -1065,8 +1065,8 @@
   "set_mode_successful_text": {
     "params": ["mode_str", "status_str"],
     "template": {
-      "vi": ["Đã {status_str} chế độ `{mode_str}`\nCảnh báo: Cài đặt này là vĩnh viễn!"],
-      "en": ["Set `{mode_str}` to {status}\nWarning: This setting is permanent!"]
+      "vi": ["Đã {status_str} chế độ `{mode_str}`", "Cảnh báo: Cài đặt này là vĩnh viễn!"],
+      "en": ["Set `{mode_str}` to {status}", "Warning: This setting is permanent!"]
     }
   },
   "vote_with_voters_text": {
@@ -1280,8 +1280,8 @@
   "new_moon_special_event_text": {
     "params": ["event_name", "event_description"],
     "template": {
-      "vi": ["\u200B\n📆 Sự kiện đặc biệt của ngày hôm nay là {event_name}.\n❓ {event_description}"],
-      "en": ["\u200B\n📆 Today's special event is {event_name}.\n❓ {event_description}"]
+      "vi": ["\u200B\n📆 Sự kiện đặc biệt của ngày hôm nay là {event_name}.", "❓ {event_description}"],
+      "en": ["\u200B\n📆 Today's special event is {event_name}.", "❓ {event_description}"]
     }
   },
   "new_moon_heads_or_tails_result_text": {
@@ -1329,8 +1329,8 @@
   "ban_command_reply_text":{
     "params": ["user", "duration", "reason"],
     "template": {
-      "vi": ["Đã cấm {user} tham gia trò chơi trong {duration}\nLý do: {reason}."],
-      "en": ["Banned {user} from joining the game for {duration}\nReason: {reason}."]
+      "vi": ["Đã cấm {user} tham gia trò chơi trong {duration}", "Lý do: {reason}."],
+      "en": ["Banned {user} from joining the game for {duration}", "Reason: {reason}."]
     }
   },
   "unban_command_reply_text":{
@@ -1343,8 +1343,8 @@
   "join_while_ban_reply_text":{
     "params": ["duration", "reason"],
     "template": {
-      "vi": ["Bạn không thể tham gia trò chơi vì đang bị cấm túc!\nLý do: {reason}.\nThời gian còn lại: {duration}"],
-      "en": ["You can not join the game because you are banned!\nLý do: {reason}.\nRemaining time: {duration}"]
+      "vi": ["Bạn không thể tham gia trò chơi vì đang bị cấm túc!", "Lý do: {reason}.", "Thời gian còn lại: {duration}"],
+      "en": ["You can not join the game because you are banned!", "Lý do: {reason}.", "Remaining time: {duration}"]
     }
   }
 }
