@@ -1235,13 +1235,13 @@
     }
   },
   "game_result_embed": {
-    "params": ["start_time_str"],
+    "params": ["start_time_str", "total_players"],
     "color": "0xfabe4e",
     "template": {
       "vi": {
         "title": "Kết quả trò chơi",
         "description": "Trò chơi đã bắt đầu lúc {start_time_str}.",
-        "content_headers": ["Số ngày đã trải qua", "\u200B\n🏆 Phe chiến thắng", "\u200B\n📝 Danh sách người chơi", "💘 Cặp đôi vàng"]
+        "content_headers": ["Số ngày đã trải qua", "\u200B\n🏆 Phe chiến thắng", "\u200B\n📝 Danh sách {total_players} người chơi", "💘 Cặp đôi vàng"]
       },
       "en": {
         "title": "Game result",
