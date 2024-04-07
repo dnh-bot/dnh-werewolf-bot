@@ -80,6 +80,7 @@ class Game:
             self.playersname = {}  # id: Username
         self.watchers = set()  # Set of id
         self.game_phase = const.GamePhase.NEW_GAME
+        self.formatted_roles = ""
         self.wolf_kill_dict = {}  # dict[wolf] -> player
         self.reborn_set = set()
         self.cupid_dict = {}  # dict[player1] -> player2, dict[player2] -> player1
@@ -208,20 +209,17 @@ class Game:
             game_role = map(lambda role: role if role != 'Cupid' else 'Villager', game_role)
             # print("DEBUG----", game_role)
 
-        sample_times = 3
-        for _ in range(sample_times):
-            assigning_roles = random.sample(game_role, len(game_role))
         r = {
             id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_])
-            for id_, role_name in zip(ids, assigning_roles)
+            for id_, role_name in zip(ids, game_role)
         }
         print("Player list:", r)
         return r
 
     def get_role_list(self):
-        role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
+        player_role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
         if not self.modes.get("hidden_role"):
-            roles_text_list = list((f"{role}: {count}" for role, count in role_list.items()))
+            roles_text_list = list((f"{role}: {count}" for role, count in player_role_list.items()))
             # To make sure player roles and display roles are not in the same order
             random.shuffle(roles_text_list)
             formatted_roles = ", ".join(roles_text_list)
@@ -241,6 +239,8 @@ class Game:
             else:
                 self.players = init_players
 
+            self.formatted_roles = self.get_role_list()
+
             await self.create_channel()
             await self.interface.send_text_to_channel(
                 modes.generate_modes_text({mode: str(value) for mode, value in self.modes.items()}),
@@ -248,7 +248,7 @@ class Game:
             )
 
             if not self.modes.get("hidden_role"):
-                await self.interface.send_text_to_channel(self.get_role_list(), config.GAMEPLAY_CHANNEL)
+                await self.interface.send_text_to_channel(self.formatted_roles, config.GAMEPLAY_CHANNEL)
 
             self.start_time = datetime.datetime.now()
 
@@ -541,7 +541,7 @@ class Game:
         await self.interface.send_embed_to_channel(status_embed_data, channel_name)
 
         if self.is_started():
-            role_list = [self.get_role_list()]
+            role_list = [self.formatted_roles]
             players_embed_data = text_template.generate_player_list_embed(
                 self.get_all_players(), None, role_list, self.modes.get("reveal_role", False)
             )
