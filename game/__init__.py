@@ -179,6 +179,46 @@ class Game:
             return "Invalid json format."
 
     def generate_roles(self, interface, ids, names_dict):
+
+        def get_score(role_dict, generated_roles):
+            return sum(role_dict[r] for r in generated_roles)
+
+        def generate_roles_new_strategy(ids):
+            num_of_players = len(ids)
+            fixed_roles = ['Werewolf', 'Seer', 'Guard', 'Villager']
+            if num_of_players == 4:
+                return dict(Counter(fixed_roles))
+            role_dict = {
+                "Seer": 7,
+                "Witch": 6,
+                "Guard": 3,
+                "Hunter": 3,
+                "Zombie": 3,
+                "Chief": 2,
+                "Villager": 1,
+                "Tanner": 1,
+                "Lycan": -1,
+                "Fox": -1,
+                "Betrayer": -2,
+                "Cupid": -3,
+                "Werewolf": -6,
+                "Superwolf": -7,
+            }
+            delta = 4
+            role_list = list(r for r in role_dict if r not in fixed_roles)
+
+            num_of_players = num_of_players - len(fixed_roles)
+
+            while len(role_list) < num_of_players*2:
+                role_list += ['Werewolf', 'Lycan'] + ['Villager']*4
+
+            random.shuffle(role_list)
+
+            while get_score(role_dict, fixed_roles + role_list[:num_of_players]) < delta:
+                random.shuffle(role_list)
+            print("SCORES", get_score(role_dict, fixed_roles + role_list[:num_of_players]))
+            return dict(Counter(fixed_roles + role_list[:num_of_players]))
+
         def dict_to_list(cfg, number=0):
             yield from (name for name in cfg for _ in range(cfg[name]))
             yield from ('Werewolf' if i % 4 == 0 else 'Villager' for i in range(number - sum(cfg.values())))
@@ -186,14 +226,11 @@ class Game:
         if self.runtime_roles:
             role_config = self.runtime_roles
         else:
-            role_config = utils.common.read_json_file("json/role_config.json")
+            role_config = generate_roles_new_strategy(ids)
 
         ids = list(ids)
         try:
-            game_role = random.choice([
-                dict_to_list(role_dict)
-                for role_dict in role_config if sum(role_dict.values()) == len(ids)
-            ])
+            game_role = generate_roles_new_strategy(ids)
         except IndexError:
             game_role = dict_to_list(role_config[-1], len(ids))
 
