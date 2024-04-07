@@ -97,9 +97,14 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
     if cmd == "join":
         if not force:
             ban_remain = BAN_DICT.get(str(message.author.id), {"end_time": 0})["end_time"] - time.time()
+            ban_reason = BAN_DICT.get(str(message.author.id), {"reason": text_templates.get_word_in_language("ban_no_reason")})["reason"]
             if ban_remain > 0:
-                await message.reply(text_templates.generate_text("join_while_ban_reply_text", duration=time_string(ban_remain)))
+                await message.reply(text_templates.generate_text("join_while_ban_reply_text", duration=time_string(ban_remain), reason=ban_reason))
                 return
+            # Remove from list if ban time expired
+            if str(message.author.id) in BAN_DICT:
+                del BAN_DICT[str(message.author.id)]
+                utils.common.write_json_file(BAN_FILE, BAN_DICT)
         await player.do_join(game, message, force=force)
 
     elif cmd in ("watch", "unwatch", "leave", "start", "next", "stopgame"):
@@ -231,7 +236,7 @@ async def do_admin_cmd(client, game, message, cmd, parameters):
     elif cmd_content == "debug":
         await do_force_debug()
     elif cmd_content == "ban":
-        await do_ban(message, parameters)
+        await do_ban(game, message, parameters)
     elif cmd_content == "unban":
         await do_unban(message)
     elif cmd_content in ("join", "leave", "start", "next", "stopgame"):
@@ -273,10 +278,10 @@ BAN_FILE = "json/ban_list.json"
 BAN_DICT = utils.common.read_json_file(BAN_FILE)
 
 
-async def do_ban(message, params):
+async def do_ban(game, message, params):
     user = message.mentions[0]
     ban_duration = timeparse(params[1]) if len(params) > 1 else 0
-    ban_reason = ' '.join(params[2:]) if len(params) > 2 else "(No reason given)"
+    ban_reason = ' '.join(params[2:]) if len(params) > 2 else text_templates.get_word_in_language("ban_no_reason")
     if ban_duration == 0:
         ban_duration = timeparse("1000y")
     BAN_DICT[str(user.id)] = {
@@ -284,6 +289,8 @@ async def do_ban(message, params):
         "reason": ban_reason
     }
     utils.common.write_json_file(BAN_FILE, BAN_DICT)
+    if not game.is_started():
+        await game.remove_player(user.id)
     await message.reply(text_templates.generate_text("ban_command_reply_text", user=user.mention, duration=time_string(ban_duration), reason=ban_reason))
 
 

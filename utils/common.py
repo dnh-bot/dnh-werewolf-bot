@@ -15,6 +15,8 @@ def write_json_file(filename, data):
         with open(filename, "w", encoding="utf8") as f:
             print(f"successfully write {filename}")
             json.dump(data, f)
+            # Add new line eof
+            f.write('\n')
     except Exception as e:
         print("write json failed.", e)
 

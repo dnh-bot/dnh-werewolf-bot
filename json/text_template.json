@@ -56,6 +56,10 @@
     "dead": {
       "vi": "đã chết",
       "en": "dead"
+    },
+    "ban_no_reason": {
+      "vi": "Không rõ lí do",
+      "en": "No reason given"
     }
   },
   "LABEL": {
@@ -1337,10 +1341,10 @@
     }
   },
   "join_while_ban_reply_text":{
-    "params": ["duration"],
+    "params": ["duration", "reason"],
     "template": {
-      "vi": ["Bạn không thể tham gia trò chơi vì đang bị cấm túc!\nThời gian còn lại: {duration}"],
-      "en": ["You can not join the game because you are banned!\nRemaining time: {duration}"]
+      "vi": ["Bạn không thể tham gia trò chơi vì đang bị cấm túc!\nLý do: {reason}.\nThời gian còn lại: {duration}"],
+      "en": ["You can not join the game because you are banned!\nLý do: {reason}.\nRemaining time: {duration}"]
     }
   }
 }
