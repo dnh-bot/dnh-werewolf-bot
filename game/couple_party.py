@@ -22,8 +22,8 @@ class CoupleParty(Party):
 
         print(self.cupid_dict)
 
-    def reset_couple(self):
-        self.player_set = set()
+    def reset_state(self):
+        super().reset_state()
         self.cupid_dict = {}
 
     def get_couple_target(self, player_id):

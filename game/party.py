@@ -6,6 +6,9 @@ class Party:
 
         self.player_set = set()
 
+    def reset_state(self):
+        self.player_set = set()
+
     async def create_channel(self):
         await self.interface.create_channel(self.channel_name)
 
@@ -31,7 +34,7 @@ class Party:
 
         await self.interface.send_action_text_to_channel(self.welcome_text_label, self.channel_name, **user_kwargs)
 
-    async def on_player_killed(self, player_id):
+    async def on_player_killed(self, player_id, phase_str=""):
         if player_id in self.player_set:
             await self.interface.add_user_to_channel(player_id, self.channel_name, is_read=False, is_send=False)
 
