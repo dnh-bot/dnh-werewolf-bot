@@ -15,6 +15,7 @@ import text_templates
 from game import const, roles, text_template, modes
 from game.modes.new_moon import NewMoonMode
 from game.voting_party import VotingParty
+from game.couple_party import CoupleParty
 
 
 def command_verify_author(valid_role):
@@ -68,7 +69,6 @@ class Game:
         self.play_time_end = datetime.time(0, 0, 0)  # in UTC
         self.play_zone = "UTC+7"
         self.async_lock = asyncio.Lock()
-        self.reset_game_state()  # Init other game variables every end game.
 
         self.werewolf_party = VotingParty(
             self.interface,
@@ -78,6 +78,9 @@ class Game:
             "werewolf_kill_text",
             "kill_list_title"
         )
+        self.couple_party = CoupleParty(self.interface, config.COUPLE_CHANNEL)
+
+        self.reset_game_state()  # Init other game variables every end game.
 
     def reset_game_state(self, is_rematching=False):
         print("reset_game_state")
@@ -91,7 +94,7 @@ class Game:
         self.watchers = set()  # Set of id
         self.game_phase = const.GamePhase.NEW_GAME
         self.reborn_set = set()
-        self.cupid_dict = {}  # dict[player1] -> player2, dict[player2] -> player1
+        self.couple_party.reset_state()
         self.night_pending_kill_list = []
         self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1}. All items are ids.
         self.vote_start = set()
@@ -280,7 +283,7 @@ class Game:
             self.interface.create_channel(config.GAMEPLAY_CHANNEL),
             self.werewolf_party.create_channel(),
             self.interface.create_channel(config.CEMETERY_CHANNEL),
-            self.interface.create_channel(config.COUPLE_CHANNEL)
+            self.couple_party.create_channel()
         )
         await asyncio.gather(
             *[player.create_personal_channel() for player in self.players.values()]
@@ -340,7 +343,7 @@ class Game:
                 self.interface.delete_channel(config.GAMEPLAY_CHANNEL),
                 self.werewolf_party.delete_channel(),
                 self.interface.delete_channel(config.CEMETERY_CHANNEL),
-                self.interface.delete_channel(config.COUPLE_CHANNEL),
+                self.couple_party.delete_channel(),
                 *[player.delete_personal_channel() for player in self.players.values()]
             )
         except Exception as e:
@@ -636,9 +639,9 @@ class Game:
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
         reveal_list = [(_id, player.__class__.__name__) for _id, player in self.players.items()]
-        couple_reveal_text = "\n\n" + "💘 " + " x ".join(f"<@{player_id}>" for player_id in self.cupid_dict) if self.cupid_dict else ""
+        couple_reveal_text = "\n\n" + "💘 " + self.couple_party.get_players_str() if self.couple_party.cupid_dict else ""
         await self.interface.send_text_to_channel(
-            "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict)) + couple_reveal_text,
+            "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner, self.couple_party.cupid_dict)) + couple_reveal_text,
             config.GAMEPLAY_CHANNEL
         )
 
@@ -651,8 +654,8 @@ class Game:
                     # \u00A0\u00A0 is one space character for discord embed
                     # Put \u200B\n at first of the next field to break line
                     [f"🎉\u00A0\u00A0\u00A0\u00A0{game_winner}\u00A0\u00A0\u00A0\u00A0🎉"],
-                    text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict),
-                    [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict)] if self.cupid_dict else []
+                    text_template.generate_reveal_str_list(reveal_list, game_winner, self.couple_party.cupid_dict),
+                    [self.couple_party.get_players_str()] if self.couple_party.cupid_dict else []
                 ],
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime"))
             )
@@ -677,7 +680,7 @@ class Game:
             return None
 
         # Check Cupid
-        couple = [self.players[i] for i in self.cupid_dict]
+        couple = [self.players[i] for i in self.couple_party.get_all_players()]
         if num_players == 2 and \
                 any(isinstance(p, roles.Werewolf) for p in couple) and \
                 any(not isinstance(p, roles.Werewolf) for p in couple) and \
@@ -740,7 +743,7 @@ class Game:
             # Mute all party channels
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
             await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, True, lambda player: isinstance(player, roles.Werewolf))
-            await self.control_muting_party_channel(config.COUPLE_CHANNEL, True, lambda player: player.player_id in self.cupid_dict)
+            await self.control_muting_party_channel(config.COUPLE_CHANNEL, True, lambda player: player.player_id in self.couple_party)
             await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, False)
         else:
             print("Error no player in game.")
@@ -775,13 +778,10 @@ class Game:
             if isinstance(self.players[lynched], roles.Tanner):
                 self.tanner_is_lynched = True
 
-            cupid_couple = self.cupid_dict.get(lynched)
+            cupid_couple = self.couple_party.get_couple_target(lynched)
             if cupid_couple is not None:
                 await self.players[cupid_couple].get_killed(True)
-                await self.interface.send_action_text_to_channel(
-                    "couple_died_on_day_text", config.GAMEPLAY_CHANNEL,
-                    died_player=f"<@{lynched}>", follow_player=f"<@{cupid_couple}>"
-                )
+                await self.couple_party.on_player_killed(lynched, "day")
                 # Kill anyone who is hunted if hunter dies with his couple
                 hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
                 if hunted:
@@ -804,7 +804,7 @@ class Game:
         # Unmute all party channels
         # Mute all players in config.GAMEPLAY_CHANNEL
         await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, False, lambda player: isinstance(player, roles.Werewolf))
-        await self.control_muting_party_channel(config.COUPLE_CHANNEL, False, lambda player: player.player_id in self.cupid_dict)
+        await self.control_muting_party_channel(config.COUPLE_CHANNEL, False, lambda player: player.player_id in self.couple_party)
         await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, True)
 
     async def do_new_nighttime_phase(self):
@@ -853,12 +853,12 @@ class Game:
                     hunted = await self.get_hunted_target_on_hunter_death(_id)
                     if hunted:  # Hunter hunted one in couple
                         final_kill_set.add(hunted)
-                        if self.cupid_dict.get(hunted):
-                            cupid_couple = self.cupid_dict[hunted]
+                        if hunted in self.couple_party:
+                            cupid_couple = self.couple_party.get_couple_target(hunted)
                             final_kill_set.add(cupid_couple)
 
-                    if self.cupid_dict.get(_id):
-                        cupid_couple = self.cupid_dict[_id]  # Hunter is one in couple
+                    if _id in self.couple_party:
+                        cupid_couple = self.couple_party.get_couple_target(_id)  # Hunter is one in couple
                         hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
                         if hunted:
                             final_kill_set.add(hunted)
@@ -874,17 +874,24 @@ class Game:
 
         if cupid_couple is not None:
             await self.players[cupid_couple].get_killed(True)
-            await self.interface.send_action_text_to_channel(
-                "couple_died_on_night_text", config.GAMEPLAY_CHANNEL,
-                died_player=f"<@{self.cupid_dict[cupid_couple]}>", follow_player=f"<@{cupid_couple}>"
-            )
+            await self.couple_party.on_player_killed(self.couple_party.get_couple_target(cupid_couple), "night")
 
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME and self.cupid_dict:
-            await self.new_moon_mode.do_end_nighttime_phase(self.interface)
-            self.reborn_set.update(self.get_following_players_set(self.reborn_set, self.cupid_dict))
+        player_has_following_reborn = set()
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME:
+            CoupleParty.set_allow_reborn_together(True)
+            if self.couple_party.cupid_dict:
+                await self.new_moon_mode.do_end_nighttime_phase(self.interface)
+                old_reborn_set = set(self.reborn_set)
+                self.reborn_set.update(self.get_following_players_set(self.reborn_set, self.couple_party.cupid_dict))
+                player_has_following_reborn = self.reborn_set - old_reborn_set
+        else:
+            CoupleParty.set_allow_reborn_together(False)
 
         for _id in self.reborn_set:
             await self.players[_id].on_reborn()
+
+        for _id in player_has_following_reborn:
+            await self.couple_party.on_player_reborn(_id)
 
         self.reborn_set = set()
 
@@ -1197,9 +1204,6 @@ class Game:
         target1_id = target1.player_id
         target2_id = target2.player_id
 
-        self.cupid_dict[target1_id] = target2_id
-        self.cupid_dict[target2_id] = target1_id
-
         await self.interface.send_action_text_to_channel(
             "couple_shipped_with_text",
             self.players[target1_id].channel_name, target=f"<@{target2_id}> {target2.__class__.__name__}"
@@ -1208,10 +1212,9 @@ class Game:
             "couple_shipped_with_text",
             self.players[target2_id].channel_name, target=f"<@{target1_id}> {target1.__class__.__name__}"
         )
-        await self.interface.create_channel(config.COUPLE_CHANNEL)
-        await self.interface.add_user_to_channel(target1_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
-        await self.interface.add_user_to_channel(target2_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
-        await self.interface.send_action_text_to_channel("couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{target1_id}>", user2=f"<@{target2_id}>")
+        await self.couple_party.create_channel()
+        await self.couple_party.set_couple(target1_id, target2_id)
+        await self.couple_party.send_welcome_text()
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
 
@@ -1265,8 +1268,8 @@ class Game:
         @check(has_role(roles.Seer))
         async def auto_seer():
             target = random.choice(self.get_alive_players())
-            if author.player_id in self.cupid_dict:
-                while target.player_id in self.cupid_dict:
+            if author.player_id in self.couple_party:
+                while target.player_id in self.couple_party:
                     target = random.choice(self.get_alive_players())
             msg = await self.seer(author, target)
             await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
