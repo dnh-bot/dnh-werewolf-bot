@@ -208,9 +208,11 @@ class Game:
             game_role = map(lambda role: role if role != 'Cupid' else 'Villager', game_role)
             # print("DEBUG----", game_role)
 
+        # To make sure player roles and display roles are not in the same order
+        assigning_roles = random.sample(game_role, len(game_role))
         r = {
             id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_])
-            for id_, role_name in zip(ids, game_role)
+            for id_, role_name in zip(ids, assigning_roles)
         }
         print("Player list:", r)
         return r
