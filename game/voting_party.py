@@ -7,6 +7,8 @@ from game.party import Party
 
 class VotingParty(Party):
     def __init__(self, interface, channel_name, welcome_text_label, before_voting_label, result_text_label):
+        # FIXME:
+        # pylint: disable=too-many-arguments
         super().__init__(interface, channel_name, welcome_text_label)
         self.before_voting_label = before_voting_label
         self.result_text_label = result_text_label
