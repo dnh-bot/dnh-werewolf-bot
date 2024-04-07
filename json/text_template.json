@@ -358,10 +358,10 @@
     }
   },
   "werewolf_kill_text": {
-    "params": ["werewolf", "target"],
+    "params": ["author", "target"],
     "template": {
-      "vi": ["🐺 Sói {werewolf} muốn xử lý {target} trong đêm nay"],
-      "en": ["🐺 Werewolf {werewolf} wants to bite {target} tonight"]
+      "vi": ["🐺 Sói {author} muốn xử lý {target} trong đêm nay"],
+      "en": ["🐺 Werewolf {author} wants to bite {target} tonight"]
     }
   },
   "werewolf_after_voting_text": {

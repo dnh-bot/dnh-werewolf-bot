@@ -14,6 +14,7 @@ import utils
 import text_templates
 from game import const, roles, text_template, modes
 from game.modes.new_moon import NewMoonMode
+from game.voting_party import VotingParty
 
 
 def command_verify_author(valid_role):
@@ -69,6 +70,14 @@ class Game:
         self.async_lock = asyncio.Lock()
         self.reset_game_state()  # Init other game variables every end game.
 
+        self.werewolf_party = VotingParty(
+            self.interface,
+            config.WEREWOLF_CHANNEL,
+            "werewolf_welcome_text",
+            "werewolf_before_voting_text",
+            "werewolf_kill_text"
+        )
+
     def reset_game_state(self, is_rematching=False):
         print("reset_game_state")
         self.is_stopped = True
@@ -80,7 +89,6 @@ class Game:
             self.playersname = {}  # id: Username
         self.watchers = set()  # Set of id
         self.game_phase = const.GamePhase.NEW_GAME
-        self.wolf_kill_dict = {}  # dict[wolf] -> player
         self.reborn_set = set()
         self.cupid_dict = {}  # dict[player1] -> player2, dict[player2] -> player1
         self.night_pending_kill_list = []
@@ -269,7 +277,7 @@ class Game:
     async def create_channel(self):
         await asyncio.gather(
             self.interface.create_channel(config.GAMEPLAY_CHANNEL),
-            self.interface.create_channel(config.WEREWOLF_CHANNEL),
+            self.werewolf_party.create_channel(),
             self.interface.create_channel(config.CEMETERY_CHANNEL),
             self.interface.create_channel(config.COUPLE_CHANNEL)
         )
@@ -329,7 +337,7 @@ class Game:
         try:
             await asyncio.gather(
                 self.interface.delete_channel(config.GAMEPLAY_CHANNEL),
-                self.interface.delete_channel(config.WEREWOLF_CHANNEL),
+                self.werewolf_party.delete_channel(),
                 self.interface.delete_channel(config.CEMETERY_CHANNEL),
                 self.interface.delete_channel(config.COUPLE_CHANNEL),
                 *[player.delete_personal_channel() for player in self.players.values()]
@@ -470,7 +478,7 @@ class Game:
                 is_personal_channel = channel_name.startswith(config.PERSONAL)
 
                 if isinstance(author, roles.Werewolf) and (channel_name == config.WEREWOLF_CHANNEL or is_personal_channel):
-                    vote_table = {f'<@{k}>': v for k, v in self.get_vote_status(self.wolf_kill_dict).items()}
+                    vote_table = {f'<@{k}>': v for k, v in self.werewolf_party.get_vote_status().items()}
                     table_title = text_templates.get_label_in_language("kill_list_title")
             else:
                 # TODO: future features in #cemetery channel
@@ -564,13 +572,11 @@ class Game:
     async def run_game_loop(self):
         print("Starting game loop")
         self.prev_playtime = self.is_in_play_time()
-        werewolf_list = []
         for _id, player in self.players.items():
             if isinstance(player, roles.Werewolf):
                 print("Wolf: ", player)
-                await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
-                await self.interface.send_action_text_to_channel("werewolf_welcome_text", config.WEREWOLF_CHANNEL, user=f"<@{_id}>")
-                werewolf_list.append(_id)
+                await self.werewolf_party.add_player(_id)
+                await self.werewolf_party.send_welcome_text(_id)
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
 
@@ -578,7 +584,8 @@ class Game:
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
 
         info = text_templates.generate_text(
-            "werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in werewolf_list))
+            "werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in self.werewolf_party.get_all_players())
+        )
         print("werewolf_list_text", info)
         await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
 
@@ -818,8 +825,7 @@ class Game:
             alive_embed_data = self.generate_player_list_embed(True)
             dead_embed_data = self.generate_player_list_embed(False)
 
-            await self.interface.send_action_text_to_channel("werewolf_before_voting_text", config.WEREWOLF_CHANNEL)
-            await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
+            await self.werewolf_party.do_new_voting_phase(alive_embed_data)
             await asyncio.gather(*[
                 player.on_night_start(alive_embed_data, dead_embed_data) for player in self.get_all_players()
             ])
@@ -840,11 +846,11 @@ class Game:
                 await self.witch_do_end_nighttime_phase(player)
 
         kills = None
-        if self.wolf_kill_dict:
-            killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
-            if killed:
-                self.night_pending_kill_list.append(killed)
-            self.wolf_kill_dict = {}
+        killed, _ = self.werewolf_party.get_party_top_voted()
+        if killed:
+            self.night_pending_kill_list.append(killed)
+
+        self.werewolf_party.do_end_voting_phase()
 
         cupid_couple = None
         if self.night_pending_kill_list:
@@ -1152,8 +1158,7 @@ class Game:
         author_id = author.player_id
         target_id = target.player_id
 
-        self.wolf_kill_dict[author_id] = target_id
-        return text_templates.generate_text("werewolf_kill_text", werewolf=f"<@{author_id}>", target=f"<@{target_id}>")
+        return self.werewolf_party.register_vote(author_id, target_id)
 
     @command_verify_author(roles.Guard)
     @command_verify_phase(const.GamePhase.NIGHT)
