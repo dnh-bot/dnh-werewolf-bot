@@ -29,7 +29,7 @@ class CoupleParty(Party):
     def get_couple_target(self, player_id):
         return self.cupid_dict.get(player_id)
 
-    async def on_player_killed(self, player_id, phase_str):
+    async def on_player_killed(self, player_id, phase_str=""):
         if player_id not in self.cupid_dict:
             return
 
