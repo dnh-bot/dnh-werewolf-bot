@@ -26,7 +26,7 @@ def generate_roles_new_strategy(ids):
         "Werewolf": -6,
         "Superwolf": -7,
     }
-    delta = 4
+    delta = 5
     role_list = list(r for r in role_dict if r not in fixed_roles)
 
     num_of_players = num_of_players - len(fixed_roles)
