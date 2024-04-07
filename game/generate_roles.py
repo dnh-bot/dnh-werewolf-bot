@@ -35,11 +35,10 @@ def generate_roles_new_strategy(ids):
         role_list += ['Werewolf', 'Lycan'] + ['Villager']*2
 
     random.shuffle(role_list)
-    
+
     scores = get_score(role_dict, fixed_roles + role_list[:num_of_players])
 
     while scores < delta or scores > 7 :
         scores = get_score(role_dict, fixed_roles + role_list[:num_of_players])
         random.shuffle(role_list)
     return dict(Counter(fixed_roles + role_list[:num_of_players]))
-
