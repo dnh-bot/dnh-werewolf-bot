@@ -75,7 +75,8 @@ class Game:
             config.WEREWOLF_CHANNEL,
             "werewolf_welcome_text",
             "werewolf_before_voting_text",
-            "werewolf_kill_text"
+            "werewolf_kill_text",
+            "kill_list_title"
         )
 
     def reset_game_state(self, is_rematching=False):
@@ -478,8 +479,7 @@ class Game:
                 is_personal_channel = channel_name.startswith(config.PERSONAL)
 
                 if isinstance(author, roles.Werewolf) and (channel_name == config.WEREWOLF_CHANNEL or is_personal_channel):
-                    vote_table = {f'<@{k}>': v for k, v in self.werewolf_party.get_vote_status().items()}
-                    table_title = text_templates.get_label_in_language("kill_list_title")
+                    vote_table, table_title = self.werewolf_party.get_vote_table_with_title()
             else:
                 # TODO: future features in #cemetery channel
                 pass

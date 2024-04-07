@@ -6,12 +6,13 @@ from game.party import Party
 
 
 class VotingParty(Party):
-    def __init__(self, interface, channel_name, welcome_text_label, before_voting_label, result_text_label):
+    def __init__(self, interface, channel_name, welcome_text_label, before_voting_label, result_text_label, list_label):
         # FIXME:
         # pylint: disable=too-many-arguments
         super().__init__(interface, channel_name, welcome_text_label)
         self.before_voting_label = before_voting_label
         self.result_text_label = result_text_label
+        self.list_label = list_label
 
         self.vote_dict = {}
 
@@ -58,3 +59,8 @@ class VotingParty(Party):
         table_dict = reduce(lambda d, kv: d.setdefault(kv[1][0], set()).add(kv[0]) or d, vote_dict.items(), {})
         print(table_dict)
         return table_dict
+
+    def get_vote_table_with_title(self):
+        vote_table = {f'<@{k}>': v for k, v in self.get_vote_status().items()}
+        table_title = text_templates.get_label_in_language(self.list_label)
+        return vote_table, table_title
