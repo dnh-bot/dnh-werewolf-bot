@@ -31,10 +31,13 @@ class Party:
 
         await self.interface.send_action_text_to_channel(self.welcome_text_label, self.channel_name, **user_kwargs)
 
-    def on_player_killed(self, player_id):
+    async def on_player_killed(self, player_id, *args, **kwargs):
         if player_id in self.player_set:
-            self.interface.add_user_to_channel(player_id, self.channel_name, is_read=False, is_send=False)
+            await self.interface.add_user_to_channel(player_id, self.channel_name, is_read=False, is_send=False)
 
-    def on_player_reborn(self, player_id):
+    async def on_player_reborn(self, player_id):
         if player_id in self.player_set:
-            self.interface.add_user_to_channel(player_id, self.channel_name, is_read=True, is_send=True)
+            await self.interface.add_user_to_channel(player_id, self.channel_name, is_read=True, is_send=True)
+
+    def __contains__(self, player_id):
+        return player_id in self.player_set
