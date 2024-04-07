@@ -209,7 +209,9 @@ class Game:
             # print("DEBUG----", game_role)
 
         # To make sure player roles and display roles are not in the same order
-        assigning_roles = random.sample(game_role, len(game_role))
+        sample_times = 5
+        for _ in range(sample_times):
+            assigning_roles = random.sample(game_role, len(game_role))
         r = {
             id_: roles.get_role_type(role_name)(interface, id_, names_dict[id_])
             for id_, role_name in zip(ids, assigning_roles)
@@ -629,7 +631,8 @@ class Game:
                     text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict),
                     [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict)] if self.cupid_dict else []
                 ],
-                start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime"))
+                start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime")),
+                total_players=len(self.players)
             )
             await self.interface.send_embed_to_channel(game_result, config.LEADERBOARD_CHANNEL)
 
