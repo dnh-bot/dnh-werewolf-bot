@@ -12,6 +12,9 @@ class Party:
     async def delete_channel(self):
         await self.interface.delete_channel(self.channel_name)
 
+    def get_all_players(self):
+        return sorted(self.player_set)
+
     async def add_player(self, player_id):
         print("party add_player")
         self.player_set.add(player_id)
