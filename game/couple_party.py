@@ -33,8 +33,8 @@ class CoupleParty(Party):
         if player_id not in self.cupid_dict:
             return
 
-        super().on_player_killed(player_id)
-        super().on_player_killed(self.cupid_dict[player_id])
+        await super().on_player_killed(player_id)
+        await super().on_player_killed(self.cupid_dict[player_id])
 
         await self.interface.send_action_text_to_channel(
             f"couple_died_on_{phase_str}_text", config.GAMEPLAY_CHANNEL,
