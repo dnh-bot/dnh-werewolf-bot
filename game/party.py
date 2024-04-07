@@ -31,7 +31,7 @@ class Party:
 
         await self.interface.send_action_text_to_channel(self.welcome_text_label, self.channel_name, **user_kwargs)
 
-    async def on_player_killed(self, player_id, *args, **kwargs):
+    async def on_player_killed(self, player_id):
         if player_id in self.player_set:
             await self.interface.add_user_to_channel(player_id, self.channel_name, is_read=False, is_send=False)
 
