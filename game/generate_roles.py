@@ -1,8 +1,10 @@
 import random
 from collections import Counter
 
+
 def get_score(role_dict, generated_roles):
     return sum(role_dict[r] for r in generated_roles)
+
 
 def generate_roles_new_strategy(ids):
     num_of_players = len(ids)
@@ -31,8 +33,8 @@ def generate_roles_new_strategy(ids):
 
     num_of_players = num_of_players - len(fixed_roles)
 
-    while len(role_list) < num_of_players*2:
-        role_list += ['Werewolf', 'Lycan'] + ['Villager']*2
+    while len(role_list) < num_of_players * 2:
+        role_list += ['Werewolf', 'Lycan'] + ['Villager'] * 2
 
     random.shuffle(role_list)
 
