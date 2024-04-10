@@ -637,6 +637,13 @@
       "en": ["Only use in the morning of new moon event **Punishment**!"]
     }
   },
+  "inform_power_used_text": {
+    "params": [],
+    "template": {
+      "vi": ["\n💡 Năng lực của bạn sẽ mạnh nhất vào lúc chuyển giao đêm ngày. Hãy chờ đến sáng để xem kết quả nhá ;>"],
+      "en": ["\n💡 Your power is most powerful when night meets day. Just wait until morning to see the result ;>"]
+    }
+  },
   "killed_users_text": {
     "params": ["user"],
     "template": {
