@@ -1,8 +1,15 @@
 import random
 from collections import Counter
 
+import utils
 
-def get_score(role_dict, generated_roles):
+
+generator_info = utils.common.read_json_file("../json/role_generator_info.json")
+role_dict = generator_info['role_score']
+delta = generator_info['delta']
+
+
+def get_score(generated_roles):
     return sum(role_dict[r] for r in generated_roles)
 
 
@@ -12,23 +19,7 @@ def generate_roles_new_strategy(ids):
     fixed_roles = ['Werewolf', 'Seer', 'Guard', 'Villager']
     if num_of_players == 4:
         return dict(Counter(fixed_roles))
-    role_dict = {
-        "Seer": 7,
-        "Witch": 6,
-        "Guard": 3,
-        "Hunter": 3,
-        "Zombie": 3,
-        "Chief": 2,
-        "Villager": 1,
-        "Tanner": 1,
-        "Lycan": -1,
-        "Fox": -1,
-        "Betrayer": -2,
-        "Cupid": -3,
-        "Werewolf": -6,
-        "Superwolf": -7,
-    }
-    delta = 5
+
     role_list = list(r for r in role_dict if r not in fixed_roles)
 
     num_of_players = num_of_players - len(fixed_roles)
@@ -38,9 +29,9 @@ def generate_roles_new_strategy(ids):
 
     random.shuffle(role_list)
 
-    scores = abs(get_score(role_dict, fixed_roles + role_list[:num_of_players]))
+    scores = abs(get_score(fixed_roles + role_list[:num_of_players]))
 
-    while scores < delta or scores > 7 :
+    while scores < delta or scores > 7:
         random.shuffle(role_list)
-        scores = get_score(role_dict, fixed_roles + role_list[:num_of_players])
+        scores = get_score(fixed_roles + role_list[:num_of_players])
     return dict(Counter(fixed_roles + role_list[:num_of_players]))
