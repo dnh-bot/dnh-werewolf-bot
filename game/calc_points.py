@@ -1,7 +1,7 @@
 import utils
 from game import generate_roles
 
-role_config = utils.common.read_json_file("../json/role_config.json")
+role_config = utils.common.read_json_file("json/role_config.json")
 
 
 def dict_to_list(cfg, number=0):

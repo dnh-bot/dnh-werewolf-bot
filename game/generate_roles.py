@@ -4,7 +4,7 @@ from collections import Counter
 import utils
 
 
-generator_info = utils.common.read_json_file("../json/role_generator_info.json")
+generator_info = utils.common.read_json_file("json/role_generator_info.json")
 role_dict = generator_info['role_score']
 delta = generator_info['delta']
 
