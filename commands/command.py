@@ -296,9 +296,12 @@ async def do_ban(game, message, params):
 
 async def do_unban(message):
     user = message.mentions[0]
-    del BAN_DICT[str(user.id)]
-    utils.common.write_json_file(BAN_FILE, BAN_DICT)
-    await message.reply(text_templates.generate_text("unban_command_reply_text", user=user.mention))
+    if str(user.id) in BAN_DICT:
+        del BAN_DICT[str(user.id)]
+        utils.common.write_json_file(BAN_FILE, BAN_DICT)
+        await message.reply(text_templates.generate_text("unban_command_reply_text", user=user.mention))
+    else:
+        await message.reply(text_templates.generate_text("unban_command_reply_not_banned_text"))
 
 
 async def test_commands(guild):

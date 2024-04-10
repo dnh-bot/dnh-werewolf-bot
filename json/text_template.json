@@ -1347,6 +1347,13 @@
       "en": ["Unbanned player {user} successfully!"]
     }
   },
+  "unban_command_reply_not_banned_text":{
+    "params": [],
+    "template": {
+      "vi": ["Người ta có bị cấm đâu mà bạn bỏ lệnh cấm bạn ơi ;;-;;"],
+      "en": ["This person wasn't banned so why do you unban ;;-;;"]
+    }
+  },
   "join_while_ban_reply_text":{
     "params": ["duration", "reason"],
     "template": {
