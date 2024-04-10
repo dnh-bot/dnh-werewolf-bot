@@ -197,13 +197,6 @@ https://cron-job.org/en/
 https://uptime.com/
 https://uptime-monitor.io/
 
-# Known issue
-
-## Library bug
-A library bug while adding member to `gameplay` channel if using `discord.py==2.2.2`
-
-Prefer to use `discord.py==1.7.3`
-
 # Game Rules
 ## Vietnamese
 [STORY_VN.md](STORY_VN.md)
