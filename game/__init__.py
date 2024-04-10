@@ -190,10 +190,7 @@ class Game:
             role_config = generate_roles.generate_roles_new_strategy(ids)
 
         ids = list(ids)
-        try:
-            game_role = dict_to_list(role_config)
-        except IndexError:
-            game_role = dict_to_list(role_config[-1], len(ids))
+        game_role = dict_to_list(role_config)
 
         # Somehow python dict retain adding order
         # So the Werewolf role will always at the begining of the dict
