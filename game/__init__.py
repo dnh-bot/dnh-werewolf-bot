@@ -183,6 +183,10 @@ class Game:
         if self.runtime_roles:
             role_config = self.runtime_roles
         else:
+            # Use fixed configuration file:
+            # role_config = utils.common.read_json_file("json/role_config.json")
+
+            # Use dynamic score system:
             role_config = generate_roles.generate_roles_new_strategy(ids)
 
         ids = list(ids)

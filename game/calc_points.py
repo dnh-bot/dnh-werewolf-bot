@@ -32,6 +32,7 @@ def evaluate_system():
     print("Min score: ", min(scores))
     print("Standard deviation: ", statistics.stdev(scores))
 
+
 if __name__ == '__main__':
     calc_roles()
     evaluate_system()
