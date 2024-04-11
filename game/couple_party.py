@@ -29,12 +29,18 @@ class CoupleParty(Party):
     def get_couple_target(self, player_id):
         return self.cupid_dict.get(player_id)
 
+    async def on_day_start(self):
+        await self.mute_channel(True)
+
+    async def on_night_start(self):
+        await self.mute_channel(False)
+
     async def on_player_killed(self, player_id, phase_str=""):
         if player_id not in self.cupid_dict:
             return
 
-        await super().on_player_killed(player_id)
-        await super().on_player_killed(self.cupid_dict[player_id])
+        await super().on_player_killed(player_id, phase_str)
+        await super().on_player_killed(self.cupid_dict[player_id], phase_str)
 
         await self.interface.send_action_text_to_channel(
             f"couple_died_on_{phase_str}_text", config.GAMEPLAY_CHANNEL,

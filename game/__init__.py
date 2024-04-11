@@ -743,7 +743,7 @@ class Game:
             # Mute all party channels
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
             await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, True, lambda player: isinstance(player, roles.Werewolf))
-            await self.control_muting_party_channel(config.COUPLE_CHANNEL, True, lambda player: player.player_id in self.couple_party)
+            await self.couple_party.on_day_start()
             await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, False)
         else:
             print("Error no player in game.")
@@ -804,7 +804,7 @@ class Game:
         # Unmute all party channels
         # Mute all players in config.GAMEPLAY_CHANNEL
         await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, False, lambda player: isinstance(player, roles.Werewolf))
-        await self.control_muting_party_channel(config.COUPLE_CHANNEL, False, lambda player: player.player_id in self.couple_party)
+        await self.couple_party.on_night_start()
         await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, True)
 
     async def do_new_nighttime_phase(self):

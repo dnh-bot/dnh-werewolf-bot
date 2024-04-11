@@ -1,3 +1,6 @@
+import asyncio
+
+
 class Party:
     def __init__(self, interface, channel_name, welcome_text_label):
         self.interface = interface
@@ -14,6 +17,18 @@ class Party:
 
     async def delete_channel(self):
         await self.interface.delete_channel(self.channel_name)
+
+    async def mute_channel(self, is_muted):
+        if self.interface.guild:
+            alive_members = list(set(member.id for member in self.interface.guild.members) & self.player_set)
+        else:
+            alive_members = []
+
+        print("Party alive_members =", alive_members)
+        await asyncio.gather(*[
+            self.interface.add_user_to_channel(_id, self.channel_name, is_read=True, is_send=not is_muted)
+            for _id in alive_members
+        ])
 
     def get_all_players(self):
         return sorted(self.player_set)
