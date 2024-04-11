@@ -1,7 +1,7 @@
 {
   "role_score": {
-    "Seer": 7,
-    "Witch": 6,
+    "Seer": 4,
+    "Witch": 5,
     "Guard": 3,
     "Hunter": 3,
     "Zombie": 3,
@@ -12,8 +12,8 @@
     "Fox": -1,
     "Betrayer": -2,
     "Cupid": -3,
-    "Werewolf": -6,
-    "Superwolf": -7
+    "Werewolf": -5,
+    "Superwolf": -6
   },
   "delta": 5
 }
