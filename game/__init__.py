@@ -180,17 +180,13 @@ class Game:
 
     def generate_roles(self, interface, ids, names_dict):
 
-        def dict_to_list(cfg, number=0):
-            yield from (name for name in cfg for _ in range(cfg[name]))
-            yield from ('Werewolf' if i % 4 == 0 else 'Villager' for i in range(number - sum(cfg.values())))
-
         if self.runtime_roles:
             role_config = self.runtime_roles
         else:
             role_config = generate_roles.generate_roles_new_strategy(ids)
 
         ids = list(ids)
-        game_role = dict_to_list(role_config)
+        game_role = utils.common.dict_to_list(role_config)
 
         # Somehow python dict retain adding order
         # So the Werewolf role will always at the begining of the dict
