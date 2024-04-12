@@ -772,8 +772,8 @@ class Game:
 
             await self.new_moon_mode.do_action(self.interface, coin_toss_value=coin_toss_value)
 
-        # Kill Tanner if they didn't vote anyone for the first 7 days
-        if self.is_tanner_alive:
+        # Kill Tanner if they didn't vote anyone from the second to the sixth day
+        if self.is_tanner_alive and self.day >= 2:
             if not self.is_tanner_voted:
                 self.is_tanner_alive = False
                 tanner_id = await self.get_tanner_id_when_not_voting()
