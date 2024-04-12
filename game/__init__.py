@@ -203,7 +203,7 @@ class Game:
         # So the Werewolf role will always at the begining of the dict
         # Shuffle to make the Werewolf role appear randomly
         game_role = list(game_role)
-        self.is_tanner_alive = True if "Tanner" in game_role else False
+        self.is_tanner_alive = "Tanner" in game_role
         random.shuffle(game_role)
         random.shuffle(ids)
         if self.modes.get("couple_random"):
@@ -725,7 +725,7 @@ class Game:
         print("do_new_daytime_phase")
         self.day += 1
 
-        # Check Tanner's win condition 
+        # Check Tanner's win condition
         if self.day >= 7 and self.is_tanner_alive:
             self.is_tanner_alive = False
 
