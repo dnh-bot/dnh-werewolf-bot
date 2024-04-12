@@ -652,7 +652,7 @@ class Game:
         print("DEBUG: ", num_players, num_werewolf)
 
         # Check Tanner
-        if self.tanner_is_lynched and not self.is_tanner_alive:
+        if self.tanner_is_lynched:
             return roles.Tanner
 
         # Check end game
@@ -790,7 +790,7 @@ class Game:
                 voted_user=f"<@{lynched}>", highest_vote_number=votes
             )
 
-            if isinstance(self.players[lynched], roles.Tanner):
+            if isinstance(self.players[lynched], roles.Tanner) and self.day < 7:
                 self.tanner_is_lynched = True
 
             cupid_couple = self.cupid_dict.get(lynched)
