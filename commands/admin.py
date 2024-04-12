@@ -128,7 +128,7 @@ async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=T
         channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=is_read, send_messages=is_send, add_reactions=is_send)
-        # await channel.set_permissions(user, create_public_threads=is_send, create_private_threads=False)  # discord.py >= 2.0
+        await channel.set_permissions(user, create_public_threads=is_send, create_private_threads=False)
         print(f"Successfully added {user} to {channel_name} read={is_read} send={is_send}")
         return True
     except Exception as e:
@@ -144,7 +144,7 @@ async def remove_user_from_channel(guild, user, channel_name):
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=False, send_messages=False, add_reactions=False)
-        # await channel.set_permissions(user, create_public_threads=False, create_private_threads=False)  # discord.py >= 2.0
+        await channel.set_permissions(user, create_public_threads=False, create_private_threads=False)
         print("Successfully removed ", user, " from ", channel_name)
         return True
     except Exception as e:
