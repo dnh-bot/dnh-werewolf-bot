@@ -105,8 +105,8 @@ async def create_channel(guild, author, channel_name, is_public=False, is_admin_
 async def delete_channel(guild, author, channel_name):
     # Delete text channel. Any Admin can delete it
     try:
-        category = await discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
-        channel = await discord.utils.get(guild.channels, name=channel_name, category=category)
+        category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+        channel = discord.utils.get(guild.channels, name=channel_name, category=category)
         response = f"{author.display_name} deleted channel {channel_name}"
         assert isinstance(channel, discord.TextChannel)
         print(response)
@@ -121,11 +121,11 @@ async def delete_channel(guild, author, channel_name):
 
 async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=True):
     # Add a user to specific channel
-    category = await discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
-    channel = await discord.utils.get(guild.channels, name=channel_name, category=category)
+    category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+    channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     if not channel:
         await asyncio.sleep(1)  # Wait 1s here to wait for channel is ready
-        channel = await discord.utils.get(guild.channels, name=channel_name, category=category)
+        channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=is_read, send_messages=is_send, add_reactions=is_send)
         # await channel.set_permissions(user, create_public_threads=is_send, create_private_threads=False)  # discord.py >= 2.0
@@ -140,8 +140,8 @@ async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=T
 async def remove_user_from_channel(guild, user, channel_name):
     # Add a user to specific channel
     print("===", user, channel_name)
-    category = await discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
-    channel = await discord.utils.get(guild.channels, name=channel_name, category=category)
+    category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+    channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=False, send_messages=False, add_reactions=False)
         # await channel.set_permissions(user, create_public_threads=False, create_private_threads=False)  # discord.py >= 2.0
@@ -153,8 +153,8 @@ async def remove_user_from_channel(guild, user, channel_name):
 
 async def send_text_to_channel(guild, text, channel_name):
     """ Send a message to a channel """
-    category = await discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
-    channel = await discord.utils.get(guild.channels, name=channel_name, category=category)
+    category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+    channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     if channel is None:
         print(f"Channel #{channel_name} in category {config.GAME_CATEGORY} does not exist!")
         return False
@@ -171,8 +171,8 @@ async def send_text_to_channel(guild, text, channel_name):
 async def send_embed_to_channel(guild, embed_data, channel_name, *_):
     """Send an embed message to a channel"""
 
-    category = await discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
-    channel = await discord.utils.get(guild.channels, name=channel_name, category=category)
+    category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+    channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     print(channel, embed_data)
     try:
         color = embed_data["color"] if "color" in embed_data else 0
@@ -248,12 +248,12 @@ async def test_admin_command(guild):
     # TEST add/remove user to/from channel
     await add_user_to_channel(guild, public_user, channel_name, is_read=True, is_send=True)
     await asyncio.sleep(2)
-    member = await discord.utils.get(channel.members, name=public_user.name)
+    member = discord.utils.get(channel.members, name=public_user.name)
     assert isinstance(member, discord.Member)
     await asyncio.sleep(5)
     await remove_user_from_channel(guild, public_user, channel_name)
     await asyncio.sleep(5)
-    member = await discord.utils.get(channel.members, name=public_user.name)
+    member = discord.utils.get(channel.members, name=public_user.name)
     assert member is None
 
     # TEST send message to private/public channel
