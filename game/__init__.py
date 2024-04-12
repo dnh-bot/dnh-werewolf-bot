@@ -811,6 +811,13 @@ class Game:
             dead_embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False, reveal_role=is_reveal_role)
 
             await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
+
+            # Must use type(p) to make sure the role match exactly
+            # pylint: disable=unidiomatic-typecheck
+            seer_is_alive = any(type(p) is roles.Seer for p in self.get_alive_players())
+            for p in filter(lambda p: type(p) is roles.ApprenticeSeer, self.get_all_players()):
+                await p.set_active(not seer_is_alive)
+
             await asyncio.gather(*[
                 player.on_action(alive_embed_data, dead_embed_data) for player in self.get_all_players()
             ])

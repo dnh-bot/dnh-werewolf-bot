@@ -385,6 +385,40 @@
       "en": ["🙋🏻‍♂️ Player {author} votes for {command} game. {text}"]
     }
   },
+  "apprenticeseer_on_active_text": {
+    "params": [],
+    "template": {
+      "vi": ["🧙 Tiên tri đã hy sinh, bạn sẽ là Tiên tri tiếp theo của ngôi làng."],
+      "en": ["🧙 The Seer is dead, you are now taking the role of the Seer."]
+    }
+  },
+  "apprenticeseer_on_inactive_text": {
+    "params": [],
+    "template": {
+      "vi": ["👁 Tiên tri vẫn còn sống, bạn hãy cố học hỏi kiến thức từ Tiên tri."],
+      "en": ["👁 The Seer is alive, you are now just Apprentice Seer"]    }
+  },
+  "apprenticeseer_before_voting_text": {
+    "params": [],
+    "template": {
+      "vi": ["🔮 Tiên tri tập sự muốn thấy gì, từ ai? Hãy làm phép bằng cách nhập `{bot_prefix}seer ID` để xem người chơi đó là ai."],
+      "en": ["🔮 What does the ApprenticeSeer want to see, from whom? Cast a spell by entering `{bot_prefix}seer ID` to see who that player is."]
+    }
+  },
+  "apprenticeseer_after_voting_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["👀 Đêm nay, Tiên tri tập sự muốn soi {target}."],
+      "en": ["👀 This night, ApprenticeSeer wants to see {target}."]
+    }
+  },
+  "apprenticeseer_invalid_register_target_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["Tiên tri vẫn còn sống, bạn hãy còn là tập sự mà thôi."],
+      "en": ["Seer is still alive, you are just ApprenticeSeer now."]
+    }
+  },
   "seer_before_voting_text": {
     "params": [],
     "template": {
