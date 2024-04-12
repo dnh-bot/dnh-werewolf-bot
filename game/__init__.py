@@ -101,6 +101,8 @@ class Game:
         self.prev_playtime = self.is_in_play_time()
         self.new_moon_mode.set_random_event()
         self.auto_hook = defaultdict(list)
+        self.is_tanner_alive = False
+        self.is_tanner_voted = False
         self.tanner_is_lynched = False
 
     def get_winner(self):
@@ -201,6 +203,7 @@ class Game:
         # So the Werewolf role will always at the begining of the dict
         # Shuffle to make the Werewolf role appear randomly
         game_role = list(game_role)
+        self.is_tanner_alive = True if "Tanner" in game_role else False
         random.shuffle(game_role)
         random.shuffle(ids)
         if self.modes.get("couple_random"):
@@ -649,7 +652,7 @@ class Game:
         print("DEBUG: ", num_players, num_werewolf)
 
         # Check Tanner
-        if self.tanner_is_lynched:
+        if self.tanner_is_lynched and self.is_tanner_alive:
             return roles.Tanner
 
         # Check end game
@@ -689,6 +692,8 @@ class Game:
             voted_list.append(voted)
             if isinstance(self.players[voter], roles.Chief):
                 voted_list.append(voted)
+            if isinstance(self.players[voter], roles.Tanner):
+                self.is_tanner_voted = True
         return voted_list
 
     async def control_muting_party_channel(self, is_muted):
@@ -719,6 +724,11 @@ class Game:
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
         self.day += 1
+
+        # Check Tanner's win condition 
+        if self.day >= 7 and self.is_tanner_alive:
+            self.is_tanner_alive = False
+
         if self.players:
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
             embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
@@ -761,6 +771,17 @@ class Game:
                 lynched, votes = None, 0
 
             await self.new_moon_mode.do_action(self.interface, coin_toss_value=coin_toss_value)
+
+        # Kill Tanner if they didn't vote anyone for the first 7 days
+        if self.is_tanner_alive:
+            if not self.is_tanner_voted:
+                self.is_tanner_alive = False
+                tanner_id = await self.get_tanner_id_when_not_voting()
+                await self.players[tanner_id].get_killed()
+                await self.interface.send_action_text_to_channel(
+                    "tanner_killed_by_not_voting_text", config.GAMEPLAY_CHANNEL,
+                    player=f"<@{tanner_id}>"
+                )
 
         if lynched:
             await self.players[lynched].get_killed()
@@ -1233,6 +1254,14 @@ class Game:
             if hunted and hunted != hunter:
                 if await self.players[hunted].get_killed():
                     return hunted
+        return None
+
+    async def get_tanner_id_when_not_voting(self):
+        players = self.get_alive_players()
+        for player in players:
+            if isinstance(player, roles.Tanner):
+                tanner_id = player.player_id
+                return tanner_id
         return None
 
     async def register_auto(self, author, subcmd):

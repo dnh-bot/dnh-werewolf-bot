@@ -1333,6 +1333,13 @@
       "en": ["👹 {author} voted to punish {target}"]
     }
   },
+  "tanner_killed_by_not_voting_text": {
+    "params": ["player"],
+    "template": {
+      "vi": ["Ôi không, thật đáng sợ quá... {player} đột nhiên bị mất tích rồi 😱"],
+      "en": ["Oh no, it's so scary... {player} suddenly disappeared 😱"]
+    }
+  },
   "ban_command_reply_text":{
     "params": ["user", "duration", "reason"],
     "template": {

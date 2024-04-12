@@ -133,8 +133,8 @@
     "name_vi": "Kẻ chán đời",
     "party": "Tanner",
     "description": {
-      "vi": "Kẻ chán đời sẽ chỉ chiến thắng nếu bị dân làng bỏ phiếu để tử hình.",
-      "en": "Tanner only wins if he is voted out during the dayphase."
+      "vi": "Kẻ chán đời sẽ chỉ chiến thắng nếu bị dân làng bỏ phiếu để tử hình. Mỗi buổi sáng, Kẻ chán đời phải bầu một người để tử hình, nếu không Kẻ chán đời sẽ chết. Sau 7 ngày, Kẻ chán đời mất khả năng chiến thắng độc lập và trở thành người dân bình thường.",
+      "en": "Tanner only wins if he is voted out during the dayphase. Every morning, Tanner has to vote one player, or else he will die. After 7 days, Tanner will lose the ability to win as a third party, continue to play as a Villager."
     },
     "daytime_command": "vote",
     "nighttime_commands": []
