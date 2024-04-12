@@ -204,6 +204,7 @@ class Game:
         # Shuffle to make the Werewolf role appear randomly
         game_role = list(game_role)
         self.is_tanner_alive = "Tanner" in game_role
+        print("TRUEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
         random.shuffle(game_role)
         random.shuffle(ids)
         if self.modes.get("couple_random"):
@@ -652,7 +653,7 @@ class Game:
         print("DEBUG: ", num_players, num_werewolf)
 
         # Check Tanner
-        if self.tanner_is_lynched and self.is_tanner_alive:
+        if self.tanner_is_lynched and not self.is_tanner_alive:
             return roles.Tanner
 
         # Check end game
