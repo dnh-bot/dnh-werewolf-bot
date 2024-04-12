@@ -204,7 +204,6 @@ class Game:
         # Shuffle to make the Werewolf role appear randomly
         game_role = list(game_role)
         self.is_tanner_alive = "Tanner" in game_role
-        print("TRUEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
         random.shuffle(game_role)
         random.shuffle(ids)
         if self.modes.get("couple_random"):
