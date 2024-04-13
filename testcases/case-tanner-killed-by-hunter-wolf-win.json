@@ -42,7 +42,10 @@
 				"h1",
 				"t1"
 			],
-			"action": []
+			"action": [
+				"t1 vote g1",
+				"g1 vote t1"
+			]
 		},
 		{
 			"time": "night2",
