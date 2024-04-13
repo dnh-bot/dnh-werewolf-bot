@@ -203,7 +203,6 @@ class Game:
         # So the Werewolf role will always at the begining of the dict
         # Shuffle to make the Werewolf role appear randomly
         game_role = list(game_role)
-        self.is_tanner_alive = "Tanner" in game_role
         random.shuffle(game_role)
         random.shuffle(ids)
         if self.modes.get("couple_random"):
@@ -724,9 +723,7 @@ class Game:
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
         self.day += 1
-
         self.check_tanner_ability()
-
         if self.players:
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
             embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
