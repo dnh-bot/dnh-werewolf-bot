@@ -782,6 +782,8 @@ class Game:
                     "tanner_killed_by_not_voting_text", config.GAMEPLAY_CHANNEL,
                     player=f"<@{tanner_id}>"
                 )
+            else:
+                self.is_tanner_voted = False
 
         if lynched:
             await self.players[lynched].get_killed()
