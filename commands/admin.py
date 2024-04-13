@@ -22,7 +22,9 @@ USER_LIST = common.read_json_file("json/user_info.json")
 
 def is_admin(author):
     # Check if this user has "Admin" right
-    return str(author.id) in USER_LIST["dev"] or str(author.id) in USER_LIST["admin"] or discord.utils.get(author.roles, name="Admin") is not None
+    return str(author.id) in USER_LIST["dev"]\
+        or str(author.id) in USER_LIST["admin"]\
+        or discord.utils.get(author.roles, name="Admin") is not None
 
 
 def list_users(guild):
@@ -126,7 +128,7 @@ async def add_user_to_channel(guild, user, channel_name, is_read=True, is_send=T
         channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=is_read, send_messages=is_send, add_reactions=is_send)
-        # await channel.set_permissions(user, create_public_threads=is_send, create_private_threads=False)  # discord.py >= 2.0
+        await channel.set_permissions(user, create_public_threads=is_send, create_private_threads=False)
         print(f"Successfully added {user} to {channel_name} read={is_read} send={is_send}")
         return True
     except Exception as e:
@@ -142,7 +144,7 @@ async def remove_user_from_channel(guild, user, channel_name):
     channel = discord.utils.get(guild.channels, name=channel_name, category=category)
     try:
         await channel.set_permissions(user, read_messages=False, send_messages=False, add_reactions=False)
-        # await channel.set_permissions(user, create_public_threads=False, create_private_threads=False)  # discord.py >= 2.0
+        await channel.set_permissions(user, create_public_threads=False, create_private_threads=False)
         print("Successfully removed ", user, " from ", channel_name)
         return True
     except Exception as e:
@@ -187,10 +189,9 @@ async def send_embed_to_channel(guild, embed_data, channel_name, *_):
 
 
 async def delete_all_personal_channel(guild):
-    category = discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
+    category = await discord.utils.get(guild.categories, name=config.GAME_CATEGORY)
     if category:
-        personal_channels = [c for c in category.channels if c.name.startswith(config.PERSONAL)]
-        await asyncio.gather(*[c.delete() for c in personal_channels])
+        await asyncio.gather(*[c.delete() for c in category.channels if c.name.startswith(config.PERSONAL)])
 
 
 async def create_game_category(guild, client_user):
@@ -247,11 +248,13 @@ async def test_admin_command(guild):
     # TEST add/remove user to/from channel
     await add_user_to_channel(guild, public_user, channel_name, is_read=True, is_send=True)
     await asyncio.sleep(2)
-    assert isinstance(discord.utils.get(channel.members, name=public_user.name), discord.Member)
+    member = discord.utils.get(channel.members, name=public_user.name)
+    assert isinstance(member, discord.Member)
     await asyncio.sleep(5)
     await remove_user_from_channel(guild, public_user, channel_name)
     await asyncio.sleep(5)
-    assert discord.utils.get(channel.members, name=public_user.name) is None
+    member = discord.utils.get(channel.members, name=public_user.name)
+    assert member is None
 
     # TEST send message to private/public channel
     await send_text_to_channel(guild, "Test sending message in public channel", config.LOBBY_CHANNEL)
