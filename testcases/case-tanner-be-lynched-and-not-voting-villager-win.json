@@ -1,12 +1,11 @@
 {
-	"name": "Tanner killed by werewolf, witch reborn, tanner win",
+	"name": "Tanner died by note voting in the morning and lynched at the same time - Villager win",
 	"player_list": {
 		"w1": "Werewolf",
 		"s1": "Seer",
 		"g1": "Guard",
 		"v1": "Villager",
-		"t1": "Tanner",
-		"wi1": "Witch"
+		"t1": "Tanner"
 	},
 	"timeline": [
 		{
@@ -16,8 +15,7 @@
 				"s1",
 				"g1",
 				"v1",
-				"t1",
-				"wi1"
+				"t1"
 			],
 			"action": []
 		},
@@ -28,12 +26,10 @@
 				"s1",
 				"g1",
 				"v1",
-				"t1",
-				"wi1"
+				"t1"
 			],
 			"action": [
-				"w1 kill t1",
-				"s1 seer v1",
+				"w1 kill v1",
 				"g1 guard g1"
 			]
 		},
@@ -43,12 +39,10 @@
 				"w1",
 				"s1",
 				"g1",
-				"wi1",
-				"v1"
+				"t1"
 			],
 			"action": [
-				"w1 vote v1",
-				"s1 vote w1"
+				"w1 vote t1"
 			]
 		},
 		{
@@ -56,30 +50,22 @@
 			"alive": [
 				"w1",
 				"s1",
-				"g1",
-				"wi1",
-				"v1"
+				"g1"
 			],
-			"action": [
-				"w1 kill wi1",
-				"wi1 reborn t1"
-			]
+			"action": []
 		},
 		{
 			"time": "day3",
 			"alive": [
 				"w1",
 				"s1",
-				"g1",
-				"v1",
-				"t1"
+				"g1"
 			],
 			"action": [
-				"w1 vote t1",
-				"g1 vote t1",
-				"t1 vote s1"
+				"s1 vote w1",
+				"g1 vote w1"
 			]
 		}
 	],
-	"win": "Tanner"
+	"win": "Villager"
 }

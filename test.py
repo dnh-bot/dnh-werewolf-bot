@@ -94,20 +94,14 @@ async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
 
     # Run single test
-    await test_case(game, "testcases/case-hunter-couple-die-together-by-kill.json")
-    await test_case(game, "testcases/case-hunter-couple-die-together-by-vote.json")
-    await test_case(game, "testcases/case-hunter-hunt-fox.json")
-    await test_case(game, "testcases/case-hunter-hunt-wolf.json")
-    await test_case(game, "testcases/case-hunter-simple.json")
-    await test_case(game, "testcases/case-hunter-hunt-night1.json")
-    await test_case(game, "testcases/case-hunter-hunted-one-in-couple.json")
-    await test_case(game, "testcases/case-tanner-win-simple.json")
-    await test_case(game, "testcases/case-tanner-killed-by-wolf-wolf-win.json")
-    await test_case(game, "testcases/case-tanner-killed-by-witch-villager-win.json")
-    await test_case(game, "testcases/case-tanner-killed-by-wolf-tanner-win.json")
-    await test_case(game, "testcases/case-tanner-killed-by-wolf-guarded-villager-win.json")
-    await test_case(game, "testcases/case-tanner-killed-by-hunter-wolf-win.json")
-    await test_case(game, "testcases/case-tanner-killed-by-couple-villager-win.json")
+    # await test_case(game, "testcases/case-hunter-couple-die-together-by-kill.json")
+    # await test_case(game, "testcases/case-hunter-couple-die-together-by-vote.json")
+    # await test_case(game, "testcases/case-hunter-hunt-fox.json")
+    # await test_case(game, "testcases/case-hunter-hunt-wolf.json")
+    # await test_case(game, "testcases/case-hunter-simple.json")
+    # await test_case(game, "testcases/case-hunter-hunt-night1.json")
+    # await test_case(game, "testcases/case-hunter-hunted-one-in-couple.json")
+
     # Run all tests
     directory = "testcases"
     for filename in os.listdir(directory):
