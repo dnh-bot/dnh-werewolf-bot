@@ -725,9 +725,7 @@ class Game:
         print("do_new_daytime_phase")
         self.day += 1
 
-        # Check Tanner's win condition
-        if self.day >= 7 and self.is_tanner_alive:
-            self.is_tanner_alive = False
+        self.check_tanner_ability()
 
         if self.players:
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
@@ -775,13 +773,20 @@ class Game:
         # Kill Tanner if they didn't vote anyone from the second to the sixth day
         if self.is_tanner_alive and self.day >= 2:
             if not self.is_tanner_voted:
-                self.is_tanner_alive = False
-                tanner_id = await self.get_tanner_id_when_not_voting()
-                await self.players[tanner_id].get_killed()
-                await self.interface.send_action_text_to_channel(
-                    "tanner_killed_by_not_voting_text", config.GAMEPLAY_CHANNEL,
-                    player=f"<@{tanner_id}>"
-                )
+                tanner_id = self.get_tanner_id()
+                if tanner_id:
+                    await self.players[tanner_id].get_killed()
+                    await self.interface.send_action_text_to_channel(
+                        "tanner_killed_by_not_voting_text", config.GAMEPLAY_CHANNEL,
+                        user=f"<@{tanner_id}>"
+                    )
+                # Check if Tanner didn't vote and lynched at the same time
+                if tanner_id and tanner_id == lynched:
+                    lynched = None
+                    await self.interface.send_action_text_to_channel(
+                        "lynched_is_died_text", config.GAMEPLAY_CHANNEL,
+                        user=f"<@{tanner_id}>"
+                    )
             else:
                 self.is_tanner_voted = False
 
@@ -1258,13 +1263,23 @@ class Game:
                     return hunted
         return None
 
-    async def get_tanner_id_when_not_voting(self):
+    def get_tanner_id(self):
         players = self.get_alive_players()
         for player in players:
             if isinstance(player, roles.Tanner):
                 tanner_id = player.player_id
                 return tanner_id
         return None
+
+    def check_tanner_ability(self):
+        tanner_id = self.get_tanner_id()
+        if tanner_id:
+            self.is_tanner_alive = True
+        else:
+            self.is_tanner_alive = False
+        # Check Tanner's win condition
+        if self.day >= 7 and self.is_tanner_alive:
+            self.is_tanner_alive = False
 
     async def register_auto(self, author, subcmd):
         def check(pred):
