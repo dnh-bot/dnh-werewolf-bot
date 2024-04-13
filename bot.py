@@ -10,6 +10,11 @@ import interface
 # ============ Local functions ============
 
 
+async def verify_database():
+    valid_database = await database.verify_init()
+    if not valid_database:
+        sys.exit(1)
+
 async def init_setup(init_game_list=False):
     """ Log ready message, check server roles/channels setup """
     startup_msg = "=========================BOT STARTUP========================="
@@ -83,5 +88,6 @@ if __name__ == '__main__':
     if not config.DISCORD_TOKEN:
         print("Use must setup DISCORD_TOKEN in .env file")
         sys.exit(1)
+    asyncio.get_event_loop().run_until_complete(verify_database())
     # keep_alive() # Uncomment to keep the bot alive
     client.run(config.DISCORD_TOKEN)

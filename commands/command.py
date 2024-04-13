@@ -134,6 +134,9 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
     elif cmd == "status":
         await game.show_status(message.author, message.channel.name)
 
+    elif cmd == "rank":
+        await game.show_player_score_list(message.channel.name)
+
     elif cmd == "timer":
         # Usage:`!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s
         if len(parameters) < 3:

@@ -14,6 +14,27 @@ def get_full_cmd_description(cmd):
     return f"{description} {text_templates.get_word_in_language('use_command')} {usage_text}."
 
 
+def generate_player_list_embed(player_list, alive_status=None, role_list=None, reveal_role=False):
+    # Handle 3 types of list: All, Alive, Dead
+    if player_list:
+        id_player_list = generate_id_player_list(player_list, alive_status, reveal_role)
+        action_name = f"{'all' if alive_status is None else 'alive' if alive_status else 'dead'}_player_list_embed"
+        embed_data = text_templates.generate_embed(
+            action_name, [id_player_list] if role_list is None else [id_player_list, role_list])
+        return embed_data
+    return None
+
+
+def generate_player_score_list_embed(player_score_data):
+    num_of_players = 15
+    if player_score_data:
+        sorted_player_score_data = sorted(player_score_data.items(), key=lambda x: x[1], reverse=True)[:num_of_players]
+        player_score_list = [f"{i+1}. <@{player_id}> -> **{score}**" for i, (player_id, score) in enumerate(sorted_player_score_data)]
+        embed_data = text_templates.generate_embed("player_score_list_embed", [player_score_list], num_of_players=num_of_players)
+        return embed_data
+    return None
+
+
 def generate_id_player_list(player_list, alive_status, reveal_role=False):
     id_player_list = []
     row_id = 1

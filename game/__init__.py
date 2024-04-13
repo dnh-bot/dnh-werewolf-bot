@@ -10,11 +10,13 @@ from collections import Counter, defaultdict
 from functools import reduce
 
 import config
+from database import Database
 import utils
 import text_templates
 from game import const, roles, text_template, modes, generate_roles
 from game.modes.new_moon import NewMoonMode
 
+database = Database().create_instance()
 
 def command_verify_author(valid_role):
     def wrapper(cmd_func):
@@ -559,6 +561,37 @@ class Game:
             players_embed_data = self.generate_player_list_embed()
             await self.interface.send_embed_to_channel(players_embed_data, channel_name)
 
+    async def handle_end_game_score_list(self, reveal_list, game_winner, cupid_dict, players):
+        # FIXME:
+        # pylint: disable=duplicate-code
+        try:
+            player_scores_data = await database.read("player_score_list.json")
+
+            for player_id, role, party in reveal_list:
+                party_victory = party == game_winner
+                cupid_victory = game_winner == 'Cupid' and (player_id in cupid_dict or role == 'Cupid')
+                change_party_victory = isinstance(players[player_id], roles.Tanner) and players[player_id].final_party == game_winner
+
+                if party_victory or cupid_victory or change_party_victory:
+                    player_scores_data[str(player_id)] = int(player_scores_data.get(str(player_id), 0)) + 5
+                elif game_winner != 'None':
+                    player_scores_data[str(player_id)] = int(player_scores_data.get(str(player_id), 0)) - 2
+
+            print("End Game Scores: ", player_scores_data)
+            await database.update("player_score_list.json", player_scores_data)
+        except Exception as e:
+            print("Error in handle_end_game_score_list: ", e)
+
+    async def show_player_score_list(self, channel_name):
+        try:
+            player_score_data = await database.read("player_score_list.json")
+            if not player_score_data:
+                return
+            score_list_embed = text_template.generate_player_score_list_embed(player_score_data)
+            await self.interface.send_embed_to_channel(score_list_embed, channel_name)
+        except Exception as e:
+            print("Error in show_player_score_list: ", e)
+
     async def run_game_loop(self):
         print("Starting game loop")
         self.prev_playtime = self.is_in_play_time()
@@ -635,6 +668,7 @@ class Game:
 
         # write to leaderboard
         if self.start_time is not None:  # game has been started
+            await self.handle_end_game_score_list(reveal_list, game_winner, self.cupid_dict, self.players)
             game_result = text_templates.generate_embed(
                 "game_result_embed",
                 [
