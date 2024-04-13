@@ -30,6 +30,9 @@ class Character:
     def get_role(self):
         return self.__class__.__name__
 
+    def get_team_class(self):
+        return self.get_role()
+
     def is_alive(self):
         return self.status != CharacterStatus.KILLED
 

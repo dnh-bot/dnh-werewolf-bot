@@ -138,5 +138,25 @@
     },
     "daytime_command": "vote",
     "nighttime_commands": []
+  },
+  "ApprenticeSeer": {
+    "name_vi": "Tiên tri tập sự",
+    "party": "Villager",
+    "description": {
+      "vi": "Nếu Tiên tri đã bị loại khỏi cuộc chơi, nhân vật này sẽ trở thành Tiên tri.",
+      "en": "The Apprentice Seer is a Villager who becomes the Seer when the Seer dies. "
+    },
+    "daytime_command": "vote",
+    "nighttime_commands": ["seer"]
+  },
+  "Cursed": {
+    "name_vi": "Kẻ bị Nguyền rủa",
+    "party": "Villager",
+    "description": {
+      "vi": "Kẻ bị Nguyền rủa ban đầu là người, Tiên tri soi cũng ra người. Nếu Kẻ bị Nguyền rủa bị Sói cắn thì sẽ không chết, mà từ đêm tiếp theo sẽ biến thành Sói, đồng thời nếu Tiên tri soi thì cũng sẽ là Sói.",
+      "en": "The Cursed is a Villager at the beginning of the game. However if the Werewolves choose the Cursed as a victim, then instead of dying the Cursed becomes a Werewolf."
+    },
+    "daytime_command": "vote",
+    "nighttime_commands": ["kill"]
   }
 }

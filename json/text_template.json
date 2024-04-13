@@ -653,6 +653,20 @@
       ]
     }
   },
+  "cursed_change_team_text": {
+    "params": [],
+    "template": {
+      "vi": ["Bạn đã đổi sang phe của Sói"],
+      "en": ["You are now part of the Werewolf team"]
+    }
+  },
+  "cursed_werewolf_welcome_text": {
+    "params": ["user"],
+    "template": {
+      "vi": ["Chào mừng {user} đến với đội của Sói"],
+      "en": ["Welcome {user} to the Werewolf team"]
+    }
+  },
   "out_of_power_text": {
     "params": [],
     "template": {

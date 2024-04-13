@@ -1,4 +1,5 @@
 from config import TEXT_LANGUAGE
+from game.roles.character import CharacterStatus
 from game.roles.villager import Villager
 from game.roles.werewolf import Werewolf
 from game.roles.guard import Guard
@@ -14,6 +15,7 @@ from game.roles.chief import Chief
 from game.roles.hunter import Hunter
 from game.roles.tanner import Tanner
 from game.roles.apprenticeseer import ApprenticeSeer
+from game.roles.cursed import Cursed
 import utils
 
 
@@ -21,7 +23,7 @@ role_info = utils.common.read_json_file("json/role_info.json")
 
 
 def get_all_roles():
-    return Villager, Werewolf, Seer, Guard, Lycan, Betrayer, Superwolf, Fox, Witch, Zombie, Cupid, Chief, Hunter, Tanner, ApprenticeSeer
+    return Villager, Werewolf, Seer, Guard, Lycan, Betrayer, Superwolf, Fox, Witch, Zombie, Cupid, Chief, Hunter, Tanner, ApprenticeSeer, Cursed
 
 
 def get_role_type(name):

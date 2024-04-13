@@ -603,7 +603,8 @@ class Game:
         await self.interface.send_action_text_to_channel("endgame_text", config.GAMEPLAY_CHANNEL, winner=game_winner)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
-        reveal_list = [(_id, player.__class__.__name__) for _id, player in self.players.items()]
+        reveal_list = [(_id, player.get_team_class()) for _id, player in self.players.items()]
+
         couple_reveal_text = "\n\n" + "💘 " + " x ".join(f"<@{player_id}>" for player_id in self.cupid_dict) if self.cupid_dict else ""
         await self.interface.send_text_to_channel(
             "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict)) + couple_reveal_text,
@@ -841,7 +842,10 @@ class Game:
         if self.wolf_kill_dict:
             killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
             if killed:
-                self.night_pending_kill_list.append(killed)
+                if isinstance(self.players[killed], roles.Cursed) and self.players[killed] != roles.CharacterStatus.PROTECTED:
+                    await self.players[killed].change_team(roles.Werewolf)
+                else:
+                    self.night_pending_kill_list.append(killed)
             self.wolf_kill_dict = {}
 
         cupid_couple = None
