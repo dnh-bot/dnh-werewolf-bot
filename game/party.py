@@ -1,3 +1,6 @@
+import asyncio
+
+
 class Party:
     def __init__(self, interface, channel_name, welcome_text_label):
         self.interface = interface
@@ -6,11 +9,26 @@ class Party:
 
         self.player_set = set()
 
+    def reset_state(self):
+        self.player_set = set()
+
     async def create_channel(self):
         await self.interface.create_channel(self.channel_name)
 
     async def delete_channel(self):
         await self.interface.delete_channel(self.channel_name)
+
+    async def mute_channel(self, is_muted):
+        if self.interface.guild:
+            alive_members = list(set(member.id for member in self.interface.guild.members) & self.player_set)
+        else:
+            alive_members = []
+
+        print("Party alive_members =", alive_members)
+        await asyncio.gather(*[
+            self.interface.add_user_to_channel(_id, self.channel_name, is_read=True, is_send=not is_muted)
+            for _id in alive_members
+        ])
 
     def get_all_players(self):
         return sorted(self.player_set)
@@ -31,10 +49,14 @@ class Party:
 
         await self.interface.send_action_text_to_channel(self.welcome_text_label, self.channel_name, **user_kwargs)
 
-    def on_player_killed(self, player_id):
+    async def on_player_killed(self, player_id, phase_str=""):
         if player_id in self.player_set:
-            self.interface.add_user_to_channel(player_id, self.channel_name, is_read=False, is_send=False)
+            print("on_player_killed phase =", phase_str)
+            await self.interface.add_user_to_channel(player_id, self.channel_name, is_read=False, is_send=False)
 
-    def on_player_reborn(self, player_id):
+    async def on_player_reborn(self, player_id):
         if player_id in self.player_set:
-            self.interface.add_user_to_channel(player_id, self.channel_name, is_read=True, is_send=True)
+            await self.interface.add_user_to_channel(player_id, self.channel_name, is_read=True, is_send=True)
+
+    def __contains__(self, player_id):
+        return player_id in self.player_set

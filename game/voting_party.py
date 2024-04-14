@@ -16,6 +16,10 @@ class VotingParty(Party):
 
         self.vote_dict = {}
 
+    def reset_state(self):
+        super().reset_state()
+        self.vote_dict = {}
+
     def get_party_top_voted(self):
         return VotingParty.get_top_voted(self.__parse_vote_dict())
 

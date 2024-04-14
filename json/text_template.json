@@ -619,6 +619,19 @@
       ]
     }
   },
+  "couple_reborn_text": {
+    "params": ["player1", "player2"],
+    "template": {
+      "vi": [
+        "😇 Chào mừng cặp đôi {player1} x {player2} được hồi sinh trở lại!",
+        "===========================================================================\n"
+      ],
+      "en": [
+        "😇 Welcome our couple {player1} x {player2} be reborn back to live!",
+        "===========================================================================\n"
+      ]
+    }
+  },
   "out_of_power_text": {
     "params": [],
     "template": {
