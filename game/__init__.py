@@ -846,7 +846,7 @@ class Game:
                 await self.witch_do_end_nighttime_phase(player)
 
         kills = None
-        killed, _ = self.werewolf_party.get_party_top_voted()
+        killed, _ = self.werewolf_party.get_top_voted()
         if killed:
             self.night_pending_kill_list.append(killed)
 

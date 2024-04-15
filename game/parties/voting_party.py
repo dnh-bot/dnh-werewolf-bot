@@ -20,9 +20,6 @@ class VotingParty(Party):
         super().reset_state()
         self.vote_dict = {}
 
-    def get_party_top_voted(self):
-        return VotingParty.get_top_voted(self.__parse_vote_dict())
-
     async def do_new_voting_phase(self, embed_data):
         print("party do_new_voting_phase")
         await self.interface.send_action_text_to_channel(self.before_voting_label, self.channel_name)
@@ -40,8 +37,10 @@ class VotingParty(Party):
         self.vote_dict[author_id] = (target_id, vote_weight)
         return self.get_result_text(author_id, target_id)
 
-    @staticmethod
-    def get_top_voted(list_id):
+    def get_top_voted(self):
+        # FIXME
+        # pylint: disable=duplicate-code
+        list_id = self.__parse_vote_dict()
         top_voted = Counter(list_id).most_common(2)
         print("get_top_voted", top_voted)
         if len(top_voted) == 1 or (len(top_voted) == 2 and top_voted[0][1] > top_voted[1][1]):
@@ -54,13 +53,10 @@ class VotingParty(Party):
             voted_list += [voted] * vote_weight
         return voted_list
 
-    def get_vote_status(self, vote_dict=None):
+    def get_vote_status(self):
         # From {"u1": ("u2", 1), "u2": ("u1", 1), "u3": ("u1", 1)}
         # to {"u2": {"u1"}, "u1": {"u3", "u2"}}
-        if vote_dict is None:
-            vote_dict = self.vote_dict
-
-        table_dict = reduce(lambda d, kv: d.setdefault(kv[1][0], set()).add(kv[0]) or d, vote_dict.items(), {})
+        table_dict = reduce(lambda d, kv: d.setdefault(kv[1][0], set()).add(kv[0]) or d, self.vote_dict.items(), {})
         print(table_dict)
         return table_dict
 
