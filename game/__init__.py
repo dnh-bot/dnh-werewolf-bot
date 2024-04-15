@@ -12,7 +12,7 @@ from functools import reduce
 import config
 import utils
 import text_templates
-from game import const, roles, text_template, modes
+from game import const, roles, text_template, modes, generate_roles
 from game.modes.new_moon import NewMoonMode
 
 
@@ -179,23 +179,18 @@ class Game:
             return "Invalid json format."
 
     def generate_roles(self, interface, ids, names_dict):
-        def dict_to_list(cfg, number=0):
-            yield from (name for name in cfg for _ in range(cfg[name]))
-            yield from ('Werewolf' if i % 4 == 0 else 'Villager' for i in range(number - sum(cfg.values())))
 
         if self.runtime_roles:
             role_config = self.runtime_roles
         else:
-            role_config = utils.common.read_json_file("json/role_config.json")
+            # Use fixed configuration file:
+            # role_config = utils.common.read_json_file("json/role_config.json")
+
+            # Use dynamic score system:
+            role_config = generate_roles.generate_roles_new_strategy(ids)
 
         ids = list(ids)
-        try:
-            game_role = random.choice([
-                dict_to_list(role_dict)
-                for role_dict in role_config if sum(role_dict.values()) == len(ids)
-            ])
-        except IndexError:
-            game_role = dict_to_list(role_config[-1], len(ids))
+        game_role = utils.common.dict_to_list(role_config)
 
         # Somehow python dict retain adding order
         # So the Werewolf role will always at the begining of the dict
