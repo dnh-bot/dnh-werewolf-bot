@@ -1,5 +1,5 @@
 import config
-from game.party import Party
+from game.parties import Party
 
 
 class CoupleParty(Party):

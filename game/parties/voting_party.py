@@ -2,7 +2,7 @@ from collections import Counter
 from functools import reduce
 
 import text_templates
-from game.party import Party
+from game.parties import Party
 
 
 class VotingParty(Party):

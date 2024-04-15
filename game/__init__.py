@@ -14,8 +14,8 @@ import utils
 import text_templates
 from game import const, roles, text_template, modes
 from game.modes.new_moon import NewMoonMode
-from game.voting_party import VotingParty
-from game.couple_party import CoupleParty
+from game.parties.voting_party import VotingParty
+from game.parties.couple_party import CoupleParty
 
 
 def command_verify_author(valid_role):

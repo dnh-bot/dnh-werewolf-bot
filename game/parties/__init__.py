@@ -34,12 +34,12 @@ class Party:
         return sorted(self.player_set)
 
     async def add_player(self, player_id):
-        print("party add_player")
+        print("parties add_player")
         self.player_set.add(player_id)
         await self.interface.add_user_to_channel(player_id, self.channel_name, is_read=True, is_send=True)
 
     async def send_welcome_text(self, player_id=None):
-        print("party send_welcome_text")
+        print("parties send_welcome_text")
         user_kwargs = {}
         if player_id:
             user_kwargs["user"] = f"<@{player_id}>"
