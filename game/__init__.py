@@ -93,6 +93,7 @@ class Game:
             self.playersname = {}  # id: Username
         self.watchers = set()  # Set of id
         self.game_phase = const.GamePhase.NEW_GAME
+        self.werewolf_party.reset_state()
         self.reborn_set = set()
         self.couple_party.reset_state()
         self.night_pending_kill_list = []
