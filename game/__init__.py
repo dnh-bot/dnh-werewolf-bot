@@ -1257,7 +1257,7 @@ class Game:
 
         def has_no_target():
             return author.target is None
-        
+
         @check(is_alive)
         @check(is_night)
         @check(has_role(roles.Guard))
