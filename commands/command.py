@@ -51,7 +51,7 @@ def check_set_timer_input(input_string):
         return [timeparse(phase) for phase in input_string]
     except:  # pylint: disable=bare-except
         return None
-  
+
 async def get_member_by_id_string(message, user_id):
     # Get exactly the id without the <@> syntax
     user_id = user_id[2:-1]
@@ -61,17 +61,18 @@ async def get_member_by_id_string(message, user_id):
             member = discord.utils.get(guild.members, id=int(user_id))
             if member is not None:
                 return member
-    except:
+    except Exception as e:
+        await message.reply("Invalid user. Try to tag that user again")
         return
 
 async def process_command(client, game, message):
     message_parts = message.content.strip()[len(config.BOT_PREFIX):].split()
     cmd, parameters = message_parts[0], message_parts[1:]
-    
-    # Mentions can be anywhere in the parameters list for other command usage 
-    for i in range(len(parameters)):
-        if parameters[i].startswith("<@") and parameters[i].endswith(">"):
-            parameters[i] = await get_member_by_id_string(message, parameters[i])
+
+    # Mentions can be anywhere in the parameters list for other command usage
+    for index, param in enumerate(parameters):
+        if parameters[index].startswith("<@") and parameters[index].endswith(">"):
+            parameters[index] = await get_member_by_id_string(message, parameters[index])
 
     try:
         await parse_command(client, game, message, cmd, parameters)
