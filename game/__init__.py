@@ -648,9 +648,11 @@ class Game:
         print("DEBUG: ", num_players, num_werewolf)
 
         # Check Tanner
-        tanner_id = self.get_player_with_role(roles.Tanner, 'dead')
-        if tanner_id and self.players[tanner_id].is_lynched and self.players[tanner_id].final_party == 'Tanner':
-            return roles.Tanner
+        tanner_id = self.get_player_with_role(roles.Tanner, 'all')
+        if tanner_id:
+            self.players[tanner_id].check_tanner_ability(self.day)
+            if self.players[tanner_id].is_lynched and self.players[tanner_id].final_party == 'Tanner':
+                return roles.Tanner
 
         # Check end game
         if num_werewolf != 0 and num_werewolf * 2 < num_players:
@@ -690,7 +692,7 @@ class Game:
             if isinstance(self.players[voter], roles.Chief):
                 voted_list.append(voted)
             if isinstance(self.players[voter], roles.Tanner):
-                self.players[voter].is_voted = True
+                self.players[voter].is_voted_other = True
         return voted_list
 
     async def control_muting_party_channel(self, is_muted):
@@ -721,7 +723,7 @@ class Game:
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
         self.day += 1
-        self.check_tanner_ability()
+
         if self.players:
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
             embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
@@ -768,9 +770,9 @@ class Game:
         # Kill Tanner if they didn't vote anyone from the second to the sixth day
         tanner_id = self.get_player_with_role(roles.Tanner)
         if tanner_id and self.day >= 2:
-            if self.players[tanner_id].is_voted:
+            if self.players[tanner_id].is_voted_other:
                 # Tanner has voted someone else and still alive
-                self.players[tanner_id].is_voted = False
+                self.players[tanner_id].is_voted_other = False
             else:
                 await self.players[tanner_id].get_killed()
                 await self.interface.send_action_text_to_channel(
@@ -1259,22 +1261,19 @@ class Game:
         return None
 
     def get_player_with_role(self, role, status='alive'):
-        players = self.get_alive_players() if status == 'alive' else self.get_dead_players()
+        players = []
+        if status == 'alive':
+            players = self.get_alive_players()
+        elif status == 'dead':
+            players = self.get_dead_players()
+        else:
+            players = self.get_all_players()
+
         for player in players:
             if isinstance(player, role):
                 player_id = player.player_id
                 return player_id
         return None
-
-    def check_tanner_ability(self):
-        # Tanner still alive
-        tanner_id = self.get_player_with_role(roles.Tanner)
-        if tanner_id:
-            if self.day < 7:
-                self.players[tanner_id].final_party = 'Tanner'
-            else:
-                # Change party after 7 days
-                self.players[tanner_id].final_party = 'Villager'
 
     async def register_auto(self, author, subcmd):
         def check(pred):
