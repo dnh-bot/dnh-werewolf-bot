@@ -51,7 +51,7 @@ async def get_member_by_id_string(message, user_id):
             member = discord.utils.get(guild.members, id=int(user_id))
             if member is not None:
                 return member
-        return
+        return None
     except Exception as e:
         await message.reply("Invalid user. Try to tag that user again")
-        return
+        return None

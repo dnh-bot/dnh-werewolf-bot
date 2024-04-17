@@ -293,11 +293,9 @@ async def do_ban(game, message, params):
         if not game.is_started():
             await game.remove_player(user.id)
         await message.reply(text_templates.generate_text("ban_command_reply_text", user=user.mention, duration=time_string(ban_duration), reason=ban_reason))
-        return
     except Exception as e:
         print("Error", e)
         await message.reply("Invalid usage. Must mention player to be banned")
-        return
 
 async def do_unban(message):
     try:
@@ -308,11 +306,9 @@ async def do_unban(message):
             await message.reply(text_templates.generate_text("unban_command_reply_text", user=user.mention))
         else:
             await message.reply(text_templates.generate_text("unban_command_reply_not_banned_text"))
-        return
     except Exception as e:
         print("Error", e)
         await message.reply("Invalid usage. Must mention player to be unbanned")
-        return
 
 async def test_commands(guild):
     print("Testing admin command")
