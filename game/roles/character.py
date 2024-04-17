@@ -32,7 +32,7 @@ class Character:
         return self.__class__.__name__
 
     def get_party(self):
-        return self.party.__class__.__name__
+        return self.party.__name__
 
     def is_alive(self):
         return self.status != CharacterStatus.KILLED
