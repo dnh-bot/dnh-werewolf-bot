@@ -1,5 +1,5 @@
 import json
-
+import discord
 
 def read_json_file(filename):
     try:
@@ -41,3 +41,17 @@ def update_json_file(filename, key, value):
     except Exception as e:
         print("update json failed.", e)
         return False
+
+async def get_member_by_id_string(message, user_id):
+    # Get exactly the id without the <@> syntax
+    user_id = user_id[2:-1]
+    guild = message.guild
+    try:
+        if guild is not None:
+            member = discord.utils.get(guild.members, id=int(user_id))
+            if member is not None:
+                return member
+        return
+    except Exception as e:
+        await message.reply("Invalid user. Try to tag that user again")
+        return

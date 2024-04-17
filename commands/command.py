@@ -52,27 +52,9 @@ def check_set_timer_input(input_string):
     except:  # pylint: disable=bare-except
         return None
 
-async def get_member_by_id_string(message, user_id):
-    # Get exactly the id without the <@> syntax
-    user_id = user_id[2:-1]
-    guild = message.guild
-    try:
-        if guild is not None:
-            member = discord.utils.get(guild.members, id=int(user_id))
-            if member is not None:
-                return member
-    except Exception as e:
-        await message.reply("Invalid user. Try to tag that user again")
-        return
-
 async def process_command(client, game, message):
     message_parts = message.content.strip()[len(config.BOT_PREFIX):].split()
     cmd, parameters = message_parts[0], message_parts[1:]
-
-    # Mentions can be anywhere in the parameters list for other command usage
-    for index, param in enumerate(parameters):
-        if parameters[index].startswith("<@") and parameters[index].endswith(">"):
-            parameters[index] = await get_member_by_id_string(message, parameters[index])
 
     try:
         await parse_command(client, game, message, cmd, parameters)
@@ -256,7 +238,7 @@ async def do_admin_cmd(client, game, message, cmd, parameters):
     elif cmd_content == "ban":
         await do_ban(game, message, parameters)
     elif cmd_content == "unban":
-        await do_unban(message, parameters)
+        await do_unban(message)
     elif cmd_content in ("join", "leave", "start", "next", "stopgame"):
         await do_game_cmd(game, message, cmd_content, parameters, True)
 
@@ -297,38 +279,40 @@ BAN_DICT = utils.common.read_json_file(BAN_FILE)
 
 
 async def do_ban(game, message, params):
-    if not isinstance(params[0], discord.Member):
-        await message.reply("Invalid usage.")
-        return
-
-    user = params[0]
-    ban_duration = timeparse(params[1]) if len(params) > 1 else 0
-    ban_reason = ' '.join(params[2:]) if len(params) > 2 else text_templates.get_word_in_language("ban_no_reason")
-    if ban_duration == 0:
-        ban_duration = timeparse("1000y")
-    BAN_DICT[str(user.id)] = {
-        "end_time": time.time() + ban_duration,
-        "reason": ban_reason
-    }
-    utils.common.write_json_file(BAN_FILE, BAN_DICT)
-    if not game.is_started():
-        await game.remove_player(user.id)
-    await message.reply(text_templates.generate_text("ban_command_reply_text", user=user.mention, duration=time_string(ban_duration), reason=ban_reason))
-
-
-async def do_unban(message, params):
-    if not isinstance(params[0], discord.Member):
-        await message.reply("Invalid usage.")
-        return
-
-    user = params[0]
-    if str(user.id) in BAN_DICT:
-        del BAN_DICT[str(user.id)]
+    try:
+        user = message.mentions[0]
+        ban_duration = timeparse(params[1]) if len(params) > 1 else 0
+        ban_reason = ' '.join(params[2:]) if len(params) > 2 else text_templates.get_word_in_language("ban_no_reason")
+        if ban_duration == 0:
+            ban_duration = timeparse("1000y")
+        BAN_DICT[str(user.id)] = {
+            "end_time": time.time() + ban_duration,
+            "reason": ban_reason
+        }
         utils.common.write_json_file(BAN_FILE, BAN_DICT)
-        await message.reply(text_templates.generate_text("unban_command_reply_text", user=user.mention))
-    else:
-        await message.reply(text_templates.generate_text("unban_command_reply_not_banned_text"))
+        if not game.is_started():
+            await game.remove_player(user.id)
+        await message.reply(text_templates.generate_text("ban_command_reply_text", user=user.mention, duration=time_string(ban_duration), reason=ban_reason))
+        return
+    except Exception as e:
+        print("Error", e)
+        await message.reply("Invalid usage. Must mention player to be banned")
+        return
 
+async def do_unban(message):
+    try:
+        user = message.mentions[0]
+        if str(user.id) in BAN_DICT:
+            del BAN_DICT[str(user.id)]
+            utils.common.write_json_file(BAN_FILE, BAN_DICT)
+            await message.reply(text_templates.generate_text("unban_command_reply_text", user=user.mention))
+        else:
+            await message.reply(text_templates.generate_text("unban_command_reply_not_banned_text"))
+        return
+    except Exception as e:
+        print("Error", e)
+        await message.reply("Invalid usage. Must mention player to be unbanned")
+        return
 
 async def test_commands(guild):
     print("Testing admin command")
