@@ -42,6 +42,10 @@ def update_json_file(filename, key, value):
         print("update json failed.", e)
         return False
 
+def dict_to_list(cfg, number=0):
+    yield from (name for name in cfg for _ in range(cfg[name]))
+    yield from ('Werewolf' if i % 4 == 0 else 'Villager' for i in range(number - sum(cfg.values())))
+
 async def get_member_by_id_string(message, user_id):
     # Get exactly the id without the <@> syntax
     user_id = user_id[2:-1]
