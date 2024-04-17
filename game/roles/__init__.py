@@ -42,14 +42,6 @@ def get_role_title(name):
     return None
 
 
-def get_role_party(name):
-    name = name.capitalize()
-    if name in role_info:
-        return role_info[name]["party"]
-
-    return None
-
-
 def get_role_description(name):
     name = name.capitalize()
     if name in role_info:

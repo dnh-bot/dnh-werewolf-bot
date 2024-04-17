@@ -2,6 +2,10 @@ from game.roles.character import Character
 
 
 class Villager(Character):
+    def __init__(self, interface, player_id, player_name):
+        super().__init__(interface, player_id, player_name)
+        self.party = Villager
+
     async def on_day(self):
         pass
 

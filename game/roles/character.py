@@ -26,9 +26,13 @@ class Character:
         valid_channel_name = "-".join(valid_channel_name.split())
         self.channel_name = f"{config.PERSONAL}-{valid_channel_name}"
         self.target = None
+        self.party = Character
 
     def get_role(self):
         return self.__class__.__name__
+
+    def get_party(self):
+        return self.party.__class__.__name__
 
     def is_alive(self):
         return self.status != CharacterStatus.KILLED
