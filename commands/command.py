@@ -8,6 +8,7 @@ import time
 import discord
 from dateutil import parser, tz
 
+from bot import BAN_FILE, BAN_DICT
 from commands import admin, player
 import commands
 import config
