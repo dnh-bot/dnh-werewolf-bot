@@ -3,6 +3,7 @@ import sys
 import discord
 from discord.ext import commands as discord_commands
 from commands import command, admin
+from commands.command import BAN_FILE, BAN_DICT
 from game import *
 import config
 import interface
@@ -88,10 +89,6 @@ async def on_command_error(ctx, error):
         pass
     elif isinstance(error, discord.ext.commands.errors.MemberNotFound):
         await ctx.reply("You must mention a person!")
-
-
-BAN_FILE = "json/ban_list.json"
-BAN_DICT = utils.common.read_json_file(BAN_FILE)
 
 
 @discord_commands.command(name="ban")

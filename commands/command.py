@@ -8,7 +8,6 @@ import time
 import discord
 from dateutil import parser, tz
 
-from bot import BAN_FILE, BAN_DICT
 from commands import admin, player
 import commands
 import config
@@ -34,6 +33,9 @@ def parse_time_str(time_str):
 
 
 UNITS = dict(zip("s m h d w y".split(), (1, 60, 60 * 60, 24 * 60 * 60, 7 * 24 * 60 * 60, 365 * 24 * 60 * 60)))
+
+BAN_FILE = "json/ban_list.json"
+BAN_DICT = utils.common.read_json_file(BAN_FILE)
 
 
 def timeparse(string):
