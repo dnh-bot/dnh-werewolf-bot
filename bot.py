@@ -1,6 +1,7 @@
 import sys
 
 import discord
+from discord.ext import commands as discord_commands
 from commands import command, admin
 from game import *
 import config
@@ -58,7 +59,7 @@ async def test_bot(game, guild):
 # details: https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
 intents = discord.Intents.all()  # Recent change in discord need set this to all()
 intents.members = True
-client = discord.Client(intents=intents)
+client = discord_commands.Bot(command_prefix=config.BOT_PREFIX, intents=intents)
 game_list = GameList()
 
 
@@ -76,8 +77,64 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if verify_ok(message):
+        await client.process_commands(message)
         await process_message(client, message)  # loop through all commands and do action on first command that match
 
+
+@client.event
+async def on_command_error(ctx, error):
+    if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+        # await ctx.reply("That command wasn't found! Sorry :(")
+        pass
+    elif isinstance(error, discord.ext.commands.errors.MemberNotFound):
+        await ctx.reply("You must mention a person!")
+
+
+BAN_FILE = "json/ban_list.json"
+BAN_DICT = utils.common.read_json_file(BAN_FILE)
+
+
+@discord_commands.command(name="ban")
+async def do_ban(ctx, user: discord.Member, ban_duration='', *, ban_reason=text_templates.get_word_in_language("ban_no_reason")):
+    try:
+        ban_duration = command.timeparse(ban_duration) if ban_duration else 0
+        if ban_duration == 0:
+            ban_duration = command.timeparse("1000y")
+        BAN_DICT[str(user.id)] = {
+            "end_time": time.time() + ban_duration,
+            "reason": ban_reason
+        }
+        utils.common.write_json_file(BAN_FILE, BAN_DICT)
+
+        game = game_list.get_game(ctx.guild.id)
+        if not game.is_started():
+            await game.remove_player(user.id)
+
+        await ctx.reply(text_templates.generate_text("ban_command_reply_text", user=user.mention, duration=command.time_string(ban_duration), reason=ban_reason))
+    except ValueError:
+        await ctx.reply("Must enter a valid ban duration.")
+    except Exception as e:
+        print("Error", e)
+        await ctx.reply("Invalid usage. Must mention player to be banned")
+
+
+@discord_commands.command(name="unban")
+async def do_unban(ctx, user: discord.Member):
+    try:
+        if str(user.id) in BAN_DICT:
+            del BAN_DICT[str(user.id)]
+            utils.common.write_json_file(BAN_FILE, BAN_DICT)
+            await ctx.reply(text_templates.generate_text("unban_command_reply_text", user=user.mention))
+        else:
+            await ctx.reply(text_templates.generate_text("unban_command_reply_not_banned_text"))
+    except Exception as e:
+        print("Error", e)
+        await ctx.reply("Invalid usage. Must mention player to be unbanned")
+
+
+# Commands
+client.add_command(do_ban)
+client.add_command(do_unban)
 
 if __name__ == '__main__':
     if not config.DISCORD_TOKEN:

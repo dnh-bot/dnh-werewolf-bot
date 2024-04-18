@@ -235,10 +235,6 @@ async def do_admin_cmd(client, game, message, cmd, parameters):
         await do_force_clean(client, message)
     elif cmd_content == "debug":
         await do_force_debug()
-    elif cmd_content == "ban":
-        await do_ban(game, message, parameters)
-    elif cmd_content == "unban":
-        await do_unban(message)
     elif cmd_content in ("join", "leave", "start", "next", "stopgame"):
         await do_game_cmd(game, message, cmd_content, parameters, True)
 
@@ -273,42 +269,6 @@ async def do_force_delete(client, message):
     if user.id == client.user.id:
         await admin.clean_game_category(message.guild, client.user, True)
 
-
-BAN_FILE = "json/ban_list.json"
-BAN_DICT = utils.common.read_json_file(BAN_FILE)
-
-
-async def do_ban(game, message, params):
-    try:
-        user = message.mentions[0]
-        ban_duration = timeparse(params[1]) if len(params) > 1 else 0
-        ban_reason = ' '.join(params[2:]) if len(params) > 2 else text_templates.get_word_in_language("ban_no_reason")
-        if ban_duration == 0:
-            ban_duration = timeparse("1000y")
-        BAN_DICT[str(user.id)] = {
-            "end_time": time.time() + ban_duration,
-            "reason": ban_reason
-        }
-        utils.common.write_json_file(BAN_FILE, BAN_DICT)
-        if not game.is_started():
-            await game.remove_player(user.id)
-        await message.reply(text_templates.generate_text("ban_command_reply_text", user=user.mention, duration=time_string(ban_duration), reason=ban_reason))
-    except Exception as e:
-        print("Error", e)
-        await message.reply("Invalid usage. Must mention player to be banned")
-
-async def do_unban(message):
-    try:
-        user = message.mentions[0]
-        if str(user.id) in BAN_DICT:
-            del BAN_DICT[str(user.id)]
-            utils.common.write_json_file(BAN_FILE, BAN_DICT)
-            await message.reply(text_templates.generate_text("unban_command_reply_text", user=user.mention))
-        else:
-            await message.reply(text_templates.generate_text("unban_command_reply_not_banned_text"))
-    except Exception as e:
-        print("Error", e)
-        await message.reply("Invalid usage. Must mention player to be unbanned")
 
 async def test_commands(guild):
     print("Testing admin command")
