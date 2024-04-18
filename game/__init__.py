@@ -211,7 +211,7 @@ class Game:
         return r
 
     def get_role_list(self):
-        player_role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
+        player_role_list = dict(Counter(v.get_role() for v in self.players.values()))
         if not self.modes.get("hidden_role"):
             roles_text_list = list((f"{role}: {count}" for role, count in player_role_list.items()))
             # To make sure player roles and display roles are not in the same order
@@ -393,7 +393,7 @@ class Game:
             "======== Alive players: =======",
             "\n".join(
                 map(str, [
-                    (player_id, player.__class__.__name__)
+                    (player_id, player.get_role())
                     for player_id, player in self.players.items() if player.is_alive()
                 ])
             ),
@@ -627,7 +627,7 @@ class Game:
         await self.interface.send_action_text_to_channel("endgame_text", config.GAMEPLAY_CHANNEL, winner=game_winner)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
-        reveal_list = [(_id, player.__class__.__name__) for _id, player in self.players.items()]
+        reveal_list = [(_id, player.get_role(), player.get_party()) for _id, player in self.players.items()]
         couple_reveal_text = "\n\n" + "💘 " + " x ".join(f"<@{player_id}>" for player_id in self.cupid_dict) if self.cupid_dict else ""
         await self.interface.send_text_to_channel(
             "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict)) + couple_reveal_text,
