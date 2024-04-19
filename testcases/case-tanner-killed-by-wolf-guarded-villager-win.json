@@ -43,7 +43,8 @@
 			],
 			"action": [
 				"s1 vote w1",
-				"g1 vote s1"
+				"g1 vote s1",
+				"t1 vote g1"
 			]
 		},
 		{

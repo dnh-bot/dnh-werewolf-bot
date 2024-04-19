@@ -187,8 +187,8 @@ def generate_help_embed(*args):
     return help_embed_data
 
 
-def generate_reveal_str_list(reveal_list, game_winner, cupid_dict):
-    winner_list = generate_winner_list(reveal_list, game_winner, cupid_dict)
+def generate_reveal_str_list(reveal_list, game_winner, cupid_dict, players):
+    winner_list = generate_winner_list(reveal_list, game_winner, cupid_dict, players)
 
     return [
         "- " + text_templates.generate_text(
@@ -198,14 +198,16 @@ def generate_reveal_str_list(reveal_list, game_winner, cupid_dict):
     ]
 
 
-def generate_winner_list(reveal_list, game_winner, cupid_dict):
+def generate_winner_list(reveal_list, game_winner, cupid_dict, players):
     winner_list = []
     for player_id, role, party in reveal_list:
         party_victory = party == game_winner
         # Cupid is in Villager team. Win with either couple or Villager
         cupid_victory = game_winner == 'Cupid' and (player_id in cupid_dict or role == 'Cupid')
+        # Change party roles
+        change_party_victory = isinstance(players[player_id], roles.Tanner) and players[player_id].final_party == game_winner
 
-        if party_victory or cupid_victory:
+        if party_victory or cupid_victory or change_party_victory:
             emoji = '🥳'
         else:
             emoji = '😭'

@@ -101,7 +101,6 @@ class Game:
         self.prev_playtime = self.is_in_play_time()
         self.new_moon_mode.set_random_event()
         self.auto_hook = defaultdict(list)
-        self.tanner_is_lynched = False
 
     def get_winner(self):
         if self.winner is None:
@@ -630,7 +629,7 @@ class Game:
         reveal_list = [(_id, player.get_role(), player.get_party()) for _id, player in self.players.items()]
         couple_reveal_text = "\n\n" + "💘 " + " x ".join(f"<@{player_id}>" for player_id in self.cupid_dict) if self.cupid_dict else ""
         await self.interface.send_text_to_channel(
-            "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict)) + couple_reveal_text,
+            "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict, self.players)) + couple_reveal_text,
             config.GAMEPLAY_CHANNEL
         )
 
@@ -643,7 +642,7 @@ class Game:
                     # \u00A0\u00A0 is one space character for discord embed
                     # Put \u200B\n at first of the next field to break line
                     [f"🎉\u00A0\u00A0\u00A0\u00A0{game_winner}\u00A0\u00A0\u00A0\u00A0🎉"],
-                    text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict),
+                    text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict, self.players),
                     [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict)] if self.cupid_dict else []
                 ],
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime")),
@@ -662,8 +661,11 @@ class Game:
         print("DEBUG: ", num_players, num_werewolf)
 
         # Check Tanner
-        if self.tanner_is_lynched:
-            return roles.Tanner
+        tanner_id = self.get_player_with_role(roles.Tanner, 'all')
+        if tanner_id:
+            self.players[tanner_id].check_tanner_ability(self.day)
+            if self.players[tanner_id].is_lynched and self.players[tanner_id].final_party == 'Tanner':
+                return roles.Tanner
 
         # Check end game
         if num_werewolf != 0 and num_werewolf * 2 < num_players:
@@ -702,6 +704,8 @@ class Game:
             voted_list.append(voted)
             if isinstance(self.players[voter], roles.Chief):
                 voted_list.append(voted)
+            if isinstance(self.players[voter], roles.Tanner):
+                self.players[voter].is_voted_other = True
         return voted_list
 
     async def control_muting_party_channel(self, channel_name, is_muted, player_check_func=None):
@@ -726,6 +730,7 @@ class Game:
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
         self.day += 1
+
         if self.players:
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
             embed_data = self.generate_player_list_embed()
@@ -766,6 +771,26 @@ class Game:
 
             await self.new_moon_mode.do_action(self.interface, coin_toss_value=coin_toss_value)
 
+        # Kill Tanner if they didn't vote anyone from the second to the sixth day
+        tanner_id = self.get_player_with_role(roles.Tanner)
+        if tanner_id and self.day >= 2:
+            if self.players[tanner_id].is_voted_other:
+                # Tanner has voted someone else and still alive
+                self.players[tanner_id].is_voted_other = False
+            else:
+                await self.players[tanner_id].get_killed()
+                await self.interface.send_action_text_to_channel(
+                        "tanner_killed_by_not_voting_text", config.GAMEPLAY_CHANNEL,
+                        user=f"<@{tanner_id}>"
+                    )
+                # Check if lynched player is also a Tanner
+                if tanner_id == lynched:
+                    lynched = None
+                    await self.interface.send_action_text_to_channel(
+                        "lynched_is_died_text", config.GAMEPLAY_CHANNEL,
+                        user=f"<@{tanner_id}>"
+                    )
+
         if lynched:
             await self.players[lynched].get_killed()
             await self.interface.send_action_text_to_channel(
@@ -773,8 +798,8 @@ class Game:
                 voted_user=f"<@{lynched}>", highest_vote_number=votes
             )
 
-            if isinstance(self.players[lynched], roles.Tanner):
-                self.tanner_is_lynched = True
+            if isinstance(self.players[lynched], roles.Tanner) and self.day < 7:
+                self.players[lynched].is_lynched = True
 
             cupid_couple = self.cupid_dict.get(lynched)
             if cupid_couple is not None:
@@ -1230,6 +1255,21 @@ class Game:
             if hunted and hunted != hunter:
                 if await self.players[hunted].get_killed():
                     return hunted
+        return None
+
+    def get_player_with_role(self, role, status='alive'):
+        players = []
+        if status == 'alive':
+            players = self.get_alive_players()
+        elif status == 'dead':
+            players = self.get_dead_players()
+        else:
+            players = self.get_all_players()
+
+        for player in players:
+            if isinstance(player, role):
+                player_id = player.player_id
+                return player_id
         return None
 
     async def register_auto(self, author, subcmd):
