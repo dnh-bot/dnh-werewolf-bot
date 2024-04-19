@@ -41,3 +41,7 @@ def update_json_file(filename, key, value):
     except Exception as e:
         print("update json failed.", e)
         return False
+
+def dict_to_list(cfg, number=0):
+    yield from (name for name in cfg for _ in range(cfg[name]))
+    yield from ('Werewolf' if i % 4 == 0 else 'Villager' for i in range(number - sum(cfg.values())))

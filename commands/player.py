@@ -123,6 +123,8 @@ async def do_next(game, message, force=False):
                 # User needs to wait for next phase
                 if message.author.id not in game.players:
                     await message.reply(text_templates.generate_text("not_in_game_text"))
+                elif message.author.id not in [player.player_id for player in game.get_alive_players()]:
+                    await message.reply(text_templates.generate_text("invalid_author_status_text", status=text_templates.get_word_in_language("alive")))
                 else:
                     game.vote_next.add(message.author.id)
                     valid, text = check_vote_valid(len(game.vote_next), len(game.get_alive_players()), "next")
