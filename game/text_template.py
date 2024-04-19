@@ -213,7 +213,7 @@ def generate_winner_list(reveal_list, game_winner, cupid_dict, players):
         # Cupid is in Villager team. Win with either couple or Villager
         cupid_victory = game_winner == 'Cupid' and (player_id in cupid_dict or role == 'Cupid')
         # Change party roles
-        change_party_victory = roles.get_role_party(role)== 'Volatile Allegiance' and players[player_id].final_party == game_winner
+        change_party_victory = isinstance(players[player_id], roles.Tanner) and players[player_id].final_party == game_winner
 
         if party_victory or cupid_victory or change_party_victory:
             emoji = '🥳'
