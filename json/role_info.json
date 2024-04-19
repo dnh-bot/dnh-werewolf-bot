@@ -1,7 +1,6 @@
 {
   "Villager": {
     "name_vi": "Dân làng",
-    "party": "Villager",
     "description": {
       "vi": "Không có chức năng đặc biệt.",
       "en": "A simple villager."
@@ -11,7 +10,6 @@
   },
   "Werewolf": {
     "name_vi": "Sói",
-    "party": "Werewolf",
     "description": {
       "vi": "Chọn 1 người để giết mỗi đêm.",
       "en": "Chooses a player to kill at night."
@@ -21,7 +19,6 @@
   },
   "Superwolf": {
     "name_vi": "Sói già",
-    "party": "Werewolf",
     "description": {
       "vi": "Chọn 1 người để giết mỗi đêm. Sói già có khả năng che giấu Tiên tri và không bị soi ra là sói.",
       "en": "Chooses a player to kill at night. Can't be seen as a Werewolf."
@@ -31,7 +28,6 @@
   },
   "Guard": {
     "name_vi": "Bảo vệ",
-    "party": "Villager",
     "description": {
       "vi": "Bảo vệ được chọn 1 người khác nhau mỗi đêm và người được chọn sẽ bất tử đêm đó.",
       "en": "Guards a player: Protect the player from being killed."
@@ -41,7 +37,6 @@
   },
   "Hunter": {
     "name_vi": "Thợ săn",
-    "party": "Villager",
     "description": {
       "vi": "Vào ban đêm, chọn 1 người khác để chết chung với mình. Ghi nhận lệnh cuối cùng.",
       "en": "Target a player to die together at night. Accept latest command."
@@ -51,7 +46,6 @@
   },
   "Lycan": {
     "name_vi": "Người hóa sói",
-    "party": "Villager",
     "description": {
       "vi": "Người hóa sói thuộc Phe dân làng, nhưng nếu được chỉ định bởi Tiên tri, thì sẽ bị thông báo là Sói.",
       "en": "A villager but is seen as a Werewolf."
@@ -61,7 +55,6 @@
   },
   "Seer": {
     "name_vi": "Tiên tri",
-    "party": "Villager",
     "description": {
       "vi": "Soi một người chơi có phải là sói hay không. Có thể giết chết Cáo nếu soi trúng Cáo.",
       "en": "Sees who is the Werewolf. Can kill Fox if Seer sees Fox."
@@ -71,7 +64,6 @@
   },
   "Betrayer": {
     "name_vi": "Kẻ phản bội",
-    "party": "Werewolf",
     "description": {
       "vi": "Là người nhưng bị mua chuộc theo phe sói. Kẻ phản bội biết ai là sói nhưng phe sói không biết ai là Kẻ phản bội.",
       "en": "A human but betrays Villagers. Betrayer knows werewolf players."
@@ -81,7 +73,6 @@
   },
   "Fox": {
     "name_vi": "Cáo",
-    "party": "Fox",
     "description": {
       "vi": "Thuộc phe thứ ba, Cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.",
       "en": "A Fox belongs to third party. Fox wins if all werewolves are killed. Fox is dead if being revealed by Seer. Fox will not be dead if being protected by Guard."
@@ -91,7 +82,6 @@
   },
   "Witch": {
     "name_vi": "Phù thủy",
-    "party": "Villager",
     "description": {
       "vi": "Vào ban đêm, Phù thủy có 1 bình phép có thể phục sinh một người chơi đã chết, đôi khi cũng có thể nguyền rủa một người còn sống. Mỗi chức năng này chỉ được sử dụng một lần duy nhất trong game.",
       "en": "Can reborn a dead player, and also can curse an alive player once per game."
@@ -101,7 +91,6 @@
   },
   "Zombie": {
     "name_vi": "Xác sống",
-    "party": "Villager",
     "description": {
       "vi": "Có thể tự hồi sinh một lần duy nhất trong game.",
       "en": "Can reborn once."
@@ -111,7 +100,6 @@
   },
   "Cupid": {
     "name_vi": "Thần tình yêu",
-    "party": "Villager",
     "description": {
       "vi": "Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ sẽ chiến thắng khi là hai người cuối cùng sống sót (hoặc khi phe của họ thắng). Thần tình yêu có thể chiến thắng cùng cặp đôi hoặc khi dân làng thắng.",
       "en": "On the first day, Cupid can choose 2 players and make them to be a couple. If one of them is dead, the other will be also dead. If the couple belongs to different parties (Werewolf and Villager), then they will win if they are the last stand players (or when their own team win). Cupid may win together with the couple or the Villagers."
@@ -121,7 +109,6 @@
   },
   "Chief": {
     "name_vi": "Trưởng làng",
-    "party": "Villager",
     "description": {
       "vi": "Vào ban ngày, phiếu bầu của Trưởng làng được bí mật tính là 2.",
       "en": "On dayphase, the Chief's vote is secretly counted as 2."
@@ -131,7 +118,6 @@
   },
   "Tanner": {
     "name_vi": "Kẻ chán đời",
-    "party": "Volatile Allegiance",
     "description": {
       "vi": "Kẻ chán đời sẽ chỉ chiến thắng nếu bị dân làng bỏ phiếu để tử hình. Bắt đầu từ ngày thứ 2, mỗi buổi sáng, Kẻ chán đời phải bầu một người để tử hình, nếu không Kẻ chán đời sẽ chết. Sau 7 ngày, Kẻ chán đời mất khả năng chiến thắng độc lập và trở thành người dân bình thường.",
       "en": "Tanner only wins if he is voted out during the dayphase. From the second day, in every morning, Tanner has to vote one player, or else he will die. After 7 days, Tanner will lose the ability to win as a third party, continue to play as a Villager."

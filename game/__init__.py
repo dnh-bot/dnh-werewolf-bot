@@ -12,7 +12,7 @@ from functools import reduce
 import config
 import utils
 import text_templates
-from game import const, roles, text_template, modes
+from game import const, roles, text_template, modes, generate_roles
 from game.modes.new_moon import NewMoonMode
 
 
@@ -178,23 +178,17 @@ class Game:
             return "Invalid json format."
 
     def generate_roles(self, interface, ids, names_dict):
-        def dict_to_list(cfg, number=0):
-            yield from (name for name in cfg for _ in range(cfg[name]))
-            yield from ('Werewolf' if i % 4 == 0 else 'Villager' for i in range(number - sum(cfg.values())))
-
         if self.runtime_roles:
             role_config = self.runtime_roles
         else:
-            role_config = utils.common.read_json_file("json/role_config.json")
+            # Use fixed configuration file:
+            # role_config = utils.common.read_json_file("json/role_config.json")
+
+            # Use dynamic score system:
+            role_config = generate_roles.generate_roles_new_strategy(ids)
 
         ids = list(ids)
-        try:
-            game_role = random.choice([
-                dict_to_list(role_dict)
-                for role_dict in role_config if sum(role_dict.values()) == len(ids)
-            ])
-        except IndexError:
-            game_role = dict_to_list(role_config[-1], len(ids))
+        game_role = utils.common.dict_to_list(role_config)
 
         # Somehow python dict retain adding order
         # So the Werewolf role will always at the begining of the dict
@@ -216,7 +210,7 @@ class Game:
         return r
 
     def get_role_list(self):
-        player_role_list = dict(Counter(v.__class__.__name__ for v in self.players.values()))
+        player_role_list = dict(Counter(v.get_role() for v in self.players.values()))
         if not self.modes.get("hidden_role"):
             roles_text_list = list((f"{role}: {count}" for role, count in player_role_list.items()))
             # To make sure player roles and display roles are not in the same order
@@ -224,6 +218,28 @@ class Game:
             formatted_roles = ", ".join(roles_text_list)
             return text_templates.generate_text("role_list_text", roles_data=formatted_roles)
         return text_templates.generate_text("hidden_role_warning_text")
+
+    def generate_player_list_embed(self, alive_status=None):
+        # Handle 3 types of list: All, Alive, Dead
+        reveal_role = self.modes.get("reveal_mode", False)
+        role_list = []
+        if alive_status is True:
+            player_list = self.get_alive_players()
+            action_name = "alive_player_list_embed"
+        elif alive_status is False:
+            player_list = self.get_dead_players()
+            action_name = "dead_player_list_embed"
+        else:
+            player_list = self.get_all_players()
+            action_name = "all_player_list_embed"
+            role_list = [self.formatted_roles]
+
+        if player_list:
+            id_player_list = text_template.generate_id_player_list(player_list, alive_status, reveal_role)
+            print("generate_player_list_embed", alive_status, reveal_role, player_list, id_player_list)
+            embed_data = text_templates.generate_embed(action_name, [id_player_list, role_list])
+            return embed_data
+        return None
 
     async def start(self, init_players=None):
         if self.is_stopped and self.game_phase == const.GamePhase.NEW_GAME:
@@ -376,7 +392,7 @@ class Game:
             "======== Alive players: =======",
             "\n".join(
                 map(str, [
-                    (player_id, player.__class__.__name__)
+                    (player_id, player.get_role())
                     for player_id, player in self.players.items() if player.is_alive()
                 ])
             ),
@@ -540,10 +556,7 @@ class Game:
         await self.interface.send_embed_to_channel(status_embed_data, channel_name)
 
         if self.is_started():
-            role_list = [self.formatted_roles]
-            players_embed_data = text_template.generate_player_list_embed(
-                self.get_all_players(), None, role_list, self.modes.get("reveal_role", False)
-            )
+            players_embed_data = self.generate_player_list_embed()
             await self.interface.send_embed_to_channel(players_embed_data, channel_name)
 
     async def run_game_loop(self):
@@ -559,7 +572,7 @@ class Game:
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
 
-        embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
+        embed_data = self.generate_player_list_embed(True)
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
 
         info = text_templates.generate_text(
@@ -613,7 +626,7 @@ class Game:
         await self.interface.send_action_text_to_channel("endgame_text", config.GAMEPLAY_CHANNEL, winner=game_winner)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
-        reveal_list = [(_id, player.__class__.__name__) for _id, player in self.players.items()]
+        reveal_list = [(_id, player.get_role(), player.get_party()) for _id, player in self.players.items()]
         couple_reveal_text = "\n\n" + "💘 " + " x ".join(f"<@{player_id}>" for player_id in self.cupid_dict) if self.cupid_dict else ""
         await self.interface.send_text_to_channel(
             "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict, self.players)) + couple_reveal_text,
@@ -695,20 +708,14 @@ class Game:
                 self.players[voter].is_voted_other = True
         return voted_list
 
-    async def control_muting_party_channel(self, is_muted):
+    async def control_muting_party_channel(self, channel_name, is_muted, player_check_func=None):
         """
-        Mute/Unmute all alive players in party channel (e.g. config.WEREWOLF_CHANNEL, config.COUPLE_CHANNEL)
+        Mute/Unmute all alive players in party channel (e.g. GAMEPLAY_CHANNEL, WEREWOLF_CHANNEL, COUPLE_CHANNEL)
         """
         await asyncio.gather(*[
-            self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=not is_muted)
+            self.interface.add_user_to_channel(_id, channel_name, is_read=True, is_send=not is_muted)
             for _id, player in self.players.items()
-            if player.is_alive() and isinstance(player, roles.Werewolf)
-        ])
-
-        await asyncio.gather(*[
-            self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=not is_muted)
-            for _id, player in self.players.items()
-            if player.is_alive() and _id in self.cupid_dict
+            if player.is_alive() and (player_check_func is None or player_check_func(player))
         ])
 
     async def announce_current_new_moon_event(self):
@@ -726,24 +733,21 @@ class Game:
 
         if self.players:
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
-            embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
+            embed_data = self.generate_player_list_embed()
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
             self.new_moon_mode.set_random_event()
             await self.announce_current_new_moon_event()
 
             if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT and len(self.get_dead_players()):
-                alive_players_embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=self.modes.get("reveal_role", False))
+                alive_players_embed_data = self.generate_player_list_embed(True)
                 await self.new_moon_mode.do_new_daytime_phase(self.interface, alive_players_embed_data=alive_players_embed_data)
 
             # Mute all party channels
-            await self.control_muting_party_channel(True)
-
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
-            await asyncio.gather(*[
-                self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
-                for _id, player in self.players.items() if player.is_alive()
-            ])
+            await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, True, lambda player: isinstance(player, roles.Werewolf))
+            await self.control_muting_party_channel(config.COUPLE_CHANNEL, True, lambda player: player.player_id in self.cupid_dict)
+            await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, False)
         else:
             print("Error no player in game.")
             await self.stop()
@@ -818,19 +822,16 @@ class Game:
         else:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
 
-        players_embed_data = text_template.generate_player_list_embed(self.get_all_players(), reveal_role=self.modes.get("reveal_role", False))
+        players_embed_data = self.generate_player_list_embed()
         await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
 
         await self.announce_current_new_moon_event()
 
         # Unmute all party channels
-        await self.control_muting_party_channel(False)
-
         # Mute all players in config.GAMEPLAY_CHANNEL
-        await asyncio.gather(*[
-            self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
-            for _id, player in self.players.items() if player.is_alive()
-        ])
+        await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, False, lambda player: isinstance(player, roles.Werewolf))
+        await self.control_muting_party_channel(config.COUPLE_CHANNEL, False, lambda player: player.player_id in self.cupid_dict)
+        await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, True)
 
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
@@ -839,17 +840,13 @@ class Game:
                 "night_phase_beginning_text",
                 config.GAMEPLAY_CHANNEL
             )
-            await self.interface.send_action_text_to_channel(
-                "werewolf_before_voting_text",
-                config.WEREWOLF_CHANNEL
-            )
-            is_reveal_role = self.modes.get("reveal_role", False)
-            alive_embed_data = text_template.generate_player_list_embed(self.get_alive_players(), alive_status=True, reveal_role=is_reveal_role)
-            dead_embed_data = text_template.generate_player_list_embed(self.get_dead_players(), alive_status=False, reveal_role=is_reveal_role)
+            alive_embed_data = self.generate_player_list_embed(True)
+            dead_embed_data = self.generate_player_list_embed(False)
 
+            await self.interface.send_action_text_to_channel("werewolf_before_voting_text", config.WEREWOLF_CHANNEL)
             await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
             await asyncio.gather(*[
-                player.on_action(alive_embed_data, dead_embed_data) for player in self.get_all_players()
+                player.on_night_start(alive_embed_data, dead_embed_data) for player in self.get_all_players()
             ])
 
     async def do_end_nighttime_phase(self):
@@ -1144,7 +1141,7 @@ class Game:
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")
             return await self.ship(author, targets[0], targets[1])
 
-        return text_templates.generate_text("invalid_command_text")
+        return text_template.generate_invalid_command_text(cmd)
 
     async def vote(self, author, target):
         author_id = author.player_id

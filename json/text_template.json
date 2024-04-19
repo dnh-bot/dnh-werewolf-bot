@@ -855,8 +855,8 @@
   "invalid_command_text": {
     "params": ["command", "text"],
     "template": {
-      "vi": ["Sai câu lệnh.{text}"],
-      "en": ["Invalid command.{text}"]
+      "vi": ["Sai câu lệnh `{command}`.{text}"],
+      "en": ["Invalid command `{command}`.{text}"]
     }
   },
   "not_vote_1_player_text": {
