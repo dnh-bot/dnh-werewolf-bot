@@ -1295,9 +1295,13 @@ class Game:
         def is_alive():
             return author.is_alive()
 
+        def has_no_target():
+            return author.target is None
+
         @check(is_alive)
         @check(is_night)
         @check(has_role(roles.Guard))
+        @check(has_no_target)
         async def auto_guard():
             target = random.choice(self.get_alive_players())
             msg = await self.guard(author, target)
@@ -1306,6 +1310,7 @@ class Game:
         @check(is_alive)
         @check(is_night)
         @check(has_role(roles.Seer))
+        @check(has_no_target)
         async def auto_seer():
             target = random.choice(self.get_alive_players())
             if author.player_id in self.cupid_dict:
