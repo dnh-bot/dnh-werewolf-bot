@@ -1374,5 +1374,19 @@
       "vi": ["Bạn không thể tham gia trò chơi vì đang bị cấm túc!", "Lý do: {reason}.", "Thời gian còn lại: {duration}"],
       "en": ["You can not join the game because you are banned!", "Lý do: {reason}.", "Remaining time: {duration}"]
     }
+  },
+  "ban_invalid_text": {
+    "params": [],
+    "template": {
+      "vi": ["Dùng lệnh sai rồi bạn ơi. Phải tag người ta mới cấm được nha."],
+      "en": ["Invalid usage. Must mention player to be banned."]
+    }
+  },
+  "unban_invalid_text": {
+    "params": [],
+    "template": {
+      "vi": ["Dùng lệnh sai rồi bạn ơi. Phải tag người ta mới bỏ lệnh cấm được nha."],
+      "en": ["Invalid usage. Must mention player to be unbanned"]
+    }
   }
 }
