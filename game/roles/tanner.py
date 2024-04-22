@@ -3,9 +3,13 @@ from game.roles.villager import Villager
 
 class Tanner(Villager):
     # Tanner is Tanner party, wins game by voted out during dayphase
+    def __init__(self, interface, player_id, player_name):
+        super().__init__(interface, player_id, player_name)
+        self.party = Tanner
+        self.is_voted_other = False
+        self.final_party = 'Tanner'
+        self.is_lynched = False
 
-    async def on_night(self):
-        pass
-
-    def seer_seen_as_werewolf(self):
-        return False
+    def check_tanner_ability(self, day):
+        if day >= 7:
+            self.final_party = 'Villager'

@@ -1333,28 +1333,42 @@
       "en": ["👹 {author} voted to punish {target}"]
     }
   },
-  "ban_command_reply_text":{
+  "tanner_killed_by_not_voting_text": {
+    "params": ["user"],
+    "template": {
+      "vi": ["Ôi không, thật đáng sợ quá... {user} đột nhiên bị mất tích rồi 😱"],
+      "en": ["Oh no, it's so scary... {user} suddenly disappeared 😱"]
+    }
+  },
+  "lynched_is_died_text": {
+    "params": ["user"],
+    "template": {
+      "vi": ["Vì người chơi {user} đã bị biến mất, nên hôm nay sẽ không có ai bị hành hình."],
+      "en": ["Because {user} had disappeared, no one will be executed."]
+    }
+  },
+  "ban_command_reply_text": {
     "params": ["user", "duration", "reason"],
     "template": {
       "vi": ["Đã cấm {user} tham gia trò chơi trong {duration}", "Lý do: {reason}."],
       "en": ["Banned {user} from joining the game for {duration}", "Reason: {reason}."]
     }
   },
-  "unban_command_reply_text":{
+  "unban_command_reply_text": {
     "params": ["user"],
     "template": {
       "vi": ["Đã bỏ lệnh cấm người chơi {user} thành công!"],
       "en": ["Unbanned player {user} successfully!"]
     }
   },
-  "unban_command_reply_not_banned_text":{
+  "unban_command_reply_not_banned_text": {
     "params": [],
     "template": {
       "vi": ["Người ta có bị cấm đâu mà bạn bỏ lệnh cấm bạn ơi ;;-;;"],
       "en": ["This person wasn't banned so why do you unban ;;-;;"]
     }
   },
-  "join_while_ban_reply_text":{
+  "join_while_ban_reply_text": {
     "params": ["duration", "reason"],
     "template": {
       "vi": ["Bạn không thể tham gia trò chơi vì đang bị cấm túc!", "Lý do: {reason}.", "Thời gian còn lại: {duration}"],
