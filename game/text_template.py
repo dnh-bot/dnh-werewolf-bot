@@ -28,7 +28,7 @@ def generate_id_player_list(player_list, alive_status, reveal_role=False):
             row_id += 1
 
         # Show role info if user is dead and reveal mode is enabled.
-        dead_player_role_str = f" - {user.get_role()}" if reveal_role and user.status == CharacterStatus.KILLED else ""
+        dead_player_role_str = f" - ***{user.get_role()}***" if reveal_role and user.status == CharacterStatus.KILLED else ""
         id_player_list.append(f"{id_str} -> <@{user.player_id}>{dead_player_role_str}")
 
     return id_player_list

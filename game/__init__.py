@@ -221,7 +221,7 @@ class Game:
 
     def generate_player_list_embed(self, alive_status=None):
         # Handle 3 types of list: All, Alive, Dead
-        reveal_role = self.modes.get("reveal_mode", False)
+        reveal_role = self.modes.get("reveal_role", False)
         role_list = []
         if alive_status is True:
             player_list = self.get_alive_players()
