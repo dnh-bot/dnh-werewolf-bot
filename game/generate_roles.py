@@ -16,11 +16,12 @@ def add_additional_roles(role_list, num_of_players):
     # From lowest to highest score roles
     fixed_additional_roles = ["Superwolf", "Cupid", "Betrayer", "Fox", "Tanner", "Chief", "Zombie", "Hunter", "Witch"]
     additional_roles = [role for role in fixed_additional_roles if role not in role_list[:num_of_players]]
+    lycan_amount = role_list.count("Lycan")
 
-    # Replace boring Villager
+    # Replace boring Villager/Lycan
     for role in additional_roles:
         for i in range(num_of_players):
-            if role_list[i] == "Villager":
+            if (role_list[i] == "Villager") or (role_list[i] == "Lycan" and lycan_amount > 2): # 2 Lycans are enough fun
                 role_list[i] = role
                 break
 
@@ -29,7 +30,7 @@ def add_additional_roles(role_list, num_of_players):
 def generate_roles_new_strategy(ids):
     num_of_players = len(ids)
 
-    fixed_roles = ['Werewolf', 'Seer', 'Guard', 'Villager']
+    fixed_roles = ["Werewolf", "Seer", "Guard", "Villager"]
     if num_of_players == 4:
         return dict(Counter(fixed_roles))
 
@@ -38,7 +39,7 @@ def generate_roles_new_strategy(ids):
     num_of_players = num_of_players - len(fixed_roles)
 
     while len(role_list) < num_of_players * 2:
-        role_list += ['Werewolf', 'Lycan'] + ['Villager'] * 2
+        role_list += ["Werewolf", "Lycan"] + ["Villager"] * 2
 
     random.shuffle(role_list)
 
@@ -48,7 +49,8 @@ def generate_roles_new_strategy(ids):
         random.shuffle(role_list)
         scores = get_score(fixed_roles + role_list[:num_of_players])
 
-    # Handle boring & useless Villagers :D
-    role_list = add_additional_roles(role_list, num_of_players)
+    if num_of_players >= 7:
+        # Handle boring & useless Villagers :D
+        role_list = add_additional_roles(role_list, num_of_players)
 
     return dict(Counter(fixed_roles + role_list[:num_of_players]))
