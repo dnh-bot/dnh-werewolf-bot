@@ -15,11 +15,12 @@ def get_full_cmd_description(cmd):
 
 
 def generate_player_score_list_embed(player_score_data):
-    num_of_players = 15
+    num_of_players = 10
     if player_score_data:
         sorted_player_score_data = sorted(player_score_data.items(), key=lambda x: x[1], reverse=True)[:num_of_players]
         player_score_list = [f"{i+1}. <@{player_id}> -> **{score}**" for i, (player_id, score) in enumerate(sorted_player_score_data)]
-        embed_data = text_templates.generate_embed("player_score_list_embed", [player_score_list], num_of_players=num_of_players)
+        god_of_war_list = [f"⚔️ <@{player_id}>" for i, (player_id, _) in enumerate(sorted_player_score_data) if (i+1) <= 3]
+        embed_data = text_templates.generate_embed("player_score_list_embed", [player_score_list, god_of_war_list], num_of_players=num_of_players)
         return embed_data
     return None
 
