@@ -12,6 +12,19 @@ delta = generator_info['delta']
 def get_score(generated_roles):
     return sum(role_dict[r] for r in generated_roles)
 
+def add_additional_roles(role_list, num_of_players):
+    # From lowest to highest score roles
+    fixed_additional_roles = ["Superwolf", "Cupid", "Betrayer", "Fox", "Tanner", "Chief", "Zombie", "Hunter", "Witch"]
+    additional_roles = [role for role in fixed_additional_roles if role not in role_list[:num_of_players]]
+
+    # Replace boring Villager
+    for role in additional_roles:
+        for i in range(num_of_players):
+            if role_list[i] == "Villager":
+                role_list[i] = role
+                break
+
+    return role_list
 
 def generate_roles_new_strategy(ids):
     num_of_players = len(ids)
@@ -31,7 +44,11 @@ def generate_roles_new_strategy(ids):
 
     scores = abs(get_score(fixed_roles + role_list[:num_of_players]))
 
-    while scores < delta or scores > 7:
+    while scores > delta:
         random.shuffle(role_list)
         scores = get_score(fixed_roles + role_list[:num_of_players])
+
+    # Handle boring & useless Villagers :D
+    role_list = add_additional_roles(role_list, num_of_players)
+
     return dict(Counter(fixed_roles + role_list[:num_of_players]))
