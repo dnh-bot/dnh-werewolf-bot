@@ -1225,7 +1225,7 @@
         "content_headers": ["Người chơi -> Điểm", "🔱 Chiến Thần Ma Sói 🔱"]
       },
       "en": {
-        "title": "Ranking Board",
+        "title": "🥇 Ranking Board 🥇",
         "description": "Congratulations to the {num_of_players} best performing villagers👏",
         "content_headers": ["Player -> Score", "🔱 God Of War 🔱"]
       }
