@@ -36,7 +36,7 @@ class NewMoonMode:
         if self.is_on:
             return random.choices(*zip(*[
                 (event_key, event["rate"])
-                for event_key, event in new_moon_event_dict.items()
+                for event_key, event in new_moon_event_dict.items() if event_key != self.current_event
             ]))[0]
 
         return NewMoonMode.NO_EVENT
