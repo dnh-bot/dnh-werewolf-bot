@@ -19,8 +19,7 @@ class GitHubGist:
 
             return True
         except Exception as e:
-            print("Init Github Gist failed, please check GITHUB_GIST_ID_URL and GITHUB_GIST_TOKEN or remove/comment them in .env file")
-            print(f"Github Gist error: {e}")
+            print(f"Verify Github Gist failed, error: {e}")
             return False
 
     async def get_gist(self, file_name=None):

@@ -561,18 +561,30 @@ class Game:
             players_embed_data = self.generate_player_list_embed()
             await self.interface.send_embed_to_channel(players_embed_data, channel_name)
 
-    async def handle_end_game_score_list(self, reveal_list, game_winner, cupid_dict, players):
-        # FIXME:
-        # pylint: disable=duplicate-code
+    def generate_victory_list(self, reveal_list, game_winner, cupid_dict, players):
+        victory_list = []
+        for player_id, role, party in reveal_list:
+            party_victory = party == game_winner
+            # Cupid is in Villager team. Win with either couple or Villager
+            cupid_victory = game_winner == 'Cupid' and (player_id in cupid_dict or role == 'Cupid')
+            # Change party roles
+            change_party_victory = isinstance(players[player_id], roles.Tanner) and players[player_id].final_party == game_winner
+
+            if party_victory or cupid_victory or change_party_victory:
+                victory = True
+            else:
+                victory = False
+
+            victory_list.append((player_id, role, victory))
+
+        return victory_list
+
+    async def handle_end_game_score_list(self, game_winner, victory_list):
         try:
             player_scores_data = await database.read("player_score_list.json")
 
-            for player_id, role, party in reveal_list:
-                party_victory = party == game_winner
-                cupid_victory = game_winner == 'Cupid' and (player_id in cupid_dict or role == 'Cupid')
-                change_party_victory = isinstance(players[player_id], roles.Tanner) and players[player_id].final_party == game_winner
-
-                if party_victory or cupid_victory or change_party_victory:
+            for player_id, _, victory in victory_list:
+                if victory:
                     player_scores_data[str(player_id)] = int(player_scores_data.get(str(player_id), 0)) + 5
                 elif game_winner != 'None':
                     player_scores_data[str(player_id)] = int(player_scores_data.get(str(player_id), 0)) - 2
@@ -660,15 +672,16 @@ class Game:
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
         reveal_list = [(_id, player.get_role(), player.get_party()) for _id, player in self.players.items()]
+        victory_list = self.generate_victory_list(reveal_list, game_winner, self.cupid_dict, self.players)
         couple_reveal_text = "\n\n" + "💘 " + " x ".join(f"<@{player_id}>" for player_id in self.cupid_dict) if self.cupid_dict else ""
         await self.interface.send_text_to_channel(
-            "\n".join(text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict, self.players)) + couple_reveal_text,
+            "\n".join(text_template.generate_reveal_str_list(victory_list)) + couple_reveal_text,
             config.GAMEPLAY_CHANNEL
         )
 
         # write to leaderboard
         if self.start_time is not None:  # game has been started
-            await self.handle_end_game_score_list(reveal_list, game_winner, self.cupid_dict, self.players)
+            await self.handle_end_game_score_list(game_winner, victory_list)
             game_result = text_templates.generate_embed(
                 "game_result_embed",
                 [
@@ -676,7 +689,7 @@ class Game:
                     # \u00A0\u00A0 is one space character for discord embed
                     # Put \u200B\n at first of the next field to break line
                     [f"🎉\u00A0\u00A0\u00A0\u00A0{game_winner}\u00A0\u00A0\u00A0\u00A0🎉"],
-                    text_template.generate_reveal_str_list(reveal_list, game_winner, self.cupid_dict, self.players),
+                    text_template.generate_reveal_str_list(victory_list),
                     [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict)] if self.cupid_dict else []
                 ],
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime")),

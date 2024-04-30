@@ -13,6 +13,7 @@ import interface
 async def verify_database():
     valid_database = await database.verify_init()
     if not valid_database:
+        print("Verify database failed, please check GITHUB_GIST_TOKEN and GITHUB_GIST_ID_URL or remove/comment them in .env file")
         sys.exit(1)
 
 async def init_setup(init_game_list=False):

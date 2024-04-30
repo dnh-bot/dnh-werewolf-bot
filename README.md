@@ -211,7 +211,7 @@ https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/m
 
 **Important note:** Gist file and local json file must have the same name to ensure synchronization
 
-3. Add `GITHUB_GIST_TOKEN` and `GITHUB_GIST_ID_URL` to the `.env` file. Please see .env.example for more details
+3. Add `GITHUB_GIST_TOKEN` and `GITHUB_GIST_ID_URL` to the `.env` file. Please see .env.example for more details. If Gist is not used, you MUST NOT include those variables
 
 # Known issue
 

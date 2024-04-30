@@ -197,34 +197,16 @@ def generate_help_embed(*args):
     return help_embed_data
 
 
-def generate_reveal_str_list(reveal_list, game_winner, cupid_dict, players):
-    winner_list = generate_winner_list(reveal_list, game_winner, cupid_dict, players)
+def generate_reveal_str_list(victory_list=None):
+    if victory_list is None:
+        return ""
 
     return [
         "- " + text_templates.generate_text(
-            "reveal_player_text", player_id=player_id, role=role, result_emoji=result_emoji
+            "reveal_player_text", player_id=player_id, role=role, result_emoji='🥳' if victory else '😭'
         )
-        for player_id, role, result_emoji in winner_list
+        for player_id, role, victory in victory_list
     ]
-
-
-def generate_winner_list(reveal_list, game_winner, cupid_dict, players):
-    winner_list = []
-    for player_id, role, party in reveal_list:
-        party_victory = party == game_winner
-        # Cupid is in Villager team. Win with either couple or Villager
-        cupid_victory = game_winner == 'Cupid' and (player_id in cupid_dict or role == 'Cupid')
-        # Change party roles
-        change_party_victory = isinstance(players[player_id], roles.Tanner) and players[player_id].final_party == game_winner
-
-        if party_victory or cupid_victory or change_party_victory:
-            emoji = '🥳'
-        else:
-            emoji = '😭'
-
-        winner_list.append((player_id, role, emoji))
-
-    return winner_list
 
 
 def time_range_to_string(start_time, end_time, zone):
