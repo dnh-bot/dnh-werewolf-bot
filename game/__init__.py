@@ -570,10 +570,7 @@ class Game:
             # Change party roles
             change_party_victory = isinstance(players[player_id], roles.Tanner) and players[player_id].final_party == game_winner
 
-            if party_victory or cupid_victory or change_party_victory:
-                victory = True
-            else:
-                victory = False
+            victory = party_victory or cupid_victory or change_party_victory
 
             victory_list.append((player_id, role, victory))
 
