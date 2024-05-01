@@ -13,8 +13,9 @@ def get_score(generated_roles):
     return sum(role_dict[r] for r in generated_roles)
 
 def add_additional_roles(role_list, num_of_players):
+    ignored_roles = ["Werewolf", "Seer", "Guard", "Villager", "Lycan"]
     # From lowest to highest score roles
-    fixed_additional_roles = ["Superwolf", "Cupid", "Betrayer", "Fox", "Tanner", "Chief", "Zombie", "Hunter", "Witch"]
+    fixed_additional_roles = sorted([role for role, score in role_dict.items() if role not in ignored_roles], key=lambda x: role_dict[x])
     additional_roles = [role for role in fixed_additional_roles if role not in role_list[:num_of_players]]
     lycan_amount = role_list.count("Lycan")
 
@@ -49,8 +50,17 @@ def generate_roles_new_strategy(ids):
         random.shuffle(role_list)
         scores = get_score(fixed_roles + role_list[:num_of_players])
 
-    if num_of_players >= 7:
+    if num_of_players >= 3:
         # Handle boring & useless Villagers :D
         role_list = add_additional_roles(role_list, num_of_players)
+
+    total_players = len(ids)
+    total_wolves = role_list[:num_of_players].count("Werewolf") + role_list[:num_of_players].count("Superwolf") + 1
+
+    # Limit werewolves
+    while (total_wolves > 5) or (total_players <= 9 and total_wolves > 2) or (total_players <= 7 and total_wolves >= 2):
+        if "Werewolf" in role_list[:num_of_players]:
+            role_list.remove("Werewolf")
+        total_wolves -= 1
 
     return dict(Counter(fixed_roles + role_list[:num_of_players]))
