@@ -831,6 +831,13 @@
       "en": ["You are not currently in the game."]
     }
   },
+  "maximum_players_exceeded": {
+    "params": ["maximum_players"],
+    "template": {
+      "vi": ["Rất tiếc, trò chơi chỉ giới hạn cho {maximum_players} người :v"],
+      "en": ["Sorry, the game is limited to {maximum_players} players :v"]
+    }
+  },
   "already_in_game_text": {
     "params": [],
     "template": {

@@ -58,7 +58,7 @@ def generate_roles_new_strategy(ids):
     total_wolves = role_list[:num_of_players].count("Werewolf") + role_list[:num_of_players].count("Superwolf") + 1
 
     # Limit werewolves
-    while (total_wolves > 5) or (total_players <= 9 and total_wolves > 2) or (total_players <= 7 and total_wolves >= 2):
+    while (total_wolves > 4) or (total_players <= 9 and total_wolves > 2) or (total_players <= 7 and total_wolves >= 2):
         if "Werewolf" in role_list[:num_of_players]:
             role_list.remove("Werewolf")
         total_wolves -= 1
