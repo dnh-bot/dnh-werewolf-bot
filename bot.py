@@ -15,8 +15,7 @@ async def init_setup(init_game_list=False):
     startup_msg = "=========================BOT STARTUP========================="
     print(startup_msg)
 
-    global database_verified
-    database_verified = False
+    database_verified = None
 
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id, " Game Category: ", config.GAME_CATEGORY)
