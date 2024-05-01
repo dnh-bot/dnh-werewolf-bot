@@ -27,15 +27,12 @@ class GithubGistDatabase(Database):
 
     async def read(self, file_name=None):
         gist_data = {}
-        if self.github_gist:
-            gist_data = await self.github_gist.get_gist(file_name)
+
+        gist_data = await self.github_gist.get_gist(file_name)
 
         return gist_data
 
     async def update(self, file_name=None, updating_content=None):
-        if not self.github_gist:
-            return
-
         await self.github_gist.edit_gist(file_name, updating_content)
 
 
