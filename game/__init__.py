@@ -16,7 +16,6 @@ import text_templates
 from game import const, roles, text_template, modes, generate_roles
 from game.modes.new_moon import NewMoonMode
 
-database = Database().create_instance()
 
 def command_verify_author(valid_role):
     def wrapper(cmd_func):
@@ -70,6 +69,7 @@ class Game:
         self.play_zone = "UTC+7"
         self.async_lock = asyncio.Lock()
         self.reset_game_state()  # Init other game variables every end game.
+        self.database = Database().create_instance()
 
     def reset_game_state(self, is_rematching=False):
         print("reset_game_state")
@@ -578,7 +578,7 @@ class Game:
 
     async def handle_end_game_score_list(self, game_winner, victory_list):
         try:
-            player_scores_data = await database.read("player_score_list.json")
+            player_scores_data = await self.database.read("player_score_list.json")
 
             for player_id, _, victory in victory_list:
                 if victory:
@@ -587,13 +587,13 @@ class Game:
                     player_scores_data[str(player_id)] = int(player_scores_data.get(str(player_id), 0)) - 2
 
             print("End Game Scores: ", player_scores_data)
-            await database.update("player_score_list.json", player_scores_data)
+            await self.database.update("player_score_list.json", player_scores_data)
         except Exception as e:
             print("Error in handle_end_game_score_list: ", e)
 
     async def show_player_score_list(self, channel_name):
         try:
-            player_score_data = await database.read("player_score_list.json")
+            player_score_data = await self.database.read("player_score_list.json")
             if not player_score_data:
                 return
             score_list_embed = text_template.generate_player_score_list_embed(player_score_data)

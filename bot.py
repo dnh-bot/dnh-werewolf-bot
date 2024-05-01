@@ -10,16 +10,14 @@ import interface
 # ============ Local functions ============
 
 
-async def verify_database():
-    valid_database = await database.verify_init()
-    if not valid_database:
-        print("Verify database failed, please check GITHUB_GIST_TOKEN and GITHUB_GIST_ID_URL or remove/comment them in .env file")
-        sys.exit(1)
-
 async def init_setup(init_game_list=False):
     """ Log ready message, check server roles/channels setup """
     startup_msg = "=========================BOT STARTUP========================="
     print(startup_msg)
+
+    global database_verified
+    database_verified = False
+
     for guild in client.guilds:
         print("Connected to server: ", guild.name, " ServerID: ", guild.id, " Game Category: ", config.GAME_CATEGORY)
         if init_game_list is False:
@@ -29,6 +27,15 @@ async def init_setup(init_game_list=False):
 
         await admin.send_text_to_channel(guild, startup_msg, config.LOBBY_CHANNEL)
         await admin.send_text_to_channel(guild, startup_msg, config.GAMEPLAY_CHANNEL)
+
+        game = game_list.get_game(guild.id)
+
+        valid_database = database_verified if database_verified is not None else await game.database.verify_init()
+        database_verified = valid_database
+        if not valid_database:
+            verify_database_failed_msg = "Verify database failed, please check `GITHUB_GIST_TOKEN` and `GITHUB_GIST_ID_URL` or remove/comment them in .env file"
+            print(verify_database_failed_msg)
+            await admin.send_text_to_channel(guild, verify_database_failed_msg, config.GAMEPLAY_CHANNEL)
 
 
 async def process_message(discord_client, message):
@@ -89,6 +96,5 @@ if __name__ == '__main__':
     if not config.DISCORD_TOKEN:
         print("Use must setup DISCORD_TOKEN in .env file")
         sys.exit(1)
-    asyncio.get_event_loop().run_until_complete(verify_database())
     # keep_alive() # Uncomment to keep the bot alive
     client.run(config.DISCORD_TOKEN)
