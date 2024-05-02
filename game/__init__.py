@@ -576,10 +576,11 @@ class Game:
         embed_data = self.generate_player_list_embed(True)
         await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
 
-        info = text_templates.generate_text(
-            "werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in werewolf_list))
-        print("werewolf_list_text", info)
-        await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
+        if not self.modes.get("betrayer_not_see_wolf"):
+            info = text_templates.generate_text(
+                "werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in werewolf_list))
+            print("werewolf_list_text", info)
+            await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
 
         await self.interface.send_text_to_channel(text_template.generate_play_time_text(self.play_time_start, self.play_time_end, self.play_zone), config.GAMEPLAY_CHANNEL)
 

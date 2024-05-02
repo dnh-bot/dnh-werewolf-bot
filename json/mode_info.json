@@ -46,5 +46,11 @@
       "vi": "Hiển thị role của người chết",
       "en": "Reveal role of dead players"
     }
+  },
+  "betrayer_not_see_wolf": {
+    "title": {
+      "vi": "Kẻ phản bội (Betrayer) không nhìn thấy Sói",
+      "en": "Betrayer does not see Werewolves"
+    }
   }
 }
