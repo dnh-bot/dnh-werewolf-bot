@@ -582,9 +582,9 @@ class Game:
 
             for player_id, _, victory in victory_list:
                 if victory:
-                    player_scores_data[str(player_id)] = int(player_scores_data.get(str(player_id), 0)) + 5
+                    player_scores_data[str(player_id)] = int(player_scores_data.get(str(player_id), 0)) + config.RANKING_SCORE_RATE.get("win", 10)
                 elif game_winner != 'None':
-                    player_scores_data[str(player_id)] = int(player_scores_data.get(str(player_id), 0)) - 2
+                    player_scores_data[str(player_id)] = int(player_scores_data.get(str(player_id), 0)) - config.RANKING_SCORE_RATE.get("lose", 2)
 
             print("End Game Scores: ", player_scores_data)
             await self.database.update("player_score_list.json", player_scores_data)

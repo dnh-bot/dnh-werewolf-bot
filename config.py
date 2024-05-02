@@ -26,6 +26,10 @@ VOTE_RATE = 0.5     # 50%
 DAYTIME = 240       # 60s
 NIGHTTIME = 60      # 30s
 ALERT_PERIOD = 30   # 20s
+RANKING_SCORE_RATE = {
+    "win": 100,
+    "lose": 20 
+}
 
 
 """ Non-configurable value """
