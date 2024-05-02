@@ -283,11 +283,11 @@
     "params": ["voted_user", "highest_vote_number"],
     "template": {
       "vi": [
-        "🔴 Thời gian quyết định đã hết. Người chơi {voted_user} đã bị đưa lên máy chém với số phiếu bầu là {highest_vote_number}. Hy vọng tình thế của làng có thể thay đổi sau quyết định này.",
+        "🔴 Thời gian quyết định đã hết. Người chơi {voted_user} đã bị đưa lên máy chém với số phiếu bầu là **{highest_vote_number}**. Hy vọng tình thế của làng có thể thay đổi sau quyết định này.",
         "===========================================================================\n"
       ],
       "en": [
-         "🔴 The time to decide has expired. Player {voted_user} has been sent to the guillotine with {highest_vote_number} votes. Hope that something could be changed after this decision.",
+         "🔴 The time to decide has expired. Player {voted_user} has been sent to the guillotine with **{highest_vote_number}** votes. Hope that something could be changed after this decision.",
          "==========================================================================\n"
        ]
     }
@@ -309,12 +309,12 @@
     "params": ["day"],
     "template": {
       "vi": [
-        "☀️ Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:",
+        "☀️ Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày **{day}**:",
         "- Hãy nhập `{bot_prefix}vote ID` để bỏ phiếu cho người bạn nghi là Sói!",
         "- Nhập `{bot_prefix}status` để xem trạng thái bỏ phiếu hiện tại."
       ],
       "en": [
-        "☀️ A new day begins, everyone wakes up. Report the situation of the day {day}:",
+        "☀️ A new day begins, everyone wakes up. Report the situation of the day **{day}**:",
         "- Enter `{bot_prefix}vote ID` to vote for the person you suspect is a Werewolf!",
         "- Type `{bot_prefix}status` to see the current voting status."
       ]
@@ -1287,8 +1287,8 @@
   "new_moon_special_event_text": {
     "params": ["event_name", "event_description"],
     "template": {
-      "vi": ["\u200B\n📆 Sự kiện đặc biệt của ngày hôm nay là {event_name}.", "❓ {event_description}"],
-      "en": ["\u200B\n📆 Today's special event is {event_name}.", "❓ {event_description}"]
+      "vi": ["\u200B\n📆 Sự kiện đặc biệt của ngày hôm nay là **{event_name}**.", "❓ *{event_description}*"],
+      "en": ["\u200B\n📆 Today's special event is **{event_name}**.", "❓ *{event_description}*"]
     }
   },
   "new_moon_heads_or_tails_result_text": {
@@ -1308,8 +1308,8 @@
   "new_moon_somnambulism_result_text": {
     "params": ["target_role"],
     "template": {
-      "vi": ["👁️ Tiên tri đã nhìn thấy nhân vật {target_role} trong cơn mộng du!"],
-      "en": ["👁️ The seer saw the character {target_role} while sleepwalking!"]
+      "vi": ["👁️ Tiên tri đã nhìn thấy nhân vật ***{target_role}*** trong cơn mộng du!"],
+      "en": ["👁️ The seer saw the character ***{target_role}*** while sleepwalking!"]
     }
   },
   "new_moon_full_moon_vegetarian_result_text": {
