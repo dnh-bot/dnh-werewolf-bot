@@ -24,6 +24,9 @@ def check_vote_valid(num_votes, num_players, task_name):
 async def do_join(game, message, force=False):
     """Join game"""
     if not game.is_started():
+        if len(game.players) >= config.MAXIMUM_PLAYERS:
+            await message.reply(text_templates.generate_text("maximum_players_exceeded", maximum_players=config.MAXIMUM_PLAYERS))
+            return
         if force:
             user_list = message.mentions
             if not user_list:
