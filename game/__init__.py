@@ -374,7 +374,8 @@ class Game:
         print("Player", id_, "left")
         del self.players[id_]
         del self.playersname[id_]
-        self.vote_start.remove(id_)
+        if id_ in self.vote_start:
+            self.vote_start.remove(id_)
         await self.interface.send_action_text_to_channel("gameplay_leave_text", config.GAMEPLAY_CHANNEL, player_id=id_)
         await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
         return len(self.players)  # Return number of current players
