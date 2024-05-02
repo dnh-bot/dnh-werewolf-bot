@@ -223,7 +223,7 @@ class Game:
 
     def generate_player_list_embed(self, alive_status=None):
         # Handle 3 types of list: All, Alive, Dead
-        reveal_role = self.modes.get("reveal_mode", False)
+        reveal_role = self.modes.get("reveal_role", False)
         role_list = []
         if alive_status is True:
             player_list = self.get_alive_players()
@@ -376,6 +376,7 @@ class Game:
         print("Player", id_, "left")
         del self.players[id_]
         del self.playersname[id_]
+        self.vote_start.remove(id_)
         await self.interface.send_action_text_to_channel("gameplay_leave_text", config.GAMEPLAY_CHANNEL, player_id=id_)
         await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
         return len(self.players)  # Return number of current players
