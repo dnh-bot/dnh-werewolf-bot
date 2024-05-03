@@ -27,6 +27,10 @@ DAYTIME = 240       # 60s
 NIGHTTIME = 60      # 30s
 ALERT_PERIOD = 30   # 20s
 MAXIMUM_PLAYERS = 20
+RANKING_SCORE_RATE = {
+    "win": 100,
+    "lose": 20 
+}
 
 
 """ Non-configurable value """
@@ -43,3 +47,6 @@ PERSONAL = "personal"
 ADMIN_CMD_PREFIX = "f_"
 
 TEXT_LANGUAGE = "vi"
+
+GITHUB_GIST_TOKEN = os.getenv("GITHUB_GIST_TOKEN")
+GITHUB_GIST_ID_URL = os.getenv("GITHUB_GIST_ID_URL")

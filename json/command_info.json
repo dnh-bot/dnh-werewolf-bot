@@ -137,6 +137,14 @@
     "exclusive_roles": [],
     "required_params": []
   },
+  "rank": {
+    "description": {
+      "vi": "Xem bảng xếp hạng.",
+      "en": "Show ranking board."
+    },
+    "exclusive_roles": [],
+    "required_params": []
+  },
   "vote": {
     "description": {
       "vi": "Lựa chọn một người sẽ bị đưa lên máy chém.",

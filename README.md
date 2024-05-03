@@ -197,6 +197,22 @@ https://cron-job.org/en/
 https://uptime.com/
 https://uptime-monitor.io/
 
+# How to use Gist Github as a database
+
+Currently, data can be stored in local json files or in Github Gist files
+To use the Gist, please follow these steps:
+
+1. Create a personal access token
+Recommended: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access- token
+Or:
+https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
+
+2. Create a personal Gist (private or public) with the same filename as the local json, please be aware that a gist can include multiple files
+
+**Important note:** Gist file and local json file must have the same name to ensure synchronization
+
+3. Add `GITHUB_GIST_TOKEN` and `GITHUB_GIST_ID_URL` to the `.env` file. Please see .env.example for more details. If Gist is not used, you MUST NOT include those variables
+
 # Known issue
 
 ## Library bug

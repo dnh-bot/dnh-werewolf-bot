@@ -1222,6 +1222,22 @@
       }
     }
   },
+  "player_score_list_embed": {
+    "params": ["num_of_players"],
+    "color": "0xf1c40f",
+    "template": {
+      "vi": {
+        "title": "🥇 Bảng Vinh Danh 🥇",
+        "description": "Chúc mừng {num_of_players} dân làng diễn sâu nhất👏",
+        "content_headers": ["Người chơi -> Điểm", "🔱 Chiến Thần Ma Sói 🔱"]
+      },
+      "en": {
+        "title": "🥇 Ranking Board 🥇",
+        "description": "Congratulations to the {num_of_players} best performing villagers👏",
+        "content_headers": ["Player -> Score", "🔱 God Of War 🔱"]
+      }
+    }
+  },
   "game_status_vote_field_text": {
     "params": ["be_voted_str", "votes_num", "voters_str"],
     "template": {
