@@ -181,7 +181,7 @@ class Game:
 
     def generate_roles(self, interface, ids, names_dict):
         if self.runtime_roles:
-            role_config = self.runtime_roles
+            role_config = self.runtime_roles[0]
         else:
             # Use fixed configuration file:
             # role_config = utils.common.read_json_file("json/role_config.json")
