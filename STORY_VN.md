@@ -31,6 +31,7 @@ Vậy bên nào sẽ chiến thắng, Thường dân, Werewolf, hay là phe Ph�
 - [Werewolf] Sói: Chọn 1 người để giết mỗi đêm.
 - [Superwolf] Sói già: Chọn 1 người để giết mỗi đêm. Sói già có khả năng che giấu Tiên tri và không bị soi ra là sói.
 - [Betrayer] Kẻ phản bội: Là **người** nhưng bị mua chuộc theo phe sói. Betrayer biết ai là sói nhưng phe sói không biết ai là Betrayer.
+- [Rat] Chuột ma sói: Chọn 1 người cắn mỗi đêm. Người đó sẽ chết nếu là Cáo hoặc Bảo vệ
 
 ### III. Phe thứ 3: Chiến thắng với những điều kiện đặc biệt
 

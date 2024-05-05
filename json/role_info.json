@@ -124,5 +124,14 @@
     },
     "daytime_command": "vote",
     "nighttime_commands": []
+  },
+  "Rat": {
+    "name_vi": "Chuột ma sói",
+    "description": {
+      "vi": "Thuộc phe ma sói. Chuột ma sói không biết ai là sói và phe sói không biết ai là Chuột ma sói. Tiên tri soi ra sói. Mỗi đêm có thể cắn một người. Người đó sẽ chết nếu là Cáo hoặc Bảo vệ",
+      "en": "Rat belong to the werewolf party. Rat don't know who belongs to the werewolves, and the werewolf party doesn't know who the Rat are. The seer reveals the werewolf. Each night, Rat can bite someone. That person will die if they are a Fox or a Guard"
+    },
+    "daytime_command": "vote",
+    "nighttime_commands": ["bite"]
   }
 }

@@ -117,7 +117,7 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
             return
         await player.do_rematch(game, message)
 
-    elif cmd in ("vote", "punish", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto"):
+    elif cmd in ("vote", "punish", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto", "bite"):
         try:
             await player.do_character_cmd(game, message, cmd, parameters)
         except Exception as e:

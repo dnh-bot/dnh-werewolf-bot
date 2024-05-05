@@ -105,7 +105,7 @@ def generate_help_command_embed(command=None):
 
         usage_str = ["- " + usage_text for usage_text in commands.get_command_usages(command)]
 
-        if command in ("vote", "punish", "kill", "guard", "seer", "reborn", "curse"):
+        if command in ("vote", "punish", "kill", "guard", "seer", "reborn", "curse", "bite"):
             example_args_list = [{"player_id": 2}]
         elif command == "ship":
             example_args_list = [{"player_id1": 2, "player_id2": 3}]

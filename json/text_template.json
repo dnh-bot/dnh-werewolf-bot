@@ -1388,5 +1388,41 @@
       "vi": ["Dùng lệnh sai rồi bạn ơi. Phải tag người ta mới bỏ lệnh cấm được nha."],
       "en": ["Invalid usage. Must mention player to be unbanned"]
     }
+  },
+  "rat_before_voting_text": {
+    "params": [],
+    "template": {
+      "vi": [
+        "🦷 Bạn muốn cắn ai đó? Hãy nhập `{bot_prefix}bite ID` để chọn đối tượng.",
+        "💡 Ví dụ: `{bot_prefix}bite 2`",
+        "⚠️ Bạn được sử dụng kỹ năng này bất kỳ lúc nào vào ban đêm, có thể dùng lên bản thân nếu đổi ý. Nhưng đừng giết bậy bạn nhé!"
+      ],
+      "en": [
+        "🦷 Choose someone to bite? Enter `{bot_prefix}bite ID` to chose person.",
+        "💡 Example: `{bot_prefix}bite 2`",
+        "⚠️ You can use this skill anytime at night. Target yourself if you change your mind."
+      ]
+    }
+  },
+  "rat_kill_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🐭🐺 Chuột ma sói muốn cắn {target} trong đêm nay"],
+      "en": ["🐭🐺 Rat werewolf wants to bite {target} tonight"]
+    }
+  },
+  "rat_after_voting_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🦷 Chuột ma sói đã xác định đối tượng thành công {target}"],
+      "en": ["🦷 Rat has targeted victim {target}"]
+    }
+  },
+  "rat_killed_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🦷 {target} đã kết thúc cuộc đời bằng một 'nụ hôn' từ bé chuột🐭"],
+      "en": ["🦷 {target} ended their life with a 'kiss' from a little mouse 🐭"]
+    }
   }
 }

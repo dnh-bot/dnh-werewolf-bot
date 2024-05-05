@@ -863,6 +863,8 @@ class Game:
                 await self.guard_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Witch):
                 await self.witch_do_end_nighttime_phase(player)
+            elif isinstance(player, roles.Rat):
+                await self.rat_do_end_nighttime_phase(player)
 
         kills = None
         if self.wolf_kill_dict:
@@ -966,6 +968,20 @@ class Game:
                 await author.send_to_personal_channel(
                     text_templates.generate_text("witch_curse_result_text", target=f"<@{curse_target_id}>")
                 )
+
+    async def rat_do_end_nighttime_phase(self, author):
+        bite_target_id = author.get_target()
+        if bite_target_id is None:
+            return
+        target = self.players[bite_target_id]
+
+        if isinstance(target, (roles.Fox, roles.Guard)):
+            bite_target_id = author.player_id
+
+        self.night_pending_kill_list.append(bite_target_id)
+        await author.send_to_personal_channel(
+            text_templates.generate_text("rat_killed_text", target=f"<@{bite_target_id}>")
+        )
 
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
@@ -1133,7 +1149,7 @@ class Game:
                 status=text_templates.get_word_in_language("alive" if is_alive_target_command else "dead")
             )
 
-        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse"):
+        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse", "bite"):
             return await getattr(self, cmd)(author, targets[0])
 
         if cmd == "ship":
@@ -1256,6 +1272,11 @@ class Game:
                 if await self.players[hunted].get_killed():
                     return hunted
         return None
+
+    @command_verify_author(roles.Rat)
+    @command_verify_phase(const.GamePhase.NIGHT)
+    async def bite(self, author, target):
+        return author.register_target(target.player_id)
 
     def get_player_with_role(self, role, status='alive'):
         players = []
