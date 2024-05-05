@@ -1,5 +1,6 @@
 # import asyncio   # Do not remove this. This for debug command
 import re
+import traceback
 from datetime import *
 import subprocess
 import os
@@ -60,7 +61,7 @@ async def process_command(client, game, message):
         await parse_command(client, game, message, cmd, parameters)
         # TODO: reply message here
     except Exception as e:
-        print(f"Error in process_command with cmd={cmd}:", e)
+        print(f"Error in process_command with cmd={cmd}:", traceback.format_exc())
 
 
 async def parse_command(client, game, message, cmd, parameters):

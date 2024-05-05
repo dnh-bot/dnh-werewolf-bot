@@ -610,19 +610,16 @@ class Game:
         for _id, player in self.players.items():
             if isinstance(player, roles.Werewolf):
                 print("Wolf: ", player)
-                await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
-                await self.interface.send_action_text_to_channel("werewolf_welcome_text", config.WEREWOLF_CHANNEL, user=f"<@{_id}>")
                 werewolf_list.append(_id)
             # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
             #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
 
         embed_data = self.generate_player_list_embed(True)
-        await asyncio.gather(*[role.on_start_game(embed_data) for role in self.get_alive_players()])
-
-        info = text_templates.generate_text(
-            "werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in werewolf_list))
-        print("werewolf_list_text", info)
-        await asyncio.gather(*[role.on_betrayer(info) for role in self.get_alive_players() if isinstance(role, roles.Betrayer)])
+        werewolf_info = text_templates.generate_text(
+            "werewolf_list_text", werewolf_str=", ".join(f"<@{_id}>" for _id in werewolf_list)
+        )
+        print("werewolf_list_text", werewolf_info)
+        await asyncio.gather(*[role.on_start_game(embed_data, werewolf_info) for role in self.get_alive_players()])
 
         await self.interface.send_text_to_channel(text_template.generate_play_time_text(self.play_time_start, self.play_time_end, self.play_zone), config.GAMEPLAY_CHANNEL)
 

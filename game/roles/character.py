@@ -119,7 +119,7 @@ class Character:
             self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True
         )
 
-    async def on_start_game(self, embed_data):
+    async def on_start_game(self, embed_data, text_data):
         # Will be overloaded in Child Class
         pass
 
