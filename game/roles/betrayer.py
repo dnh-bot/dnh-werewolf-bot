@@ -12,5 +12,5 @@ class Betrayer(Villager):
     def seer_seen_as_werewolf(self):
         return False
 
-    async def on_start_game(self, _, text_info):
-        await self.interface.send_text_to_channel(text_info, self.channel_name)
+    async def on_start_game(self, _, text_data):
+        await self.interface.send_text_to_channel(text_data, self.channel_name)
