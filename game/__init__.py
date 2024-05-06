@@ -193,7 +193,7 @@ class Game:
         game_role = utils.common.dict_to_list(role_config)
 
         # Somehow python dict retain adding order
-        # So the Werewolf role will always at the begining of the dict
+        # So the Werewolf role will always at the beginning of the dict
         # Shuffle to make the Werewolf role appear randomly
         game_role = list(game_role)
         random.shuffle(game_role)
