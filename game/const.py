@@ -12,10 +12,18 @@ class GamePhase(Enum):
 
 class DeadReason(int, Enum):
     HIDDEN = 0
+    TANNER_NO_VOTE = auto()
+    LYNCHED = auto()
     HUNTED = auto()
     COUPLE = auto()
 
     def get_label(self, game_phase):
+        if self == DeadReason.TANNER_NO_VOTE:
+            return "tanner_killed_by_not_voting_text"
+
+        if self == DeadReason.LYNCHED:
+            return "execution_player_text"
+
         if self == DeadReason.HUNTED:
             return "hunter_killed_text"
 

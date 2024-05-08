@@ -428,7 +428,17 @@ class Game:
                 if _id in self.cupid_dict:
                     pending_queue.append((self.cupid_dict[_id], const.DeadReason.COUPLE))
 
-        return dict(final_kill_dict)
+        print("final_kill_dict =", final_kill_dict)
+
+        kills_list_by_reason = defaultdict(list)
+        for _id, reason_list in final_kill_dict.items():
+            if const.DeadReason.HIDDEN in reason_list:  # hidden reason
+                kills_list_by_reason[const.DeadReason.HIDDEN].append(_id)
+            else:
+                for reason in reason_list:
+                    kills_list_by_reason[reason].append(_id)
+
+        return kills_list_by_reason
 
     def get_following_players_set(self, player_set, cupid_dict):
         return set(cupid_dict[_id] for _id in player_set if _id in cupid_dict)
@@ -851,11 +861,10 @@ class Game:
                 # Tanner has voted someone else and still alive
                 self.players[tanner_id].is_voted_other = False
             else:
-                await self.players[tanner_id].get_killed()
-                await self.interface.send_action_text_to_channel(
-                        "tanner_killed_by_not_voting_text", config.GAMEPLAY_CHANNEL,
-                        user=f"<@{tanner_id}>"
-                    )
+                kills_list_by_reason = await self.get_final_died_players_with_reasons(
+                    [(tanner_id, const.DeadReason.TANNER_NO_VOTE)]
+                )
+                await self.send_dead_info_on_end_phase(kills_list_by_reason)
                 # Check if lynched player is also a Tanner
                 if tanner_id == lynched:
                     lynched = None
@@ -865,33 +874,14 @@ class Game:
                     )
 
         if lynched:
-            await self.players[lynched].get_killed()
-            await self.interface.send_action_text_to_channel(
-                "execution_player_text", config.GAMEPLAY_CHANNEL,
-                voted_user=f"<@{lynched}>", highest_vote_number=votes
-            )
-
             if isinstance(self.players[lynched], roles.Tanner) and self.day < 7:
                 self.players[lynched].is_lynched = True
 
-            cupid_couple = self.cupid_dict.get(lynched)
-            if cupid_couple is not None:
-                await self.players[cupid_couple].get_killed(True)
-                await self.interface.send_action_text_to_channel(
-                    "couple_died_on_day_text", config.GAMEPLAY_CHANNEL,
-                    died_player=f"<@{lynched}>", follow_player=f"<@{cupid_couple}>"
-                )
-                # Kill anyone who is hunted if hunter dies with his couple
-                hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
-                if hunted:
-                    await self.interface.send_action_text_to_channel(
-                        "hunter_killed_text", config.GAMEPLAY_CHANNEL, target=f"<@{hunted}>"
-                    )
-            hunted = await self.get_hunted_target_on_hunter_death(lynched)
-            if hunted:
-                await self.interface.send_action_text_to_channel(
-                    "hunter_killed_text", config.GAMEPLAY_CHANNEL, target=f"<@{hunted}>"
-                )
+            kills_list_by_reason = await self.get_final_died_players_with_reasons(
+                [(lynched, const.DeadReason.LYNCHED)]
+            )
+            await self.send_dead_info_on_end_phase(kills_list_by_reason, highest_vote_number=votes)
+
         else:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
 
@@ -945,41 +935,14 @@ class Game:
 
         kills_list_by_reason = defaultdict(list)
         if self.night_pending_kill_list:
-            final_died_dict = await self.get_final_died_players_with_reasons(
+            kills_list_by_reason = await self.get_final_died_players_with_reasons(
                 [(_id, const.DeadReason.HIDDEN) for _id in self.night_pending_kill_list]
             )
-            print("final_kill_dict =", final_died_dict)
-
-            for _id, reason_list in final_died_dict.items():
-                if const.DeadReason.HIDDEN in reason_list:  # hidden reason
-                    kills_list_by_reason[const.DeadReason.HIDDEN].append(_id)
-                else:
-                    for reason in reason_list:
-                        kills_list_by_reason[reason].append(_id)
-
             self.night_pending_kill_list = []  # Reset killed list for next day
 
         # Morning deaths announcement
         if kills_list_by_reason:
-            for reason in sorted(kills_list_by_reason.keys()):
-                label = reason.get_label(self.game_phase)
-                id_list = kills_list_by_reason[reason]
-
-                if reason == const.DeadReason.HIDDEN:
-                    await self.interface.send_action_text_to_channel(
-                        label,
-                        config.GAMEPLAY_CHANNEL,
-                        user=", ".join(f"<@{_id}>" for _id in id_list)
-                    )
-                else:
-                    for _id in id_list:
-                        kwargs = dict()
-                        if reason == const.DeadReason.HUNTED:
-                            kwargs = {"target": f"<@{_id}>"}
-                        elif reason == const.DeadReason.COUPLE:
-                            kwargs = {"died_player": f"<@{self.cupid_dict[_id]}>", "follow_player": f"<@{_id}>"}
-
-                        await self.interface.send_action_text_to_channel(label, config.GAMEPLAY_CHANNEL, **kwargs)
+            await self.send_dead_info_on_end_phase(kills_list_by_reason)
         else:
             await self.interface.send_action_text_to_channel("killed_none_text", config.GAMEPLAY_CHANNEL)
 
@@ -991,6 +954,31 @@ class Game:
             await self.players[_id].on_reborn()
 
         self.reborn_set = set()
+
+    async def send_dead_info_on_end_phase(self, kills_list_by_reason, **kw_info):
+        for reason in sorted(kills_list_by_reason.keys()):
+            label = reason.get_label(self.game_phase)
+            id_list = kills_list_by_reason[reason]
+
+            if reason == const.DeadReason.HIDDEN:
+                await self.interface.send_action_text_to_channel(
+                    label,
+                    config.GAMEPLAY_CHANNEL,
+                    user=", ".join(f"<@{_id}>" for _id in id_list)
+                )
+            else:
+                for _id in id_list:
+                    kwargs = {}
+                    if reason == const.DeadReason.TANNER_NO_VOTE:
+                        kwargs = {"user": f"<@{_id}>"}
+                    elif reason == const.DeadReason.LYNCHED:
+                        kwargs = {"voted_user": f"<@{_id}>", "highest_vote_number": kw_info.get("highest_vote_number", 0)}
+                    if reason == const.DeadReason.HUNTED:
+                        kwargs = {"target": f"<@{_id}>"}
+                    elif reason == const.DeadReason.COUPLE:
+                        kwargs = {"died_player": f"<@{self.cupid_dict[_id]}>", "follow_player": f"<@{_id}>"}
+
+                    await self.interface.send_action_text_to_channel(label, config.GAMEPLAY_CHANNEL, **kwargs)
 
     async def guard_do_end_nighttime_phase(self, author):
         target_id = author.get_target()
