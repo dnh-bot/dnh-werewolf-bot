@@ -563,14 +563,15 @@ class Game:
             players_embed_data = self.generate_player_list_embed()
             await self.interface.send_embed_to_channel(players_embed_data, channel_name)
 
-    def generate_victory_list(self, reveal_list, game_winner, cupid_dict, players):
+    def generate_victory_list(self, game_winner):
         victory_list = []
-        for player_id, role, party in reveal_list:
+        for player_id, player in self.players.items():
+            role, party = player.get_role(), player.get_party()
             party_victory = party == game_winner
             # Cupid is in Villager team. Win with either couple or Villager
-            cupid_victory = game_winner == 'Cupid' and (player_id in cupid_dict or role == 'Cupid')
+            cupid_victory = game_winner == 'Cupid' and (player_id in self.cupid_dict or role == 'Cupid')
             # Change party roles
-            change_party_victory = isinstance(players[player_id], roles.Tanner) and players[player_id].final_party == game_winner
+            change_party_victory = isinstance(player, roles.Tanner) and party == game_winner
 
             victory = party_victory or cupid_victory or change_party_victory
 
@@ -667,11 +668,13 @@ class Game:
         await self.interface.send_action_text_to_channel("endgame_text", config.GAMEPLAY_CHANNEL, winner=game_winner)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
-        reveal_list = [(_id, player.get_role(), player.get_party()) for _id, player in self.players.items()]
-        victory_list = self.generate_victory_list(reveal_list, game_winner, self.cupid_dict, self.players)
-        couple_reveal_text = "\n\n" + "💘 " + " x ".join(f"<@{player_id}>" for player_id in self.cupid_dict) if self.cupid_dict else ""
+        victory_list = self.generate_victory_list(game_winner)
+        reveal_str_list = text_template.generate_reveal_str_list(victory_list)
+        cupid_str = " x ".join(f"<@{player_id}>" for player_id in self.cupid_dict)
+
+        couple_reveal_text = "\n\n" + "💘 " + cupid_str if self.cupid_dict else ""
         await self.interface.send_text_to_channel(
-            "\n".join(text_template.generate_reveal_str_list(victory_list)) + couple_reveal_text,
+            "\n".join(reveal_str_list) + couple_reveal_text,
             config.GAMEPLAY_CHANNEL
         )
 
@@ -685,8 +688,8 @@ class Game:
                     # \u00A0\u00A0 is one space character for discord embed
                     # Put \u200B\n at first of the next field to break line
                     [f"🎉\u00A0\u00A0\u00A0\u00A0{game_winner}\u00A0\u00A0\u00A0\u00A0🎉"],
-                    text_template.generate_reveal_str_list(victory_list),
-                    [" x ".join(f"<@{player_id}>" for player_id in self.cupid_dict)] if self.cupid_dict else []
+                    reveal_str_list,
+                    [cupid_str] if self.cupid_dict else []
                 ],
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime")),
                 total_players=len(self.players)
@@ -707,7 +710,7 @@ class Game:
         tanner_id = self.get_player_with_role(roles.Tanner, 'all')
         if tanner_id:
             self.players[tanner_id].check_tanner_ability(self.day)
-            if self.players[tanner_id].is_lynched and self.players[tanner_id].final_party == 'Tanner':
+            if self.players[tanner_id].is_lynched and self.players[tanner_id].get_party() == 'Tanner':
                 return roles.Tanner
 
         # Check end game

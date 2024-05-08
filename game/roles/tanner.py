@@ -7,9 +7,8 @@ class Tanner(Villager):
         super().__init__(interface, player_id, player_name)
         self.party = Tanner
         self.is_voted_other = False
-        self.final_party = 'Tanner'
         self.is_lynched = False
 
     def check_tanner_ability(self, day):
         if day >= 7:
-            self.final_party = 'Villager'
+            self.party = Villager
