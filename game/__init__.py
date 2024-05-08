@@ -425,7 +425,8 @@ class Game:
                     if hunted and hunted != _id:
                         pending_queue.append((hunted, const.DeadReason.HUNTED))
 
-                if _id in self.cupid_dict:
+                if _id in self.cupid_dict and dead_reason != const.DeadReason.COUPLE:
+                    # prevent repeatedly killing a couple
                     pending_queue.append((self.cupid_dict[_id], const.DeadReason.COUPLE))
 
         print("final_kill_dict = dict(", *final_kill_dict.items(), ")")
