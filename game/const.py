@@ -17,7 +17,7 @@ class DeadReason(int, Enum):
     HUNTED = auto()
     COUPLE = auto()
 
-    def get_label(self, game_phase):
+    def get_template_label(self, game_phase):
         if self == DeadReason.TANNER_NO_VOTE:
             return "tanner_killed_by_not_voting_text"
 
@@ -32,5 +32,5 @@ class DeadReason(int, Enum):
 
         return "killed_users_text"
 
-    def __str__(self):
+    def __repr__(self):
         return self.name.lower()

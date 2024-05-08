@@ -428,7 +428,7 @@ class Game:
                 if _id in self.cupid_dict:
                     pending_queue.append((self.cupid_dict[_id], const.DeadReason.COUPLE))
 
-        print("final_kill_dict =", final_kill_dict)
+        print("final_kill_dict = dict(", *final_kill_dict.items(), ")")
 
         kills_list_by_reason = defaultdict(list)
         for _id, reason_list in final_kill_dict.items():
@@ -957,7 +957,7 @@ class Game:
 
     async def send_dead_info_on_end_phase(self, kills_list_by_reason, **kw_info):
         for reason in sorted(kills_list_by_reason.keys()):
-            label = reason.get_label(self.game_phase)
+            label = reason.get_template_label(self.game_phase)
             id_list = kills_list_by_reason[reason]
 
             if reason == const.DeadReason.HIDDEN:
@@ -1312,15 +1312,6 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def hunter(self, author, target):
         return author.register_target(target.player_id)
-
-    async def get_hunted_target_on_hunter_death(self, hunter):
-        """Kill anyone who is hunted"""
-        if isinstance(self.players[hunter], roles.Hunter):
-            hunted = self.players[hunter].get_target()
-            if hunted and hunted != hunter:
-                if await self.players[hunted].get_killed():
-                    return hunted
-        return None
 
     def get_player_with_role(self, role, status='alive'):
         players = []
