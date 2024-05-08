@@ -571,7 +571,7 @@ class Game:
             # Cupid is in Villager team. Win with either couple or Villager
             cupid_victory = game_winner == 'Cupid' and (player_id in self.cupid_dict or role == 'Cupid')
             # Change party roles
-            change_party_victory = isinstance(player, roles.Tanner) and player.final_party == game_winner
+            change_party_victory = isinstance(player, roles.Tanner) and party == game_winner
 
             victory = party_victory or cupid_victory or change_party_victory
 
@@ -710,7 +710,7 @@ class Game:
         tanner_id = self.get_player_with_role(roles.Tanner, 'all')
         if tanner_id:
             self.players[tanner_id].check_tanner_ability(self.day)
-            if self.players[tanner_id].is_lynched and self.players[tanner_id].final_party == 'Tanner':
+            if self.players[tanner_id].is_lynched and self.players[tanner_id].get_party() == 'Tanner':
                 return roles.Tanner
 
         # Check end game
