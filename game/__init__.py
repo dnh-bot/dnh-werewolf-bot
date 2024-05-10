@@ -1,6 +1,7 @@
 # FIXME:
 # pylint: disable=too-many-lines
 import datetime
+import queue
 import random
 import time
 import json
@@ -402,6 +403,58 @@ class Game:
             ),
             "\n"
         ))
+
+    async def get_final_died_players_with_reasons(self, pending_died_list):
+        """
+        Get final died players with reasons set after a phase.
+        pending_died_list format: [(player_id, dead_reason),...]
+        dead_reason is hidden in night phase.
+        """
+        # collect all dead reasons of a player to final_kill_dict
+        # format: final_kill_dict = {player_id: [dead_reason,...], ...}
+        final_kill_dict = defaultdict(list)
+        pending_queue = queue.Queue()
+        for info in pending_died_list:
+            pending_queue.put(info)
+
+        while not pending_queue.empty():
+            player_id, dead_reason = pending_queue.get()
+
+            if await self.players[player_id].get_killed(dead_reason == const.DeadReason.COUPLE):
+                final_kill_dict[player_id].append(dead_reason)
+
+                for following_info in self.get_following_dead_players(player_id, dead_reason):
+                    pending_queue.put(following_info)
+
+        print("final_kill_dict = dict(", *final_kill_dict.items(), ")")
+
+        # convert final_kill_dict to a new dict of player_id list, filter by reason
+        # kills_list_by_reason format: {reason: [player_id,...], ...}
+        kills_list_by_reason = defaultdict(list)
+        for player_id, reason_list in final_kill_dict.items():
+            if const.DeadReason.HIDDEN in reason_list:  # hidden reason
+                kills_list_by_reason[const.DeadReason.HIDDEN].append(player_id)
+            else:
+                for reason in reason_list:
+                    kills_list_by_reason[reason].append(player_id)
+
+        return kills_list_by_reason
+
+    def get_following_dead_players(self, player_id, dead_reason):
+        """
+        Get following dead players by followed relation (e.g. hunter, couple,...)
+        """
+        following_players = []
+        if isinstance(self.players[player_id], roles.Hunter):
+            hunted = self.players[player_id].get_target()
+            if hunted and hunted != player_id:
+                following_players.append((hunted, const.DeadReason.HUNTED))
+
+        if player_id in self.cupid_dict and dead_reason != const.DeadReason.COUPLE:
+            # prevent repeatedly killing a couple
+            following_players.append((self.cupid_dict[player_id], const.DeadReason.COUPLE))
+
+        return following_players
 
     def get_following_players_set(self, player_set, cupid_dict):
         return set(cupid_dict[_id] for _id in player_set if _id in cupid_dict)
@@ -824,11 +877,10 @@ class Game:
                 # Tanner has voted someone else and still alive
                 self.players[tanner_id].is_voted_other = False
             else:
-                await self.players[tanner_id].get_killed()
-                await self.interface.send_action_text_to_channel(
-                        "tanner_killed_by_not_voting_text", config.GAMEPLAY_CHANNEL,
-                        user=f"<@{tanner_id}>"
-                    )
+                kills_list_by_reason = await self.get_final_died_players_with_reasons(
+                    [(tanner_id, const.DeadReason.TANNER_NO_VOTE)]
+                )
+                await self.send_dead_info_on_end_phase(kills_list_by_reason)
                 # Check if lynched player is also a Tanner
                 if tanner_id == lynched:
                     lynched = None
@@ -838,33 +890,14 @@ class Game:
                     )
 
         if lynched:
-            await self.players[lynched].get_killed()
-            await self.interface.send_action_text_to_channel(
-                "execution_player_text", config.GAMEPLAY_CHANNEL,
-                voted_user=f"<@{lynched}>", highest_vote_number=votes
-            )
-
             if isinstance(self.players[lynched], roles.Tanner) and self.day < 7:
                 self.players[lynched].is_lynched = True
 
-            cupid_couple = self.cupid_dict.get(lynched)
-            if cupid_couple is not None:
-                await self.players[cupid_couple].get_killed(True)
-                await self.interface.send_action_text_to_channel(
-                    "couple_died_on_day_text", config.GAMEPLAY_CHANNEL,
-                    died_player=f"<@{lynched}>", follow_player=f"<@{cupid_couple}>"
-                )
-                # Kill anyone who is hunted if hunter dies with his couple
-                hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
-                if hunted:
-                    await self.interface.send_action_text_to_channel(
-                        "hunter_killed_text", config.GAMEPLAY_CHANNEL, target=f"<@{hunted}>"
-                    )
-            hunted = await self.get_hunted_target_on_hunter_death(lynched)
-            if hunted:
-                await self.interface.send_action_text_to_channel(
-                    "hunter_killed_text", config.GAMEPLAY_CHANNEL, target=f"<@{hunted}>"
-                )
+            kills_list_by_reason = await self.get_final_died_players_with_reasons(
+                [(lynched, const.DeadReason.LYNCHED)]
+            )
+            await self.send_dead_info_on_end_phase(kills_list_by_reason, highest_vote_number=votes)
+
         else:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
 
@@ -910,47 +943,22 @@ class Game:
             elif isinstance(player, roles.Witch):
                 await self.witch_do_end_nighttime_phase(player)
 
-        kills = None
         if self.wolf_kill_dict:
             killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
             if killed:
-                self.night_pending_kill_list.append(killed)
+                self.night_pending_kill_list.append((killed, const.DeadReason.HIDDEN))
             self.wolf_kill_dict = {}
 
-        cupid_couple = None
+        kills_list_by_reason = defaultdict(list)
         if self.night_pending_kill_list:
-            final_kill_set = set()
-            for _id in self.night_pending_kill_list:
-                if await self.players[_id].get_killed():  # Guard can protect Fox from Seer kill
-                    final_kill_set.add(_id)
-                    hunted = await self.get_hunted_target_on_hunter_death(_id)
-                    if hunted:  # Hunter hunted one in couple
-                        final_kill_set.add(hunted)
-                        if self.cupid_dict.get(hunted):
-                            cupid_couple = self.cupid_dict[hunted]
-                            final_kill_set.add(cupid_couple)
-
-                    if self.cupid_dict.get(_id):
-                        cupid_couple = self.cupid_dict[_id]  # Hunter is one in couple
-                        hunted = await self.get_hunted_target_on_hunter_death(cupid_couple)
-                        if hunted:
-                            final_kill_set.add(hunted)
-
-            kills = ", ".join(f"<@{_id}>" for _id in final_kill_set)
+            kills_list_by_reason = await self.get_final_died_players_with_reasons(self.night_pending_kill_list)
             self.night_pending_kill_list = []  # Reset killed list for next day
 
         # Morning deaths announcement
-        await self.interface.send_action_text_to_channel(
-            "killed_users_text" if kills else "killed_none_text", config.GAMEPLAY_CHANNEL,
-            user=kills
-        )
-
-        if cupid_couple is not None:
-            await self.players[cupid_couple].get_killed(True)
-            await self.interface.send_action_text_to_channel(
-                "couple_died_on_night_text", config.GAMEPLAY_CHANNEL,
-                died_player=f"<@{self.cupid_dict[cupid_couple]}>", follow_player=f"<@{cupid_couple}>"
-            )
+        if kills_list_by_reason:
+            await self.send_dead_info_on_end_phase(kills_list_by_reason)
+        else:
+            await self.interface.send_action_text_to_channel("killed_none_text", config.GAMEPLAY_CHANNEL)
 
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME and self.cupid_dict:
             await self.new_moon_mode.do_end_nighttime_phase(self.interface)
@@ -960,6 +968,31 @@ class Game:
             await self.players[_id].on_reborn()
 
         self.reborn_set = set()
+
+    async def send_dead_info_on_end_phase(self, kills_list_by_reason, **kw_info):
+        for reason in sorted(kills_list_by_reason.keys()):
+            label = reason.get_template_label(self.game_phase)
+            id_list = kills_list_by_reason[reason]
+
+            if reason == const.DeadReason.HIDDEN:
+                await self.interface.send_action_text_to_channel(
+                    label,
+                    config.GAMEPLAY_CHANNEL,
+                    user=", ".join(f"<@{_id}>" for _id in id_list)
+                )
+            else:
+                for _id in id_list:
+                    kwargs = {}
+                    if reason == const.DeadReason.TANNER_NO_VOTE:
+                        kwargs = {"user": f"<@{_id}>"}
+                    elif reason == const.DeadReason.LYNCHED:
+                        kwargs = {"voted_user": f"<@{_id}>", "highest_vote_number": kw_info.get("highest_vote_number", 0)}
+                    if reason == const.DeadReason.HUNTED:
+                        kwargs = {"target": f"<@{_id}>"}
+                    elif reason == const.DeadReason.COUPLE:
+                        kwargs = {"died_player": f"<@{self.cupid_dict[_id]}>", "follow_player": f"<@{_id}>"}
+
+                    await self.interface.send_action_text_to_channel(label, config.GAMEPLAY_CHANNEL, **kwargs)
 
     async def guard_do_end_nighttime_phase(self, author):
         target_id = author.get_target()
@@ -981,7 +1014,7 @@ class Game:
         target = self.players[target_id]
 
         if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
-            self.night_pending_kill_list.append(target_id)
+            self.night_pending_kill_list.append((target_id, const.DeadReason.HIDDEN))
 
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.SOMNAMBULISM:
             await self.new_moon_mode.do_action(self.interface, target=target)
@@ -1007,7 +1040,7 @@ class Game:
             curse_target_id = author.get_curse_target()
             if author.get_curse_power() > 0 and curse_target_id:
                 author.on_use_curse_power()
-                self.night_pending_kill_list.append(curse_target_id)
+                self.night_pending_kill_list.append((curse_target_id, const.DeadReason.HIDDEN))
 
                 await author.send_to_personal_channel(
                     text_templates.generate_text("witch_curse_result_text", target=f"<@{curse_target_id}>")
@@ -1293,15 +1326,6 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def hunter(self, author, target):
         return author.register_target(target.player_id)
-
-    async def get_hunted_target_on_hunter_death(self, hunter):
-        """Kill anyone who is hunted"""
-        if isinstance(self.players[hunter], roles.Hunter):
-            hunted = self.players[hunter].get_target()
-            if hunted and hunted != hunter:
-                if await self.players[hunted].get_killed():
-                    return hunted
-        return None
 
     def get_player_with_role(self, role, status='alive'):
         players = []
