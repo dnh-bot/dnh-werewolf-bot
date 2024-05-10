@@ -1,6 +1,7 @@
 # FIXME:
 # pylint: disable=too-many-lines
 import datetime
+import queue
 import random
 import time
 import json
@@ -409,37 +410,51 @@ class Game:
         pending_died_list format: [(player_id, dead_reason),...]
         dead_reason is hidden in night phase.
         """
+        # collect all dead reasons of a player to final_kill_dict
+        # format: final_kill_dict = {player_id: [dead_reason,...], ...}
         final_kill_dict = defaultdict(list)
-        pending_queue = pending_died_list[:]
-        queue_id = 0
-        while queue_id < len(pending_queue):
-            _id, dead_reason = pending_queue[queue_id]
-            queue_id += 1
+        pending_queue = queue.Queue()
+        for info in pending_died_list:
+            pending_queue.put(info)
 
-            if await self.players[_id].get_killed(dead_reason == const.DeadReason.COUPLE):
-                # Guard can protect Fox from Seer kill
-                final_kill_dict[_id].append(dead_reason)
+        while not pending_queue.empty():
+            player_id, dead_reason = pending_queue.get()
 
-                if isinstance(self.players[_id], roles.Hunter):
-                    hunted = self.players[_id].get_target()
-                    if hunted and hunted != _id:
-                        pending_queue.append((hunted, const.DeadReason.HUNTED))
+            if await self.players[player_id].get_killed(dead_reason == const.DeadReason.COUPLE):
+                final_kill_dict[player_id].append(dead_reason)
 
-                if _id in self.cupid_dict and dead_reason != const.DeadReason.COUPLE:
-                    # prevent repeatedly killing a couple
-                    pending_queue.append((self.cupid_dict[_id], const.DeadReason.COUPLE))
+                for following_info in self.get_following_dead_players(player_id, dead_reason):
+                    pending_queue.put(following_info)
 
         print("final_kill_dict = dict(", *final_kill_dict.items(), ")")
 
+        # convert final_kill_dict to a new dict of player_id list, filter by reason
+        # kills_list_by_reason format: {reason: [player_id,...], ...}
         kills_list_by_reason = defaultdict(list)
-        for _id, reason_list in final_kill_dict.items():
+        for player_id, reason_list in final_kill_dict.items():
             if const.DeadReason.HIDDEN in reason_list:  # hidden reason
-                kills_list_by_reason[const.DeadReason.HIDDEN].append(_id)
+                kills_list_by_reason[const.DeadReason.HIDDEN].append(player_id)
             else:
                 for reason in reason_list:
-                    kills_list_by_reason[reason].append(_id)
+                    kills_list_by_reason[reason].append(player_id)
 
         return kills_list_by_reason
+
+    def get_following_dead_players(self, player_id, dead_reason):
+        """
+        Get following dead players by followed relation (e.g. hunter, couple,...)
+        """
+        following_players = []
+        if isinstance(self.players[player_id], roles.Hunter):
+            hunted = self.players[player_id].get_target()
+            if hunted and hunted != player_id:
+                following_players.append((hunted, const.DeadReason.HUNTED))
+
+        if player_id in self.cupid_dict and dead_reason != const.DeadReason.COUPLE:
+            # prevent repeatedly killing a couple
+            following_players.append((self.cupid_dict[player_id], const.DeadReason.COUPLE))
+
+        return following_players
 
     def get_following_players_set(self, player_set, cupid_dict):
         return set(cupid_dict[_id] for _id in player_set if _id in cupid_dict)
