@@ -931,14 +931,12 @@ class Game:
         if self.wolf_kill_dict:
             killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
             if killed:
-                self.night_pending_kill_list.append(killed)
+                self.night_pending_kill_list.append((killed, const.DeadReason.HIDDEN))
             self.wolf_kill_dict = {}
 
         kills_list_by_reason = defaultdict(list)
         if self.night_pending_kill_list:
-            kills_list_by_reason = await self.get_final_died_players_with_reasons(
-                [(_id, const.DeadReason.HIDDEN) for _id in self.night_pending_kill_list]
-            )
+            kills_list_by_reason = await self.get_final_died_players_with_reasons(self.night_pending_kill_list)
             self.night_pending_kill_list = []  # Reset killed list for next day
 
         # Morning deaths announcement
@@ -1001,7 +999,7 @@ class Game:
         target = self.players[target_id]
 
         if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
-            self.night_pending_kill_list.append(target_id)
+            self.night_pending_kill_list.append((target_id, const.DeadReason.HIDDEN))
 
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.SOMNAMBULISM:
             await self.new_moon_mode.do_action(self.interface, target=target)
@@ -1027,7 +1025,7 @@ class Game:
             curse_target_id = author.get_curse_target()
             if author.get_curse_power() > 0 and curse_target_id:
                 author.on_use_curse_power()
-                self.night_pending_kill_list.append(curse_target_id)
+                self.night_pending_kill_list.append((curse_target_id, const.DeadReason.HIDDEN))
 
                 await author.send_to_personal_channel(
                     text_templates.generate_text("witch_curse_result_text", target=f"<@{curse_target_id}>")
