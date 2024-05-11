@@ -1,0 +1,56 @@
+{
+	"name": "Tanner in couple, Tanner win",
+	"player_list": {
+		"w1": "Werewolf",
+		"s1": "Seer",
+		"g1": "Guard",
+		"c1": "Cupid",
+		"t1": "Tanner"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"s1",
+				"g1",
+				"c1",
+				"t1"
+			],
+			"action": [
+				"w1 vote s1",
+				"c1 vote w1",
+				"c1 ship t1 g1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"s1",
+				"g1",
+				"c1",
+				"t1"
+			],
+			"action": [
+				"w1 kill c1",
+				"g1 guard g1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"s1",
+				"g1",
+				"t1"
+			],
+			"action": [
+				"g1 vote t1",
+				"w1 vote t1",
+				"t1 vote g1"
+			]
+		}
+	],
+	"win": "Tanner"
+}
