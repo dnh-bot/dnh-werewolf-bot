@@ -870,6 +870,7 @@ class Game:
 
             await self.new_moon_mode.do_action(self.interface, coin_toss_value=coin_toss_value)
 
+        day_kill_list = []
         # Kill Tanner if they didn't vote anyone from the second to the sixth day
         tanner_id = self.get_player_with_role(roles.Tanner)
         if tanner_id and self.day >= 2:
@@ -877,10 +878,7 @@ class Game:
                 # Tanner has voted someone else and still alive
                 self.players[tanner_id].is_voted_other = False
             else:
-                kills_list_by_reason = await self.get_final_died_players_with_reasons(
-                    [(tanner_id, const.DeadReason.TANNER_NO_VOTE)]
-                )
-                await self.send_dead_info_on_end_phase(kills_list_by_reason)
+                day_kill_list.append((tanner_id, const.DeadReason.TANNER_NO_VOTE))
                 # Check if lynched player is also a Tanner
                 if tanner_id == lynched:
                     lynched = None
@@ -892,12 +890,13 @@ class Game:
             if isinstance(self.players[lynched], roles.Tanner) and self.day < 7:
                 self.players[lynched].is_lynched = True
 
-            kills_list_by_reason = await self.get_final_died_players_with_reasons(
-                [(lynched, const.DeadReason.LYNCHED)]
-            )
+            day_kill_list.append((lynched, const.DeadReason.LYNCHED))
+
+        if day_kill_list:
+            kills_list_by_reason = await self.get_final_died_players_with_reasons(day_kill_list)
             await self.send_dead_info_on_end_phase(kills_list_by_reason, highest_vote_number=votes)
 
-        else:
+        if not lynched:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
 
         players_embed_data = self.generate_player_list_embed()
