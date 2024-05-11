@@ -884,10 +884,9 @@ class Game:
                 # Check if lynched player is also a Tanner
                 if tanner_id == lynched:
                     lynched = None
-                    await self.interface.send_action_text_to_channel(
-                        "lynched_is_died_text", config.GAMEPLAY_CHANNEL,
-                        user=f"<@{tanner_id}>"
-                    )
+                    # await self.interface.send_action_text_to_channel(
+                    #     "lynched_is_died_text", config.GAMEPLAY_CHANNEL, user=f"<@{tanner_id}>"
+                    # )
 
         if lynched:
             if isinstance(self.players[lynched], roles.Tanner) and self.day < 7:

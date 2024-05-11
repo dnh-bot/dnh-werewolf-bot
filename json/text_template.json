@@ -1359,15 +1359,15 @@
   "tanner_killed_by_not_voting_text": {
     "params": ["user"],
     "template": {
-      "vi": ["Ôi không, thật đáng sợ quá... {user} đột nhiên bị mất tích rồi 😱"],
-      "en": ["Oh no, it's so scary... {user} suddenly disappeared 😱"]
+      "vi": ["Do không tham gia bỏ phiếu, {user} đã bị kéo xuống địa ngục 😱"],
+      "en": ["Due to not participating in voting, {user} has been dragged to hell 😱"]
     }
   },
   "lynched_is_died_text": {
     "params": ["user"],
     "template": {
-      "vi": ["Vì người chơi {user} đã bị biến mất, nên hôm nay sẽ không có ai bị hành hình."],
-      "en": ["Because {user} had disappeared, no one will be executed."]
+      "vi": ["{user} đã biến mất trước khi lên đoạn đầu đài."],
+      "en": ["{user} has been disappeared before execution."]
     }
   },
   "ban_command_reply_text": {
