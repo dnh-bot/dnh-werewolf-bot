@@ -623,6 +623,19 @@
       ]
     }
   },
+  "couple_reborn_text": {
+    "params": ["reborn_player", "follow_player"],
+    "template": {
+      "vi": [
+        "😇 Chào mừng {follow_player} trở lại cuộc đời cùng với người thương {reborn_player}!",
+        "===========================================================================\n"
+      ],
+      "en": [
+        "😇 Welcome {follow_player} back to life with your beloved {reborn_player}!",
+        "===========================================================================\n"
+      ]
+    }
+  },
   "out_of_power_text": {
     "params": [],
     "template": {

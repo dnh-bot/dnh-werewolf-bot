@@ -423,7 +423,7 @@ class Game:
             if await self.players[player_id].get_killed(dead_reason == const.DeadReason.COUPLE):
                 final_kill_dict[player_id].append(dead_reason)
 
-                for following_info in self.get_following_dead_players(player_id, dead_reason):
+                for following_info in self.get_following_players(player_id, dead_reason):
                     pending_queue.put(following_info)
 
         print("final_kill_dict = dict(", *final_kill_dict.items(), ")")
@@ -440,24 +440,65 @@ class Game:
 
         return kills_list_by_reason
 
-    def get_following_dead_players(self, player_id, dead_reason):
+    async def get_final_reborn_players_with_reasons(self, pending_reborn_list):
         """
-        Get following dead players by followed relation (e.g. hunter, couple,...)
+        Get final reborn players with reasons set after a phase.
+        pending_reborn_list format: [(player_id, reborn_reason),...]
+        reborn_reason is hidden in night phase.
+        """
+        # collect all reborn reasons of a player to final_reborn_dict
+        # format: final_reborn_dict = {player_id: [reborn_reason,...], ...}
+        final_reborn_dict = defaultdict(list)
+        pending_queue = queue.Queue()
+        for info in pending_reborn_list:
+            pending_queue.put(info)
+
+        while not pending_queue.empty():
+            player_id, reborn_reason = pending_queue.get()
+
+            if await self.players[player_id].on_reborn():
+                final_reborn_dict[player_id].append(reborn_reason)
+
+                for following_info in self.get_following_players(player_id, reborn_reason):
+                    pending_queue.put(following_info)
+
+        print("final_reborn_dict = dict(", *final_reborn_dict.items(), ")")
+
+        # convert final_reborn_dict to a new dict of player_id list, filter by reason
+        # reborn_list_by_reason format: {reason: [player_id,...], ...}
+        reborn_list_by_reason = defaultdict(list)
+        for player_id, reason_list in final_reborn_dict.items():
+            if const.RebornReason.HIDDEN in reason_list:  # hidden reason
+                reborn_list_by_reason[const.RebornReason.HIDDEN].append(player_id)
+            else:
+                for reason in reason_list:
+                    reborn_list_by_reason[reason].append(player_id)
+
+        return reborn_list_by_reason
+
+    def get_following_players(self, player_id, reason):
+        """
+        Get following dead/reborn players by followed relation (e.g. hunter, couple,...)
         """
         following_players = []
-        if isinstance(self.players[player_id], roles.Hunter):
+
+        if isinstance(self.players[player_id], roles.Hunter) and isinstance(reason, const.DeadReason):
             hunted = self.players[player_id].get_target()
             if hunted and hunted != player_id:
                 following_players.append((hunted, const.DeadReason.HUNTED))
 
-        if player_id in self.cupid_dict and dead_reason != const.DeadReason.COUPLE:
-            # prevent repeatedly killing a couple
-            following_players.append((self.cupid_dict[player_id], const.DeadReason.COUPLE))
+        if player_id in self.cupid_dict and not reason.is_couple_following():
+            # prevent repeatedly call a couple
+            follower_id = self.cupid_dict[player_id]
+
+            if isinstance(reason, const.DeadReason):
+                following_players.append((follower_id, const.DeadReason.COUPLE))
+
+            elif isinstance(reason, const.RebornReason):
+                if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME:
+                    following_players.append((follower_id, const.RebornReason.COUPLE))
 
         return following_players
-
-    def get_following_players_set(self, player_set, cupid_dict):
-        return set(cupid_dict[_id] for _id in player_set if _id in cupid_dict)
 
     async def add_watcher(self, id_):
         if id_ in self.players:
@@ -960,10 +1001,9 @@ class Game:
 
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME and self.cupid_dict:
             await self.new_moon_mode.do_end_nighttime_phase(self.interface)
-            self.reborn_set.update(self.get_following_players_set(self.reborn_set, self.cupid_dict))
 
-        for _id in self.reborn_set:
-            await self.players[_id].on_reborn()
+        reborn_list_by_reason = await self.get_final_reborn_players_with_reasons(self.reborn_set)
+        await self.send_reborn_info_on_end_phase(reborn_list_by_reason)
 
         self.reborn_set = set()
 
@@ -991,6 +1031,24 @@ class Game:
                         kwargs = {"died_player": f"<@{self.cupid_dict[_id]}>", "follow_player": f"<@{_id}>"}
 
                     await self.interface.send_action_text_to_channel(label, config.GAMEPLAY_CHANNEL, **kwargs)
+
+    async def send_reborn_info_on_end_phase(self, reborn_list_by_reason):
+        for reason in sorted(reborn_list_by_reason.keys()):
+            label = reason.get_template_label(self.game_phase)
+            id_list = reborn_list_by_reason[reason]
+
+            if reason == const.RebornReason.COUPLE:
+                for _id in id_list:
+                    await self.interface.add_user_to_channel(self.cupid_dict[_id], config.COUPLE_CHANNEL, is_read=True, is_send=True)
+                    await self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+                    await self.interface.send_action_text_to_channel(
+                        "couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{self.cupid_dict[_id]}>", user2=f"<@{_id}>"
+                    )
+                    await self.interface.send_action_text_to_channel(
+                        label,
+                        config.GAMEPLAY_CHANNEL,
+                        reborn_player=f"<@{self.cupid_dict[_id]}>", follow_player=f"<@{_id}>"
+                    )
 
     async def guard_do_end_nighttime_phase(self, author):
         target_id = author.get_target()
@@ -1028,7 +1086,7 @@ class Game:
         reborn_target_id = author.get_reborn_target()
         if author.get_reborn_power() > 0 and reborn_target_id:
             author.on_use_reborn_power()
-            self.reborn_set.add(reborn_target_id)
+            self.reborn_set.add((reborn_target_id, const.RebornReason.HIDDEN))
 
             await author.send_to_personal_channel(
                 text_templates.generate_text("witch_reborn_result_text", target=f"<@{reborn_target_id}>")
@@ -1287,7 +1345,7 @@ class Game:
             return text_templates.generate_text("out_of_power_text")
 
         author.on_use_power()
-        self.reborn_set.add(author_id)
+        self.reborn_set.add((author_id, const.RebornReason.HIDDEN))
 
         return text_templates.generate_text("zombie_after_reborn_text")
 
