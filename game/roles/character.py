@@ -65,6 +65,7 @@ class Character:
                 "after_reborn_text", config.GAMEPLAY_CHANNEL, user=f"<@{self.player_id}>"
             )
         )
+        return True
 
     def get_protected(self):
         self.status = CharacterStatus.PROTECTED
