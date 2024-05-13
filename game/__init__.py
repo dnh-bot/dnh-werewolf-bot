@@ -762,7 +762,6 @@ class Game:
         # Check Tanner
         tanner_id = self.get_player_with_role(roles.Tanner, 'all')
         if tanner_id:
-            self.players[tanner_id].check_tanner_ability(self.day)
             if self.players[tanner_id].is_lynched and self.players[tanner_id].get_party() == 'Tanner':
                 return roles.Tanner
 
@@ -831,6 +830,9 @@ class Game:
         self.day += 1
 
         if self.players:
+            await asyncio.gather(*[
+                player.on_day_start(self.day) for player in self.get_all_players()
+            ])
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
             embed_data = self.generate_player_list_embed()
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
@@ -874,20 +876,15 @@ class Game:
         # Kill Tanner if they didn't vote anyone from the second to the sixth day
         tanner_id = self.get_player_with_role(roles.Tanner)
         if tanner_id and self.day >= 2:
-            if self.players[tanner_id].is_voted_other:
-                # Tanner has voted someone else and still alive
-                self.players[tanner_id].is_voted_other = False
-            else:
+            if not self.players[tanner_id].is_voted_other:
+                # Tanner hasn't voted someone else and will be dead
                 day_kill_list.append((tanner_id, const.DeadReason.TANNER_NO_VOTE))
                 # Check if lynched player is also a Tanner
                 if tanner_id == lynched:
                     lynched = None
-                    # await self.interface.send_action_text_to_channel(
-                    #     "lynched_is_died_text", config.GAMEPLAY_CHANNEL, user=f"<@{tanner_id}>"
-                    # )
 
         if lynched:
-            if isinstance(self.players[lynched], roles.Tanner) and self.day < 7:
+            if isinstance(self.players[lynched], roles.Tanner):
                 self.players[lynched].is_lynched = True
 
             day_kill_list.append((lynched, const.DeadReason.LYNCHED))

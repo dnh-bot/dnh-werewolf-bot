@@ -85,7 +85,8 @@ class Character:
             return invalid_target_text
 
         self.set_target(target_id)
-        return text_templates.generate_text(f"{self.get_role().lower()}_after_voting_text", target=f"<@{target_id}>") + text_templates.generate_text("inform_power_used_text")
+        return text_templates.generate_text(f"{self.get_role().lower()}_after_voting_text", target=f"<@{target_id}>")\
+            + text_templates.generate_text("inform_power_used_text")
 
     async def create_personal_channel(self, self_check=False):
         await self.interface.create_channel(self.channel_name)
@@ -124,6 +125,10 @@ class Character:
         pass
 
     async def on_day(self):
+        # Will be overloaded in Child Class
+        pass
+
+    async def on_day_start(self, day):
         # Will be overloaded in Child Class
         pass
 
