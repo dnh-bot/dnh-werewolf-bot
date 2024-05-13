@@ -978,9 +978,8 @@ class Game:
         self.reborn_set = set()
 
     async def send_status_changes_info_on_end_phase(self, kills_list_by_reason, **kw_info):
-        for reason in sorted(kills_list_by_reason.keys()):
+        for reason, id_list in kills_list_by_reason.items():
             label = reason.get_template_label(self.game_phase)
-            id_list = kills_list_by_reason[reason]
 
             if reason is const.DeadReason.HIDDEN:
                 await self.interface.send_action_text_to_channel(
