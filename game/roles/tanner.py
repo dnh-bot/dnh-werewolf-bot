@@ -9,6 +9,8 @@ class Tanner(Villager):
         self.is_voted_other = False
         self.is_lynched = False
 
-    def check_tanner_ability(self, day):
+    async def on_day_start(self, day):
         if day >= 7:
             self.party = Villager
+
+        self.is_voted_other = False
