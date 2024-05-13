@@ -404,77 +404,47 @@ class Game:
             "\n"
         ))
 
-    async def get_final_died_players_with_reasons(self, pending_died_list):
+    async def get_final_status_changes_with_reasons(self, pending_list):
         """
-        Get final died players with reasons set after a phase.
-        pending_died_list format: [(player_id, dead_reason),...]
-        dead_reason is hidden in night phase.
+        Get final status changes with reasons set after a phase.
+        pending_list format: [(player_id, reason),...]
         """
-        # collect all dead reasons of a player to final_kill_dict
-        # format: final_kill_dict = {player_id: [dead_reason,...], ...}
-        final_kill_dict = defaultdict(list)
+        # collect all dead reasons of a player to final_dict
+        # format: final_dict = {player_id: [dead_reason,...], ...}
+        final_dict = defaultdict(list)
         pending_queue = queue.Queue()
-        for info in pending_died_list:
+        for info in pending_list:
             pending_queue.put(info)
 
         while not pending_queue.empty():
-            player_id, dead_reason = pending_queue.get()
+            player_id, reason = pending_queue.get()
+            status_changed_successfully = False
+            if isinstance(reason, const.DeadReason):
+                status_changed_successfully = await self.players[player_id].get_killed(reason == const.DeadReason.COUPLE)
+            elif isinstance(reason, const.RebornReason):
+                status_changed_successfully = await self.players[player_id].on_reborn()
 
-            if await self.players[player_id].get_killed(dead_reason == const.DeadReason.COUPLE):
-                final_kill_dict[player_id].append(dead_reason)
+            if status_changed_successfully:
+                final_dict[player_id].append(reason)
 
-                for following_info in self.get_following_players(player_id, dead_reason):
+                for following_info in self.get_following_players(player_id, reason):
                     pending_queue.put(following_info)
 
-        print("final_kill_dict = dict(", *final_kill_dict.items(), ")")
+        print("final_dict = dict(", *final_dict.items(), ")")
 
-        # convert final_kill_dict to a new dict of player_id list, filter by reason
-        # kills_list_by_reason format: {reason: [player_id,...], ...}
-        kills_list_by_reason = defaultdict(list)
-        for player_id, reason_list in final_kill_dict.items():
+        # convert final_dict to a new dict of player_id list, filter by reason
+        # list_by_reason format: {reason: [player_id,...], ...}
+        list_by_reason = defaultdict(list)
+        for player_id, reason_list in final_dict.items():
             if const.DeadReason.HIDDEN in reason_list:  # hidden reason
-                kills_list_by_reason[const.DeadReason.HIDDEN].append(player_id)
+                list_by_reason[const.DeadReason.HIDDEN].append(player_id)
+            elif const.RebornReason.HIDDEN in reason_list:  # hidden reason
+                list_by_reason[const.RebornReason.HIDDEN].append(player_id)
             else:
                 for reason in reason_list:
-                    kills_list_by_reason[reason].append(player_id)
+                    list_by_reason[reason].append(player_id)
 
-        return kills_list_by_reason
-
-    async def get_final_reborn_players_with_reasons(self, pending_reborn_list):
-        """
-        Get final reborn players with reasons set after a phase.
-        pending_reborn_list format: [(player_id, reborn_reason),...]
-        reborn_reason is hidden in night phase.
-        """
-        # collect all reborn reasons of a player to final_reborn_dict
-        # format: final_reborn_dict = {player_id: [reborn_reason,...], ...}
-        final_reborn_dict = defaultdict(list)
-        pending_queue = queue.Queue()
-        for info in pending_reborn_list:
-            pending_queue.put(info)
-
-        while not pending_queue.empty():
-            player_id, reborn_reason = pending_queue.get()
-
-            if await self.players[player_id].on_reborn():
-                final_reborn_dict[player_id].append(reborn_reason)
-
-                for following_info in self.get_following_players(player_id, reborn_reason):
-                    pending_queue.put(following_info)
-
-        print("final_reborn_dict = dict(", *final_reborn_dict.items(), ")")
-
-        # convert final_reborn_dict to a new dict of player_id list, filter by reason
-        # reborn_list_by_reason format: {reason: [player_id,...], ...}
-        reborn_list_by_reason = defaultdict(list)
-        for player_id, reason_list in final_reborn_dict.items():
-            if const.RebornReason.HIDDEN in reason_list:  # hidden reason
-                reborn_list_by_reason[const.RebornReason.HIDDEN].append(player_id)
-            else:
-                for reason in reason_list:
-                    reborn_list_by_reason[reason].append(player_id)
-
-        return reborn_list_by_reason
+        return list_by_reason
 
     def get_following_players(self, player_id, reason):
         """
@@ -934,7 +904,7 @@ class Game:
             day_kill_list.append((lynched, const.DeadReason.LYNCHED))
 
         if day_kill_list:
-            kills_list_by_reason = await self.get_final_died_players_with_reasons(day_kill_list)
+            kills_list_by_reason = await self.get_final_status_changes_with_reasons(day_kill_list)
             await self.send_dead_info_on_end_phase(kills_list_by_reason, highest_vote_number=votes)
 
         if not lynched:
@@ -990,7 +960,7 @@ class Game:
 
         kills_list_by_reason = defaultdict(list)
         if self.night_pending_kill_list:
-            kills_list_by_reason = await self.get_final_died_players_with_reasons(self.night_pending_kill_list)
+            kills_list_by_reason = await self.get_final_status_changes_with_reasons(self.night_pending_kill_list)
             self.night_pending_kill_list = []  # Reset killed list for next day
 
         # Morning deaths announcement
@@ -1002,7 +972,7 @@ class Game:
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME and self.cupid_dict:
             await self.new_moon_mode.do_end_nighttime_phase(self.interface)
 
-        reborn_list_by_reason = await self.get_final_reborn_players_with_reasons(self.reborn_set)
+        reborn_list_by_reason = await self.get_final_status_changes_with_reasons(self.reborn_set)
         await self.send_reborn_info_on_end_phase(reborn_list_by_reason)
 
         self.reborn_set = set()
