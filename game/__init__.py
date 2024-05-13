@@ -905,7 +905,7 @@ class Game:
 
         if day_kill_list:
             kills_list_by_reason = await self.get_final_status_changes_with_reasons(day_kill_list)
-            await self.send_dead_info_on_end_phase(kills_list_by_reason, highest_vote_number=votes)
+            await self.send_status_changes_info_on_end_phase(kills_list_by_reason, highest_vote_number=votes)
 
         if not lynched:
             await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
@@ -965,7 +965,7 @@ class Game:
 
         # Morning deaths announcement
         if kills_list_by_reason:
-            await self.send_dead_info_on_end_phase(kills_list_by_reason)
+            await self.send_status_changes_info_on_end_phase(kills_list_by_reason)
         else:
             await self.interface.send_action_text_to_channel("killed_none_text", config.GAMEPLAY_CHANNEL)
 
@@ -973,16 +973,16 @@ class Game:
             await self.new_moon_mode.do_end_nighttime_phase(self.interface)
 
         reborn_list_by_reason = await self.get_final_status_changes_with_reasons(self.reborn_set)
-        await self.send_reborn_info_on_end_phase(reborn_list_by_reason)
+        await self.send_status_changes_info_on_end_phase(reborn_list_by_reason)
 
         self.reborn_set = set()
 
-    async def send_dead_info_on_end_phase(self, kills_list_by_reason, **kw_info):
+    async def send_status_changes_info_on_end_phase(self, kills_list_by_reason, **kw_info):
         for reason in sorted(kills_list_by_reason.keys()):
             label = reason.get_template_label(self.game_phase)
             id_list = kills_list_by_reason[reason]
 
-            if reason == const.DeadReason.HIDDEN:
+            if reason is const.DeadReason.HIDDEN:
                 await self.interface.send_action_text_to_channel(
                     label,
                     config.GAMEPLAY_CHANNEL,
@@ -990,35 +990,25 @@ class Game:
                 )
             else:
                 for _id in id_list:
-                    kwargs = {}
-                    if reason == const.DeadReason.TANNER_NO_VOTE:
+                    if reason is const.DeadReason.TANNER_NO_VOTE:
                         kwargs = {"user": f"<@{_id}>"}
-                    elif reason == const.DeadReason.LYNCHED:
+                    elif reason is const.DeadReason.LYNCHED:
                         kwargs = {"voted_user": f"<@{_id}>", "highest_vote_number": kw_info.get("highest_vote_number", 0)}
-                    if reason == const.DeadReason.HUNTED:
+                    elif reason is const.DeadReason.HUNTED:
                         kwargs = {"target": f"<@{_id}>"}
-                    elif reason == const.DeadReason.COUPLE:
+                    elif reason is const.DeadReason.COUPLE:
                         kwargs = {"died_player": f"<@{self.cupid_dict[_id]}>", "follow_player": f"<@{_id}>"}
+                    elif reason is const.RebornReason.COUPLE:
+                        await self.interface.add_user_to_channel(self.cupid_dict[_id], config.COUPLE_CHANNEL, is_read=True, is_send=True)
+                        await self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+                        await self.interface.send_action_text_to_channel(
+                            "couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{self.cupid_dict[_id]}>", user2=f"<@{_id}>"
+                        )
+                        kwargs = {"reborn_player": f"<@{self.cupid_dict[_id]}>", "follow_player": f"<@{_id}>"}
+                    else:
+                        continue
 
                     await self.interface.send_action_text_to_channel(label, config.GAMEPLAY_CHANNEL, **kwargs)
-
-    async def send_reborn_info_on_end_phase(self, reborn_list_by_reason):
-        for reason in sorted(reborn_list_by_reason.keys()):
-            label = reason.get_template_label(self.game_phase)
-            id_list = reborn_list_by_reason[reason]
-
-            if reason == const.RebornReason.COUPLE:
-                for _id in id_list:
-                    await self.interface.add_user_to_channel(self.cupid_dict[_id], config.COUPLE_CHANNEL, is_read=True, is_send=True)
-                    await self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
-                    await self.interface.send_action_text_to_channel(
-                        "couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{self.cupid_dict[_id]}>", user2=f"<@{_id}>"
-                    )
-                    await self.interface.send_action_text_to_channel(
-                        label,
-                        config.GAMEPLAY_CHANNEL,
-                        reborn_player=f"<@{self.cupid_dict[_id]}>", follow_player=f"<@{_id}>"
-                    )
 
     async def guard_do_end_nighttime_phase(self, author):
         target_id = author.get_target()
