@@ -420,7 +420,7 @@ class Game:
             player_id, reason = pending_queue.get()
             status_changed_successfully = False
             if isinstance(reason, const.DeadReason):
-                status_changed_successfully = await self.players[player_id].get_killed(reason == const.DeadReason.COUPLE)
+                status_changed_successfully = await self.players[player_id].get_killed(reason is const.DeadReason.COUPLE)
             elif isinstance(reason, const.RebornReason):
                 status_changed_successfully = await self.players[player_id].on_reborn()
 
@@ -436,9 +436,9 @@ class Game:
         # list_by_reason format: {reason: [player_id,...], ...}
         list_by_reason = defaultdict(list)
         for player_id, reason_list in final_dict.items():
-            if const.DeadReason.HIDDEN in reason_list:  # hidden reason
+            if any(reason is const.DeadReason.HIDDEN for reason in reason_list):  # hidden reason
                 list_by_reason[const.DeadReason.HIDDEN].append(player_id)
-            elif const.RebornReason.HIDDEN in reason_list:  # hidden reason
+            elif any(reason is const.RebornReason.HIDDEN for reason in reason_list):  # hidden reason
                 list_by_reason[const.RebornReason.HIDDEN].append(player_id)
             else:
                 for reason in reason_list:
