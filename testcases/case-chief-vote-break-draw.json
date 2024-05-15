@@ -1,10 +1,10 @@
 {
-	"name": "Chief test",
+	"name": "Chief vote break draw",
 	"player_list": {
 		"w1": "Werewolf",
 		"f1": "Fox",
 		"g1": "Guard",
-		"c1": "Chief",
+		"ch1": "Chief",
 		"wi1": "Witch"
 	},
 	"timeline": [
@@ -14,12 +14,12 @@
 				"w1",
 				"f1",
 				"g1",
-				"c1",
+				"ch1",
 				"wi1"
 			],
 			"action": [
-				"w1 vote c1",
-				"c1 vote f1"
+				"w1 vote ch1",
+				"ch1 vote f1"
 			]
 		},
 		{
@@ -27,7 +27,7 @@
 			"alive": [
 				"w1",
 				"g1",
-				"c1",
+				"ch1",
 				"wi1"
 			],
 			"action": [
@@ -41,12 +41,12 @@
 			"alive": [
 				"w1",
 				"wi1",
-				"c1",
+				"ch1",
 				"f1",
 				"g1"
 			],
 			"action": [
-				"c1 vote wi1"
+				"ch1 vote wi1"
 			]
 		},
 		{
@@ -54,7 +54,7 @@
 			"alive": [
 				"w1",
 				"g1",
-				"c1",
+				"ch1",
 				"f1"
 			],
 			"action": [
@@ -67,14 +67,14 @@
 			"alive": [
 				"w1",
 				"g1",
-				"c1",
+				"ch1",
 				"f1"
 			],
 			"action": [
-				"f1 vote c1",
-				"g1 vote c1",
-				"w1 vote c1",
-				"c1 vote f1"
+				"f1 vote ch1",
+				"g1 vote ch1",
+				"w1 vote ch1",
+				"ch1 vote f1"
 			]
 		},
 		{
