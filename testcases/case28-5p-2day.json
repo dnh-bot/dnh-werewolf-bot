@@ -37,7 +37,7 @@
 			"action": [
 				"w1 kill l1",
 				"g1 guard l1",
-				"s1 seer w1=true"
+				"s1 seer w1 = true"
 			]
 		},
 		{

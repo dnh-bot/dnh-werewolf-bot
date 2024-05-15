@@ -39,7 +39,7 @@
 			],
 			"action": [
 				"w1 kill h1",
-				"s1 seer c1=false",
+				"s1 seer c1 = false",
 				"h1 hunter w1"
 			]
 		},

@@ -32,7 +32,7 @@
 				"sw1"
 			],
 			"action": [
-				"s1 seer f1=false"
+				"s1 seer f1 = false"
 			]
 		},
 		{
@@ -56,7 +56,7 @@
 				"sw1"
 			],
 			"action": [
-				"s1 seer w1=true"
+				"s1 seer w1 = true"
 			]
 		},
 		{
@@ -82,7 +82,7 @@
 				"sw1"
 			],
 			"action": [
-				"s1 seer l1=true"
+				"s1 seer l1 = true"
 			]
 		},
 		{
@@ -106,7 +106,7 @@
 				"sw1"
 			],
 			"action": [
-				"s1 seer sw1=false",
+				"s1 seer sw1 = false",
 				"sw1 kill v1"
 			]
 		}

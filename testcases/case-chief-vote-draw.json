@@ -38,7 +38,7 @@
 			"action": [
 				"w1 kill g1",
 				"g1 guard g1",
-				"s1 seer ch1=false"
+				"s1 seer ch1 = false"
 			]
 		},
 		{
@@ -67,7 +67,7 @@
 			"action": [
 				"w1 kill f1",
 				"g1 guard ch1",
-				"s1 seer w1=true"
+				"s1 seer w1 = true"
 			]
 		},
 		{

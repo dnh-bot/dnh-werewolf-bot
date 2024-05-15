@@ -18,7 +18,7 @@
             "alive": ["w", "s", "z", "v"],
             "action": [
                 "w kill z",
-                "s seer z=false"
+                "s seer z = false"
             ]
         },
         {

@@ -22,7 +22,7 @@
             "action": [
                 "3 reborn 4",
                 "1 kill 2",
-                "2 seer 3=false"
+                "2 seer 3 = false"
             ]
         },
         {

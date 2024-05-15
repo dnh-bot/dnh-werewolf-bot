@@ -68,7 +68,7 @@ async def test_case(game, filepath):
             for action_str in action_data["action"]:
                 expected_result = None
                 if action_str.find("=") != -1:
-                    action_str, expected_result = action_str.split("=")
+                    action_str, expected_result = action_str.split(" = ")
 
                 author_name, command = action_str.split()[:2]
                 target_name = action_str.split()[2:]
