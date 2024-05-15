@@ -66,10 +66,19 @@ async def test_case(game, filepath):
 
             assert check_alive_players(game, list(map(lambda x: id_map[x], action_data["alive"])), playersname)
             for action_str in action_data["action"]:
+                expected_result = None
+                if action_str.find("=") != -1:
+                    action_str, expected_result = action_str.split("=")
+
                 author_name, command = action_str.split()[:2]
                 target_name = action_str.split()[2:]
                 text = await game.do_player_action(command, id_map[author_name], *[id_map[i] for i in target_name])
                 print(text)
+
+                if command == "seer":
+                    target_seen_as_werewolf = game.players[id_map[target_name[0]]].seer_seen_as_werewolf()
+                    assert expected_result.capitalize() == str(target_seen_as_werewolf)
+
             await asyncio.sleep(delay_time)
             await game.next_phase()
 
