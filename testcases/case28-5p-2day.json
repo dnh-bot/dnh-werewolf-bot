@@ -37,7 +37,7 @@
 			"action": [
 				"w1 kill l1",
 				"g1 guard l1",
-				"s1 seer l1"
+				"s1 seer w1=true"
 			]
 		},
 		{
@@ -53,7 +53,7 @@
 				"v1 vote w1",
 				"g1 vote w1",
 				"l1 vote w1",
-				"s1 vote g1"
+				"s1 vote w1"
 			]
 		}
 	],

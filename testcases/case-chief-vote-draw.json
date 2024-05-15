@@ -1,11 +1,12 @@
 {
-	"name": "Chief test",
+	"name": "Chief vote draw",
 	"player_list": {
 		"w1": "Werewolf",
 		"f1": "Fox",
 		"g1": "Guard",
-		"c1": "Chief",
-		"wi1": "Witch"
+		"ch1": "Chief",
+		"wi1": "Witch",
+		"s1": "Seer"
 	},
 	"timeline": [
 		{
@@ -14,13 +15,14 @@
 				"w1",
 				"f1",
 				"g1",
-				"c1",
-				"wi1"
+				"ch1",
+				"wi1",
+				"s1"
 			],
 			"action": [
-				"w1 vote c1",
-				"c1 vote f1",
-				"wi1 vote c1"
+				"w1 vote ch1",
+				"ch1 vote f1",
+				"wi1 vote ch1"
 			]
 		},
 		{
@@ -29,12 +31,14 @@
 				"w1",
 				"g1",
 				"f1",
-				"c1",
-				"wi1"
+				"ch1",
+				"wi1",
+				"s1"
 			],
 			"action": [
 				"w1 kill g1",
-				"g1 guard g1"
+				"g1 guard g1",
+				"s1 seer ch1=false"
 			]
 		},
 		{
@@ -42,9 +46,10 @@
 			"alive": [
 				"w1",
 				"wi1",
-				"c1",
+				"ch1",
 				"f1",
-				"g1"
+				"g1",
+				"s1"
 			],
 			"action": [
 				"f1 vote wi1"
@@ -55,23 +60,27 @@
 			"alive": [
 				"w1",
 				"g1",
-				"c1",
-				"f1"
+				"ch1",
+				"f1",
+				"s1"
 			],
 			"action": [
 				"w1 kill f1",
-				"g1 guard c1"
+				"g1 guard ch1",
+				"s1 seer w1=true"
 			]
 		},
 		{
 			"time": "day3",
 			"alive": [
 				"w1",
-				"c1",
-				"g1"
+				"ch1",
+				"g1",
+				"s1"
 			],
 			"action": [
-				"c1 vote w1"
+				"ch1 vote w1",
+				"s1 vote w1"
 			]
 		}
 	],

@@ -33,7 +33,7 @@
 			],
 			"action": [
 				"w1 kill t1",
-				"s1 seer v1",
+				"s1 seer v1=false",
 				"g1 guard g1"
 			]
 		},
@@ -62,7 +62,8 @@
 			],
 			"action": [
 				"w1 kill wi1",
-				"wi1 reborn t1"
+				"wi1 reborn t1",
+				"s1 seer g1=false"
 			]
 		},
 		{
