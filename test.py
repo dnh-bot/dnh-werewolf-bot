@@ -76,6 +76,9 @@ async def test_case(game, filepath):
                 print(text)
 
                 if command == "seer":
+                    # test example:
+                    # "s1 seer v1 = false"
+                    # "s1 seer w1 = true"
                     target_seen_as_werewolf = game.players[id_map[target_name[0]]].seer_seen_as_werewolf()
                     assert expected_result.capitalize() == str(target_seen_as_werewolf)
 
