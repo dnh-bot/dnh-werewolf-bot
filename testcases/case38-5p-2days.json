@@ -37,7 +37,7 @@
 			],
 			"action": [
 				"w1 kill b1",
-				"s1 seer f1"
+				"s1 seer f1 = false"
 			]
 		},
 		{

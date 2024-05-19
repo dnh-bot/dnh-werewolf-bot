@@ -1,0 +1,115 @@
+{
+	"name": "Seer sees Werewolf, Superwolf, Lycan and Fox",
+	"player_list": {
+		"w1": "Werewolf",
+		"s1": "Seer",
+		"l1": "Lycan",
+		"v1": "Villager",
+		"sw1": "Superwolf",
+		"f1": "Fox"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"l1",
+				"v1",
+				"sw1",
+				"f1",
+				"s1"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"v1",
+				"s1",
+				"l1",
+				"f1",
+				"sw1"
+			],
+			"action": [
+				"s1 seer f1 = false"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"v1",
+				"s1",
+				"l1",
+				"sw1"
+			],
+			"action": []
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"v1",
+				"s1",
+				"l1",
+				"sw1"
+			],
+			"action": [
+				"s1 seer w1 = true"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"v1",
+				"s1",
+				"l1",
+				"sw1"
+			],
+			"action": [
+				"s1 vote w1",
+				"v1 vote w1"
+			]
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"v1",
+				"s1",
+				"l1",
+				"sw1"
+			],
+			"action": [
+				"s1 seer l1 = true"
+			]
+		},
+		{
+			"time": "day4",
+			"alive": [
+				"v1",
+				"s1",
+				"l1",
+				"sw1"
+			],
+			"action": [
+				"s1 vote l1",
+				"sw1 vote l1"
+			]
+		},
+		{
+			"time": "night4",
+			"alive": [
+				"v1",
+				"s1",
+				"sw1"
+			],
+			"action": [
+				"s1 seer sw1 = false",
+				"sw1 kill v1"
+			]
+		}
+	],
+	"win": "Werewolf"
+}

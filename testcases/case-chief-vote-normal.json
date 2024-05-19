@@ -1,10 +1,10 @@
 {
-	"name": "Chief test",
+	"name": "Chief vote normal",
 	"player_list": {
 		"w1": "Werewolf",
 		"f1": "Fox",
 		"g1": "Guard",
-		"c1": "Chief",
+		"ch1": "Chief",
 		"wi1": "Witch"
 	},
 	"timeline": [
@@ -14,13 +14,13 @@
 				"w1",
 				"f1",
 				"g1",
-				"c1",
+				"ch1",
 				"wi1"
 			],
 			"action": [
-				"w1 vote c1",
-				"g1 vote c1",
-				"wi1 vote c1"
+				"w1 vote ch1",
+				"g1 vote ch1",
+				"wi1 vote ch1"
 			]
 		},
 		{
@@ -34,7 +34,7 @@
 			"action": [
 				"w1 kill g1",
 				"g1 guard g1",
-				"wi1 reborn c1"
+				"wi1 reborn ch1"
 			]
 		},
 		{
@@ -42,7 +42,7 @@
 			"alive": [
 				"w1",
 				"wi1",
-				"c1",
+				"ch1",
 				"f1",
 				"g1"
 			],
@@ -55,24 +55,24 @@
 			"alive": [
 				"w1",
 				"g1",
-				"c1",
+				"ch1",
 				"f1"
 			],
 			"action": [
 				"w1 kill f1",
-				"g1 guard c1"
+				"g1 guard ch1"
 			]
 		},
 		{
 			"time": "day3",
 			"alive": [
 				"w1",
-				"c1",
+				"ch1",
 				"g1"
 			],
 			"action": [
 				"g1 vote w1",
-				"c1 vote w1"
+				"ch1 vote w1"
 			]
 		}
 	],
