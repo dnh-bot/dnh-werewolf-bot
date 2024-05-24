@@ -1044,7 +1044,7 @@ class Game:
         target_id = author.get_autopsy_target()
         if target_id is None:
             return
-        
+
         target = self.players[target_id]
         role = target.get_role()
 
@@ -1295,7 +1295,7 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def seer(self, author, target):
         return author.register_target(target.player_id)
-    
+
     @command_verify_author(roles.Pathologist)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def autopsy(self, author, target):
