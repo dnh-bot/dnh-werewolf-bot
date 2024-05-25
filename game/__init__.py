@@ -1041,7 +1041,7 @@ class Game:
         )
 
     async def pathologist_do_end_nighttime_phase(self, author):
-        target_id = author.get_autopsy_target()
+        target_id = author.get_target()
         if target_id is None:
             return
 
@@ -1299,7 +1299,7 @@ class Game:
     @command_verify_author(roles.Pathologist)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def autopsy(self, author, target):
-        return author.register_autopsy_target(target.player_id)
+        return author.register_target(target.player_id)
 
     @command_verify_author(roles.Witch)
     @command_verify_phase(const.GamePhase.NIGHT)
