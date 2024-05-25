@@ -1,16 +1,11 @@
-import text_templates
 from game.roles.villager import Villager
 
 
 class Pathologist(Villager):
     """Pathologist can check 1 dead person each night to see their's role"""
 
-    def __init__(self, interface, player_id, player_name):
-        super().__init__(interface, player_id, player_name)
-
     async def on_night(self):
         pass
-
 
     async def on_night_start(self, _, dead_embed_data):
         if self.is_alive():
