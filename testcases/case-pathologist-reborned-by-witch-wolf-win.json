@@ -1,0 +1,96 @@
+{
+	"name": "Pathologist reborned by witch, werewolf wins",
+	"player_list": {
+		"w1": "Werewolf",
+		"g1": "Guard",
+		"p1": "Pathologist",
+		"wi1": "Witch",
+		"s1": "Seer"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"wi1",
+				"s1"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"wi1",
+				"s1"
+			],
+			"action": [
+				"w1 kill p1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"g1",
+				"wi1",
+				"s1"
+			],
+			"action": []
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"g1",
+				"wi1",
+				"s1"
+			],
+			"action": [
+				"wi1 reborn p1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"wi1",
+				"s1"
+			],
+			"action": [
+				"g1 vote wi1"
+			]
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"s1"
+			],
+			"action": [
+				"w1 kill s1",
+				"p1 autopsy wi1 = Witch"
+			]
+		},
+		{
+			"time": "day4",
+			"alive": [
+				"w1",
+				"g1",
+				"p1"
+			],
+			"action": [
+				"w1 vote g1"
+			]
+		}
+	],
+	"win": "Werewolf"
+}

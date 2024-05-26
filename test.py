@@ -81,6 +81,11 @@ async def test_case(game, filepath):
                     # "s1 seer w1 = true"
                     target_seen_as_werewolf = game.players[id_map[target_name[0]]].seer_seen_as_werewolf()
                     assert expected_result.capitalize() == str(target_seen_as_werewolf)
+                elif command == "autopsy":
+                    target_get_role_name = game.players[id_map[target_name[0]]].get_role()
+                    print(target_get_role_name, "HUEHUEHUEHUEHUE")
+                    print(expected_result)
+                    assert expected_result == target_get_role_name
 
             await asyncio.sleep(delay_time)
             await game.next_phase()
@@ -106,13 +111,7 @@ async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
 
     # Run single test
-    # await test_case(game, "testcases/case-hunter-couple-die-together-by-kill.json")
-    # await test_case(game, "testcases/case-hunter-couple-die-together-by-vote.json")
-    # await test_case(game, "testcases/case-hunter-hunt-fox.json")
-    # await test_case(game, "testcases/case-hunter-hunt-wolf.json")
-    # await test_case(game, "testcases/case-hunter-simple.json")
-    # await test_case(game, "testcases/case-hunter-hunt-night1.json")
-    # await test_case(game, "testcases/case-hunter-hunted-one-in-couple.json")
+    # await test_case(game, "testcases/case-pathologist-simple-test.json")
 
     # Run all tests
     directory = "testcases"

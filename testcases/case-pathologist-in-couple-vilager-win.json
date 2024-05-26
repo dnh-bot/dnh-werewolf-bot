@@ -1,0 +1,75 @@
+{
+	"name": "Pathologist in couple, villager win",
+	"player_list": {
+		"w1": "Werewolf",
+		"b1": "Betrayer",
+		"p1": "Pathologist",
+		"c1": "Cupid",
+		"s1": "Seer"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"b1",
+				"p1",
+				"c1",
+				"s1"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"b1",
+				"p1",
+				"c1",
+				"s1"
+			],
+			"action": [
+				"c1 ship w1 p1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"b1",
+				"p1",
+				"c1",
+				"s1"
+			],
+			"action": [
+				"w1 vote b1",
+				"p1 vote b1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"p1",
+				"c1",
+				"s1"
+			],
+			"action": [
+				"p1 autopsy b1 = Betrayer",
+				"w1 kill c1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"p1",
+				"s1"
+			],
+			"action": [
+				"s1 vote w1"
+			]
+		}
+	],
+	"win": "Villager"
+}

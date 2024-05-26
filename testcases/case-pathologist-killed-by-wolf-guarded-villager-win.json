@@ -1,0 +1,75 @@
+{
+	"name": "Pathologist killed by wolf, guared. Villager wins",
+	"player_list": {
+		"w1": "Werewolf",
+		"g1": "Guard",
+		"p1": "Pathologist",
+		"wi1": "Witch",
+		"s1": "Seer"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"wi1",
+				"s1"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"wi1",
+				"s1"
+			],
+			"action": [
+				"w1 kill p1",
+				"g1 guard p1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"wi1",
+				"s1"
+			],
+			"action": [
+				"w1 vote s1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"wi1"
+			],
+			"action": [
+				"p1 autopsy s1 = Seer",
+				"w1 kill g1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"p1",
+				"wi1"
+			],
+			"action": [
+				"p1 vote w1"
+			]
+		}
+	],
+	"win": "Villager"
+}
