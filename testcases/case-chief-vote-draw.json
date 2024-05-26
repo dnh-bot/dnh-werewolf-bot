@@ -4,7 +4,7 @@
 		"w1": "Werewolf",
 		"f1": "Fox",
 		"g1": "Guard",
-		"ch1": "Chief",
+		"chief": "Chief",
 		"wi1": "Witch",
 		"s1": "Seer"
 	},
@@ -15,14 +15,14 @@
 				"w1",
 				"f1",
 				"g1",
-				"ch1",
+				"chief",
 				"wi1",
 				"s1"
 			],
 			"action": [
-				"w1 vote ch1",
-				"ch1 vote f1",
-				"wi1 vote ch1"
+				"w1 vote chief",
+				"chief vote f1",
+				"wi1 vote chief"
 			]
 		},
 		{
@@ -31,14 +31,14 @@
 				"w1",
 				"g1",
 				"f1",
-				"ch1",
+				"chief",
 				"wi1",
 				"s1"
 			],
 			"action": [
 				"w1 kill g1",
 				"g1 guard g1",
-				"s1 seer ch1 = false"
+				"s1 seer chief = false"
 			]
 		},
 		{
@@ -46,7 +46,7 @@
 			"alive": [
 				"w1",
 				"wi1",
-				"ch1",
+				"chief",
 				"f1",
 				"g1",
 				"s1"
@@ -60,13 +60,13 @@
 			"alive": [
 				"w1",
 				"g1",
-				"ch1",
+				"chief",
 				"f1",
 				"s1"
 			],
 			"action": [
 				"w1 kill f1",
-				"g1 guard ch1",
+				"g1 guard chief",
 				"s1 seer w1 = true"
 			]
 		},
@@ -74,12 +74,12 @@
 			"time": "day3",
 			"alive": [
 				"w1",
-				"ch1",
+				"chief",
 				"g1",
 				"s1"
 			],
 			"action": [
-				"ch1 vote w1",
+				"chief vote w1",
 				"s1 vote w1"
 			]
 		}
