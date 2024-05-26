@@ -671,13 +671,8 @@ class Game:
     async def run_game_loop(self):
         print("Starting game loop")
         self.prev_playtime = self.is_in_play_time()
-        werewolf_list = []
-        for _id, player in self.players.items():
-            if isinstance(player, roles.Werewolf):
-                print("Wolf: ", player)
-                werewolf_list.append(_id)
-            # else:  # Enable this will not allow anyone to see config.WEREWOLF_CHANNEL including Admin player
-            #     await self.interface.add_user_to_channel(_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
+        werewolf_list = self.get_werewolf_list()
+        print("Wolf: ", werewolf_list)
 
         embed_data = self.generate_player_list_embed(True)
         werewolf_info = text_templates.generate_text(
@@ -928,11 +923,14 @@ class Game:
             alive_embed_data = self.generate_player_list_embed(True)
             dead_embed_data = self.generate_player_list_embed(False)
 
-            await self.interface.send_action_text_to_channel("werewolf_before_voting_text", config.WEREWOLF_CHANNEL)
-            await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
+            await self.werewolf_do_new_nighttime_phase(alive_embed_data)
             await asyncio.gather(*[
                 player.on_night_start(alive_embed_data, dead_embed_data) for player in self.get_all_players()
             ])
+
+    async def werewolf_do_new_nighttime_phase(self, alive_embed_data):
+        await self.interface.send_action_text_to_channel("werewolf_before_voting_text", config.WEREWOLF_CHANNEL)
+        await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
 
     async def do_end_nighttime_phase(self):
         # FIXME:
@@ -951,11 +949,7 @@ class Game:
             elif isinstance(player, roles.Pathologist):
                 await self.pathologist_do_end_nighttime_phase(player)
 
-        if self.wolf_kill_dict:
-            killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
-            if killed:
-                self.night_pending_kill_list.append((killed, const.DeadReason.HIDDEN))
-            self.wolf_kill_dict = {}
+        await self.werewolf_do_end_nighttime_phase()
 
         kills_list_by_reason = defaultdict(list)
         if self.night_pending_kill_list:
@@ -1071,6 +1065,22 @@ class Game:
                 await author.send_to_personal_channel(
                     text_templates.generate_text("witch_curse_result_text", target=f"<@{curse_target_id}>")
                 )
+
+    async def werewolf_do_end_nighttime_phase(self):
+        if self.is_werewolf_diseased:
+            self.is_werewolf_diseased = False
+            return
+
+        if self.wolf_kill_dict:
+            killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
+            print("killed", killed)
+            if killed:
+                self.night_pending_kill_list.append((killed, const.DeadReason.HIDDEN))
+                await self.interface.send_action_text_to_channel(
+                    "werewolf_kill_result_text", config.WEREWOLF_CHANNEL, target=f"<@{killed}>"
+                )
+
+            self.wolf_kill_dict = {}
 
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
@@ -1283,7 +1293,7 @@ class Game:
         target_id = target.player_id
 
         self.wolf_kill_dict[author_id] = target_id
-        return text_templates.generate_text("werewolf_kill_text", werewolf=f"<@{author_id}>", target=f"<@{target_id}>")
+        return text_templates.generate_text("werewolf_after_voting_text", werewolf=f"<@{author_id}>", target=f"<@{target_id}>")
 
     @command_verify_author(roles.Guard)
     @command_verify_phase(const.GamePhase.NIGHT)
@@ -1358,8 +1368,15 @@ class Game:
     async def hunter(self, author, target):
         return author.register_target(target.player_id)
 
+    def get_werewolf_list(self):
+        werewolf_list = []
+        for _id, player in self.players.items():
+            if isinstance(player, roles.Werewolf):
+                werewolf_list.append(_id)
+
+        return werewolf_list
+
     def get_player_with_role(self, role, status='alive'):
-        players = []
         if status == 'alive':
             players = self.get_alive_players()
         elif status == 'dead':
