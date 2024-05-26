@@ -1067,10 +1067,6 @@ class Game:
                 )
 
     async def werewolf_do_end_nighttime_phase(self):
-        if self.is_werewolf_diseased:
-            self.is_werewolf_diseased = False
-            return
-
         if self.wolf_kill_dict:
             killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
             print("killed", killed)
