@@ -66,6 +66,7 @@ class NewMoonMode:
             return
 
     async def do_new_nighttime_phase(self, interface, **kwargs):
+        print("New Moon do_new_nighttime_phase kwargs", kwargs)
         if self.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
             await interface.send_action_text_to_channel("new_moon_full_moon_vegetarian_announcement_text", WEREWOLF_CHANNEL)
             return
