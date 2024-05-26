@@ -812,14 +812,14 @@ class Game:
                 self.players[voter].is_voted_other = True
         return voted_list
 
-    async def control_muting_party_channel(self, channel_name, is_muted, player_check_func=None):
+    async def control_muting_party_channel(self, channel_name, is_muted, player_list):
         """
         Mute/Unmute all alive players in party channel (e.g. GAMEPLAY_CHANNEL, WEREWOLF_CHANNEL, COUPLE_CHANNEL)
         """
         await asyncio.gather(*[
             self.interface.add_user_to_channel(_id, channel_name, is_read=True, is_send=not is_muted)
-            for _id, player in self.players.items()
-            if player.is_alive() and (player_check_func is None or player_check_func(player))
+            for _id in player_list
+            if self.players[_id].is_alive()
         ])
 
     async def announce_current_new_moon_event(self):
@@ -852,9 +852,9 @@ class Game:
 
             # Mute all party channels
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
-            await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, True, lambda player: isinstance(player, roles.Werewolf))
-            await self.control_muting_party_channel(config.COUPLE_CHANNEL, True, lambda player: player.player_id in self.cupid_dict)
-            await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, False)
+            await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, True, self.get_werewolf_list())
+            await self.control_muting_party_channel(config.COUPLE_CHANNEL, True, list(self.cupid_dict.keys()))
+            await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, False, list(self.players.keys()))
         else:
             print("Error no player in game.")
             await self.stop()
@@ -905,21 +905,18 @@ class Game:
         players_embed_data = self.generate_player_list_embed()
         await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
 
-        await self.announce_current_new_moon_event()
-
-        # Unmute all party channels
         # Mute all players in config.GAMEPLAY_CHANNEL
-        await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, False, lambda player: isinstance(player, roles.Werewolf))
-        await self.control_muting_party_channel(config.COUPLE_CHANNEL, False, lambda player: player.player_id in self.cupid_dict)
-        await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, True)
+        await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, True, list(self.players.keys()))
 
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
         if self.players:
-            await self.interface.send_action_text_to_channel(
-                "night_phase_beginning_text",
-                config.GAMEPLAY_CHANNEL
-            )
+            await self.interface.send_action_text_to_channel("night_phase_beginning_text", config.GAMEPLAY_CHANNEL)
+            await self.announce_current_new_moon_event()
+            # Unmute all party channels
+            await self.control_muting_party_channel(config.COUPLE_CHANNEL, False, list(self.cupid_dict.keys()))
+
+            # do on_night_start
             alive_embed_data = self.generate_player_list_embed(True)
             dead_embed_data = self.generate_player_list_embed(False)
 
@@ -929,6 +926,12 @@ class Game:
             ])
 
     async def werewolf_do_new_nighttime_phase(self, alive_embed_data):
+        await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, False, self.get_werewolf_list())
+
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
+            await self.new_moon_mode.do_new_nighttime_phase(self.interface)
+            return
+
         await self.interface.send_action_text_to_channel("werewolf_before_voting_text", config.WEREWOLF_CHANNEL)
         await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
 

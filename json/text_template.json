@@ -1369,8 +1369,15 @@
       "en": ["👁️ The seer saw the character ***{target_role}*** while sleepwalking!"]
     }
   },
+  "new_moon_full_moon_vegetarian_announcement_text": {
+    "params": [],
+    "template": {
+      "vi": ["🌕 Đêm nay Sói sẽ ăn chay."],
+      "en": ["🌕 Tonight the Werewolves will not kill anyone."]
+    }
+  },
   "new_moon_full_moon_vegetarian_result_text": {
-    "params": ["target_role"],
+    "params": [],
     "template": {
       "vi": ["🌕 Hôm nay là ngày rằm, nghỉ ăn thịt một bữa nha bạn ơi!"],
       "en": ["🌕 Today is the full moon day, please stop killing!"]
