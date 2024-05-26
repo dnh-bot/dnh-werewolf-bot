@@ -556,6 +556,27 @@
       ]
     }
   },
+  "pathologist_before_voting_text": {
+    "params": [],
+    "template": {
+      "vi": ["🚑 Bác sĩ pháp y đêm nay muốn khám nghiệm thi thể của ai? `{bot_prefix}autopsy ID` để xem vai trò của người đó"],
+      "en": ["🚑 Pathologist doctor wants to examine whose body tonight? Use {bot_prefix}autopsy ID to see that person's role."]
+    }
+  },
+  "pathologist_after_voting_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🔬 Đêm nay, Bác sĩ pháp y muốn kiểm tra vai trò của {target}."],
+      "en": ["🔬 This night, Pathologist wants to check {target}'s role."]
+    }
+  },
+  "pathologist_result_text": {
+    "params": ["target", "role"],
+    "template": {
+      "vi": ["🧬 Ồ, bạn đã khám nghiệm được {target} là {role}."],
+      "en": ["🧬 Oh, you've examined {target} is a {role}."]
+    }
+  },
   "zombie_after_reborn_text": {
     "params": [],
     "template": {

@@ -1,10 +1,9 @@
 {
-	"name": "Chief vote draw",
+	"name": "Pathologist reborned by witch, werewolf wins",
 	"player_list": {
 		"w1": "Werewolf",
-		"f1": "Fox",
 		"g1": "Guard",
-		"chief": "Chief",
+		"p1": "Pathologist",
 		"wi1": "Witch",
 		"s1": "Seer"
 	},
@@ -13,76 +12,85 @@
 			"time": "day1",
 			"alive": [
 				"w1",
-				"f1",
 				"g1",
-				"chief",
+				"p1",
 				"wi1",
 				"s1"
 			],
-			"action": [
-				"w1 vote chief",
-				"chief vote f1",
-				"wi1 vote chief"
-			]
+			"action": []
 		},
 		{
 			"time": "night1",
 			"alive": [
 				"w1",
 				"g1",
-				"f1",
-				"chief",
+				"p1",
 				"wi1",
 				"s1"
 			],
 			"action": [
-				"w1 kill g1",
-				"g1 guard g1",
-				"s1 seer chief = false"
+				"w1 kill p1"
 			]
 		},
 		{
 			"time": "day2",
 			"alive": [
 				"w1",
-				"wi1",
-				"chief",
-				"f1",
 				"g1",
+				"wi1",
 				"s1"
 			],
-			"action": [
-				"f1 vote wi1"
-			]
+			"action": []
 		},
 		{
 			"time": "night2",
 			"alive": [
 				"w1",
 				"g1",
-				"chief",
-				"f1",
+				"wi1",
 				"s1"
 			],
 			"action": [
-				"w1 kill f1",
-				"g1 guard chief",
-				"s1 seer w1 = true"
+				"wi1 reborn p1"
 			]
 		},
 		{
 			"time": "day3",
 			"alive": [
 				"w1",
-				"chief",
 				"g1",
+				"p1",
+				"wi1",
 				"s1"
 			],
 			"action": [
-				"chief vote w1",
-				"s1 vote w1"
+				"g1 vote wi1"
+			]
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"s1"
+			],
+			"action": [
+				"w1 kill s1",
+				"p1 autopsy wi1 = Witch"
+			]
+		},
+		{
+			"time": "day4",
+			"alive": [
+				"w1",
+				"g1",
+				"p1"
+			],
+			"action": [
+				"w1 vote g1"
 			]
 		}
 	],
-	"win": "Villager"
+	"win": "Werewolf"
 }

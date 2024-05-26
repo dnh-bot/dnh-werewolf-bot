@@ -216,6 +216,15 @@
     "exclusive_roles": ["Witch"],
     "required_params": ["player_id"]
   },
+  "autopsy": {
+    "description": {
+      "vi": "Khám nghiệm chức năng của một người đã chết.",
+      "en": "Examine a dead body to reveal its role."
+    },
+    "valid_channels": ["PERSONAL"],
+    "exclusive_roles": ["Pathologist"],
+    "required_params": ["player_id"]
+  },
   "zombie": {
     "description": {
       "vi": "Tự đội mồ sống dậy.",

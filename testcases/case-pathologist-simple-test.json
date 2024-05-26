@@ -1,10 +1,9 @@
 {
-	"name": "Chief vote draw",
+	"name": "Pathologist test",
 	"player_list": {
 		"w1": "Werewolf",
-		"f1": "Fox",
 		"g1": "Guard",
-		"chief": "Chief",
+		"p1": "Pathologist",
 		"wi1": "Witch",
 		"s1": "Seer"
 	},
@@ -13,74 +12,59 @@
 			"time": "day1",
 			"alive": [
 				"w1",
-				"f1",
 				"g1",
-				"chief",
+				"p1",
 				"wi1",
 				"s1"
 			],
 			"action": [
-				"w1 vote chief",
-				"chief vote f1",
-				"wi1 vote chief"
+				"w1 vote g1"
 			]
 		},
 		{
 			"time": "night1",
 			"alive": [
 				"w1",
-				"g1",
-				"f1",
-				"chief",
+				"p1",
 				"wi1",
 				"s1"
 			],
 			"action": [
-				"w1 kill g1",
-				"g1 guard g1",
-				"s1 seer chief = false"
+				"p1 autopsy g1 = Guard"
 			]
 		},
 		{
 			"time": "day2",
 			"alive": [
 				"w1",
+				"p1",
 				"wi1",
-				"chief",
-				"f1",
-				"g1",
 				"s1"
 			],
 			"action": [
-				"f1 vote wi1"
+				"s1 vote wi1"
 			]
 		},
 		{
 			"time": "night2",
 			"alive": [
 				"w1",
-				"g1",
-				"chief",
-				"f1",
+				"p1",
 				"s1"
 			],
 			"action": [
-				"w1 kill f1",
-				"g1 guard chief",
-				"s1 seer w1 = true"
+				"p1 autopsy wi1 = Witch"
 			]
 		},
 		{
 			"time": "day3",
 			"alive": [
 				"w1",
-				"chief",
-				"g1",
+				"p1",
 				"s1"
 			],
 			"action": [
-				"chief vote w1",
-				"s1 vote w1"
+				"p1 vote w1"
 			]
 		}
 	],

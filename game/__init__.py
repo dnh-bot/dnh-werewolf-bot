@@ -948,6 +948,8 @@ class Game:
                 await self.guard_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Witch):
                 await self.witch_do_end_nighttime_phase(player)
+            elif isinstance(player, roles.Pathologist):
+                await self.pathologist_do_end_nighttime_phase(player)
 
         if self.wolf_kill_dict:
             killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
@@ -1036,6 +1038,18 @@ class Game:
                 f"seer_result_{'' if target.seer_seen_as_werewolf() else 'not_'}werewolf_text",
                 target=f"<@{target_id}>"
             )
+        )
+
+    async def pathologist_do_end_nighttime_phase(self, author):
+        target_id = author.get_target()
+        if target_id is None:
+            return
+
+        target = self.players[target_id]
+        role = target.get_role()
+
+        await author.send_to_personal_channel(
+            text_templates.generate_text("pathologist_result_text", target=f"<@{target_id}>", role=role)
         )
 
     async def witch_do_end_nighttime_phase(self, author):
@@ -1217,14 +1231,14 @@ class Game:
         if cmd == "zombie":
             return await self.zombie(author)
 
-        is_alive_target_command = cmd != "reborn"
+        is_alive_target_command = cmd not in ["reborn", "autopsy"]
         if is_alive_target_command != targets[0].is_alive():
             return text_templates.generate_text(
                 "invalid_target_status_text",
                 status=text_templates.get_word_in_language("alive" if is_alive_target_command else "dead")
             )
 
-        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse"):
+        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse", "autopsy"):
             return await getattr(self, cmd)(author, targets[0])
 
         if cmd == "ship":
@@ -1280,6 +1294,11 @@ class Game:
     @command_verify_author(roles.Seer)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def seer(self, author, target):
+        return author.register_target(target.player_id)
+
+    @command_verify_author(roles.Pathologist)
+    @command_verify_phase(const.GamePhase.NIGHT)
+    async def autopsy(self, author, target):
         return author.register_target(target.player_id)
 
     @command_verify_author(roles.Witch)

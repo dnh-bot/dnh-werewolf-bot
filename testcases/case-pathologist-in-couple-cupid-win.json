@@ -1,11 +1,10 @@
 {
-	"name": "Chief vote draw",
+	"name": "Pathologist in couple, cupid win",
 	"player_list": {
 		"w1": "Werewolf",
-		"f1": "Fox",
 		"g1": "Guard",
-		"chief": "Chief",
-		"wi1": "Witch",
+		"p1": "Pathologist",
+		"c1": "Cupid",
 		"s1": "Seer"
 	},
 	"timeline": [
@@ -13,46 +12,38 @@
 			"time": "day1",
 			"alive": [
 				"w1",
-				"f1",
 				"g1",
-				"chief",
-				"wi1",
+				"p1",
+				"c1",
 				"s1"
 			],
-			"action": [
-				"w1 vote chief",
-				"chief vote f1",
-				"wi1 vote chief"
-			]
+			"action": []
 		},
 		{
 			"time": "night1",
 			"alive": [
 				"w1",
 				"g1",
-				"f1",
-				"chief",
-				"wi1",
+				"p1",
+				"c1",
 				"s1"
 			],
 			"action": [
-				"w1 kill g1",
-				"g1 guard g1",
-				"s1 seer chief = false"
+				"c1 ship w1 p1"
 			]
 		},
 		{
 			"time": "day2",
 			"alive": [
 				"w1",
-				"wi1",
-				"chief",
-				"f1",
 				"g1",
+				"p1",
+				"c1",
 				"s1"
 			],
 			"action": [
-				"f1 vote wi1"
+				"w1 vote c1",
+				"p1 vote c1"
 			]
 		},
 		{
@@ -60,29 +51,25 @@
 			"alive": [
 				"w1",
 				"g1",
-				"chief",
-				"f1",
+				"p1",
 				"s1"
 			],
 			"action": [
-				"w1 kill f1",
-				"g1 guard chief",
-				"s1 seer w1 = true"
+				"p1 autopsy c1 = Cupid",
+				"w1 kill g1"
 			]
 		},
 		{
 			"time": "day3",
 			"alive": [
 				"w1",
-				"chief",
-				"g1",
+				"p1",
 				"s1"
 			],
 			"action": [
-				"chief vote w1",
-				"s1 vote w1"
+				"w1 vote s1"
 			]
 		}
 	],
-	"win": "Villager"
+	"win": "Cupid"
 }

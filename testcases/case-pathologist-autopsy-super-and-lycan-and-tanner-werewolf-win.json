@@ -1,0 +1,90 @@
+{
+	"name": "Pathologist autopsy Super, Lycan and Tanner, Werewolf win",
+	"player_list": {
+		"sw1": "Superwolf",
+		"t1": "Tanner",
+		"p1": "Pathologist",
+		"l1": "Lycan",
+		"s1": "Seer",
+		"w1": "Werewolf",
+		"g1": "Guard"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"sw1",
+				"t1",
+				"p1",
+				"l1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": [
+				"s1 vote sw1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"t1",
+				"p1",
+				"l1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": [
+				"w1 kill l1",
+				"p1 autopsy sw1 = Superwolf"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"t1",
+				"p1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": []
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"p1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": [
+				"p1 autopsy l1 = Lycan",
+				"w1 kill g1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"p1",
+				"s1",
+				"w1"
+			],
+			"action": []
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"p1",
+				"s1",
+				"w1"
+			],
+			"action": [
+				"w1 kill p1",
+				"p1 autopsy t1 = Tanner"
+			]
+		}
+	],
+	"win": "Werewolf"
+}

@@ -4,7 +4,7 @@
 		"w1": "Werewolf",
 		"f1": "Fox",
 		"g1": "Guard",
-		"ch1": "Chief",
+		"chief": "Chief",
 		"wi1": "Witch"
 	},
 	"timeline": [
@@ -14,13 +14,13 @@
 				"w1",
 				"f1",
 				"g1",
-				"ch1",
+				"chief",
 				"wi1"
 			],
 			"action": [
-				"w1 vote ch1",
-				"g1 vote ch1",
-				"wi1 vote ch1"
+				"w1 vote chief",
+				"g1 vote chief",
+				"wi1 vote chief"
 			]
 		},
 		{
@@ -34,7 +34,7 @@
 			"action": [
 				"w1 kill g1",
 				"g1 guard g1",
-				"wi1 reborn ch1"
+				"wi1 reborn chief"
 			]
 		},
 		{
@@ -42,7 +42,7 @@
 			"alive": [
 				"w1",
 				"wi1",
-				"ch1",
+				"chief",
 				"f1",
 				"g1"
 			],
@@ -55,24 +55,24 @@
 			"alive": [
 				"w1",
 				"g1",
-				"ch1",
+				"chief",
 				"f1"
 			],
 			"action": [
 				"w1 kill f1",
-				"g1 guard ch1"
+				"g1 guard chief"
 			]
 		},
 		{
 			"time": "day3",
 			"alive": [
 				"w1",
-				"ch1",
+				"chief",
 				"g1"
 			],
 			"action": [
 				"g1 vote w1",
-				"ch1 vote w1"
+				"chief vote w1"
 			]
 		}
 	],
