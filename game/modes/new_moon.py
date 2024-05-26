@@ -65,6 +65,12 @@ class NewMoonMode:
             await interface.send_action_text_to_channel("new_moon_punishment_announcement_text", CEMETERY_CHANNEL, cmd_usages=f"`{BOT_PREFIX}punish`")
             return
 
+    async def do_new_nighttime_phase(self, interface, **kwargs):
+        print("New Moon do_new_nighttime_phase kwargs", kwargs)
+        if self.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
+            await interface.send_action_text_to_channel("new_moon_full_moon_vegetarian_announcement_text", WEREWOLF_CHANNEL)
+            return
+
     async def do_end_nighttime_phase(self, interface, **kwargs):
         print("New Moon do_end_nighttime_phase kwargs", kwargs)
         if self.current_event == NewMoonMode.TWIN_FLAME:

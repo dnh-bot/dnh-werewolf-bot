@@ -361,18 +361,18 @@
       ]
     }
   },
-  "werewolf_kill_text": {
+  "werewolf_after_voting_text": {
     "params": ["werewolf", "target"],
     "template": {
-      "vi": ["🐺 Sói {werewolf} muốn xử lý {target} trong đêm nay"],
-      "en": ["🐺 Werewolf {werewolf} wants to bite {target} tonight"]
+      "vi": ["🐺 Sói {werewolf} muốn xử lý {target} trong đêm nay."],
+      "en": ["🐺 Werewolf {werewolf} wants to bite {target} tonight."]
     }
   },
-  "werewolf_after_voting_text": {
-    "params": ["user"],
+  "werewolf_kill_result_text": {
+    "params": ["target"],
     "template": {
-      "vi": ["Đang tiến hành xử lý {user}. Mong là mọi việc thuận lợi, đi ngủ thôi."],
-      "en": ["Processing {user}. Hope everything goes well, let's go to sleep."]
+      "vi": ["😋 Đang tiến hành xử lý {target}. Hi vọng là mọi việc thuận lợi."],
+      "en": ["😋 Processing killing {target}. Hope everything goes well."]
     }
   },
   "vote_text": {
@@ -1369,8 +1369,15 @@
       "en": ["👁️ The seer saw the character ***{target_role}*** while sleepwalking!"]
     }
   },
+  "new_moon_full_moon_vegetarian_announcement_text": {
+    "params": [],
+    "template": {
+      "vi": ["🌕 Đêm nay Sói sẽ ăn chay."],
+      "en": ["🌕 Tonight the Werewolves will not kill anyone."]
+    }
+  },
   "new_moon_full_moon_vegetarian_result_text": {
-    "params": ["target_role"],
+    "params": [],
     "template": {
       "vi": ["🌕 Hôm nay là ngày rằm, nghỉ ăn thịt một bữa nha bạn ơi!"],
       "en": ["🌕 Today is the full moon day, please stop killing!"]
