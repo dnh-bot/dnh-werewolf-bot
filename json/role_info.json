@@ -126,9 +126,9 @@
     "nighttime_commands": []
   },
   "Pathologist": {
-    "name_vi": "Bác sĩ Khám tử thi",
+    "name_vi": "Bác sĩ pháp y",
     "description": {
-      "vi": "Bác sĩ Khám tử thi mỗi đêm được chọn một người đã chết và biết được role của người đó.",
+      "vi": "Bác sĩ pháp y mỗi đêm được chọn một người đã chết và biết được role của người đó.",
       "en": "Pathologist each night can choose one deceased person and reveal their role."
     },
     "daytime_command": "vote",

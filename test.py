@@ -83,8 +83,6 @@ async def test_case(game, filepath):
                     assert expected_result.capitalize() == str(target_seen_as_werewolf)
                 elif command == "autopsy":
                     target_get_role_name = game.players[id_map[target_name[0]]].get_role()
-                    print(target_get_role_name, "HUEHUEHUEHUEHUE")
-                    print(expected_result)
                     assert expected_result == target_get_role_name
 
             await asyncio.sleep(delay_time)
