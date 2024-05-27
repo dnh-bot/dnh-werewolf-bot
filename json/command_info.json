@@ -4,6 +4,7 @@
       "vi": "Thiết lập đồng hồ đếm ngược.",
       "en": "Set the current timer."
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": ["dayphase", "nightphase", "alertperiod"]
   },
@@ -12,6 +13,7 @@
       "vi": "Chạy đồng hồ đếm ngược hiện tại.",
       "en": "Start the current timer."
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -20,6 +22,7 @@
       "vi": "Dừng đồng hồ đếm ngược hiện tại.",
       "en": "Stop the current timer."
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -28,6 +31,7 @@
       "vi": "Thiết lập giờ chơi trong 1 ngày. Thời gian phải ở định dạng HH:MM.",
       "en": "Set the playing time in a day. Time must be in HH:MM format."
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": ["time_start", "time_end"],
     "additional_params": ["time_zone"]
@@ -37,6 +41,7 @@
       "vi": "Thiết lập bảng phân vai mặc định cho trò chơi mới.",
       "en": "Set default player roles for a new game"
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": ["role_dict"]
   },
@@ -45,6 +50,7 @@
       "vi": "Hiển thị thiết lập các chế độ chơi",
       "en": "Display mode setting"
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -53,6 +59,7 @@
       "vi": "Thiết lập chế độ chơi.",
       "en": "Enable/Disable game modes."
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": ["mode_id", "on_str"]
   },
@@ -61,6 +68,7 @@
       "vi": "Tham gia vào một trò chơi.",
       "en": "Join a game."
     },
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -69,6 +77,7 @@
       "vi": "Rời khỏi một trò chơi.",
       "en": "Leave a game."
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -77,6 +86,7 @@
       "vi": "Theo dõi (nhưng không tham gia) vào một trò chơi.",
       "en": "Watch a game."
     },
+    "valid_channels": ["LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -85,6 +95,7 @@
       "vi": "Bỏ theo dõi một trò chơi.",
       "en": "Unwatch a game."
     },
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -93,6 +104,7 @@
       "vi": "Bắt đầu một trò chơi (cần đủ số lượng vote).",
       "en": "Start a game."
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -110,6 +122,7 @@
       "vi": "Nhảy đến phase sau (cần đủ số lượng vote).",
       "en": "Jump to next phase."
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -118,6 +131,7 @@
       "vi": "Dừng trò chơi.",
       "en": "Stop a game."
     },
+    "valid_channels": ["LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -126,6 +140,7 @@
       "vi": "Yêu cầu chơi lại cùng những người chơi hiện tại",
       "en": "Request a rematch with current players"
     },
+    "valid_channels": ["LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -134,6 +149,7 @@
       "vi": "Xem trạng thái trò chơi trong buổi hiện tại.",
       "en": "Show status of current phase."
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -142,6 +158,7 @@
       "vi": "Xem bảng xếp hạng.",
       "en": "Show ranking board."
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -186,6 +203,7 @@
       "vi": "Săn một ai đó.",
       "en": "Hunt a player."
     },
+    "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Hunter"],
     "required_params": ["player_id"]
   },
