@@ -149,7 +149,7 @@
       "vi": "Xem trạng thái trò chơi trong buổi hiện tại.",
       "en": "Show status of current phase."
     },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "valid_channels": ["GAMEPLAY", "LOBBY", "PERSONAL"],
     "exclusive_roles": [],
     "required_params": []
   },
