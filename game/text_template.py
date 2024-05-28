@@ -104,7 +104,9 @@ def generate_help_command_embed(command=None):
     command = command.lower() if isinstance(command, str) else command
     if command is None:
         help_embed_data = text_templates.generate_embed("help_command_all_embed", [])
-        help_embed_data["content"] = [(cmd, [commands.get_command_description(cmd)]) for cmd in all_commands]
+        help_embed_data["content"] = [
+            ("List", [" | ".join(f"`{cmd}`" for cmd in all_commands)])
+        ]
 
     elif command in all_commands:
         command_description = commands.get_command_description(command)
@@ -157,15 +159,13 @@ def generate_help_command_embed(command=None):
 
 def generate_help_role_embed(role=None):
     all_roles_name = [a_role.__name__ for a_role in roles.get_all_roles()]
-    role = role.capitalize() if isinstance(role, str) else role
     if role is None:
         help_embed_data = text_templates.generate_embed("help_role_all_embed", [])
         help_embed_data["content"] = [
-            (roles.get_role_title(role_name), [roles.get_role_description(role_name)])
-            for role_name in all_roles_name
+            ("List", [" | ".join(f"`{role_name}`" for role_name in all_roles_name)])
         ]
 
-    elif role in all_roles_name:
+    elif role.lower() in [a_role_name.lower() for a_role_name in all_roles_name]:
         nighttime_commands = roles.get_role_nighttime_commands(role)
         if nighttime_commands:
             nighttime_actions_description = ["- " + get_full_cmd_description(cmd) for cmd in nighttime_commands]
