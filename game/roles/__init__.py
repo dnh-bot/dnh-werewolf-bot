@@ -49,18 +49,15 @@ def get_role_data_by_name(name):
 def get_role_title(name):
     role_data = get_role_data_by_name(name)
     if role_data is not None:
-        field_name = f"name_{TEXT_LANGUAGE}"
-        if field_name in role_data:
-            return f"{name} ({role_data[field_name]})"
-        return name
-    print("Unknown state get_role_title")
+        return role_data["title"]
+
     return None
 
 
 def get_role_description(name):
     role_data = get_role_data_by_name(name)
     if role_data is not None:
-        return role_data["description"][TEXT_LANGUAGE]
+        return role_data["description"]
 
     return None
 
