@@ -118,11 +118,7 @@ def generate_help_command_embed(command=None):
 
         usage_str = ["- " + usage_text for usage_text in commands.get_command_usages(command)]
 
-        if command in ("vote", "punish", "kill", "guard", "seer", "reborn", "curse"):
-            example_args_list = [{"player_id": 2}]
-        elif command == "ship":
-            example_args_list = [{"player_id1": 2, "player_id2": 3}]
-        elif command == "timer":
+        if command == "timer":
             example_args_list = [{"dayphase": 60, "nightphase": 30, "alertperiod": 20}]
         elif command == "setmode":
             example_args_list = [{"mode_id": "2", "on_str": "on"}]
@@ -134,7 +130,7 @@ def generate_help_command_embed(command=None):
                 {"time_start": "00:00", "time_end": "23:59", "time_zone": "UTC+7"}
             ]
         else:
-            example_args_list = []
+            example_args_list = [{"player_id": 2, "player_id1": 2, "player_id2": 3}]
 
         help_embed_data = text_templates.generate_embed(
             "help_command_embed", [
