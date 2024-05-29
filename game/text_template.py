@@ -129,6 +129,12 @@ def generate_help_command_embed(command=None):
                 {"time_start": "00:00", "time_end": "23:59", "time_zone": ""},
                 {"time_start": "00:00", "time_end": "23:59", "time_zone": "UTC+7"}
             ]
+        elif command == "auto":
+            example_args_list = [
+                {"cmd": "seer"},
+                {"cmd": "guard"},
+                {"cmd": "off"}
+            ]
         else:
             example_args_list = [{"player_id": 2, "player_id1": 2, "player_id2": 3}]
 

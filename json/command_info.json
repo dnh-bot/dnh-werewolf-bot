@@ -263,11 +263,11 @@
   },
   "auto": {
     "description": {
-      "vi": "Tự động thực hiện chức năng.",
-      "en": "Automatically use player's mana."
+      "vi": "Tự động thực hiện chức năng của người chơi. Tắt chức năng tự động này bằng tham số `off`.",
+      "en": "Automatically use player's mana. Turn off this auto feature by using parameter `off`."
     },
     "valid_channels": ["PERSONAL"],
-    "exclusive_roles": [],
-    "required_params": []
+    "exclusive_roles": ["Seer", "Guard"],
+    "required_params": ["cmd"]
   }
 }
