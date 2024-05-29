@@ -166,22 +166,24 @@ def generate_help_role_embed(role=None):
         help_embed_data["content"] = [
             ("List", [" | ".join(f"`{role_name}`" for role_name in all_roles_name)])
         ]
+        return help_embed_data
 
-    elif role.lower() in [a_role_name.lower() for a_role_name in all_roles_name]:
-        nighttime_commands = roles.get_role_nighttime_commands(role)
-        if nighttime_commands:
-            nighttime_actions_description = ["- " + get_full_cmd_description(cmd) for cmd in nighttime_commands]
-        else:
-            nighttime_actions_description = [text_templates.generate_text("nighttime_no_actions_text")]
+    role_data = roles.get_role_data_by_name(role)
+    if not role_data:
+        return text_templates.generate_embed("help_invalid_name_embed", [], arg_type="role", arg_name=role)
 
-        help_embed_data = text_templates.generate_embed(
-            "help_role_embed", [[get_full_cmd_description("vote")], nighttime_actions_description],
-            role_title=roles.get_role_title(role), role_description=roles.get_role_description(role)
-        )
+    title = role_data["title"]
+    description = role_data["description"]
+    nighttime_commands = role_data["nighttime_commands"]
+    if nighttime_commands:
+        nighttime_actions_description = ["- " + get_full_cmd_description(cmd) for cmd in nighttime_commands]
     else:
-        help_embed_data = text_templates.generate_embed("help_invalid_name_embed", [], arg_type="role", arg_name=role)
+        nighttime_actions_description = [text_templates.generate_text("nighttime_no_actions_text")]
 
-    return help_embed_data
+    return text_templates.generate_embed(
+        "help_role_embed", [[get_full_cmd_description("vote")], nighttime_actions_description],
+        role_title=title, role_description=description
+    )
 
 
 def generate_help_embed(*args):
