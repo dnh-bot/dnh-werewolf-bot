@@ -104,7 +104,9 @@ def generate_help_command_embed(command=None):
     command = command.lower() if isinstance(command, str) else command
     if command is None:
         help_embed_data = text_templates.generate_embed("help_command_all_embed", [])
-        help_embed_data["content"] = [(cmd, [commands.get_command_description(cmd)]) for cmd in all_commands]
+        help_embed_data["content"] = [
+            ("List", [" | ".join(f"`{cmd}`" for cmd in all_commands)])
+        ]
 
     elif command in all_commands:
         command_description = commands.get_command_description(command)
@@ -116,11 +118,7 @@ def generate_help_command_embed(command=None):
 
         usage_str = ["- " + usage_text for usage_text in commands.get_command_usages(command)]
 
-        if command in ("vote", "punish", "kill", "guard", "seer", "reborn", "curse"):
-            example_args_list = [{"player_id": 2}]
-        elif command == "ship":
-            example_args_list = [{"player_id1": 2, "player_id2": 3}]
-        elif command == "timer":
+        if command == "timer":
             example_args_list = [{"dayphase": 60, "nightphase": 30, "alertperiod": 20}]
         elif command == "setmode":
             example_args_list = [{"mode_id": "2", "on_str": "on"}]
@@ -131,8 +129,14 @@ def generate_help_command_embed(command=None):
                 {"time_start": "00:00", "time_end": "23:59", "time_zone": ""},
                 {"time_start": "00:00", "time_end": "23:59", "time_zone": "UTC+7"}
             ]
+        elif command == "auto":
+            example_args_list = [
+                {"cmd": "seer"},
+                {"cmd": "guard"},
+                {"cmd": "off"}
+            ]
         else:
-            example_args_list = []
+            example_args_list = [{"player_id": 2, "player_id1": 2, "player_id2": 3}]
 
         help_embed_data = text_templates.generate_embed(
             "help_command_embed", [
@@ -157,29 +161,29 @@ def generate_help_command_embed(command=None):
 
 def generate_help_role_embed(role=None):
     all_roles_name = [a_role.__name__ for a_role in roles.get_all_roles()]
-    role = role.capitalize() if isinstance(role, str) else role
     if role is None:
         help_embed_data = text_templates.generate_embed("help_role_all_embed", [])
         help_embed_data["content"] = [
-            (roles.get_role_title(role_name), [roles.get_role_description(role_name)])
-            for role_name in all_roles_name
+            ("List", [" | ".join(f"`{role_name}`" for role_name in all_roles_name)])
         ]
+        return help_embed_data
 
-    elif role in all_roles_name:
-        nighttime_commands = roles.get_role_nighttime_commands(role)
-        if nighttime_commands:
-            nighttime_actions_description = ["- " + get_full_cmd_description(cmd) for cmd in nighttime_commands]
-        else:
-            nighttime_actions_description = [text_templates.generate_text("nighttime_no_actions_text")]
+    role_data = roles.get_role_data_by_name(role)
+    if not role_data:
+        return text_templates.generate_embed("help_invalid_name_embed", [], arg_type="role", arg_name=role)
 
-        help_embed_data = text_templates.generate_embed(
-            "help_role_embed", [[get_full_cmd_description("vote")], nighttime_actions_description],
-            role_title=roles.get_role_title(role), role_description=roles.get_role_description(role)
-        )
+    title = role_data["title"]
+    description = role_data["description"]
+    nighttime_commands = role_data["nighttime_commands"]
+    if nighttime_commands:
+        nighttime_actions_description = ["- " + get_full_cmd_description(cmd) for cmd in nighttime_commands]
     else:
-        help_embed_data = text_templates.generate_embed("help_invalid_name_embed", [], arg_type="role", arg_name=role)
+        nighttime_actions_description = [text_templates.generate_text("nighttime_no_actions_text")]
 
-    return help_embed_data
+    return text_templates.generate_embed(
+        "help_role_embed", [[get_full_cmd_description("vote")], nighttime_actions_description],
+        role_title=title, role_description=description
+    )
 
 
 def generate_help_embed(*args):
