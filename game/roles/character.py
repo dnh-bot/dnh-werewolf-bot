@@ -27,6 +27,7 @@ class Character:
         self.channel_name = f"{config.PERSONAL}-{valid_channel_name}"
         self.target = None
         self.party = Character
+        self.depend_target = None
 
     def get_role(self):
         return self.__class__.__name__

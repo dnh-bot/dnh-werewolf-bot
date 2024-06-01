@@ -133,5 +133,14 @@
     },
     "daytime_command": "vote",
     "nighttime_commands": ["autopsy"]
+  },
+  "ApprenticeSeer": {
+    "name_vi": "Tiên tri tập sự",
+    "description": {
+      "vi": "Nếu Tiên tri đã chết, Tiên tri tập sự sẽ trở thành Tiên tri của làng.",
+      "en": "If the Seer dies, the Apprentice Seer will become the village's Seer."
+    },
+    "daytime_command": "vote",
+    "nighttime_commands": ["seer"]
   }
 }

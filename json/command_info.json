@@ -213,7 +213,7 @@
       "en": "Seer a player."
     },
     "valid_channels": ["PERSONAL"],
-    "exclusive_roles": ["Seer"],
+    "exclusive_roles": ["Seer", "Apprentice Seer"],
     "required_params": ["player_id"]
   },
   "reborn": {

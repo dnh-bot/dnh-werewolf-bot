@@ -944,6 +944,8 @@ class Game:
         for player in self.get_alive_players():
             if isinstance(player, roles.Seer):
                 await self.seer_do_end_nighttime_phase(player)
+            elif isinstance(player, roles.ApprenticeSeer):
+                await self.apprenticeseer_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Guard):
                 await self.guard_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Witch):
@@ -1035,6 +1037,14 @@ class Game:
                 target=f"<@{target_id}>"
             )
         )
+    async def apprenticeseer_do_end_nighttime_phase(self, author):
+        seer_id = self.get_player_with_role(roles.Seer, "dead")
+        active_status = seer_id is not None
+
+        author.set_active(active_status)
+
+        if author.is_active:
+            await self.seer_do_end_nighttime_phase(author)
 
     async def pathologist_do_end_nighttime_phase(self, author):
         target_id = author.get_target()
@@ -1300,6 +1310,11 @@ class Game:
         return author.register_target(target.player_id)
 
     @command_verify_author(roles.Seer)
+    @command_verify_phase(const.GamePhase.NIGHT)
+    async def seer(self, author, target):
+        return author.register_target(target.player_id)
+
+    @command_verify_author(roles.ApprenticeSeer)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def seer(self, author, target):
         return author.register_target(target.player_id)
