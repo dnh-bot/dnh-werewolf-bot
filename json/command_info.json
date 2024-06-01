@@ -213,7 +213,16 @@
       "en": "Seer a player."
     },
     "valid_channels": ["PERSONAL"],
-    "exclusive_roles": ["Seer", "Apprentice Seer"],
+    "exclusive_roles": ["Seer"],
+    "required_params": ["player_id"]
+  },
+  "aseer": {
+    "description": {
+      "vi": "Soi một người bất kỳ - thực hiện bởi Tiên tri tập sự.",
+      "en": "Seer a player - by ApprenticeSeer."
+    },
+    "valid_channels": ["PERSONAL"],
+    "exclusive_roles": ["Apprentice Seer"],
     "required_params": ["player_id"]
   },
   "reborn": {

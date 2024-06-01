@@ -1256,7 +1256,7 @@ class Game:
                 status=text_templates.get_word_in_language("alive" if is_alive_target_command else "dead")
             )
 
-        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse", "autopsy"):
+        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse", "autopsy", "aseer"):
             return await getattr(self, cmd)(author, targets[0])
 
         if cmd == "ship":
@@ -1316,7 +1316,7 @@ class Game:
 
     @command_verify_author(roles.ApprenticeSeer)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def seer(self, author, target):
+    async def aseer(self, author, target):
         return author.register_target(target.player_id)
 
     @command_verify_author(roles.Pathologist)

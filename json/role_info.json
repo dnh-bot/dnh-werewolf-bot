@@ -141,6 +141,6 @@
       "en": "If the Seer dies, the Apprentice Seer will become the village's Seer."
     },
     "daytime_command": "vote",
-    "nighttime_commands": ["seer"]
+    "nighttime_commands": ["aseer"]
   }
 }

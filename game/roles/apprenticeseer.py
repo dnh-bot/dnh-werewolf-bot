@@ -17,7 +17,7 @@ class ApprenticeSeer(Seer):
 
     async def on_day(self):
         self.target = None
- 
+
     async def set_active(self, active):
         if self.is_alive() and active != self.is_active:
             if active:
