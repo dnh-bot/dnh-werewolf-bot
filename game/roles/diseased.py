@@ -1,4 +1,4 @@
-from game.roles import Villager
+from game.roles.villager import Villager
 
 
 class Diseased(Villager):

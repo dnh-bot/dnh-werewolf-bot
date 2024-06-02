@@ -15,6 +15,8 @@ class CharacterStatus(Enum):
 
 
 class Character:
+    # FIXME:
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods
     def __init__(self, interface, player_id, player_name):
         self.interface = interface
         self.player_id = player_id
@@ -145,6 +147,7 @@ class Character:
 
     async def on_day_start(self, day):
         # Will be overloaded in Child Class
+        print(f"on day {day} start")
         if self.next_disable_action_days > 0:
             self.set_action_disabled_today(True)
             await self.send_to_personal_channel(
