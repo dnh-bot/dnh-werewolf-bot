@@ -21,8 +21,12 @@ from game.modes.new_moon import NewMoonMode
 def command_verify_author(valid_role):
     def wrapper(cmd_func):
         async def execute(game, author, *a, **kw):
-            if author is not None and not isinstance(author, valid_role):
-                return text_templates.generate_text("invalid_author_text")
+            if author is not None:
+                if not isinstance(author, valid_role):
+                    return text_templates.generate_text("invalid_author_text")
+
+                if author.is_action_disabled_today():
+                    return text_templates.generate_text("invalid_author_disabled_action_text")
 
             return await cmd_func(game, author, *a, **kw)
 
@@ -84,6 +88,7 @@ class Game:
         self.watchers = set()  # Set of id
         self.game_phase = const.GamePhase.NEW_GAME
         self.formatted_roles = ""
+        self.is_werewolf_diseased = False
         self.wolf_kill_dict = {}  # dict[wolf] -> player
         self.reborn_set = set()
         self.cupid_dict = {}  # dict[player1] -> player2, dict[player2] -> player1
@@ -672,7 +677,7 @@ class Game:
         print("Starting game loop")
         self.prev_playtime = self.is_in_play_time()
         werewolf_list = self.get_werewolf_list()
-        print("Wolf: ", werewolf_list)
+        print("Wolf:", werewolf_list)
 
         embed_data = self.generate_player_list_embed(True)
         werewolf_info = text_templates.generate_text(
@@ -931,6 +936,10 @@ class Game:
             await self.new_moon_mode.do_new_nighttime_phase(self.interface)
             return
 
+        if self.is_werewolf_diseased:
+            await self.interface.send_action_text_to_channel("werewolf_diseased_text", config.WEREWOLF_CHANNEL)
+            return
+
         await self.interface.send_action_text_to_channel("werewolf_before_voting_text", config.WEREWOLF_CHANNEL)
         await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
 
@@ -1069,6 +1078,10 @@ class Game:
                 )
 
     async def werewolf_do_end_nighttime_phase(self):
+        if self.is_werewolf_diseased:
+            self.is_werewolf_diseased = False
+            return
+
         if self.wolf_kill_dict:
             killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
             print("killed", killed)
@@ -1077,8 +1090,19 @@ class Game:
                 await self.interface.send_action_text_to_channel(
                     "werewolf_kill_result_text", config.WEREWOLF_CHANNEL, target=f"<@{killed}>"
                 )
+                await self.do_werewolf_killed_effect(self.players[killed])
 
             self.wolf_kill_dict = {}
+
+    async def do_werewolf_killed_effect(self, killed_player):
+        if isinstance(killed_player, roles.Diseased):
+            print("werewolf has been diseased")
+            self.is_werewolf_diseased = True
+            werewolf_list = self.get_werewolf_list()
+            for werewolf_id in werewolf_list:
+                # affects all werewolves
+                werewolf = self.players[werewolf_id]
+                werewolf.add_next_disable_action_days(1)
 
     async def new_phase(self):
         self.last_nextcmd_time = time.time()

@@ -27,6 +27,8 @@ class Character:
         self.channel_name = f"{config.PERSONAL}-{valid_channel_name}"
         self.target = None
         self.party = Character
+        self.action_disabled_today = False
+        self.next_disable_action_days = 0
 
     def get_role(self):
         return self.__class__.__name__
@@ -89,6 +91,18 @@ class Character:
         return text_templates.generate_text(f"{self.get_role().lower()}_after_voting_text", target=f"<@{target_id}>")\
             + text_templates.generate_text("inform_power_used_text")
 
+    def get_next_disable_action_days(self):
+        return self.next_disable_action_days
+
+    def add_next_disable_action_days(self, day_count):
+        self.next_disable_action_days += day_count
+
+    def is_action_disabled_today(self):
+        return self.action_disabled_today
+
+    def set_action_disabled_today(self, action_disabled_today):
+        self.action_disabled_today = action_disabled_today
+
     async def create_personal_channel(self, self_check=False):
         await self.interface.create_channel(self.channel_name)
         await self.interface.add_user_to_channel(self.player_id, self.channel_name, is_read=True, is_send=True)
@@ -131,7 +145,14 @@ class Character:
 
     async def on_day_start(self, day):
         # Will be overloaded in Child Class
-        pass
+        if self.next_disable_action_days > 0:
+            self.set_action_disabled_today(True)
+            await self.send_to_personal_channel(
+                text_templates.generate_text("disabled_action_text", day_count=self.next_disable_action_days)
+            )
+            self.next_disable_action_days -= 1
+        else:
+            self.set_action_disabled_today(False)
 
     async def on_night(self):
         # Will be overloaded in Child Class
