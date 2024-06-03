@@ -792,7 +792,7 @@
     "params": [],
     "template": {
       "vi": ["Bạn đã bị mất năng lượng nên trong hôm nay không thể thi triển sức mạnh. Sau hôm nay có thể bạn sẽ trở lại trạng thái bình thường :)"],
-      "en": ["Your energy was sucked so you can't use your power today. After today, maybe you would return to your normal state :)"]
+      "en": ["Your energy was empty so you can't use your power today. After today, maybe you would return to your normal state :)"]
     }
   },
   "invalid_ship_with_random_couple_text": {
