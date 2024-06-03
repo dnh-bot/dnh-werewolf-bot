@@ -133,5 +133,14 @@
     },
     "daytime_command": "vote",
     "nighttime_commands": ["autopsy"]
+  },
+  "Diseased": {
+    "name_vi": "Người bệnh",
+    "description": {
+      "vi": "Nếu Người bệnh bị Sói cắn, thì Sói sẽ không thể cắn người nào vào đêm tiếp theo do bị bệnh.",
+      "en": "If a Diseased is killed by Werewolf, the Werewolf will not be able to kill anyone the following night due to the diseased."
+    },
+    "daytime_command": "vote",
+    "nighttime_commands": []
   }
 }
