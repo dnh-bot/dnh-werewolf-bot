@@ -788,11 +788,11 @@
       "en": ["Please wait until the {phase}, my friend!"]
     }
   },
-  "invalid_nighttime_text": {
+  "invalid_author_disabled_action_text": {
     "params": [],
     "template": {
-      "vi": ["Ráng đợi tới đêm bạn êy!"],
-      "en": ["Please wait until the night, my friend!"]
+      "vi": ["Bạn đã bị mất năng lượng nên trong hôm nay không thể thi triển sức mạnh. Sau hôm nay có thể bạn sẽ trở lại trạng thái bình thường :)"],
+      "en": ["Your energy was empty so you can't use your power today. After today, maybe you would return to your normal state :)"]
     }
   },
   "invalid_ship_with_random_couple_text": {
@@ -1409,6 +1409,20 @@
     "template": {
       "vi": ["{user} đã biến mất trước khi lên đoạn đầu đài."],
       "en": ["{user} has been disappeared before execution."]
+    }
+  },
+  "werewolf_diseased_text": {
+    "params": [],
+    "template": {
+      "vi": ["🤒 Sói đã bị nhiễm bệnh nên phải ăn cháo trắng tĩnh dưỡng. Đợi ngày mai khoẻ lại rồi có thể cắn người lại nha."],
+      "en": ["🤒 The werewolf was diseased, so you have to eat white porridge to revive. Wait until tomorrow to you feel better then you can kill people again."]
+    }
+  },
+  "disabled_action_text": {
+    "params": ["day_count"],
+    "template": {
+      "vi": ["Hôm nay bạn tạm thời không thể sử dụng quyền năng của mình. Hãy đợi hết {day_count} ngày để bạn có thể trở lại trạng thái bình thường."],
+      "en": ["Today you temporarily can't use your power. Please wait {day_count} day(s) so you can return to your normal state."]
     }
   },
   "ban_command_reply_text": {

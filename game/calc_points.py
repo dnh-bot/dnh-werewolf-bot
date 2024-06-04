@@ -3,6 +3,7 @@ import statistics
 import utils
 from game import generate_roles
 
+
 def calc_roles():
     role_config = utils.common.read_json_file("json/role_config.json")
 
@@ -26,7 +27,7 @@ def evaluate_system():
             #     print(role_config)
             score = generate_roles.get_score(role_config)
             scores.append(score)
-    # Caculate standard deviation of scores:
+    # Calculate standard deviation of scores:
     print("Mean score: ", sum(scores)/len(scores))
     print("Max score: ", max(scores))
     print("Min score: ", min(scores))

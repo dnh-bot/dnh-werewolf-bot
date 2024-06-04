@@ -1,0 +1,81 @@
+{
+	"name": "Diseased has been guarded",
+	"player_list": {
+		"wolf": "Werewolf",
+		"guard": "Guard",
+		"seer": "Seer",
+		"diseased": "Diseased",
+		"villager": "Villager"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"diseased",
+				"villager"
+			],
+			"action": [
+				"wolf vote villager",
+				"guard vote villager",
+				"diseased vote villager"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"diseased"
+			],
+			"action": [
+				"wolf kill diseased",
+				"guard guard diseased",
+				"seer seer diseased = false"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"diseased"
+			],
+			"action": [
+				"wolf vote seer",
+				"seer vote guard"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"diseased"
+			],
+			"action": [
+				"wolf kill seer",
+				"seer seer wolf = true"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"diseased"
+			],
+			"action": [
+				"guard vote wolf",
+				"seer vote wolf"
+			]
+		}
+	],
+	"win": "Villager"
+}
