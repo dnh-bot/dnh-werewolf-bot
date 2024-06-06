@@ -543,19 +543,6 @@
       "en": ["🩸 You have cursed {target}"]
     }
   },
-  "zombie_before_voting_text": {
-    "params": [],
-    "template": {
-      "vi": [
-        "🧟 Bạn có thể đội mồ sống dậy! Bạn chỉ có thể sử dụng kỹ năng này 1 lần.",
-        "💡 Nhập `{bot_prefix}zombie` để trở lại cuộc đời.\n"
-      ],
-      "en": [
-        "🧟 You can be reborn! You can only use this skill once.",
-        "💡 Enter `{bot_prefix}zombie` to return to the life.\n"
-      ]
-    }
-  },
   "pathologist_before_voting_text": {
     "params": [],
     "template": {
@@ -575,6 +562,19 @@
     "template": {
       "vi": ["🧬 Ồ, bạn đã khám nghiệm được {target} là {role}."],
       "en": ["🧬 Oh, you've examined {target} is a {role}."]
+    }
+  },
+  "zombie_before_voting_text": {
+    "params": [],
+    "template": {
+      "vi": [
+        "🧟 Bạn có thể đội mồ sống dậy! Bạn chỉ có thể sử dụng kỹ năng này 1 lần.",
+        "💡 Nhập `{bot_prefix}zombie` để trở lại cuộc đời.\n"
+      ],
+      "en": [
+        "🧟 You can be reborn! You can only use this skill once.",
+        "💡 Enter `{bot_prefix}zombie` to return to the life.\n"
+      ]
     }
   },
   "zombie_after_reborn_text": {
@@ -863,6 +863,13 @@
     "template": {
       "vi": ["Hiện bạn đang không ở trong game."],
       "en": ["You are not currently in the game."]
+    }
+  },
+  "not_in_phase_text": {
+    "params": ["phase"],
+    "template": {
+      "vi": ["Hiện đang ngoài giờ thực hiện chức năng {phase}."],
+      "en": ["You are not currently in the {phase} action time."]
     }
   },
   "maximum_players_exceeded": {
