@@ -664,13 +664,6 @@
       "en": ["You can only use your skill once!"]
     }
   },
-  "invalid_punish_in_cemetery_text": {
-    "params": [],
-    "template": {
-      "vi": ["Chỉ sử dụng trong buổi sáng của sự kiện new moon **Trừng Phạt**!"],
-      "en": ["Only use in the morning of new moon event **Punishment**!"]
-    }
-  },
   "inform_power_used_text": {
     "params": [],
     "template": {
@@ -786,6 +779,13 @@
     "template": {
       "vi": ["Ráng đợi tới {phase} bạn êy!"],
       "en": ["Please wait until the {phase}, my friend!"]
+    }
+  },
+  "invalid_phase_in_event_text": {
+    "params": ["phase", "event"],
+    "template": {
+      "vi": ["Chỉ sử dụng trong thời gian {phase} của sự kiện new moon **{event}**!"],
+      "en": ["Only use in the {phase} of new moon event **{event}**!"]
     }
   },
   "invalid_author_disabled_action_text": {

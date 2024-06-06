@@ -844,9 +844,6 @@ class Game:
         self.day += 1
 
         if self.players:
-            await asyncio.gather(*[
-                player.on_day_start(self.day) for player in self.get_all_players()
-            ])
             await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
             embed_data = self.generate_player_list_embed()
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
@@ -858,6 +855,9 @@ class Game:
                 alive_players_embed_data = self.generate_player_list_embed(True)
                 await self.new_moon_mode.do_new_daytime_phase(self.interface, alive_players_embed_data=alive_players_embed_data)
 
+            await asyncio.gather(*[
+                player.on_day_start(self.day) for player in self.get_all_players()
+            ])
             # Mute all party channels
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
             await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, True, self.get_werewolf_list())
@@ -1120,12 +1120,13 @@ class Game:
         print(self.display_alive_player())
         if self.timer_enable:
             await self.cancel_running_task(self.task_run_timer_phase)
-            self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
 
-        if self.game_phase == const.GamePhase.DAY:
-            await self.do_new_daytime_phase()
-        elif self.game_phase == const.GamePhase.NIGHT:
-            await self.do_new_nighttime_phase()
+            if self.game_phase == const.GamePhase.DAY:
+                await self.do_new_daytime_phase()
+            elif self.game_phase == const.GamePhase.NIGHT:
+                await self.do_new_nighttime_phase()
+
+            self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
 
     async def end_phase(self):
         assert self.game_phase != const.GamePhase.NEW_GAME
