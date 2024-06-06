@@ -664,6 +664,13 @@
       "en": ["You can only use your skill once!"]
     }
   },
+  "invalid_punish_in_cemetery_text": {
+    "params": [],
+    "template": {
+      "vi": ["Chỉ sử dụng trong buổi sáng của sự kiện new moon **Trừng Phạt**!"],
+      "en": ["Only use in the morning of new moon event **Punishment**!"]
+    }
+  },
   "inform_power_used_text": {
     "params": [],
     "template": {
