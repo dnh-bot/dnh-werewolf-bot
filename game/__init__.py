@@ -1250,7 +1250,7 @@ class Game:
         # pylint: disable=too-many-return-statements, too-many-branches
         if not self.__is_on_phase:
             return text_templates.generate_text(
-                "not_in_phase_text",
+                "not_in_phase_action_time_text",
                 phase=text_templates.get_word_in_language(str(self.game_phase))
             )
 

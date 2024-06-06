@@ -872,7 +872,7 @@
       "en": ["You are not currently in the game."]
     }
   },
-  "not_in_phase_text": {
+  "not_in_phase_action_time_text": {
     "params": ["phase"],
     "template": {
       "vi": ["Hiện đang ngoài giờ thực hiện chức năng {phase}."],
