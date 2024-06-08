@@ -1,5 +1,6 @@
 # import asyncio   # Do not remove this. This for debug command
 import re
+import traceback
 from datetime import *
 import subprocess
 import os
@@ -60,7 +61,7 @@ async def process_command(client, game, message):
         await parse_command(client, game, message, cmd, parameters)
         # TODO: reply message here
     except Exception as e:
-        print(f"Error in process_command with cmd={cmd}:", e)
+        print(f"Error in process_command with cmd={cmd}:", traceback.format_exc())
 
 
 async def parse_command(client, game, message, cmd, parameters):
@@ -117,7 +118,7 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
             return
         await player.do_rematch(game, message)
 
-    elif cmd in ("vote", "punish", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto", "bite"):
+    elif cmd in ("vote", "punish", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto", "autopsy", "bite"):
         try:
             await player.do_character_cmd(game, message, cmd, parameters)
         except Exception as e:
@@ -133,6 +134,9 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
 
     elif cmd == "status":
         await game.show_status(message.author, message.channel.name)
+
+    elif cmd == "rank":
+        await game.show_player_score_list(message.channel.name)
 
     elif cmd == "timer":
         # Usage:`!timer 60 30 20` -> dayphase=60s, nightphase=30s, alertperiod=20s

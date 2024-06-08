@@ -1,0 +1,105 @@
+{
+	"name": "Pathologist autopsy Chief, Hunter, Fox. Villager win",
+	"player_list": {
+		"chief": "Chief",
+		"h1": "Hunter",
+		"p1": "Pathologist",
+		"f1": "Fox",
+		"s1": "Seer",
+		"w1": "Werewolf",
+		"g1": "Guard"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"chief",
+				"h1",
+				"p1",
+				"f1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": [
+				"s1 vote chief"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"h1",
+				"p1",
+				"f1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": [
+				"w1 kill f1",
+				"p1 autopsy chief = Chief"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"h1",
+				"p1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": [
+				"w1 vote h1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"p1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": [
+				"p1 autopsy f1 = Fox",
+				"w1 kill h1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"p1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": []
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"p1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": [
+				"p1 autopsy h1 = Hunter"
+			]
+		},
+		{
+			"time": "day4",
+			"alive": [
+				"p1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": [
+				"p1 vote w1"
+			]
+		}
+	],
+	"win": "Villager"
+}

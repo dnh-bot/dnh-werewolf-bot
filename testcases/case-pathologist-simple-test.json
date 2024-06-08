@@ -1,0 +1,72 @@
+{
+	"name": "Pathologist test",
+	"player_list": {
+		"w1": "Werewolf",
+		"g1": "Guard",
+		"p1": "Pathologist",
+		"wi1": "Witch",
+		"s1": "Seer"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"wi1",
+				"s1"
+			],
+			"action": [
+				"w1 vote g1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"p1",
+				"wi1",
+				"s1"
+			],
+			"action": [
+				"p1 autopsy g1 = Guard"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"p1",
+				"wi1",
+				"s1"
+			],
+			"action": [
+				"s1 vote wi1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"p1",
+				"s1"
+			],
+			"action": [
+				"p1 autopsy wi1 = Witch"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"p1",
+				"s1"
+			],
+			"action": [
+				"p1 vote w1"
+			]
+		}
+	],
+	"win": "Villager"
+}

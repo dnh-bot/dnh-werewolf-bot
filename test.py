@@ -66,10 +66,25 @@ async def test_case(game, filepath):
 
             assert check_alive_players(game, list(map(lambda x: id_map[x], action_data["alive"])), playersname)
             for action_str in action_data["action"]:
+                expected_result = None
+                if action_str.find("=") != -1:
+                    action_str, expected_result = action_str.split(" = ")
+
                 author_name, command = action_str.split()[:2]
                 target_name = action_str.split()[2:]
                 text = await game.do_player_action(command, id_map[author_name], *[id_map[i] for i in target_name])
                 print(text)
+
+                if command == "seer":
+                    # test example:
+                    # "s1 seer v1 = false"
+                    # "s1 seer w1 = true"
+                    target_seen_as_werewolf = game.players[id_map[target_name[0]]].seer_seen_as_werewolf()
+                    assert expected_result.capitalize() == str(target_seen_as_werewolf)
+                elif command == "autopsy":
+                    target_get_role_name = game.players[id_map[target_name[0]]].get_role()
+                    assert expected_result == target_get_role_name
+
             await asyncio.sleep(delay_time)
             await game.next_phase()
 
@@ -94,13 +109,7 @@ async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
 
     # Run single test
-    # await test_case(game, "testcases/case-hunter-couple-die-together-by-kill.json")
-    # await test_case(game, "testcases/case-hunter-couple-die-together-by-vote.json")
-    # await test_case(game, "testcases/case-hunter-hunt-fox.json")
-    # await test_case(game, "testcases/case-hunter-hunt-wolf.json")
-    # await test_case(game, "testcases/case-hunter-simple.json")
-    # await test_case(game, "testcases/case-hunter-hunt-night1.json")
-    # await test_case(game, "testcases/case-hunter-hunted-one-in-couple.json")
+    # await test_case(game, "testcases/case-pathologist-simple-test.json")
 
     # Run all tests
     directory = "testcases"

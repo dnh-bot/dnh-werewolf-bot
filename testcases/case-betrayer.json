@@ -5,7 +5,8 @@
 		"f1": "Fox",
 		"g1": "Guard",
 		"b1": "Betrayer",
-		"wi1": "Witch"
+		"wi1": "Witch",
+		"s1": "Seer"
 	},
 	"timeline": [
 		{
@@ -15,7 +16,8 @@
 				"f1",
 				"g1",
 				"b1",
-				"wi1"
+				"wi1",
+				"s1"
 			],
 			"action": [
 				"w1 vote b1",
@@ -30,12 +32,14 @@
 				"w1",
 				"g1",
 				"f1",
-				"wi1"
+				"wi1",
+				"s1"
 			],
 			"action": [
 				"w1 kill g1",
 				"g1 guard g1",
-				"wi1 reborn b1"
+				"wi1 reborn b1",
+				"s1 seer b1 = false"
 			]
 		},
 		{
@@ -45,7 +49,8 @@
 				"wi1",
 				"b1",
 				"f1",
-				"g1"
+				"g1",
+				"s1"
 			],
 			"action": [
 				"f1 vote wi1"
@@ -57,11 +62,12 @@
 				"w1",
 				"g1",
 				"b1",
-				"f1"
+				"f1",
+				"s1"
 			],
 			"action": [
 				"w1 kill f1",
-				"b1 seer f1",
+				"s1 seer f1 = false",
 				"g1 guard b1"
 			]
 		},
@@ -70,7 +76,8 @@
 			"alive": [
 				"w1",
 				"b1",
-				"g1"
+				"g1",
+				"s1"
 			],
 			"action": [
 				"b1 vote w1"

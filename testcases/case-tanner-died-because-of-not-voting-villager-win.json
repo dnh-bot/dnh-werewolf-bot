@@ -5,6 +5,7 @@
 		"s1": "Seer",
 		"g1": "Guard",
 		"v1": "Villager",
+		"v2": "Villager",
 		"t1": "Tanner"
 	},
 	"timeline": [
@@ -15,6 +16,7 @@
 				"s1",
 				"g1",
 				"v1",
+				"v2",
 				"t1"
 			],
 			"action": []
@@ -26,6 +28,7 @@
 				"s1",
 				"g1",
 				"v1",
+				"v2",
 				"t1"
 			],
 			"action": [
@@ -39,9 +42,13 @@
 				"w1",
 				"s1",
 				"g1",
+				"v2",
 				"t1"
 			],
-			"action": []
+			"action": [
+				"w1 vote v2",
+				"g1 vote v2"
+			]
 		},
 		{
 			"time": "night2",

@@ -24,6 +24,9 @@ def check_vote_valid(num_votes, num_players, task_name):
 async def do_join(game, message, force=False):
     """Join game"""
     if not game.is_started():
+        if len(game.players) >= config.MAXIMUM_PLAYERS:
+            await message.reply(text_templates.generate_text("maximum_players_exceeded", maximum_players=config.MAXIMUM_PLAYERS))
+            return
         if force:
             user_list = message.mentions
             if not user_list:
@@ -199,7 +202,7 @@ async def do_character_cmd(game, message, cmd, parameters):
         is_valid_command = False
         if all(param.isdigit() for param in parameters):
             targets_index = [int(param) - 1 for param in parameters]
-            id_players = game.get_dead_players() if cmd == "reborn" else game.get_alive_players()
+            id_players = game.get_dead_players() if cmd in ["reborn", "autopsy"] else game.get_alive_players()
             if all(0 <= i < len(id_players) for i in targets_index):
                 is_valid_command = True
                 msg = await game.do_player_action(cmd, author.id, *[id_players[i].player_id for i in targets_index])

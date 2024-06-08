@@ -1,0 +1,142 @@
+{
+	"name": "Diseased has been reborn",
+	"player_list": {
+		"wolf": "Werewolf",
+		"superwolf": "Superwolf",
+		"guard": "Guard",
+		"seer": "Seer",
+		"diseased": "Diseased",
+		"witch": "Witch",
+		"villager": "Villager"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"wolf",
+				"superwolf",
+				"guard",
+				"seer",
+				"diseased",
+				"witch",
+				"villager"
+			],
+			"action": [
+				"guard vote superwolf",
+				"seer vote superwolf",
+				"diseased vote superwolf"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"diseased",
+				"witch",
+				"villager"
+			],
+			"action": [
+				"wolf kill diseased",
+				"seer seer diseased = false"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"witch",
+				"villager"
+			],
+			"action": [
+				"wolf vote seer",
+				"seer vote guard"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"witch",
+				"villager"
+			],
+			"action": [
+				"wolf kill villager",
+				"seer seer villager = false",
+				"witch reborn diseased"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"witch",
+				"diseased",
+				"villager"
+			],
+			"action": []
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"witch",
+				"diseased",
+				"villager"
+			],
+			"action": [
+				"wolf kill diseased",
+				"seer seer diseased = false"
+			]
+		},
+		{
+			"time": "day4",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"witch",
+				"villager"
+			],
+			"action": [
+				"witch vote villager"
+			]
+		},
+		{
+			"time": "night4",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"witch"
+			],
+			"action": [
+				"wolf kill seer",
+				"seer seer wolf = true"
+			]
+		},
+		{
+			"time": "day5",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"witch"
+			],
+			"action": [
+				"seer vote wolf",
+				"witch vote wolf"
+			]
+		}
+	],
+	"win": "Villager"
+}

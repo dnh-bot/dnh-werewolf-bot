@@ -17,8 +17,15 @@ class Werewolf(Character):
         return False
 
     async def on_reborn(self):
-        await super().on_reborn()
+        reborn_status = await super().on_reborn()
+        if reborn_status:
+            await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
+
+        return reborn_status
+
+    async def on_start_game(self, *_):
         await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
+        await self.interface.send_action_text_to_channel("werewolf_welcome_text", config.WEREWOLF_CHANNEL, user=f"<@{self.player_id}>")
 
     async def on_night(self):
         pass

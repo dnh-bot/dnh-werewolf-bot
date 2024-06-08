@@ -1,0 +1,106 @@
+{
+	"name": "Pathologist autopsy Werewolf, Villager, Zombie. Villager win",
+	"player_list": {
+		"sw1": "Superwolf",
+		"v1": "Villager",
+		"p1": "Pathologist",
+		"z1": "Zombie",
+		"s1": "Seer",
+		"w1": "Werewolf",
+		"g1": "Guard"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"sw1",
+				"v1",
+				"p1",
+				"z1",
+				"s1",
+				"w1",
+				"g1"
+			],
+			"action": [
+				"s1 vote w1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"sw1",
+				"v1",
+				"p1",
+				"z1",
+				"s1",
+				"g1"
+			],
+			"action": [
+				"sw1 kill z1",
+				"p1 autopsy w1 = Werewolf"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"sw1",
+				"v1",
+				"p1",
+				"s1",
+				"g1"
+			],
+			"action": [
+				"sw1 vote v1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"sw1",
+				"p1",
+				"s1",
+				"g1"
+			],
+			"action": [
+				"p1 autopsy z1 = Zombie",
+				"sw1 kill s1",
+				"z1 zombie"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"sw1",
+				"p1",
+				"z1",
+				"g1"
+			],
+			"action": []
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"sw1",
+				"p1",
+				"z1",
+				"g1"
+			],
+			"action": [
+				"p1 autopsy v1 = Villager"
+			]
+		},
+		{
+			"time": "day4",
+			"alive": [
+				"sw1",
+				"p1",
+				"z1",
+				"g1"
+			],
+			"action": [
+				"p1 vote sw1"
+			]
+		}
+	],
+	"win": "Villager"
+}

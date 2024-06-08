@@ -1,0 +1,75 @@
+{
+	"name": "Pathologist in couple, cupid win",
+	"player_list": {
+		"w1": "Werewolf",
+		"g1": "Guard",
+		"p1": "Pathologist",
+		"c1": "Cupid",
+		"s1": "Seer"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"c1",
+				"s1"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"c1",
+				"s1"
+			],
+			"action": [
+				"c1 ship w1 p1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"c1",
+				"s1"
+			],
+			"action": [
+				"w1 vote c1",
+				"p1 vote c1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"g1",
+				"p1",
+				"s1"
+			],
+			"action": [
+				"p1 autopsy c1 = Cupid",
+				"w1 kill g1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"p1",
+				"s1"
+			],
+			"action": [
+				"w1 vote s1"
+			]
+		}
+	],
+	"win": "Cupid"
+}

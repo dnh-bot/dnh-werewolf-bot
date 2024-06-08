@@ -125,11 +125,29 @@
     "daytime_command": "vote",
     "nighttime_commands": []
   },
+  "Pathologist": {
+    "name_vi": "Bác sĩ pháp y",
+    "description": {
+      "vi": "Bác sĩ pháp y mỗi đêm được chọn một người đã chết và biết được role của người đó.",
+      "en": "Pathologist each night can choose one deceased person and reveal their role."
+    },
+    "daytime_command": "vote",
+    "nighttime_commands": ["autopsy"]
+  },
+  "Diseased": {
+    "name_vi": "Người bệnh",
+    "description": {
+      "vi": "Nếu Người bệnh bị Sói cắn, thì Sói sẽ không thể cắn người nào vào đêm tiếp theo do bị bệnh.",
+      "en": "If a Diseased is killed by Werewolf, the Werewolf will not be able to kill anyone the following night due to the diseased."
+    },
+    "daytime_command": "vote",
+    "nighttime_commands": []
+  },
   "Rat": {
     "name_vi": "Chuột ma sói",
     "description": {
-      "vi": "Thuộc phe ma sói. Chuột ma sói không biết ai là sói và phe sói không biết ai là Chuột ma sói. Tiên tri soi ra sói. Mỗi đêm có thể cắn một người. Người đó sẽ chết nếu là Cáo hoặc Bảo vệ",
-      "en": "Rat belong to the werewolf party. Rat don't know who belongs to the werewolves, and the werewolf party doesn't know who the Rat are. The seer reveals the werewolf. Each night, Rat can bite someone. That person will die if they are a Fox or a Guard"
+      "vi": "Thuộc phe Sói. Chuột ma sói không biết ai là sói và phe sói không biết ai là Chuột ma sói. Tiên tri soi ra Sói. Mỗi đêm có thể cắn một người. Người đó sẽ chết nếu là Cáo hoặc Bảo vệ.",
+      "en": "Rat belongs to the Werewolf party. Rat doesn't know who belongs to the werewolves, and the werewolf party doesn't know who the Rat are. The seer reveals the werewolf. Each night, Rat can bite someone. That person will die if they are a Fox or a Guard."
     },
     "daytime_command": "vote",
     "nighttime_commands": ["bite"]

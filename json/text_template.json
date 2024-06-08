@@ -283,11 +283,11 @@
     "params": ["voted_user", "highest_vote_number"],
     "template": {
       "vi": [
-        "🔴 Thời gian quyết định đã hết. Người chơi {voted_user} đã bị đưa lên máy chém với số phiếu bầu là {highest_vote_number}. Hy vọng tình thế của làng có thể thay đổi sau quyết định này.",
+        "🔴 Thời gian quyết định đã hết. Người chơi {voted_user} đã bị đưa lên máy chém với số phiếu bầu là **{highest_vote_number}**. Hy vọng tình thế của làng có thể thay đổi sau quyết định này.",
         "===========================================================================\n"
       ],
       "en": [
-         "🔴 The time to decide has expired. Player {voted_user} has been sent to the guillotine with {highest_vote_number} votes. Hope that something could be changed after this decision.",
+         "🔴 The time to decide has expired. Player {voted_user} has been sent to the guillotine with **{highest_vote_number}** votes. Hope that something could be changed after this decision.",
          "==========================================================================\n"
        ]
     }
@@ -309,12 +309,12 @@
     "params": ["day"],
     "template": {
       "vi": [
-        "☀️ Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày {day}:",
+        "☀️ Một ngày mới bắt đầu, mọi người thức giấc. Báo cáo tình hình ngày **{day}**:",
         "- Hãy nhập `{bot_prefix}vote ID` để bỏ phiếu cho người bạn nghi là Sói!",
         "- Nhập `{bot_prefix}status` để xem trạng thái bỏ phiếu hiện tại."
       ],
       "en": [
-        "☀️ A new day begins, everyone wakes up. Report the situation of the day {day}:",
+        "☀️ A new day begins, everyone wakes up. Report the situation of the day **{day}**:",
         "- Enter `{bot_prefix}vote ID` to vote for the person you suspect is a Werewolf!",
         "- Type `{bot_prefix}status` to see the current voting status."
       ]
@@ -361,18 +361,18 @@
       ]
     }
   },
-  "werewolf_kill_text": {
+  "werewolf_after_voting_text": {
     "params": ["werewolf", "target"],
     "template": {
-      "vi": ["🐺 Sói {werewolf} muốn xử lý {target} trong đêm nay"],
-      "en": ["🐺 Werewolf {werewolf} wants to bite {target} tonight"]
+      "vi": ["🐺 Sói {werewolf} muốn xử lý {target} trong đêm nay."],
+      "en": ["🐺 Werewolf {werewolf} wants to bite {target} tonight."]
     }
   },
-  "werewolf_after_voting_text": {
-    "params": ["user"],
+  "werewolf_kill_result_text": {
+    "params": ["target"],
     "template": {
-      "vi": ["Đang tiến hành xử lý {user}. Mong là mọi việc thuận lợi, đi ngủ thôi."],
-      "en": ["Processing {user}. Hope everything goes well, let's go to sleep."]
+      "vi": ["😋 Đang tiến hành xử lý {target}. Hi vọng là mọi việc thuận lợi."],
+      "en": ["😋 Processing killing {target}. Hope everything goes well."]
     }
   },
   "vote_text": {
@@ -543,6 +543,27 @@
       "en": ["🩸 You have cursed {target}"]
     }
   },
+  "pathologist_before_voting_text": {
+    "params": [],
+    "template": {
+      "vi": ["🚑 Bác sĩ pháp y đêm nay muốn khám nghiệm thi thể của ai? `{bot_prefix}autopsy ID` để xem vai trò của người đó"],
+      "en": ["🚑 Pathologist doctor wants to examine whose body tonight? Use {bot_prefix}autopsy ID to see that person's role."]
+    }
+  },
+  "pathologist_after_voting_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🔬 Đêm nay, Bác sĩ pháp y muốn kiểm tra vai trò của {target}."],
+      "en": ["🔬 This night, Pathologist wants to check {target}'s role."]
+    }
+  },
+  "pathologist_result_text": {
+    "params": ["target", "role"],
+    "template": {
+      "vi": ["🧬 Ồ, bạn đã khám nghiệm được {target} là {role}."],
+      "en": ["🧬 Oh, you've examined {target} is a {role}."]
+    }
+  },
   "zombie_before_voting_text": {
     "params": [],
     "template": {
@@ -619,6 +640,19 @@
       ],
       "en": [
         "😇 {follow_player} has given up and is on the way to finding {died_player}.",
+        "===========================================================================\n"
+      ]
+    }
+  },
+  "couple_reborn_text": {
+    "params": ["reborn_player", "follow_player"],
+    "template": {
+      "vi": [
+        "😇 Chào mừng {follow_player} trở lại cuộc đời cùng với người thương {reborn_player}!",
+        "===========================================================================\n"
+      ],
+      "en": [
+        "😇 Welcome {follow_player} back to life with your beloved {reborn_player}!",
         "===========================================================================\n"
       ]
     }
@@ -754,11 +788,11 @@
       "en": ["Please wait until the {phase}, my friend!"]
     }
   },
-  "invalid_nighttime_text": {
+  "invalid_author_disabled_action_text": {
     "params": [],
     "template": {
-      "vi": ["Ráng đợi tới đêm bạn êy!"],
-      "en": ["Please wait until the night, my friend!"]
+      "vi": ["Bạn đã bị mất năng lượng nên trong hôm nay không thể thi triển sức mạnh. Sau hôm nay có thể bạn sẽ trở lại trạng thái bình thường :)"],
+      "en": ["Your energy was empty so you can't use your power today. After today, maybe you would return to your normal state :)"]
     }
   },
   "invalid_ship_with_random_couple_text": {
@@ -829,6 +863,20 @@
     "template": {
       "vi": ["Hiện bạn đang không ở trong game."],
       "en": ["You are not currently in the game."]
+    }
+  },
+  "not_in_phase_action_time_text": {
+    "params": ["phase"],
+    "template": {
+      "vi": ["Hiện đang ngoài giờ thực hiện chức năng {phase}."],
+      "en": ["You are not currently in the {phase} action time."]
+    }
+  },
+  "maximum_players_exceeded": {
+    "params": ["maximum_players"],
+    "template": {
+      "vi": ["Rất tiếc, trò chơi chỉ giới hạn cho {maximum_players} người :v"],
+      "en": ["Sorry, the game is limited to {maximum_players} players :v"]
     }
   },
   "already_in_game_text": {
@@ -1215,6 +1263,22 @@
       }
     }
   },
+  "player_score_list_embed": {
+    "params": ["num_of_players"],
+    "color": "0xf1c40f",
+    "template": {
+      "vi": {
+        "title": "🥇 Bảng Vinh Danh 🥇",
+        "description": "Chúc mừng {num_of_players} dân làng diễn sâu nhất👏",
+        "content_headers": ["Người chơi -> Điểm", "🔱 Chiến Thần Ma Sói 🔱"]
+      },
+      "en": {
+        "title": "🥇 Ranking Board 🥇",
+        "description": "Congratulations to the {num_of_players} best performing villagers👏",
+        "content_headers": ["Player -> Score", "🔱 God Of War 🔱"]
+      }
+    }
+  },
   "game_status_vote_field_text": {
     "params": ["be_voted_str", "votes_num", "voters_str"],
     "template": {
@@ -1287,8 +1351,8 @@
   "new_moon_special_event_text": {
     "params": ["event_name", "event_description"],
     "template": {
-      "vi": ["\u200B\n📆 Sự kiện đặc biệt của ngày hôm nay là {event_name}.", "❓ {event_description}"],
-      "en": ["\u200B\n📆 Today's special event is {event_name}.", "❓ {event_description}"]
+      "vi": ["\u200B\n📆 Sự kiện đặc biệt của ngày hôm nay là **{event_name}**.", "❓ *{event_description}*"],
+      "en": ["\u200B\n📆 Today's special event is **{event_name}**.", "❓ *{event_description}*"]
     }
   },
   "new_moon_heads_or_tails_result_text": {
@@ -1308,12 +1372,19 @@
   "new_moon_somnambulism_result_text": {
     "params": ["target_role"],
     "template": {
-      "vi": ["👁️ Tiên tri đã nhìn thấy nhân vật {target_role} trong cơn mộng du!"],
-      "en": ["👁️ The seer saw the character {target_role} while sleepwalking!"]
+      "vi": ["👁️ Tiên tri đã nhìn thấy nhân vật ***{target_role}*** trong cơn mộng du!"],
+      "en": ["👁️ The seer saw the character ***{target_role}*** while sleepwalking!"]
+    }
+  },
+  "new_moon_full_moon_vegetarian_announcement_text": {
+    "params": [],
+    "template": {
+      "vi": ["🌕 Đêm nay Sói sẽ ăn chay."],
+      "en": ["🌕 Tonight the Werewolves will not kill anyone."]
     }
   },
   "new_moon_full_moon_vegetarian_result_text": {
-    "params": ["target_role"],
+    "params": [],
     "template": {
       "vi": ["🌕 Hôm nay là ngày rằm, nghỉ ăn thịt một bữa nha bạn ơi!"],
       "en": ["🌕 Today is the full moon day, please stop killing!"]
@@ -1336,15 +1407,29 @@
   "tanner_killed_by_not_voting_text": {
     "params": ["user"],
     "template": {
-      "vi": ["Ôi không, thật đáng sợ quá... {user} đột nhiên bị mất tích rồi 😱"],
-      "en": ["Oh no, it's so scary... {user} suddenly disappeared 😱"]
+      "vi": ["Do không tham gia bỏ phiếu, {user} đã bị kéo xuống địa ngục 😱"],
+      "en": ["Due to not participating in voting, {user} has been dragged to hell 😱"]
     }
   },
   "lynched_is_died_text": {
     "params": ["user"],
     "template": {
-      "vi": ["Vì người chơi {user} đã bị biến mất, nên hôm nay sẽ không có ai bị hành hình."],
-      "en": ["Because {user} had disappeared, no one will be executed."]
+      "vi": ["{user} đã biến mất trước khi lên đoạn đầu đài."],
+      "en": ["{user} has been disappeared before execution."]
+    }
+  },
+  "werewolf_diseased_text": {
+    "params": [],
+    "template": {
+      "vi": ["🤒 Sói đã bị nhiễm bệnh nên phải ăn cháo trắng tĩnh dưỡng. Đợi ngày mai khoẻ lại rồi có thể cắn người lại nha."],
+      "en": ["🤒 The werewolf was diseased, so you have to eat white porridge to revive. Wait until tomorrow to you feel better then you can kill people again."]
+    }
+  },
+  "disabled_action_text": {
+    "params": ["day_count"],
+    "template": {
+      "vi": ["Hôm nay bạn tạm thời không thể sử dụng quyền năng của mình. Hãy đợi hết {day_count} ngày để bạn có thể trở lại trạng thái bình thường."],
+      "en": ["Today you temporarily can't use your power. Please wait {day_count} day(s) so you can return to your normal state."]
     }
   },
   "ban_command_reply_text": {

@@ -1,0 +1,117 @@
+{
+	"name": "Diseased killed, but a werewolf reborn",
+	"player_list": {
+		"wolf": "Werewolf",
+		"superwolf": "Superwolf",
+		"guard": "Guard",
+		"seer": "Seer",
+		"diseased": "Diseased",
+		"witch": "Witch",
+		"villager": "Villager"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"wolf",
+				"superwolf",
+				"guard",
+				"seer",
+				"diseased",
+				"witch",
+				"villager"
+			],
+			"action": [
+				"guard vote superwolf",
+				"seer vote superwolf",
+				"diseased vote superwolf"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"diseased",
+				"witch",
+				"villager"
+			],
+			"action": [
+				"wolf kill diseased",
+				"witch reborn superwolf",
+				"seer seer diseased = false"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"superwolf",
+				"wolf",
+				"guard",
+				"seer",
+				"witch",
+				"villager"
+			],
+			"action": []
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"superwolf",
+				"wolf",
+				"guard",
+				"seer",
+				"witch",
+				"villager"
+			],
+			"action": [
+				"superwolf kill villager",
+				"seer seer wolf = true"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"superwolf",
+				"wolf",
+				"seer",
+				"guard",
+				"witch",
+				"villager"
+			],
+			"action": [
+				"guard vote wolf",
+				"seer vote wolf",
+				"villager vote wolf"
+			]
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"superwolf",
+				"seer",
+				"guard",
+				"witch",
+				"villager"
+			],
+			"action": [
+				"superwolf kill seer",
+				"witch curse villager"
+			]
+		},
+		{
+			"time": "day4",
+			"alive": [
+				"superwolf",
+				"guard",
+				"witch"
+			],
+			"action": [
+				"witch vote superwolf",
+				"guard vote superwolf"
+			]
+		}
+	],
+	"win": "Villager"
+}

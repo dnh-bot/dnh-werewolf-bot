@@ -1,15 +1,15 @@
 {
-    "name":"Simple test zombie",
-    "player_list":{
-        "w":"Werewolf",
-        "s":"Seer",
-        "z":"Zombie",
-        "v":"Villager"
+    "name": "Simple test zombie",
+    "player_list": {
+        "w": "Werewolf",
+        "s": "Seer",
+        "z": "Zombie",
+        "v": "Villager"
     },
-    "timeline":[
+    "timeline": [
         {
-            "time":"day1",
-            "alive":["w","s","z","v"],
+            "time": "day1",
+            "alive": ["w", "s", "z", "v"],
             "action": [
                 "w vote z",
                 "s vote z",
@@ -17,16 +17,16 @@
             ]
         },
         {
-            "time":"night1",
-            "alive":["w","s","v"],
+            "time": "night1",
+            "alive": ["w", "s", "v"],
             "action": [
                 "z zombie",
                 "w kill v"
             ]
         },
         {
-            "time":"day2",
-            "alive":["w","s","z"],
+            "time": "day2",
+            "alive": ["w", "s", "z"],
             "action": [
                 "s vote w",
                 "z vote w",

@@ -14,6 +14,17 @@ def get_full_cmd_description(cmd):
     return f"{description} {text_templates.get_word_in_language('use_command')} {usage_text}."
 
 
+def generate_player_score_list_embed(player_score_data):
+    num_of_players = 10
+    if player_score_data:
+        sorted_player_score_data = sorted(player_score_data.items(), key=lambda x: x[1], reverse=True)[:num_of_players]
+        player_score_list = [f"{i+1}. <@{player_id}> -> **{score}**" for i, (player_id, score) in enumerate(sorted_player_score_data)]
+        god_of_war_list = [f"⚔️ <@{player_id}>" for i, (player_id, _) in enumerate(sorted_player_score_data) if (i+1) <= 3]
+        embed_data = text_templates.generate_embed("player_score_list_embed", [player_score_list, god_of_war_list], num_of_players=num_of_players)
+        return embed_data
+    return None
+
+
 def generate_id_player_list(player_list, alive_status, reveal_role=False):
     id_player_list = []
     row_id = 1
@@ -28,7 +39,7 @@ def generate_id_player_list(player_list, alive_status, reveal_role=False):
             row_id += 1
 
         # Show role info if user is dead and reveal mode is enabled.
-        dead_player_role_str = f" - {user.get_role()}" if reveal_role and user.status == CharacterStatus.KILLED else ""
+        dead_player_role_str = f" - ***{user.get_role()}***" if reveal_role and user.status == CharacterStatus.KILLED else ""
         id_player_list.append(f"{id_str} -> <@{user.player_id}>{dead_player_role_str}")
 
     return id_player_list
@@ -93,7 +104,9 @@ def generate_help_command_embed(command=None):
     command = command.lower() if isinstance(command, str) else command
     if command is None:
         help_embed_data = text_templates.generate_embed("help_command_all_embed", [])
-        help_embed_data["content"] = [(cmd, [commands.get_command_description(cmd)]) for cmd in all_commands]
+        help_embed_data["content"] = [
+            ("List", [" | ".join(f"`{cmd}`" for cmd in all_commands)])
+        ]
 
     elif command in all_commands:
         command_description = commands.get_command_description(command)
@@ -105,11 +118,7 @@ def generate_help_command_embed(command=None):
 
         usage_str = ["- " + usage_text for usage_text in commands.get_command_usages(command)]
 
-        if command in ("vote", "punish", "kill", "guard", "seer", "reborn", "curse", "bite"):
-            example_args_list = [{"player_id": 2}]
-        elif command == "ship":
-            example_args_list = [{"player_id1": 2, "player_id2": 3}]
-        elif command == "timer":
+        if command == "timer":
             example_args_list = [{"dayphase": 60, "nightphase": 30, "alertperiod": 20}]
         elif command == "setmode":
             example_args_list = [{"mode_id": "2", "on_str": "on"}]
@@ -120,8 +129,14 @@ def generate_help_command_embed(command=None):
                 {"time_start": "00:00", "time_end": "23:59", "time_zone": ""},
                 {"time_start": "00:00", "time_end": "23:59", "time_zone": "UTC+7"}
             ]
+        elif command == "auto":
+            example_args_list = [
+                {"cmd": "seer"},
+                {"cmd": "guard"},
+                {"cmd": "off"}
+            ]
         else:
-            example_args_list = []
+            example_args_list = [{"player_id": 2, "player_id1": 2, "player_id2": 3}]
 
         help_embed_data = text_templates.generate_embed(
             "help_command_embed", [
@@ -146,29 +161,29 @@ def generate_help_command_embed(command=None):
 
 def generate_help_role_embed(role=None):
     all_roles_name = [a_role.__name__ for a_role in roles.get_all_roles()]
-    role = role.capitalize() if isinstance(role, str) else role
     if role is None:
         help_embed_data = text_templates.generate_embed("help_role_all_embed", [])
         help_embed_data["content"] = [
-            (roles.get_role_title(role_name), [roles.get_role_description(role_name)])
-            for role_name in all_roles_name
+            ("List", [" | ".join(f"`{role_name}`" for role_name in all_roles_name)])
         ]
+        return help_embed_data
 
-    elif role in all_roles_name:
-        nighttime_commands = roles.get_role_nighttime_commands(role)
-        if nighttime_commands:
-            nighttime_actions_description = ["- " + get_full_cmd_description(cmd) for cmd in nighttime_commands]
-        else:
-            nighttime_actions_description = [text_templates.generate_text("nighttime_no_actions_text")]
+    role_data = roles.get_role_data_by_name(role)
+    if not role_data:
+        return text_templates.generate_embed("help_invalid_name_embed", [], arg_type="role", arg_name=role)
 
-        help_embed_data = text_templates.generate_embed(
-            "help_role_embed", [[get_full_cmd_description("vote")], nighttime_actions_description],
-            role_title=roles.get_role_title(role), role_description=roles.get_role_description(role)
-        )
+    title = role_data["title"]
+    description = role_data["description"]
+    nighttime_commands = role_data["nighttime_commands"]
+    if nighttime_commands:
+        nighttime_actions_description = ["- " + get_full_cmd_description(cmd) for cmd in nighttime_commands]
     else:
-        help_embed_data = text_templates.generate_embed("help_invalid_name_embed", [], arg_type="role", arg_name=role)
+        nighttime_actions_description = [text_templates.generate_text("nighttime_no_actions_text")]
 
-    return help_embed_data
+    return text_templates.generate_embed(
+        "help_role_embed", [[get_full_cmd_description("vote")], nighttime_actions_description],
+        role_title=title, role_description=description
+    )
 
 
 def generate_help_embed(*args):
@@ -187,34 +202,16 @@ def generate_help_embed(*args):
     return help_embed_data
 
 
-def generate_reveal_str_list(reveal_list, game_winner, cupid_dict, players):
-    winner_list = generate_winner_list(reveal_list, game_winner, cupid_dict, players)
+def generate_reveal_str_list(victory_list=None):
+    if victory_list is None:
+        return ""
 
     return [
         "- " + text_templates.generate_text(
-            "reveal_player_text", player_id=player_id, role=role, result_emoji=result_emoji
+            "reveal_player_text", player_id=player_id, role=role, result_emoji='🥳' if victory else '😭'
         )
-        for player_id, role, result_emoji in winner_list
+        for player_id, role, victory in victory_list
     ]
-
-
-def generate_winner_list(reveal_list, game_winner, cupid_dict, players):
-    winner_list = []
-    for player_id, role, party in reveal_list:
-        party_victory = party == game_winner
-        # Cupid is in Villager team. Win with either couple or Villager
-        cupid_victory = game_winner == 'Cupid' and (player_id in cupid_dict or role == 'Cupid')
-        # Change party roles
-        change_party_victory = isinstance(players[player_id], roles.Tanner) and players[player_id].final_party == game_winner
-
-        if party_victory or cupid_victory or change_party_victory:
-            emoji = '🥳'
-        else:
-            emoji = '😭'
-
-        winner_list.append((player_id, role, emoji))
-
-    return winner_list
 
 
 def time_range_to_string(start_time, end_time, zone):
