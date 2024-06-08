@@ -12,6 +12,9 @@ class Rat(Villager):
         super().__init__(interface, player_id, player_name)
         self.party = Werewolf
 
+    async def on_day(self):
+        self.target = None
+
     async def on_night_start(self, alive_embed_data, _):
         if self.is_alive():
             await self.interface.send_action_text_to_channel("rat_before_voting_text", self.channel_name)
