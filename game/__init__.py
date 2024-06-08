@@ -1091,18 +1091,22 @@ class Game:
                 )
 
     async def rat_do_end_nighttime_phase(self, author):
-        bite_target_id = author.get_target()
-        if bite_target_id is None:
+        target_id = author.get_target()
+        if target_id is None:
             return
-        target = self.players[bite_target_id]
+
+        target = self.players[target_id]
 
         if isinstance(target, (roles.Fox, roles.Guard)):
-            bite_target_id = author.player_id
-
-        self.night_pending_kill_list.append(bite_target_id)
-        await author.send_to_personal_channel(
-            text_templates.generate_text("rat_killed_text", target=f"<@{bite_target_id}>")
-        )
+            self.night_pending_kill_list.append((author.player_id, const.DeadReason.HIDDEN))
+            await author.send_to_personal_channel(
+                text_templates.generate_text("rat_dead_bite_text", target=f"<@{target_id}>")
+            )
+        else:
+            self.night_pending_kill_list.append((target_id, const.DeadReason.HIDDEN))
+            await author.send_to_personal_channel(
+                text_templates.generate_text("rat_result_text", target=f"<@{target_id}>")
+            )
 
     async def werewolf_do_end_nighttime_phase(self):
         if self.is_werewolf_diseased:
