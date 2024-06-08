@@ -1480,34 +1480,34 @@
       "vi": [
         "🦷 Bạn muốn cắn ai đó? Hãy nhập `{bot_prefix}bite ID` để chọn đối tượng.",
         "💡 Ví dụ: `{bot_prefix}bite 2`",
-        "⚠️ Bạn được sử dụng kỹ năng này bất kỳ lúc nào vào ban đêm, có thể dùng lên bản thân nếu đổi ý. Nhưng đừng giết bậy bạn nhé!"
+        "⚠️ Bạn được sử dụng kỹ năng này bất kỳ lúc nào vào ban đêm."
       ],
       "en": [
         "🦷 Choose someone to bite? Enter `{bot_prefix}bite ID` to chose person.",
         "💡 Example: `{bot_prefix}bite 2`",
-        "⚠️ You can use this skill anytime at night. Target yourself if you change your mind."
+        "⚠️ You can use this skill anytime at night."
       ]
-    }
-  },
-  "rat_kill_text": {
-    "params": ["target"],
-    "template": {
-      "vi": ["🐭🐺 Chuột ma sói muốn cắn {target} trong đêm nay"],
-      "en": ["🐭🐺 Rat werewolf wants to bite {target} tonight"]
     }
   },
   "rat_after_voting_text": {
     "params": ["target"],
     "template": {
-      "vi": ["🦷 Chuột ma sói đã xác định đối tượng thành công {target}"],
-      "en": ["🦷 Rat has targeted victim {target}"]
+      "vi": ["🐭 Chuột ma sói muốn cắn {target} trong đêm nay."],
+      "en": ["🐭 Rat wants to bite {target} tonight."]
     }
   },
-  "rat_killed_text": {
+  "rat_result_text": {
     "params": ["target"],
     "template": {
-      "vi": ["🦷 {target} đã kết thúc cuộc đời bằng một 'nụ hôn' từ bé chuột🐭"],
-      "en": ["🦷 {target} ended their life with a 'kiss' from a little mouse 🐭"]
+      "vi": ["🦷 {target} đã bị Chuột ma sói cắn một miếng."],
+      "en": ["🦷 {target} was bitten by the Rat."]
+    }
+  },
+  "rat_dead_bite_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🦷 Chuột ma sói đã lỡ cắn phải đối tượng không được cắn {target} nên sẽ bị xuống địa ngục."],
+      "en": ["🦷 Rat has accidentally bitten the must-not-bite {target}, so the Rat will go to hell."]
     }
   }
 }

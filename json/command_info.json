@@ -246,7 +246,7 @@
   "bite": {
     "description": {
       "vi": "Cắn một ai đó.",
-      "en": "Bit a player."
+      "en": "Bite a player."
     },
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Rat"],

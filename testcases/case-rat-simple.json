@@ -1,5 +1,5 @@
 {
-	"name": "Rat inspected by Seer",
+	"name": "Rat simple test",
 	"player_list": {
 		"v1": "Villager",
 		"r1": "Rat",
@@ -30,7 +30,7 @@
 			],
 			"action": [
 				"r1 bite v1",
-				"s1 seer r1"
+				"s1 seer r1 = true"
 			]
 		},
 		{
