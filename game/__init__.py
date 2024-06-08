@@ -72,6 +72,7 @@ class Game:
         self.play_time_start = datetime.time(0, 0, 0)  # in UTC
         self.play_time_end = datetime.time(0, 0, 0)  # in UTC
         self.play_zone = "UTC+7"
+        self.__is_on_phase = False
         self.async_lock = asyncio.Lock()
         self.reset_game_state()  # Init other game variables every end game.
         self.database = Database().create_instance()
@@ -700,6 +701,7 @@ class Game:
 
                 # New phase
                 await self.new_phase()
+                self.__is_on_phase = True
 
                 await asyncio.gather(*[role.on_phase(self.game_phase) for role in self.get_alive_players()])
 
@@ -712,6 +714,7 @@ class Game:
                 self.next_flag.clear()
                 print("After clear")
 
+                self.__is_on_phase = False
                 await self.end_phase()
                 # End_phase
 
@@ -860,6 +863,9 @@ class Game:
             await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, True, self.get_werewolf_list())
             await self.control_muting_party_channel(config.COUPLE_CHANNEL, True, list(self.cupid_dict.keys()))
             await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, False, list(self.players.keys()))
+
+            # init object
+            self.voter_dict = {}
         else:
             print("Error no player in game.")
             await self.stop()
@@ -930,6 +936,11 @@ class Game:
             await asyncio.gather(*[
                 player.on_night_start(alive_embed_data, dead_embed_data) for player in self.get_all_players()
             ])
+
+            # init object
+            self.wolf_kill_dict = {}
+            self.night_pending_kill_list = []
+            self.reborn_set = set()
 
     async def werewolf_do_new_nighttime_phase(self, alive_embed_data):
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
@@ -1237,6 +1248,12 @@ class Game:
     async def do_player_action(self, cmd, author_id, *targets_id):
         # FIXME
         # pylint: disable=too-many-return-statements, too-many-branches
+        if not self.__is_on_phase:
+            return text_templates.generate_text(
+                "not_in_phase_action_time_text",
+                phase=text_templates.get_word_in_language(str(self.game_phase))
+            )
+
         assert self.players is not None
         # print(self.players)
         author = self.players.get(author_id)
@@ -1280,6 +1297,7 @@ class Game:
 
         return text_template.generate_invalid_command_text(cmd)
 
+    @command_verify_phase(const.GamePhase.DAY)
     async def vote(self, author, target):
         author_id = author.player_id
         target_id = target.player_id
