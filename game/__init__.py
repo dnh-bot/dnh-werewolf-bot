@@ -769,7 +769,7 @@ class Game:
     def get_winning_role(self):
         alives = self.get_alive_players()
         num_players = len(alives)
-        num_werewolf = sum(isinstance(p, roles.Werewolf) for p in alives)
+        num_werewolf = sum(isinstance(p, (roles.Werewolf, roles.Rat)) for p in alives)
 
         print("DEBUG: ", num_players, num_werewolf)
 
@@ -786,8 +786,8 @@ class Game:
         # Check Cupid
         couple = [self.players[i] for i in self.cupid_dict]
         if num_players == 2 and \
-                any(isinstance(p, roles.Werewolf) for p in couple) and \
-                any(not isinstance(p, roles.Werewolf) for p in couple) and \
+                any(isinstance(p, (roles.Werewolf, roles.Rat)) for p in couple) and \
+                any(not isinstance(p, (roles.Werewolf, roles.Rat)) for p in couple) and \
                 all(p in alives for p in couple):
             return roles.Cupid
 
