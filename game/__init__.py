@@ -714,7 +714,7 @@ class Game:
                 self.next_flag.clear()
                 print("After clear")
 
-                self.__is_on_phase = not self.timer_enable
+                self.__is_on_phase = False
                 await self.end_phase()
                 # End_phase
 
@@ -1138,8 +1138,6 @@ class Game:
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
         print(self.display_alive_player())
-        if self.timer_enable:
-            await self.cancel_running_task(self.task_run_timer_phase)
 
         if self.game_phase == const.GamePhase.DAY:
             await self.do_new_daytime_phase()
@@ -1147,6 +1145,7 @@ class Game:
             await self.do_new_nighttime_phase()
 
         if self.timer_enable:
+            await self.cancel_running_task(self.task_run_timer_phase)
             self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
 
     async def end_phase(self):
@@ -1270,7 +1269,7 @@ class Game:
     async def do_player_action(self, cmd, author_id, *targets_id):
         # FIXME
         # pylint: disable=too-many-return-statements, too-many-branches
-        if not self.__is_on_phase:
+        if self.timer_enable and not self.__is_on_phase:
             return text_templates.generate_text(
                 "not_in_phase_action_time_text",
                 phase=text_templates.get_word_in_language(str(self.game_phase))
