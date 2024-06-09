@@ -1,0 +1,41 @@
+{
+	"name": "Rat bite Diseased",
+	"player_list": {
+		"rat": "Rat",
+		"guard": "Guard",
+		"seer": "Seer",
+		"diseased": "Diseased",
+		"villager": "Villager"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"rat",
+				"guard",
+				"seer",
+				"diseased",
+				"villager"
+			],
+			"action": [
+				"rat vote villager",
+				"guard vote villager",
+				"diseased vote villager"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"rat",
+				"guard",
+				"seer",
+				"diseased"
+			],
+			"action": [
+				"rat bite diseased",
+				"seer seer rat = true"
+			]
+		}
+	],
+	"win": "Villager"
+}

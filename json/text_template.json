@@ -1509,5 +1509,12 @@
       "vi": ["🦷 Chuột ma sói đã lỡ cắn phải đối tượng không được cắn {target} nên sẽ bị xuống địa ngục."],
       "en": ["🦷 Rat has accidentally bitten the must-not-bite {target}, so the Rat will go to hell."]
     }
+  },
+  "rat_diseased_bite_text": {
+    "params": [],
+    "template": {
+      "vi": ["🦷 Chuột ma sói đã bị nhiễm bệnh nên tạm thời ngày mai sẽ không được cắn người."],
+      "en": ["🦷 Rat has been ill, so temporarily you can't bite people tomorrow."]
+    }
   }
 }

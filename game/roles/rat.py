@@ -5,7 +5,10 @@ from game.roles.werewolf import Werewolf
 class Rat(Villager):
     """ 
     Rat is a Werewolf. Rat can not see Werewolf party, and Werewolf party can not see Rat.
-    Rat can bite someone. That person will die if they are a Fox or a Guard
+    Rat can bite someone. Rat will die if they are a Fox or a Guard.
+
+    If Rat bites Diseased, both will die unless one of them is protected -
+    at this case the Rat will only be ill and not die.
     """
 
     def __init__(self, interface, player_id, player_name):
