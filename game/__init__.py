@@ -1139,14 +1139,14 @@ class Game:
         self.last_nextcmd_time = time.time()
         print(self.display_alive_player())
 
+        if self.timer_enable:
+            await self.cancel_running_task(self.task_run_timer_phase)
+            self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
+
         if self.game_phase == const.GamePhase.DAY:
             await self.do_new_daytime_phase()
         elif self.game_phase == const.GamePhase.NIGHT:
             await self.do_new_nighttime_phase()
-
-        if self.timer_enable:
-            await self.cancel_running_task(self.task_run_timer_phase)
-            self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")
 
     async def end_phase(self):
         assert self.game_phase != const.GamePhase.NEW_GAME
