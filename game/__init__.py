@@ -1150,7 +1150,6 @@ class Game:
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
         print(self.display_alive_player())
-
         if self.timer_enable:
             await self.cancel_running_task(self.task_run_timer_phase)
             self.task_run_timer_phase = asyncio.create_task(self.run_timer_phase(), name="task_run_timer_phase")

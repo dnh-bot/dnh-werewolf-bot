@@ -31,7 +31,7 @@ def add_additional_roles(role_list, remaining_roles):
 
 
 def balance_werewolves(total_players, role_list, remaining_roles):
-    total_wolves = sum(r in ("Werewolf", "Superwolf") for r in role_list[:remaining_roles]) + 1
+    total_wolves = sum(r in ("Werewolf", "Superwolf", "Rat") for r in role_list[:remaining_roles]) + 1
     while total_wolves > 4 or \
             (10 <= total_players <= 14 and total_wolves > 3) or \
             (total_players <= 9 and total_wolves > 2) or \
@@ -40,6 +40,8 @@ def balance_werewolves(total_players, role_list, remaining_roles):
             role_list.remove("Werewolf")
         elif "Superwolf" in role_list[:remaining_roles]:
             role_list.remove("Superwolf")
+        elif "Rat" in role_list[:remaining_roles]:
+            role_list.remove("Rat")
         total_wolves -= 1
 
     return role_list
