@@ -92,7 +92,6 @@ class Game:
         self.is_werewolf_diseased = False
         self.wolf_kill_dict = {}  # dict[wolf] -> player
         self.reborn_set = set()
-        self.cupid_dict = {}  # dict[player1] -> player2, dict[player2] -> player1
         self.night_pending_kill_list = []
         self.voter_dict = {}  # Dict of voted players {user1:user2, user3:user4, user2:user1}. All items are ids.
         self.vote_start = set()
@@ -456,17 +455,17 @@ class Game:
         """
         Get following dead/reborn players by followed relation (e.g. hunter, couple,...)
         """
+        player = self.players[player_id]
         following_players = []
 
-        if isinstance(self.players[player_id], roles.Hunter) and isinstance(reason, const.DeadReason):
-            hunted = self.players[player_id].get_target()
+        if isinstance(player, roles.Hunter) and isinstance(reason, const.DeadReason):
+            hunted = player.get_target()
             if hunted and hunted != player_id:
                 following_players.append((hunted, const.DeadReason.HUNTED))
 
-        if player_id in self.cupid_dict and not reason.is_couple_following():
+        follower_id = player.get_lover()
+        if follower_id is not None and not reason.is_couple_following():
             # prevent repeatedly call a couple
-            follower_id = self.cupid_dict[player_id]
-
             if isinstance(reason, const.DeadReason):
                 following_players.append((follower_id, const.DeadReason.COUPLE))
 
@@ -639,7 +638,7 @@ class Game:
             role, party = player.get_role(), player.get_party()
             party_victory = party == game_winner
             # Cupid is in Villager team. Win with either couple or Villager
-            cupid_victory = game_winner == 'Cupid' and (player_id in self.cupid_dict or role == 'Cupid')
+            cupid_victory = game_winner == 'Cupid' and (player.get_lover() is not None or role == 'Cupid')
             # Change party roles
             change_party_victory = isinstance(player, roles.Tanner) and party == game_winner
 
@@ -737,9 +736,10 @@ class Game:
 
         victory_list = self.generate_victory_list(game_winner)
         reveal_str_list = text_template.generate_reveal_str_list(victory_list)
-        cupid_str = " x ".join(f"<@{player_id}>" for player_id in self.cupid_dict)
+        couple_id_list = self.get_couple_player_id_list()
+        cupid_str = " x ".join(f"<@{player_id}>" for player_id in couple_id_list)
 
-        couple_reveal_text = "\n\n" + "💘 " + cupid_str if self.cupid_dict else ""
+        couple_reveal_text = "\n\n" + "💘 " + cupid_str if couple_id_list else ""
         await self.interface.send_text_to_channel(
             "\n".join(reveal_str_list) + couple_reveal_text,
             config.GAMEPLAY_CHANNEL
@@ -756,7 +756,7 @@ class Game:
                     # Put \u200B\n at first of the next field to break line
                     [f"🎉\u00A0\u00A0\u00A0\u00A0{game_winner}\u00A0\u00A0\u00A0\u00A0🎉"],
                     reveal_str_list,
-                    [cupid_str] if self.cupid_dict else []
+                    [cupid_str] if couple_id_list else []
                 ],
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime")),
                 total_players=len(self.players)
@@ -784,11 +784,9 @@ class Game:
             return None
 
         # Check Cupid
-        couple = [self.players[i] for i in self.cupid_dict]
-        if num_players == 2 and \
-                any(Game.is_role_in_werewolf_party(p) for p in couple) and \
-                any(not Game.is_role_in_werewolf_party(p) for p in couple) and \
-                all(p in alives for p in couple):
+        couple = [self.players[i] for i in self.get_couple_player_id_list()]
+        if num_players == 2 and len(couple) > 0 and all(p.is_alive() for p in couple) and \
+                all(Game.is_role_in_werewolf_party(p) != Game.is_role_in_werewolf_party(self.players[p.get_lover()]) for p in couple):
             return roles.Cupid
 
         # Werewolf still alive then werewolf win
@@ -861,7 +859,7 @@ class Game:
             # Mute all party channels
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
             await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, True, self.get_werewolf_list())
-            await self.control_muting_party_channel(config.COUPLE_CHANNEL, True, list(self.cupid_dict.keys()))
+            await self.control_muting_party_channel(config.COUPLE_CHANNEL, True, self.get_couple_player_id_list())
             await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, False, list(self.players.keys()))
 
             # init object
@@ -923,7 +921,7 @@ class Game:
             # Unmute all party channels
             await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, True, list(self.players.keys()))
             await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, False, self.get_werewolf_list())
-            await self.control_muting_party_channel(config.COUPLE_CHANNEL, False, list(self.cupid_dict.keys()))
+            await self.control_muting_party_channel(config.COUPLE_CHANNEL, False, self.get_couple_player_id_list())
 
             await self.interface.send_action_text_to_channel("night_phase_beginning_text", config.GAMEPLAY_CHANNEL)
             await self.announce_current_new_moon_event()
@@ -988,7 +986,7 @@ class Game:
         else:
             await self.interface.send_action_text_to_channel("killed_none_text", config.GAMEPLAY_CHANNEL)
 
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME and self.cupid_dict:
+        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME and self.get_couple_player_id_list():
             await self.new_moon_mode.do_end_nighttime_phase(self.interface)
 
         reborn_list_by_reason = await self.get_final_status_changes_with_reasons(self.reborn_set)
@@ -1015,14 +1013,12 @@ class Game:
                     elif reason is const.DeadReason.HUNTED:
                         kwargs = {"target": f"<@{_id}>"}
                     elif reason is const.DeadReason.COUPLE:
-                        kwargs = {"died_player": f"<@{self.cupid_dict[_id]}>", "follow_player": f"<@{_id}>"}
+                        kwargs = {"died_player": f"<@{self.players[_id].get_lover()}>", "follow_player": f"<@{_id}>"}
                     elif reason is const.RebornReason.COUPLE:
-                        await self.interface.add_user_to_channel(self.cupid_dict[_id], config.COUPLE_CHANNEL, is_read=True, is_send=True)
+                        lover_id = self.players[_id].get_lover()
+                        await self.interface.add_user_to_channel(lover_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
                         await self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
-                        await self.interface.send_action_text_to_channel(
-                            "couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{self.cupid_dict[_id]}>", user2=f"<@{_id}>"
-                        )
-                        kwargs = {"reborn_player": f"<@{self.cupid_dict[_id]}>", "follow_player": f"<@{_id}>"}
+                        kwargs = {"reborn_player": f"<@{lover_id}>", "follow_player": f"<@{_id}>"}
                     else:
                         continue
 
@@ -1417,20 +1413,9 @@ class Game:
         target1_id = target1.player_id
         target2_id = target2.player_id
 
-        self.cupid_dict[target1_id] = target2_id
-        self.cupid_dict[target2_id] = target1_id
-
-        await self.interface.send_action_text_to_channel(
-            "couple_shipped_with_text",
-            self.players[target1_id].channel_name, target=f"<@{target2_id}> {target2.__class__.__name__}"
-        )
-        await self.interface.send_action_text_to_channel(
-            "couple_shipped_with_text",
-            self.players[target2_id].channel_name, target=f"<@{target1_id}> {target1.__class__.__name__}"
-        )
         await self.interface.create_channel(config.COUPLE_CHANNEL)
-        await self.interface.add_user_to_channel(target1_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
-        await self.interface.add_user_to_channel(target2_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+        await target1.register_lover(target2.player_id, target2.get_role())
+        await target2.register_lover(target1.player_id, target1.get_role())
         await self.interface.send_action_text_to_channel("couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{target1_id}>", user2=f"<@{target2_id}>")
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
@@ -1456,6 +1441,9 @@ class Game:
                 werewolf_list.append(_id)
 
         return werewolf_list
+
+    def get_couple_player_id_list(self):
+        return [_id for _id, player in self.players.items() if player.get_lover() is not None]
 
     def get_player_with_role(self, role, status='alive'):
         if status == 'alive':
@@ -1512,15 +1500,15 @@ class Game:
         @check(has_no_target)
         async def auto_seer():
             target = random.choice(self.get_alive_players())
-            if author.player_id in self.cupid_dict:
-                while target.player_id in self.cupid_dict:
+            if author.get_lover():
+                while target.get_lover() == author.player_id:
                     target = random.choice(self.get_alive_players())
             msg = await self.seer(author, target)
             await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
 
         if subcmd == "off":
             self.auto_hook[author] = []
-            return "Clear auto successed"
+            return "Clear auto succeeded"
 
         if subcmd == "seer":
             if has_role(roles.Seer)():

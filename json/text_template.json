@@ -605,10 +605,10 @@
     }
   },
   "couple_shipped_with_text": {
-    "params": ["target"],
+    "params": ["target", "target_role"],
     "template": {
-      "vi": ["👩🏻‍❤️‍👨🏻 Bạn và {target} đã được thần tình yêu chọn làm cặp đôi đồng sinh cộng tử."],
-      "en": ["👩🏻‍❤️‍👨🏻 You and {target} have been chosen by the cupid to be a couple."]
+      "vi": ["👩🏻‍❤️‍👨🏻 Bạn và {target_role} {target} đã được thần tình yêu chọn làm cặp đôi đồng sinh cộng tử."],
+      "en": ["👩🏻‍❤️‍👨🏻 You and {target} the {target_role} have been chosen by the cupid to be a couple."]
     }
   },
   "couple_welcome_text": {
