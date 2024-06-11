@@ -27,6 +27,7 @@ class Character:
         valid_channel_name = "".join(c for c in player_name if c not in BANNED_CHARS).lower()
         valid_channel_name = "-".join(valid_channel_name.split())
         self.channel_name = f"{config.PERSONAL}-{valid_channel_name}"
+        self.lover = None
         self.target = None
         self.party = Character
         self.action_disabled_today = False
@@ -76,6 +77,23 @@ class Character:
 
     def get_protected(self):
         self.status = CharacterStatus.PROTECTED
+
+    def get_lover(self):
+        return self.lover
+
+    def set_lover(self, lover_id):
+        self.lover = lover_id
+
+    async def register_lover(self, lover_id, lover_role):
+        if self.lover is not None or lover_id == self.player_id:
+            return False
+
+        self.set_lover(lover_id)
+        await self.interface.send_action_text_to_channel(
+            "couple_shipped_with_text", self.channel_name, target=f"<@{lover_id}>", target_role=lover_role
+        )
+        await self.interface.add_user_to_channel(self.player_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+        return True
 
     def get_target(self):
         return self.target
