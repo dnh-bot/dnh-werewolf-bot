@@ -1,8 +1,8 @@
-from game.roles.villager import Villager
+from game.roles.character import Character
 from game.roles.werewolf import Werewolf
 
 
-class Rat(Villager):
+class Rat(Character):
     """ 
     Rat is a Werewolf. Rat can not see Werewolf party, and Werewolf party can not see Rat.
     Rat can bite someone. Rat will die if they are a Fox or a Guard.

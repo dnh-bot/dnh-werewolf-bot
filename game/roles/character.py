@@ -124,6 +124,9 @@ class Character:
     async def delete_personal_channel(self):
         await self.interface.delete_channel(self.channel_name)
 
+    def seer_seen_as_werewolf(self):
+        pass
+
     async def on_phase(self, phase):
         # Reset Guard protection
         if self.status == CharacterStatus.PROTECTED:
