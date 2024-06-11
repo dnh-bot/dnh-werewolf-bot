@@ -1473,5 +1473,48 @@
       "vi": ["Dùng lệnh sai rồi bạn ơi. Phải tag người ta mới bỏ lệnh cấm được nha."],
       "en": ["Invalid usage. Must mention player to be unbanned"]
     }
+  },
+  "rat_before_voting_text": {
+    "params": [],
+    "template": {
+      "vi": [
+        "🦷 Bạn muốn cắn ai đó? Hãy nhập `{bot_prefix}bite ID` để chọn đối tượng.",
+        "💡 Ví dụ: `{bot_prefix}bite 2`",
+        "⚠️ Bạn được sử dụng kỹ năng này bất kỳ lúc nào vào ban đêm."
+      ],
+      "en": [
+        "🦷 Choose someone to bite? Enter `{bot_prefix}bite ID` to chose person.",
+        "💡 Example: `{bot_prefix}bite 2`",
+        "⚠️ You can use this skill anytime at night."
+      ]
+    }
+  },
+  "rat_after_voting_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🐭 Chuột ma sói muốn cắn {target} trong đêm nay."],
+      "en": ["🐭 Rat wants to bite {target} tonight."]
+    }
+  },
+  "rat_result_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🦷 {target} đã bị Chuột ma sói cắn một miếng."],
+      "en": ["🦷 {target} was bitten by the Rat."]
+    }
+  },
+  "rat_dead_bite_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🦷 Chuột ma sói đã lỡ cắn phải đối tượng không được cắn {target} nên sẽ bị xuống địa ngục."],
+      "en": ["🦷 Rat has accidentally bitten the must-not-bite {target}, so the Rat will go to hell."]
+    }
+  },
+  "rat_diseased_bite_text": {
+    "params": [],
+    "template": {
+      "vi": ["🦷 Chuột ma sói đã bị nhiễm bệnh nên tạm thời ngày mai sẽ không được cắn người."],
+      "en": ["🦷 Rat has been ill, so temporarily you can't bite people tomorrow."]
+    }
   }
 }

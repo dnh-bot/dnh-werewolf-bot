@@ -1,0 +1,76 @@
+{
+	"name": "Rat in couple, cupid win",
+	"player_list": {
+		"r1": "Rat",
+		"g1": "Guard",
+		"s1": "Seer",
+		"c1": "Cupid",
+		"v1": "Villager"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"r1",
+				"g1",
+				"s1",
+				"c1",
+				"v1"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"r1",
+				"g1",
+				"s1",
+				"c1",
+				"v1"
+			],
+			"action": [
+				"c1 ship v1 r1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"r1",
+				"g1",
+				"s1",
+				"c1",
+				"v1"
+			],
+			"action": [
+				"v1 vote c1",
+				"r1 vote c1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"r1",
+				"g1",
+				"s1",
+				"v1"
+			],
+			"action": [
+				"s1 seer r1 = true",
+				"r1 bite s1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"r1",
+				"g1",
+				"v1"
+			],
+			"action": [
+				"v1 vote g1",
+				"r1 vote g1"
+			]
+		}
+	],
+	"win": "Cupid"
+}

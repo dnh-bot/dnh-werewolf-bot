@@ -769,7 +769,7 @@ class Game:
     def get_winning_role(self):
         alives = self.get_alive_players()
         num_players = len(alives)
-        num_werewolf = sum(isinstance(p, roles.Werewolf) for p in alives)
+        num_werewolf = sum(Game.is_role_in_werewolf_party(p) for p in alives)
 
         print("DEBUG: ", num_players, num_werewolf)
 
@@ -786,8 +786,8 @@ class Game:
         # Check Cupid
         couple = [self.players[i] for i in self.cupid_dict]
         if num_players == 2 and \
-                any(isinstance(p, roles.Werewolf) for p in couple) and \
-                any(not isinstance(p, roles.Werewolf) for p in couple) and \
+                any(Game.is_role_in_werewolf_party(p) for p in couple) and \
+                any(not Game.is_role_in_werewolf_party(p) for p in couple) and \
                 all(p in alives for p in couple):
             return roles.Cupid
 
@@ -962,14 +962,18 @@ class Game:
 
         # TODO: move to Player class
         for player in self.get_alive_players():
+            if isinstance(player, roles.Guard):
+                await self.guard_do_end_nighttime_phase(player)
+
+        for player in self.get_alive_players():
             if isinstance(player, roles.Seer):
                 await self.seer_do_end_nighttime_phase(player)
-            elif isinstance(player, roles.Guard):
-                await self.guard_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Witch):
                 await self.witch_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Pathologist):
                 await self.pathologist_do_end_nighttime_phase(player)
+            elif isinstance(player, roles.Rat):
+                await self.rat_do_end_nighttime_phase(player)
 
         await self.werewolf_do_end_nighttime_phase()
 
@@ -1088,6 +1092,31 @@ class Game:
                     text_templates.generate_text("witch_curse_result_text", target=f"<@{curse_target_id}>")
                 )
 
+    async def rat_do_end_nighttime_phase(self, author):
+        target_id = author.get_target()
+        if target_id is None:
+            return
+
+        target = self.players[target_id]
+
+        if isinstance(target, (roles.Fox, roles.Guard)):
+            self.night_pending_kill_list.append((author.player_id, const.DeadReason.HIDDEN))
+            await author.send_to_personal_channel(
+                text_templates.generate_text("rat_dead_bite_text", target=f"<@{target_id}>")
+            )
+        else:
+            self.night_pending_kill_list.append((target_id, const.DeadReason.HIDDEN))
+            await author.send_to_personal_channel(
+                text_templates.generate_text("rat_result_text", target=f"<@{target_id}>")
+            )
+            if isinstance(target, roles.Diseased):
+                await self.do_diseased_effect(author.player_id)
+                await author.send_to_personal_channel(
+                    text_templates.generate_text("rat_diseased_bite_text", target=f"<@{target_id}>")
+                )
+                if not target.is_protected():
+                    self.night_pending_kill_list.append((author.player_id, const.DeadReason.HIDDEN))
+
     async def werewolf_do_end_nighttime_phase(self):
         if self.is_werewolf_diseased:
             self.is_werewolf_diseased = False
@@ -1110,10 +1139,13 @@ class Game:
             print("werewolf has been diseased")
             self.is_werewolf_diseased = True
             werewolf_list = self.get_werewolf_list()
+            # affects all werewolves
             for werewolf_id in werewolf_list:
-                # affects all werewolves
-                werewolf = self.players[werewolf_id]
-                werewolf.add_next_disable_action_days(1)
+                await self.do_diseased_effect(werewolf_id)
+
+    async def do_diseased_effect(self, target_id):
+        target = self.players[target_id]
+        target.add_next_disable_action_days(1)
 
     async def new_phase(self):
         self.last_nextcmd_time = time.time()
@@ -1248,7 +1280,7 @@ class Game:
     async def do_player_action(self, cmd, author_id, *targets_id):
         # FIXME
         # pylint: disable=too-many-return-statements, too-many-branches
-        if not self.__is_on_phase:
+        if self.timer_enable and not self.__is_on_phase:
             return text_templates.generate_text(
                 "not_in_phase_action_time_text",
                 phase=text_templates.get_word_in_language(str(self.game_phase))
@@ -1287,7 +1319,7 @@ class Game:
                 status=text_templates.get_word_in_language("alive" if is_alive_target_command else "dead")
             )
 
-        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse", "autopsy"):
+        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse", "autopsy", "bite"):
             return await getattr(self, cmd)(author, targets[0])
 
         if cmd == "ship":
@@ -1407,6 +1439,15 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def hunter(self, author, target):
         return author.register_target(target.player_id)
+
+    @command_verify_author(roles.Rat)
+    @command_verify_phase(const.GamePhase.NIGHT)
+    async def bite(self, author, target):
+        return author.register_target(target.player_id)
+
+    @staticmethod
+    def is_role_in_werewolf_party(player):
+        return isinstance(player, (roles.Werewolf, roles.Rat))
 
     def get_werewolf_list(self):
         werewolf_list = []

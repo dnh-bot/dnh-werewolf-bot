@@ -41,6 +41,9 @@ class Character:
     def is_alive(self):
         return self.status != CharacterStatus.KILLED
 
+    def is_protected(self):
+        return self.status == CharacterStatus.PROTECTED
+
     async def get_killed(self, is_suicide=False):
         # Suicide means the couple follows lover death
         if self.status == CharacterStatus.KILLED or (self.status == CharacterStatus.PROTECTED and not is_suicide):
@@ -120,6 +123,9 @@ class Character:
 
     async def delete_personal_channel(self):
         await self.interface.delete_channel(self.channel_name)
+
+    def seer_seen_as_werewolf(self):
+        pass
 
     async def on_phase(self, phase):
         # Reset Guard protection

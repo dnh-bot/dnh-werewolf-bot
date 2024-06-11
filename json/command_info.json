@@ -243,6 +243,15 @@
     "exclusive_roles": ["Pathologist"],
     "required_params": ["player_id"]
   },
+  "bite": {
+    "description": {
+      "vi": "Cắn một ai đó.",
+      "en": "Bite a player."
+    },
+    "valid_channels": ["PERSONAL"],
+    "exclusive_roles": ["Rat"],
+    "required_params": ["player_id"]
+  },
   "zombie": {
     "description": {
       "vi": "Tự đội mồ sống dậy.",
