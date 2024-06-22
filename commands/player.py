@@ -190,6 +190,11 @@ async def do_character_cmd(game, message, cmd, parameters):
     author = message.author
     required_param_number = len(commands.get_command_required_params(cmd))
 
+    if parameters == ["undo"]:
+        msg = await game.undo_player_action(cmd, author.id)
+        await message.reply(msg)
+        return
+
     if cmd == "auto":
         msg = await game.do_player_action(cmd, author.id, *parameters)
         await message.reply(msg)
