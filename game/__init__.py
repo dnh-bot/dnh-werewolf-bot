@@ -50,7 +50,6 @@ def command_verify_phase(valid_phase):
         return execute
 
     return wrapper
-from game.modes.new_moon.events import *
 
 
 class Game:
