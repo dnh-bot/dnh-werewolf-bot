@@ -1,10 +1,7 @@
-import asyncio
-
 import text_templates
 from config import *
-from game import roles
-from game.modes.new_moon.events import *
-from interface import ConsoleInterface
+from game.modes.new_moon.events import generate_random_event
+from game.modes.new_moon.events.no_event import NoEvent
 
 
 class NewMoonMode:
@@ -99,4 +96,3 @@ class NewMoonMode:
             return execute
 
         return wrapper
-
