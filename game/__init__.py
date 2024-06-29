@@ -16,6 +16,7 @@ import utils
 import text_templates
 from game import const, roles, text_template, modes, generate_roles
 from game.modes.new_moon import NewMoonMode
+from game.modes.new_moon.events import *
 
 
 def command_verify_author(valid_role):
@@ -49,7 +50,6 @@ def command_verify_phase(valid_phase):
         return execute
 
     return wrapper
-from game.modes.new_moon.events import *
 
 
 class Game:
