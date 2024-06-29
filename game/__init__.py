@@ -701,7 +701,6 @@ class Game:
 
                 # New phase
                 await self.new_phase()
-                self.__is_on_phase = True
 
                 await asyncio.gather(*[role.on_phase(self.game_phase) for role in self.get_alive_players()])
 
@@ -714,7 +713,6 @@ class Game:
                 self.next_flag.clear()
                 print("After clear")
 
-                self.__is_on_phase = False
                 await self.end_phase()
                 # End_phase
 
@@ -1150,8 +1148,11 @@ class Game:
         elif self.game_phase == const.GamePhase.NIGHT:
             await self.do_new_nighttime_phase()
 
+        self.__is_on_phase = True
+
     async def end_phase(self):
         assert self.game_phase != const.GamePhase.NEW_GAME
+        self.__is_on_phase = False
         if self.game_phase == const.GamePhase.DAY:
             await self.do_end_daytime_phase()
         elif self.game_phase == const.GamePhase.NIGHT:

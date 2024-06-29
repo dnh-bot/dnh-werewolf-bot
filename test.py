@@ -64,7 +64,7 @@ async def test_case(game, filepath):
         for timeline_idx, action_data in enumerate(timeline_action_list):
             await asyncio.sleep(delay_time)
             assert check_alive_players(game, list(map(lambda x: id_map[x], action_data["alive"])), playersname)
-            await asyncio.sleep(delay_time)
+            # await asyncio.sleep(delay_time)
 
             for action_str in action_data["action"]:
                 expected_result = None
