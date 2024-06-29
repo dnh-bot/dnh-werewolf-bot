@@ -1,18 +1,8 @@
 import text_templates
-from config import TEXT_LANGUAGE
-from game.modes.new_moon.events import ALL_EVENTS
 
 
 class NewMoonEvent:
     KEY = ""
-
-    @classmethod
-    def get_name(cls):
-        return ALL_EVENTS[cls.KEY]["title"][TEXT_LANGUAGE]
-
-    @classmethod
-    def get_description(cls):
-        return ALL_EVENTS[cls.KEY]["description"][TEXT_LANGUAGE]
 
     @classmethod
     async def send_announcement_text(cls, interface, channel_name, **kwargs):

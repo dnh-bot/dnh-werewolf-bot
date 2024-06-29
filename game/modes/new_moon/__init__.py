@@ -1,6 +1,6 @@
 import text_templates
 from config import *
-from game.modes.new_moon.events import generate_random_event
+from game.modes.new_moon.events import *
 from game.modes.new_moon.events.no_event import NoEvent
 
 
@@ -36,8 +36,8 @@ class NewMoonMode:
             await interface.send_action_text_to_channel(
                 f"new_moon_{'no' if self.current_event is NoEvent else 'special'}_event_text",
                 GAMEPLAY_CHANNEL,
-                event_name=self.current_event.get_name(),
-                event_description=self.current_event.get_description()
+                event_name=get_event_name(self.current_event),
+                event_description=get_event_description(self.current_event)
             )
 
     async def do_new_daytime_phase(self, interface, **kwargs):
@@ -71,7 +71,7 @@ class NewMoonMode:
                 game_current_event = game.new_moon_mode.get_current_event()
 
                 if valid_event and game_current_event is not valid_event:
-                    event_title = "" if valid_event is None else valid_event.get_name()
+                    event_title = "" if valid_event is None else get_event_name(valid_event)
                     return text_templates.generate_text("invalid_in_event_text", event=event_title)
 
                 return await cmd_func(game, author, *a, **kw)

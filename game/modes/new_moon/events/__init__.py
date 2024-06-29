@@ -1,6 +1,7 @@
 import random
 
 import utils
+from config import TEXT_LANGUAGE
 from game.modes.new_moon.events.no_event import NoEvent
 from game.modes.new_moon.events.heads_or_tails import HeadsOrTails
 from game.modes.new_moon.events.somnambulism import Somnambulism
@@ -26,3 +27,11 @@ def generate_random_event():
         for event_key, event in ALL_EVENTS.items()
     ]))[0]
     return [e for e in EVENTS_LIST if e.KEY == event_str][0]
+
+
+def get_event_name(event):
+    return ALL_EVENTS[event.KEY]["title"][TEXT_LANGUAGE]
+
+
+def get_event_description(event):
+    return ALL_EVENTS[event.KEY]["description"][TEXT_LANGUAGE]
