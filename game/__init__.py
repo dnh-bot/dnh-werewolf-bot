@@ -1389,8 +1389,10 @@ class Game:
 
     @command_verify_author(roles.Werewolf)
     @command_verify_phase(const.GamePhase.NIGHT)
-    @NewMoonMode.deactivate_in_event(FullMoonVegetarian)
     async def kill(self, author, target):
+        if self.new_moon_mode.get_current_event() is FullMoonVegetarian:
+            return await self.new_moon_mode.do_action(self.interface)
+
         author_id = author.player_id
         target_id = target.player_id
 
