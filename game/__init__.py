@@ -1377,7 +1377,7 @@ class Game:
         self.voter_dict[author_id] = target_id
         return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
-    @NewMoonMode.active_in_event(Punishment)
+    @NewMoonMode.active_in_event(Punishment, const.GamePhase.DAY)
     async def punish(self, author, target):
         author_id = author.player_id
         target_id = target.player_id

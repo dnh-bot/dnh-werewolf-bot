@@ -65,13 +65,19 @@ class NewMoonMode:
         return None
 
     @classmethod
-    def active_in_event(cls, valid_event):
+    def active_in_event(cls, valid_event, valid_phase=None):
         def wrapper(cmd_func):
             async def execute(game, author, *a, **kw):
                 game_current_event = game.new_moon_mode.get_current_event()
 
-                if valid_event and game_current_event is not valid_event:
-                    event_title = "" if valid_event is None else get_event_name(valid_event)
+                if game_current_event is not valid_event or (valid_phase is not None and game.game_phase != valid_phase):
+                    event_title = get_event_name(valid_event)
+                    if valid_phase:
+                        phase_str = text_templates.get_word_in_language(str(valid_phase))
+                        return text_templates.generate_text(
+                            "invalid_in_event_phase_text", event=event_title, phase=phase_str
+                        )
+
                     return text_templates.generate_text("invalid_in_event_text", event=event_title)
 
                 return await cmd_func(game, author, *a, **kw)

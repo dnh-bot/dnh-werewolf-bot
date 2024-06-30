@@ -816,6 +816,13 @@
       "en": ["Cannot use in the new moon event **{event}**!"]
     }
   },
+  "invalid_in_event_phase_text": {
+    "params": ["event", "phase"],
+    "template": {
+      "vi": ["Chỉ sử dụng vào {phase} của sự kiện new moon **{event}**!"],
+      "en": ["Only use in the {phase} of new moon event **{event}**!"]
+    }
+  },
   "invalid_author_disabled_action_text": {
     "params": [],
     "template": {
