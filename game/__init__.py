@@ -1262,13 +1262,6 @@ class Game:
                 timer_remaining_text=text_template.generate_timer_remaining_text(self.timecounter)
             )
 
-    async def do_new_moon_event_action(self):
-        if not self.modes.get("new_moon", False):
-            return None
-
-        # TODO
-        return None
-
     async def do_player_action(self, cmd, author_id, *targets_id):
         # FIXME
         # pylint: disable=too-many-return-statements, too-many-branches
