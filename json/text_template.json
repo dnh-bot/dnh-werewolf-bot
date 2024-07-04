@@ -1357,12 +1357,12 @@
       "vi": {
         "title": "Trạng thái trò chơi",
         "description": "{status_description}",
-        "content_headers": ["Số ngày đã trải qua", "⏰ Thời gian còn lại của {phase_str}", "{table_title}", "Trạng thái của bạn"]
+        "content_headers": ["Số ngày đã trải qua", "📆 Sự kiện New Moon hiện tại", "⏰ Thời gian còn lại của {phase_str}", "{table_title}", "Trạng thái của bạn"]
       },
       "en": {
         "title": "Game status",
         "description": "{status_description}",
-        "content_headers": ["Number of days", "⏰ Remaining time of {phase_str}", "{table_title}", "Your status"]
+        "content_headers": ["Number of days", "📆 Current New Moon event", "⏰ Remaining time of {phase_str}", "{table_title}", "Your status"]
       }
     }
   },

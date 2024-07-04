@@ -619,6 +619,7 @@ class Game:
             "game_status_with_table_embed",
             [
                 [passed_days],
+                [get_event_name(self.new_moon_mode.get_current_event())] if self.new_moon_mode.is_on else [],
                 [text_template.generate_timer_remaining_text(remaining_time)],
                 text_template.generate_vote_field(vote_table),
                 [author_status]
