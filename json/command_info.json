@@ -140,6 +140,7 @@
       "vi": "Kiểm tra lại tất cả channel người chơi.",
       "en": "Re-check all player channels."
     },
+    "valid_channels": ["GAMEPLAY", "LOBBY"],
     "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": []
@@ -169,6 +170,7 @@
       "vi": "Yêu cầu chơi lại cùng những người chơi hiện tại",
       "en": "Request a rematch with current players"
     },
+    "valid_channels": ["LOBBY"],
     "type": "LOBBY",
     "exclusive_roles": [],
     "required_params": []
@@ -197,6 +199,7 @@
       "vi": "Lựa chọn một người sẽ bị đưa lên máy chém.",
       "en": "Vote a player."
     },
+    "valid_channels": ["GAMEPLAY"],
     "type": "GAMEPLAY",
     "exclusive_roles": [],
     "required_params": ["player_id"],
@@ -208,6 +211,7 @@
       "en": "Vote a player, use on when new moon event Punishment"
     },
     "valid_channels": ["CEMETERY"],
+    "type": "CEMETERY",
     "exclusive_roles": [],
     "required_params": ["player_id"]
   },
@@ -216,6 +220,7 @@
       "vi": "Lựa chọn một người sẽ bị ăn thịt trong đêm.",
       "en": "Kill a player."
     },
+    "valid_channels": ["WEREWOLF"],
     "type": "WEREWOLF",
     "exclusive_roles": ["Werewolf", "Superwolf"],
     "required_params": ["player_id"],
@@ -226,6 +231,7 @@
       "vi": "Bảo vệ một ai đó trong đêm.",
       "en": "Guard a player."
     },
+    "valid_channels": ["PERSONAL"],
     "type": "PERSONAL",
     "exclusive_roles": ["Guard"],
     "required_params": ["player_id"],
@@ -247,6 +253,7 @@
       "vi": "Soi một người bất kỳ.",
       "en": "Seer a player."
     },
+    "valid_channels": ["PERSONAL"],
     "type": "PERSONAL",
     "exclusive_roles": ["Seer"],
     "required_params": ["player_id"],
@@ -257,6 +264,7 @@
       "vi": "Hồi sinh một người đã chết.",
       "en": "Reborn a player."
     },
+    "valid_channels": ["PERSONAL"],
     "type": "PERSONAL",
     "exclusive_roles": ["Witch"],
     "required_params": ["player_id"],
@@ -267,6 +275,7 @@
       "vi": "Nguyền rủa một người còn sống.",
       "en": "Curse a player."
     },
+    "valid_channels": ["PERSONAL"],
     "type": "PERSONAL",
     "exclusive_roles": ["Witch"],
     "required_params": ["player_id"],
@@ -278,6 +287,7 @@
       "en": "Examine a dead body to reveal its role."
     },
     "valid_channels": ["PERSONAL"],
+    "type": "PERSONAL",
     "exclusive_roles": ["Pathologist"],
     "required_params": ["player_id"]
   },
@@ -287,6 +297,7 @@
       "en": "Bite a player."
     },
     "valid_channels": ["PERSONAL"],
+    "type": "PERSONAL",
     "exclusive_roles": ["Rat"],
     "required_params": ["player_id"]
   },
@@ -295,6 +306,7 @@
       "vi": "Tự đội mồ sống dậy.",
       "en": "Reborn yourself."
     },
+    "valid_channels": ["PERSONAL"],
     "type": "PERSONAL",
     "exclusive_roles": ["Zombie"],
     "required_params": []
@@ -304,6 +316,7 @@
       "vi": "Ghép đôi 2 người.",
       "en": "Match 2 players together as a couple."
     },
+    "valid_channels": ["PERSONAL"],
     "type": "PERSONAL",
     "exclusive_roles": ["Cupid"],
     "required_params": ["player_id1", "player_id2"],
@@ -315,10 +328,8 @@
       "en": "Automatically use player's mana. Turn off this auto feature by using parameter `off`."
     },
     "valid_channels": ["PERSONAL"],
+    "type": "PERSONAL",
     "exclusive_roles": ["Seer", "Guard"],
     "required_params": ["cmd"]
-    "type": "PERSONAL",
-    "exclusive_roles": [],
-    "required_params": []
   }
 }
