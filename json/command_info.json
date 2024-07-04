@@ -213,7 +213,8 @@
     "valid_channels": ["CEMETERY"],
     "type": "CEMETERY",
     "exclusive_roles": [],
-    "required_params": ["player_id"]
+    "required_params": ["player_id"],
+    "examples": [[2]]
   },
   "kill": {
     "description": {
@@ -289,7 +290,8 @@
     "valid_channels": ["PERSONAL"],
     "type": "PERSONAL",
     "exclusive_roles": ["Pathologist"],
-    "required_params": ["player_id"]
+    "required_params": ["player_id"],
+    "examples": [[2]]
   },
   "bite": {
     "description": {
@@ -299,7 +301,8 @@
     "valid_channels": ["PERSONAL"],
     "type": "PERSONAL",
     "exclusive_roles": ["Rat"],
-    "required_params": ["player_id"]
+    "required_params": ["player_id"],
+    "examples": [[2]]
   },
   "zombie": {
     "description": {
