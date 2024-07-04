@@ -950,8 +950,8 @@ class Game:
             return
 
         # await self.interface.send_action_text_to_channel("werewolf_before_voting_text", config.WEREWOLF_CHANNEL)
-        # await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
         await roles.Werewolf.send_before_voting_text(self.interface, config.WEREWOLF_CHANNEL, "kill")
+        await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
 
     async def do_end_nighttime_phase(self):
         # FIXME:

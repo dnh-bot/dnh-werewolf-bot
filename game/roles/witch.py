@@ -1,5 +1,4 @@
 import text_templates
-import commands
 from game.roles.villager import Villager
 
 
