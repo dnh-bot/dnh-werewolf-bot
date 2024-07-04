@@ -13,4 +13,4 @@ class Seer(Villager):
     async def on_night_start(self, alive_embed_data, _):
         if self.is_alive():
             await self.__class__.send_before_voting_text(self.interface, self.channel_name, "seer")
-            await self.interface.send_embed_to_channel(embed_data, self.channel_name)
+            await self.interface.send_embed_to_channel(alive_embed_data, self.channel_name)

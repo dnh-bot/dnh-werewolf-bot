@@ -14,5 +14,5 @@ class Cupid(Villager):
         self.power = 0
 
     async def on_start_game(self, embed_data, _):
-        await self.interface.send_action_text_to_channel("cupid_start_game_text", self.channel_name)
+        await self.__class__.send_before_voting_text(self.interface, self.channel_name, "ship")
         await self.interface.send_embed_to_channel(embed_data, self.channel_name)
