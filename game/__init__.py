@@ -1326,8 +1326,6 @@ class Game:
         return text_template.generate_invalid_command_text(cmd)
 
     async def undo_player_action(self, cmd, author_id):
-        # TODO: undo cupid command ship
-
         player = self.players[author_id]
         if cmd in ("vote", "punish") and author_id in self.voter_dict:
             del self.voter_dict[author_id]
@@ -1337,12 +1335,6 @@ class Game:
             player.set_target(None)
         elif cmd in ("curse", "reborn") and isinstance(player, roles.Witch):
             getattr(player, f"set_{cmd}_target")(None)
-        elif cmd in ("zombie") and isinstance(player, roles.Zombie) and \
-                author_id in self.reborn_set and \
-                not player.is_alive() and \
-                player.get_power() == 1:
-            self.reborn_set.remove(author_id)
-            player.on_undo_power()
 
         return text_templates.generate_text("undo_player_action_successful_text", player=f"<@{author_id}>")
 

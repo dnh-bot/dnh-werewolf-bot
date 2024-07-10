@@ -14,9 +14,6 @@ class Zombie(Villager):
     def on_use_power(self):
         self.power = 0
 
-    def on_undo_power(self):
-        self.power = 1
-
     async def on_night(self):
         pass
 

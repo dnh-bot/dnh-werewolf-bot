@@ -681,8 +681,8 @@
   "undo_player_action_successful_text": {
     "params": ["player"],
     "template": {
-      "vi": ["🔁 Hoàn tác lệnh về trạng thái ban đầu thành công.\n{player}, đừng quên thực hiện chức năng của mình nhé :3"],
-      "en": ["🔁 Undo command to original state successfully.\n{player}, don't forget to use your ability :3"]
+      "vi": ["🔁 Hoàn tác lệnh về trạng thái ban đầu thành công.\n{player}, đừng quên hành động của mình nhé :3"],
+      "en": ["🔁 Undo command to original state successfully.\n{player}, don't forget your action :3"]
     }
   },
   "killed_users_text": {

@@ -86,7 +86,7 @@ def get_command_usages(command, **kwargs):
 
 
 def get_undo_command_usage(command):
-    undo_available_cmds = ["vote", "punish", "kill", "guard", "hunter", "seer", "autopsy", "bite", "curse", "reborn", "zombie"]
+    undo_available_cmds = ["vote", "punish", "kill", "guard", "hunter", "seer", "autopsy", "bite", "curse", "reborn"]
 
     return ["- " + f"`{BOT_PREFIX}{command} undo`"] if command in undo_available_cmds else []
 
