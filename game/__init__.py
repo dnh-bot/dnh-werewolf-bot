@@ -1328,26 +1328,24 @@ class Game:
     async def undo_player_action(self, parameters, author, channel_name):
         player = self.players[author.id]
         is_personal_channel = channel_name.startswith(config.PERSONAL)
-        is_werewolf_team = isinstance(player, roles.Werewolf) or isinstance(player, roles.Superwolf)
 
         # vote, punish
-        if (channel_name == config.GAMEPLAY_CHANNEL or channel_name == config.CEMETERY_CHANNEL) and self.game_phase == const.GamePhase.DAY and author.id in self.voter_dict:
+        if channel_name in (config.GAMEPLAY_CHANNEL, config.CEMETERY_CHANNEL) and self.game_phase == const.GamePhase.DAY and author.id in self.voter_dict:
             del self.voter_dict[author.id]
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.id}>")
         # kill
-        elif channel_name == config.WEREWOLF_CHANNEL and self.game_phase == const.GamePhase.NIGHT and is_werewolf_team and author.id in self.wolf_kill_dict:
+        if channel_name == config.WEREWOLF_CHANNEL and self.game_phase == const.GamePhase.NIGHT and isinstance(player, (roles.Superwolf, roles.Werewolf)) and author.id in self.wolf_kill_dict:
             del self.wolf_kill_dict[author.id]
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.id}>")
         # guard, hunter, seer, autospy, bite
-        elif is_personal_channel and self.game_phase == const.GamePhase.NIGHT and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.Pathologist, roles.Rat)) and player.get_target() is not None:
+        if is_personal_channel and self.game_phase == const.GamePhase.NIGHT and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.Pathologist, roles.Rat)) and player.get_target() is not None:
             player.set_target(None)
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.id}>")
         # curse, reborn
-        elif is_personal_channel and self.game_phase == const.GamePhase.NIGHT and isinstance(player, roles.Witch):
-            if len(parameters) > 0 and parameters[0] in ["curse", "reborn"]:
-                if getattr(player, f"get_{parameters[0]}_power")() == 1 and getattr(player, f"get_{parameters[0]}_target")() is not None:
-                    getattr(player, f"set_{parameters[0]}_target")(None)
-                    return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.id}>")
+        if is_personal_channel and self.game_phase == const.GamePhase.NIGHT and isinstance(player, roles.Witch) and len(parameters) > 0 and parameters[0] in ["curse", "reborn"]:
+            if getattr(player, f"get_{parameters[0]}_power")() == 1 and getattr(player, f"get_{parameters[0]}_target")() is not None:
+                getattr(player, f"set_{parameters[0]}_target")(None)
+                return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.id}>")
 
         return text_templates.generate_text("undo_command_failed_text", player=f"<@{author.id}>")
 
