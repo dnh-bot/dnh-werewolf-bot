@@ -125,7 +125,7 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
             print(f"Error in do_character_cmd with cmd={cmd}:", e)
 
     elif cmd == "undo":
-        msg = await game.undo_player_action(parameters, message.author, message.channel.name)
+        msg = await game.undo_player_action(message.author.id, parameters, message.channel.name)
         await message.reply(msg)
 
     elif cmd == "selfcheck":
