@@ -1037,12 +1037,12 @@
       "vi": {
         "title": "Werewolf Bot Help for command `{command}`",
         "description": "{command_description}",
-        "content_headers": ["Nhân vật sử dụng", "Cách sử dụng", "Ví dụ", "Lệnh hoàn tác"]
+        "content_headers": ["Nhân vật sử dụng", "Cách sử dụng", "Ví dụ"]
       },
       "en": {
         "title": "Werewolf Bot Help for command `{command}`",
         "description": "{command_description}",
-        "content_headers": ["Exclusive roles", "Usage", "Example", "Undo command"]
+        "content_headers": ["Exclusive roles", "Usage", "Example"]
       }
     }
   },
