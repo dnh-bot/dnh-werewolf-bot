@@ -278,5 +278,14 @@
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Seer", "Guard"],
     "required_params": ["cmd"]
+  },
+  "undo": {
+    "description": {
+      "vi": "Hoàn tác vụ hành động của người chơi về trạng thái ban đầu.",
+      "en": "Undo the player's action to its original state."
+    },
+    "valid_channels": ["PERSONAL", "WEREWOLF", "GAMEPLAY", "CEMETERY"],
+    "exclusive_roles": [],
+    "required_params": []
   }
 }

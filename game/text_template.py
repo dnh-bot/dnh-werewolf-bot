@@ -138,7 +138,6 @@ def generate_help_command_embed(command=None):
         else:
             example_args_list = [{"player_id": 2, "player_id1": 2, "player_id2": 3}]
 
-        undo_usage_str = commands.get_undo_command_usage(command)
         help_embed_data = text_templates.generate_embed(
             "help_command_embed", [
                 [command_exclusive_roles_str],
@@ -147,8 +146,7 @@ def generate_help_command_embed(command=None):
                     "- " + example_text
                     for example_args in example_args_list
                     for example_text in commands.get_command_usages(command, **example_args)
-                ],
-                undo_usage_str
+                ]
             ],
             command=command, command_description=command_description
         )

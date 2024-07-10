@@ -85,12 +85,6 @@ def get_command_usages(command, **kwargs):
     return []
 
 
-def get_undo_command_usage(command):
-    undo_available_cmds = ["vote", "punish", "kill", "guard", "hunter", "seer", "autopsy", "bite", "curse", "reborn"]
-
-    return ["- " + f"`{BOT_PREFIX}{command} undo`"] if command in undo_available_cmds else []
-
-
 def is_command_in_valid_channel(command, channel_name):
     valid_channels = get_command_valid_channels(command)
     if not valid_channels:
