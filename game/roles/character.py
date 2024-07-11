@@ -114,6 +114,10 @@ class Character:
         return text_templates.generate_text(f"{self.get_role().lower()}_after_voting_text", target=f"<@{target_id}>")\
             + text_templates.generate_text("inform_power_used_text")
 
+    def unregister_target(self):
+        self.set_target(None)
+        return text_templates.generate_text("undo_command_successful_text", player=f"<@{self.player_id}>")
+
     def get_next_disable_action_days(self):
         return self.next_disable_action_days
 

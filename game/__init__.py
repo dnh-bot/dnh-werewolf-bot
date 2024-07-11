@@ -1397,8 +1397,7 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def guard(self, author, target=None):
         if target is None:
-            author.set_target(None)
-            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+            return author.unregister_target()
 
         roles.Guard.set_allow_self_protection(self.modes.get("allow_guard_self_protection", False))
         return author.register_target(target.player_id)
@@ -1407,8 +1406,7 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def seer(self, author, target=None):
         if target is None:
-            author.set_target(None)
-            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+            return author.unregister_target()
 
         return author.register_target(target.player_id)
 
@@ -1416,8 +1414,7 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def autopsy(self, author, target=None):
         if target is None:
-            author.set_target(None)
-            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+            return author.unregister_target()
 
         return author.register_target(target.player_id)
 
@@ -1425,11 +1422,7 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def reborn(self, author, target=None):
         if target is None:
-            if author.get_reborn_power() > 0:
-                author.set_reborn_target(None)
-                return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
-            else:
-                return text_templates.generate_text("undo_command_failed_text", player=f"<@{author.player_id}>")
+            return author.unregister_reborn_target()
 
         return author.register_reborn_target(target.player_id)
 
@@ -1437,11 +1430,7 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def curse(self, author, target=None):
         if target is None:
-            if author.get_curse_power() > 0:
-                author.set_curse_target(None)
-                return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
-            else:
-                return text_templates.generate_text("undo_command_failed_text", player=f"<@{author.player_id}>")
+            return author.unregister_curse_target()
 
         return author.register_curse_target(target.player_id)
 
@@ -1480,8 +1469,7 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def hunter(self, author, target=None):
         if target is None:
-            author.set_target(None)
-            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+            return author.unregister_target()
 
         return author.register_target(target.player_id)
 
@@ -1489,8 +1477,7 @@ class Game:
     @command_verify_phase(const.GamePhase.NIGHT)
     async def bite(self, author, target=None):
         if target is None:
-            author.set_target(None)
-            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+            return author.unregister_target()
 
         return author.register_target(target.player_id)
 
