@@ -1341,11 +1341,16 @@ class Game:
         if is_personal_channel and self.game_phase == const.GamePhase.NIGHT and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.Pathologist, roles.Rat)) and player.get_target() is not None:
             player.set_target(None)
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
-        # curse, reborn
-        if is_personal_channel and self.game_phase == const.GamePhase.NIGHT and isinstance(player, roles.Witch) and len(parameters) > 0 and parameters[0] in ["curse", "reborn"]:
-            if getattr(player, f"get_{parameters[0]}_power")() == 1 and getattr(player, f"get_{parameters[0]}_target")() is not None:
-                getattr(player, f"set_{parameters[0]}_target")(None)
-                return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
+        # Undo curse, reborn just when Witch did any of them previously
+        if is_personal_channel and self.game_phase == const.GamePhase.NIGHT and isinstance(player, roles.Witch):
+            witch_commands = ["curse", "reborn"]
+            for command in witch_commands[:]:
+                if getattr(player, f"get_{command}_power")() == 1 and getattr(player, f"get_{command}_target")() is not None:
+                    getattr(player, f"set_{command}_target")(None)
+                else:
+                    witch_commands.remove(command)
+            if len(witch_commands) > 0:
+                return text_templates.generate_text("undo_witch_command_successful_text", commands=", ".join(witch_commands), player=f"<@{author_id}>")
 
         return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
 

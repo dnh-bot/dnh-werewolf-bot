@@ -681,8 +681,15 @@
   "undo_command_successful_text": {
     "params": ["player"],
     "template": {
-      "vi": ["🔁 Hành động đã quay về trạng thái ban đầu.\n{player}, đừng quên nhé :3"],
-      "en": ["🔁 Action returned to its original state.\n{player}, don't forget :3"]
+      "vi": ["🔁 Hành động đã quay về trạng thái ban đầu.\n{player}, đừng quên bạn nhé :3"],
+      "en": ["🔁 Action returned to its original state.\n{player}, don't forget it :3"]
+    }
+  },
+  "undo_witch_command_successful_text": {
+    "params": ["commands", "player"],
+    "template": {
+      "vi": ["🔁🧙🏻‍♀️ Hành động **`{commands}`** đã quay về trạng thái ban đầu.\n{player}, đừng quên bạn nhé :3"],
+      "en": ["🔁🧙🏻‍♀️ Action **`{commands}`** returned to its original state.\n{player}, don't forget it :3"]
     }
   },
   "undo_command_failed_text": {
