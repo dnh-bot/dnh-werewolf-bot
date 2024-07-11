@@ -1332,7 +1332,7 @@ class Game:
         return text_template.generate_invalid_command_text(cmd)
 
     @command_verify_phase(const.GamePhase.DAY)
-    async def vote(self, author, target=None):
+    async def vote(self, author, target):
         author_id = author.player_id
 
         if target is None:
@@ -1350,7 +1350,7 @@ class Game:
         self.voter_dict[author_id] = target_id
         return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
-    async def punish(self, author, target=None):
+    async def punish(self, author, target):
         new_moon_punishment_event = self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT
         is_day_time = self.game_phase == const.GamePhase.DAY
         # May also check if author is dead or not?
@@ -1375,7 +1375,7 @@ class Game:
 
     @command_verify_author(roles.Werewolf)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def kill(self, author, target=None):
+    async def kill(self, author, target):
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
             return await self.new_moon_mode.do_action(self.interface)
 
@@ -1395,7 +1395,7 @@ class Game:
 
     @command_verify_author(roles.Guard)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def guard(self, author, target=None):
+    async def guard(self, author, target):
         if target is None:
             return author.unregister_target()
 
@@ -1404,7 +1404,7 @@ class Game:
 
     @command_verify_author(roles.Seer)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def seer(self, author, target=None):
+    async def seer(self, author, target):
         if target is None:
             return author.unregister_target()
 
@@ -1412,7 +1412,7 @@ class Game:
 
     @command_verify_author(roles.Pathologist)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def autopsy(self, author, target=None):
+    async def autopsy(self, author, target):
         if target is None:
             return author.unregister_target()
 
@@ -1420,7 +1420,7 @@ class Game:
 
     @command_verify_author(roles.Witch)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def reborn(self, author, target=None):
+    async def reborn(self, author, target):
         if target is None:
             return author.unregister_reborn_target()
 
@@ -1428,7 +1428,7 @@ class Game:
 
     @command_verify_author(roles.Witch)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def curse(self, author, target=None):
+    async def curse(self, author, target):
         if target is None:
             return author.unregister_curse_target()
 
@@ -1467,7 +1467,7 @@ class Game:
 
     @command_verify_author(roles.Hunter)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def hunter(self, author, target=None):
+    async def hunter(self, author, target):
         if target is None:
             return author.unregister_target()
 
@@ -1475,7 +1475,7 @@ class Game:
 
     @command_verify_author(roles.Rat)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def bite(self, author, target=None):
+    async def bite(self, author, target):
         if target is None:
             return author.unregister_target()
 
