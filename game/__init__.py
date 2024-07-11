@@ -1339,8 +1339,8 @@ class Game:
             if author_id in self.voter_dict:
                 del self.voter_dict[author_id]
                 return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
-            else:
-                return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
+
+            return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
 
         target_id = target.player_id
         if author_id == target_id:
@@ -1363,8 +1363,8 @@ class Game:
             if author_id in self.voter_dict:
                 del self.voter_dict[author_id]
                 return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
-            else:
-                return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
+
+            return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
 
         target_id = target.player_id
 
@@ -1385,8 +1385,8 @@ class Game:
             if author_id in self.wolf_kill_dict:
                 del self.wolf_kill_dict[author_id]
                 return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
-            else:
-                return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
+
+            return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
 
         target_id = target.player_id
 
