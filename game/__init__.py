@@ -1325,6 +1325,35 @@ class Game:
 
         return text_template.generate_invalid_command_text(cmd)
 
+    async def undo_player_action(self, author_id, channel_name):
+        player = self.players[author_id]
+        is_personal_channel = channel_name.startswith(config.PERSONAL)
+
+        # vote, punish
+        if channel_name in (config.GAMEPLAY_CHANNEL, config.CEMETERY_CHANNEL) and self.game_phase == const.GamePhase.DAY and author_id in self.voter_dict:
+            del self.voter_dict[author_id]
+            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
+        # kill
+        if channel_name == config.WEREWOLF_CHANNEL and self.game_phase == const.GamePhase.NIGHT and isinstance(player, (roles.Superwolf, roles.Werewolf)) and author_id in self.wolf_kill_dict:
+            del self.wolf_kill_dict[author_id]
+            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
+        # guard, hunter, seer, autospy, bite
+        if is_personal_channel and self.game_phase == const.GamePhase.NIGHT and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.Pathologist, roles.Rat)) and player.get_target() is not None:
+            player.set_target(None)
+            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
+        # Undo curse, reborn just when Witch did any of them previously
+        if is_personal_channel and self.game_phase == const.GamePhase.NIGHT and isinstance(player, roles.Witch):
+            witch_commands = ["curse", "reborn"]
+            for command in witch_commands[:]:
+                if getattr(player, f"get_{command}_power")() == 1 and getattr(player, f"get_{command}_target")() is not None:
+                    getattr(player, f"set_{command}_target")(None)
+                else:
+                    witch_commands.remove(command)
+            if len(witch_commands) > 0:
+                return text_templates.generate_text("undo_witch_command_successful_text", commands=", ".join(witch_commands), player=f"<@{author_id}>")
+
+        return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
+
     @command_verify_phase(const.GamePhase.DAY)
     async def vote(self, author, target):
         author_id = author.player_id

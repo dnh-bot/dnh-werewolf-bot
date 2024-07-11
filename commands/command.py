@@ -124,6 +124,10 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         except Exception as e:
             print(f"Error in do_character_cmd with cmd={cmd}:", e)
 
+    elif cmd == "undo":
+        msg = await game.undo_player_action(message.author.id, message.channel.name)
+        await message.reply(msg)
+
     elif cmd == "selfcheck":
         if not game.is_started():
             await message.reply(text_templates.generate_text("game_not_started_text"))
