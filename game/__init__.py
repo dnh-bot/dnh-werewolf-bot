@@ -1273,7 +1273,7 @@ class Game:
         # TODO
         return None
 
-    async def do_player_action(self, cmd, author_id, *targets_id):
+    async def do_player_action(self, cmd, author_id, *parameters):
         # FIXME
         # pylint: disable=too-many-return-statements, too-many-branches
         if self.timer_enable and not self.__is_on_phase:
@@ -1296,10 +1296,16 @@ class Game:
             )
 
         if cmd == "auto":
-            return await self.register_auto(author, *targets_id)
+            return await self.register_auto(author, *parameters)
+
+        if parameters == ("undo",):
+            if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse", "autopsy", "bite"):
+                return await getattr(self, cmd)(author, None)
+            else:
+                return text_templates.generate_text("undo_command_failed_text")
 
         targets = []
-        for target_id in targets_id:
+        for target_id in parameters:
             target = self.players.get(target_id)
             if target is None:
                 return text_templates.generate_text("invalid_target_text")
@@ -1325,22 +1331,17 @@ class Game:
 
         return text_template.generate_invalid_command_text(cmd)
 
-    async def undo_player_action(self, cmd, author_id):
-        player = self.players[author_id]
-        if cmd in ("vote", "punish") and author_id in self.voter_dict:
-            del self.voter_dict[author_id]
-        elif cmd == "kill" and author_id in self.wolf_kill_dict:
-            del self.wolf_kill_dict[author_id]
-        elif cmd in ("guard", "hunter", "seer", "autopsy", "bite"): # Basic register target
-            player.set_target(None)
-        elif cmd in ("curse", "reborn") and isinstance(player, roles.Witch):
-            getattr(player, f"set_{cmd}_target")(None)
-
-        return text_templates.generate_text("undo_player_action_successful_text", player=f"<@{author_id}>")
-
     @command_verify_phase(const.GamePhase.DAY)
-    async def vote(self, author, target):
+    async def vote(self, author, target=None):
         author_id = author.player_id
+
+        if target is None:
+            if author_id in self.voter_dict:
+                del self.voter_dict[author_id]
+                return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
+            else:
+                return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
+
         target_id = target.player_id
         if author_id == target_id:
             return text_templates.generate_text("prevent_self_voting_text")
@@ -1349,7 +1350,7 @@ class Game:
         self.voter_dict[author_id] = target_id
         return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
-    async def punish(self, author, target):
+    async def punish(self, author, target=None):
         new_moon_punishment_event = self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT
         is_day_time = self.game_phase == const.GamePhase.DAY
         # May also check if author is dead or not?
@@ -1357,6 +1358,14 @@ class Game:
             return text_templates.generate_text("invalid_punish_in_cemetery_text")
 
         author_id = author.player_id
+
+        if target is None:
+            if author_id in self.voter_dict:
+                del self.voter_dict[author_id]
+                return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
+            else:
+                return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
+
         target_id = target.player_id
 
         # Punish for target user
@@ -1366,11 +1375,19 @@ class Game:
 
     @command_verify_author(roles.Werewolf)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def kill(self, author, target):
+    async def kill(self, author, target=None):
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
             return await self.new_moon_mode.do_action(self.interface)
 
         author_id = author.player_id
+
+        if target is None:
+            if author_id in self.wolf_kill_dict:
+                del self.wolf_kill_dict[author_id]
+                return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
+            else:
+                return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
+
         target_id = target.player_id
 
         self.wolf_kill_dict[author_id] = target_id
@@ -1378,28 +1395,54 @@ class Game:
 
     @command_verify_author(roles.Guard)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def guard(self, author, target):
+    async def guard(self, author, target=None):
+        if target is None:
+            author.set_target(None)
+            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+
         roles.Guard.set_allow_self_protection(self.modes.get("allow_guard_self_protection", False))
         return author.register_target(target.player_id)
 
     @command_verify_author(roles.Seer)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def seer(self, author, target):
+    async def seer(self, author, target=None):
+        if target is None:
+            author.set_target(None)
+            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+
         return author.register_target(target.player_id)
 
     @command_verify_author(roles.Pathologist)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def autopsy(self, author, target):
+    async def autopsy(self, author, target=None):
+        if target is None:
+            author.set_target(None)
+            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+
         return author.register_target(target.player_id)
 
     @command_verify_author(roles.Witch)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def reborn(self, author, target):
+    async def reborn(self, author, target=None):
+        if target is None:
+            if author.get_reborn_power() > 0:
+                author.set_reborn_target(None)
+                return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+            else:
+                return text_templates.generate_text("undo_command_failed_text", player=f"<@{author.player_id}>")
+
         return author.register_reborn_target(target.player_id)
 
     @command_verify_author(roles.Witch)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def curse(self, author, target):
+    async def curse(self, author, target=None):
+        if target is None:
+            if author.get_curse_power() > 0:
+                author.set_curse_target(None)
+                return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+            else:
+                return text_templates.generate_text("undo_command_failed_text", player=f"<@{author.player_id}>")
+
         return author.register_curse_target(target.player_id)
 
     @command_verify_author(roles.Zombie)
@@ -1435,12 +1478,20 @@ class Game:
 
     @command_verify_author(roles.Hunter)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def hunter(self, author, target):
+    async def hunter(self, author, target=None):
+        if target is None:
+            author.set_target(None)
+            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+
         return author.register_target(target.player_id)
 
     @command_verify_author(roles.Rat)
     @command_verify_phase(const.GamePhase.NIGHT)
-    async def bite(self, author, target):
+    async def bite(self, author, target=None):
+        if target is None:
+            author.set_target(None)
+            return text_templates.generate_text("undo_command_successful_text", player=f"<@{author.player_id}>")
+
         return author.register_target(target.player_id)
 
     @staticmethod
