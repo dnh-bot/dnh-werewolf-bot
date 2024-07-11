@@ -1325,7 +1325,7 @@ class Game:
 
         return text_template.generate_invalid_command_text(cmd)
 
-    async def undo_player_action(self, author_id, parameters, channel_name):
+    async def undo_player_action(self, author_id, channel_name):
         player = self.players[author_id]
         is_personal_channel = channel_name.startswith(config.PERSONAL)
 
