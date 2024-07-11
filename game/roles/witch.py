@@ -81,12 +81,12 @@ class Witch(Villager):
         if self.get_reborn_power() > 0:
             self.set_reborn_target(None)
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{self.player_id}>")
-        else:
-            return text_templates.generate_text("undo_command_failed_text", player=f"<@{self.player_id}>")
+
+        return text_templates.generate_text("undo_command_failed_text", player=f"<@{self.player_id}>")
 
     def unregister_curse_target(self):
         if Witch.is_can_kill() and self.get_curse_power() > 0:
             self.set_curse_target(None)
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{self.player_id}>")
-        else:
-            return text_templates.generate_text("undo_command_failed_text", player=f"<@{self.player_id}>")
+
+        return text_templates.generate_text("undo_command_failed_text", player=f"<@{self.player_id}>")

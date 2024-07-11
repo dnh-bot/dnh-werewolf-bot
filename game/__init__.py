@@ -1301,8 +1301,8 @@ class Game:
         if parameters == ("undo",):
             if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse", "autopsy", "bite"):
                 return await getattr(self, cmd)(author, None)
-            else:
-                return text_templates.generate_text("undo_command_failed_text")
+
+            return text_templates.generate_text("undo_command_failed_text")
 
         targets = []
         for target_id in parameters:
