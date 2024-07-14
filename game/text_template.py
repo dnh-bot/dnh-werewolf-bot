@@ -103,10 +103,11 @@ def generate_help_command_embed(command=None):
     all_commands = commands.get_all_commands()
     command = command.lower() if isinstance(command, str) else command
     if command is None:
-        help_embed_data = text_templates.generate_embed("help_command_all_embed", [])
-        help_embed_data["content"] = [
-            ("List", [" | ".join(f"`{cmd}`" for cmd in all_commands)])
-        ]
+        type_commands_list = commands.get_commands_by_type_list()
+        help_embed_data = text_templates.generate_embed(
+            "help_command_all_embed",
+            [[" | ".join(f"`{command}`" for command in type_commands_list[k])] for k in ("general", "game", "action")]
+        )
 
     elif command in all_commands:
         command_description = commands.get_command_description(command)

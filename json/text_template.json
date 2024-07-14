@@ -1028,12 +1028,12 @@
       "vi": {
         "title": "Werewolf Bot Help for commands",
         "description": "Danh sách các lệnh. Bạn có thể xem thêm về 1 lệnh bằng lệnh `{bot_prefix}help cmd <tên lệnh>`",
-        "content_headers": []
+        "content_headers": ["Các lệnh chung", "Các lệnh trò chơi", "Các lệnh hành động"]
       },
       "en": {
         "title": "Werewolf Bot Help for commands",
         "description": "Full command list. You can get more information on a command using `{bot_prefix}help cmd <name of command>`",
-        "content_headers": []
+        "content_headers": ["General commands", "Game commands", "Action commands"]
       }
     }
   },
