@@ -1340,7 +1340,7 @@ class Game:
             del self.voter_dict[author_id]
             if channel_name == config.CEMETERY_CHANNEL:
                 await self.interface.send_action_text_to_channel(
-                    "undo_command_successful_text", config.GAMEPLAY_CHANNEL, player=f"<@{author_id}>"
+                    "new_moon_punishment_undo_text", config.GAMEPLAY_CHANNEL, author=f"<@{author_id}>"
                 )
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
 
