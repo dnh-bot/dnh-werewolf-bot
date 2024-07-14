@@ -1332,6 +1332,10 @@ class Game:
         # vote, punish
         if channel_name in (config.GAMEPLAY_CHANNEL, config.CEMETERY_CHANNEL) and self.game_phase == const.GamePhase.DAY and author_id in self.voter_dict:
             del self.voter_dict[author_id]
+            if channel_name == config.CEMETERY_CHANNEL:
+                await self.interface.send_action_text_to_channel(
+                    "undo_command_successful_text", config.GAMEPLAY_CHANNEL, player=f"<@{author_id}>"
+                )
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
         # kill
         if channel_name == config.WEREWOLF_CHANNEL and self.game_phase == const.GamePhase.NIGHT and isinstance(player, (roles.Superwolf, roles.Werewolf)) and author_id in self.wolf_kill_dict:
