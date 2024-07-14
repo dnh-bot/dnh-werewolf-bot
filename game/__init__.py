@@ -1326,27 +1326,39 @@ class Game:
         return text_template.generate_invalid_command_text(cmd)
 
     async def undo_player_action(self, author_id, channel_name):
-        player = self.players[author_id]
-        is_personal_channel = channel_name.startswith(config.PERSONAL)
+        if self.game_phase == const.GamePhase.DAY:
+            return await self.__undo_player_daytime_action(author_id, channel_name)
 
+        if self.game_phase == const.GamePhase.NIGHT:
+            return await self.__undo_player_nighttime_action(author_id, channel_name)
+
+        return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
+
+    async def __undo_player_daytime_action(self, author_id, channel_name):
         # vote, punish
-        if channel_name in (config.GAMEPLAY_CHANNEL, config.CEMETERY_CHANNEL) and self.game_phase == const.GamePhase.DAY and author_id in self.voter_dict:
+        if channel_name in (config.GAMEPLAY_CHANNEL, config.CEMETERY_CHANNEL) and author_id in self.voter_dict:
             del self.voter_dict[author_id]
             if channel_name == config.CEMETERY_CHANNEL:
                 await self.interface.send_action_text_to_channel(
                     "undo_command_successful_text", config.GAMEPLAY_CHANNEL, player=f"<@{author_id}>"
                 )
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
+
+        return text_templates.generate_text("undo_command_failed_text", player=f"<@{author_id}>")
+
+    async def __undo_player_nighttime_action(self, author_id, channel_name):
+        player = self.players[author_id]
+        is_personal_channel = channel_name.startswith(config.PERSONAL)
         # kill
-        if channel_name == config.WEREWOLF_CHANNEL and self.game_phase == const.GamePhase.NIGHT and isinstance(player, (roles.Superwolf, roles.Werewolf)) and author_id in self.wolf_kill_dict:
+        if channel_name == config.WEREWOLF_CHANNEL and isinstance(player, roles.Werewolf) and author_id in self.wolf_kill_dict:
             del self.wolf_kill_dict[author_id]
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
         # guard, hunter, seer, autospy, bite
-        if is_personal_channel and self.game_phase == const.GamePhase.NIGHT and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.Pathologist, roles.Rat)) and player.get_target() is not None:
+        if is_personal_channel and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.Pathologist, roles.Rat)) and player.get_target() is not None:
             player.set_target(None)
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
         # Undo curse, reborn just when Witch did any of them previously
-        if is_personal_channel and self.game_phase == const.GamePhase.NIGHT and isinstance(player, roles.Witch):
+        if is_personal_channel and isinstance(player, roles.Witch):
             witch_commands = ["curse", "reborn"]
             for command in witch_commands[:]:
                 if getattr(player, f"get_{command}_power")() == 1 and getattr(player, f"get_{command}_target")() is not None:
