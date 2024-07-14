@@ -1425,6 +1425,13 @@
       "en": ["👹 {author} voted to punish {target}"]
     }
   },
+  "new_moon_punishment_undo_text": {
+    "params": ["author"],
+    "template": {
+      "vi": ["🔁👹 {author} đã huỷ phiếu trừng phạt của mình."],
+      "en": ["🔁👹 {author} has removed their punishment vote."]
+    }
+  },
   "tanner_killed_by_not_voting_text": {
     "params": ["user"],
     "template": {
