@@ -1429,7 +1429,7 @@
     "params": ["author"],
     "template": {
       "vi": ["🔁👹 {author} đã huỷ phiếu trừng phạt của mình."],
-      "en": ["🔁👹 {author} has remove their punishment vote."]
+      "en": ["🔁👹 {author} has removed their punishment vote."]
     }
   },
   "tanner_killed_by_not_voting_text": {
