@@ -23,8 +23,17 @@ role_info = utils.common.read_json_file("json/role_info.json")
 
 
 def get_all_roles():
-    return Villager, Werewolf, Seer, Guard, Lycan, Betrayer, Superwolf, Fox, Witch, Zombie, Cupid, Chief, Hunter,\
+    return Villager, Werewolf, Seer, Guard, Lycan, Superwolf, Betrayer, Fox, Witch, Zombie, Cupid, Chief, Hunter,\
         Tanner, Pathologist, Diseased, Rat
+
+
+def get_party_roles_list():
+    party_roles_list = [[], [], []]
+    for a_role in get_all_roles():
+        _name = a_role.__name__
+        party_roles_list[role_info[_name]["party"] - 1].append(_name)
+
+    return party_roles_list
 
 
 def get_role_type(name):

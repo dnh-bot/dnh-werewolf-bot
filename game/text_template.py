@@ -160,12 +160,12 @@ def generate_help_command_embed(command=None):
 
 
 def generate_help_role_embed(role=None):
-    all_roles_name = [a_role.__name__ for a_role in roles.get_all_roles()]
     if role is None:
-        help_embed_data = text_templates.generate_embed("help_role_all_embed", [])
-        help_embed_data["content"] = [
-            ("List", [" | ".join(f"`{role_name}`" for role_name in all_roles_name)])
-        ]
+        party_roles_list = roles.get_party_roles_list()
+        help_embed_data = text_templates.generate_embed(
+            "help_role_all_embed",
+            [[" | ".join(f"`{role_name}`" for role_name in role_list)] for role_list in party_roles_list]
+        )
         return help_embed_data
 
     role_data = roles.get_role_data_by_name(role)

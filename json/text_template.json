@@ -1060,12 +1060,12 @@
       "vi": {
         "title": "Werewolf Bot Help for roles",
         "description": "Danh sách các nhân vật. Bạn có thể xem thêm về 1 nhân vật bằng lệnh `{bot_prefix}help role <tên nhân vật>`",
-        "content_headers": []
+        "content_headers": ["Phe Dân", "Phe Sói", "Phe thứ 3"]
       },
       "en": {
         "title": "Werewolf Bot Help for roles",
         "description": "Full role list. You can get more information on a role using `{bot_prefix}help role <name of role>`",
-        "content_headers": []
+        "content_headers": ["Villager party", "Werewolf party", "Third party"]
       }
     }
   },
