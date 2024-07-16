@@ -57,7 +57,7 @@ def generate_text_list(action, **kwargs):
             for line in template_obj["template"][TEXT_LANGUAGE]
         ]
 
-    print(f"Error in generate_text: action={action} not in text_template.json")
+    print(f"Error in generate_text_list: action={action} not in text_template.json")
     return ""
 
 
