@@ -1053,6 +1053,28 @@
       }
     }
   },
+  "party_name_list": {
+    "params": [],
+    "template": {
+      "vi": ["Dân", "Sói", "thứ ba"],
+      "en": ["Villager", "Werewolf", "third"]
+    }
+  },
+  "party_description_list": {
+    "params": [],
+    "template": {
+      "vi": [
+        "Chiến thắng nếu sống sót và tiêu diệt được hết phe Sói và Cáo. Không thể nhận biết được người cùng phe.",
+        "Chiến thắng nếu giết hết phe Dân. Nhận biết được **Sói** cùng phe.",
+        "Chiến thắng với những điều kiện đặc biệt."
+      ],
+      "en": [
+        "Win if survives and destroys Werewolf party and Fox. Unable to recognize people on the same side.",
+        "Win if kills Villager party. Identify other **Werewolves** on the same side.",
+        "Win with special conditions."
+      ]
+    }
+  },
   "help_role_all_embed": {
     "params": [],
     "color": "0x206694",
@@ -1070,17 +1092,17 @@
     }
   },
   "help_role_embed": {
-    "params": ["role_title", "role_description"],
+    "params": ["role_title", "role_party", "role_description"],
     "color": "0x3498db",
     "template": {
       "vi": {
         "title": "Werewolf Bot Help về nhân vật {role_title}",
-        "description": "{role_description}",
+        "description": "Thuộc phe {role_party}. {role_description}",
         "content_headers": ["Ban ngày", "Ban đêm"]
       },
       "en": {
         "title": "Werewolf Bot Help for role {role_title}",
-        "description": "{role_description}",
+        "description": "Belongs to the {role_party} party. {role_description}",
         "content_headers": ["Day", "Night"]
       }
     }

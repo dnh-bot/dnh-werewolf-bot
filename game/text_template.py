@@ -162,10 +162,14 @@ def generate_help_command_embed(command=None):
 
 def generate_help_role_embed(role=None):
     if role is None:
+        party_description_list = text_templates.generate_text_list("party_description_list")
         party_roles_list = roles.get_party_roles_list()
         help_embed_data = text_templates.generate_embed(
             "help_role_all_embed",
-            [[" | ".join(f"`{role_name}`" for role_name in role_list)] for role_list in party_roles_list]
+            [
+                [party_description, *[f"- {role_title}" for role_title in role_list]]
+                for party_description, role_list in zip(party_description_list, party_roles_list)
+            ]
         )
         return help_embed_data
 
@@ -173,7 +177,10 @@ def generate_help_role_embed(role=None):
     if not role_data:
         return text_templates.generate_embed("help_invalid_name_embed", [], arg_type="role", arg_name=role)
 
+    party_name_list = text_templates.generate_text_list("party_name_list")
+
     title = role_data["title"]
+    party = party_name_list[role_data["party"] - 1]
     description = role_data["description"]
     nighttime_commands = role_data["nighttime_commands"]
     if nighttime_commands:
@@ -183,7 +190,7 @@ def generate_help_role_embed(role=None):
 
     return text_templates.generate_embed(
         "help_role_embed", [[get_full_cmd_description("vote")], nighttime_actions_description],
-        role_title=title, role_description=description
+        role_title=title, role_party=party, role_description=description
     )
 
 
