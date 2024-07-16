@@ -23,8 +23,19 @@ role_info = utils.common.read_json_file("json/role_info.json")
 
 
 def get_all_roles():
-    return Villager, Werewolf, Seer, Guard, Lycan, Betrayer, Superwolf, Fox, Witch, Zombie, Cupid, Chief, Hunter,\
+    return Villager, Werewolf, Seer, Guard, Lycan, Superwolf, Betrayer, Fox, Witch, Zombie, Cupid, Chief, Hunter,\
         Tanner, Pathologist, Diseased, Rat
+
+
+def get_party_roles_list():
+    party_roles_list = [[], [], []]
+    for a_role in get_all_roles():
+        _name = a_role.__name__
+        field_name = f"name_{TEXT_LANGUAGE}"
+        title = _name if field_name not in role_info[_name] else f"{_name} ({role_info[_name][field_name]})"
+        party_roles_list[role_info[_name]["party"] - 1].append(title)
+
+    return party_roles_list
 
 
 def get_role_type(name):
@@ -42,6 +53,7 @@ def get_role_data_by_name(name):
             field_name = f"name_{TEXT_LANGUAGE}"
             return {
                 "title": _name if field_name not in _data else f"{_name} ({_data[field_name]})",
+                "party": _data["party"],
                 "description": _data["description"][TEXT_LANGUAGE],
                 "nighttime_commands": _data["nighttime_commands"]
             }

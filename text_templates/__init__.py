@@ -47,6 +47,20 @@ def get_format_string(key):
     return ""
 
 
+def generate_text_list(action, **kwargs):
+    if action in text_template_dict:
+        template_obj = text_template_dict[action]
+        return [
+            line.format(
+                bot_prefix=BOT_PREFIX, gameplay_channel=GAMEPLAY_CHANNEL, **kwargs
+            )
+            for line in template_obj["template"][TEXT_LANGUAGE]
+        ]
+
+    print(f"Error in generate_text_list: action={action} not in text_template.json")
+    return ""
+
+
 def generate_text(action, **kwargs):
     if action in text_template_dict:
         template_obj = text_template_dict[action]

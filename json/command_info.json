@@ -4,7 +4,8 @@
       "vi": "Thiết lập đồng hồ đếm ngược.",
       "en": "Set the current timer."
     },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "general",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": ["dayphase", "nightphase", "alertperiod"]
   },
@@ -13,7 +14,8 @@
       "vi": "Chạy đồng hồ đếm ngược hiện tại.",
       "en": "Start the current timer."
     },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "general",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -22,7 +24,8 @@
       "vi": "Dừng đồng hồ đếm ngược hiện tại.",
       "en": "Stop the current timer."
     },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "general",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -31,7 +34,8 @@
       "vi": "Thiết lập giờ chơi trong 1 ngày. Thời gian phải ở định dạng HH:MM.",
       "en": "Set the playing time in a day. Time must be in HH:MM format."
     },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "general",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": ["time_start", "time_end"],
     "additional_params": ["time_zone"]
@@ -41,7 +45,8 @@
       "vi": "Thiết lập bảng phân vai mặc định cho trò chơi mới.",
       "en": "Set default player roles for a new game"
     },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "general",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": ["role_dict"]
   },
@@ -50,7 +55,8 @@
       "vi": "Hiển thị thiết lập các chế độ chơi",
       "en": "Display mode setting"
     },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "general",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -59,15 +65,27 @@
       "vi": "Thiết lập chế độ chơi.",
       "en": "Enable/Disable game modes."
     },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "general",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": ["mode_id", "on_str"]
+  },
+  "rank": {
+    "description": {
+      "vi": "Xem bảng xếp hạng.",
+      "en": "Show ranking board."
+    },
+    "type": "general",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
+    "exclusive_roles": [],
+    "required_params": []
   },
   "join": {
     "description": {
       "vi": "Tham gia vào một trò chơi.",
       "en": "Join a game."
     },
+    "type": "game",
     "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": []
@@ -77,7 +95,8 @@
       "vi": "Rời khỏi một trò chơi.",
       "en": "Leave a game."
     },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "game",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -86,6 +105,7 @@
       "vi": "Theo dõi (nhưng không tham gia) vào một trò chơi.",
       "en": "Watch a game."
     },
+    "type": "game",
     "valid_channels": ["LOBBY"],
     "exclusive_roles": [],
     "required_params": []
@@ -95,42 +115,7 @@
       "vi": "Bỏ theo dõi một trò chơi.",
       "en": "Unwatch a game."
     },
-    "valid_channels": ["LOBBY", "GAMEPLAY"],
-    "exclusive_roles": [],
-    "required_params": []
-  },
-  "start": {
-    "description": {
-      "vi": "Bắt đầu một trò chơi (cần đủ số lượng vote).",
-      "en": "Start a game."
-    },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
-    "exclusive_roles": [],
-    "required_params": []
-  },
-  "selfcheck": {
-    "description": {
-      "vi": "Kiểm tra lại tất cả channel người chơi.",
-      "en": "Re-check all player channels."
-    },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
-    "exclusive_roles": [],
-    "required_params": []
-  },
-  "next": {
-    "description": {
-      "vi": "Nhảy đến phase sau (cần đủ số lượng vote).",
-      "en": "Jump to next phase."
-    },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
-    "exclusive_roles": [],
-    "required_params": []
-  },
-  "stopgame": {
-    "description": {
-      "vi": "Dừng trò chơi.",
-      "en": "Stop a game."
-    },
+    "type": "game",
     "valid_channels": ["LOBBY"],
     "exclusive_roles": [],
     "required_params": []
@@ -140,7 +125,48 @@
       "vi": "Yêu cầu chơi lại cùng những người chơi hiện tại",
       "en": "Request a rematch with current players"
     },
+    "type": "game",
     "valid_channels": ["LOBBY"],
+    "exclusive_roles": [],
+    "required_params": []
+  },
+  "selfcheck": {
+    "description": {
+      "vi": "Kiểm tra lại tất cả channel người chơi.",
+      "en": "Re-check all player channels."
+    },
+    "type": "game",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
+    "exclusive_roles": [],
+    "required_params": []
+  },
+  "start": {
+    "description": {
+      "vi": "Bắt đầu một trò chơi (cần đủ số lượng vote).",
+      "en": "Start a game."
+    },
+    "type": "game",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
+    "exclusive_roles": [],
+    "required_params": []
+  },
+  "next": {
+    "description": {
+      "vi": "Nhảy đến phase sau (cần đủ số lượng vote).",
+      "en": "Jump to next phase."
+    },
+    "type": "game",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
+    "exclusive_roles": [],
+    "required_params": []
+  },
+  "stopgame": {
+    "description": {
+      "vi": "Dừng trò chơi.",
+      "en": "Stop a game."
+    },
+    "type": "game",
+    "valid_channels": ["LOBBY", "GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -149,16 +175,8 @@
       "vi": "Xem trạng thái trò chơi trong buổi hiện tại.",
       "en": "Show status of current phase."
     },
-    "valid_channels": ["GAMEPLAY", "LOBBY", "PERSONAL"],
-    "exclusive_roles": [],
-    "required_params": []
-  },
-  "rank": {
-    "description": {
-      "vi": "Xem bảng xếp hạng.",
-      "en": "Show ranking board."
-    },
-    "valid_channels": ["GAMEPLAY", "LOBBY"],
+    "type": "game",
+    "valid_channels": ["LOBBY", "GAMEPLAY", "CEMETERY", "WEREWOLF", "PERSONAL"],
     "exclusive_roles": [],
     "required_params": []
   },
@@ -167,7 +185,8 @@
       "vi": "Lựa chọn một người sẽ bị đưa lên máy chém.",
       "en": "Vote a player."
     },
-    "valid_channels": ["GAMEPLAY"],
+    "type": "action",
+    "valid_channels": ["game"],
     "exclusive_roles": [],
     "required_params": ["player_id"]
   },
@@ -176,6 +195,7 @@
       "vi": "Lựa chọn một người sẽ bị đưa lên máy chém, sử dụng khi có sự kiện new moon Trừng Phạt",
       "en": "Vote a player, use on when new moon event Punishment"
     },
+    "type": "action",
     "valid_channels": ["CEMETERY"],
     "exclusive_roles": [],
     "required_params": ["player_id"]
@@ -185,6 +205,7 @@
       "vi": "Lựa chọn một người sẽ bị ăn thịt trong đêm.",
       "en": "Kill a player."
     },
+    "type": "action",
     "valid_channels": ["WEREWOLF"],
     "exclusive_roles": ["Werewolf", "Superwolf"],
     "required_params": ["player_id"]
@@ -194,6 +215,7 @@
       "vi": "Bảo vệ một ai đó trong đêm.",
       "en": "Guard a player."
     },
+    "type": "action",
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Guard"],
     "required_params": ["player_id"]
@@ -203,6 +225,7 @@
       "vi": "Săn một ai đó.",
       "en": "Hunt a player."
     },
+    "type": "action",
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Hunter"],
     "required_params": ["player_id"]
@@ -212,6 +235,7 @@
       "vi": "Soi một người bất kỳ.",
       "en": "Seer a player."
     },
+    "type": "action",
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Seer"],
     "required_params": ["player_id"]
@@ -221,6 +245,7 @@
       "vi": "Hồi sinh một người đã chết.",
       "en": "Reborn a player."
     },
+    "type": "action",
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Witch"],
     "required_params": ["player_id"]
@@ -230,6 +255,7 @@
       "vi": "Nguyền rủa một người còn sống.",
       "en": "Curse a player."
     },
+    "type": "action",
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Witch"],
     "required_params": ["player_id"]
@@ -239,6 +265,7 @@
       "vi": "Khám nghiệm chức năng của một người đã chết.",
       "en": "Examine a dead body to reveal its role."
     },
+    "type": "action",
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Pathologist"],
     "required_params": ["player_id"]
@@ -248,6 +275,7 @@
       "vi": "Cắn một ai đó.",
       "en": "Bite a player."
     },
+    "type": "action",
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Rat"],
     "required_params": ["player_id"]
@@ -257,6 +285,7 @@
       "vi": "Tự đội mồ sống dậy.",
       "en": "Reborn yourself."
     },
+    "type": "action",
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Zombie"],
     "required_params": []
@@ -266,6 +295,7 @@
       "vi": "Ghép đôi 2 người.",
       "en": "Match 2 players together as a couple."
     },
+    "type": "action",
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Cupid"],
     "required_params": ["player_id1", "player_id2"]
@@ -275,16 +305,18 @@
       "vi": "Tự động thực hiện chức năng của người chơi. Tắt chức năng tự động này bằng tham số `off`.",
       "en": "Automatically use player's mana. Turn off this auto feature by using parameter `off`."
     },
+    "type": "action",
     "valid_channels": ["PERSONAL"],
     "exclusive_roles": ["Seer", "Guard"],
     "required_params": ["cmd"]
   },
   "undo": {
     "description": {
-      "vi": "Hoàn tác vụ hành động của người chơi về trạng thái ban đầu.",
-      "en": "Undo the player's action to its original state."
+      "vi": "Hoàn tác vụ hành động của người chơi về trạng thái ban đầu.\n- Vào ban ngày, mọi người chơi đều có thể dùng lệnh này.\n- Vào ban đêm, trừ Zombie và Cupid, mọi nhân vật có chức năng đều có thể sử dụng lệnh này.",
+      "en": "Undo the player's action to its original state.\n- On daytime, all players can use this command.\n- On nighttime, except Zombies and Cupid, every characters who has special actions can use this command."
     },
-    "valid_channels": ["PERSONAL", "WEREWOLF", "GAMEPLAY", "CEMETERY"],
+    "type": "action",
+    "valid_channels": ["GAMEPLAY", "CEMETERY", "WEREWOLF", "PERSONAL"],
     "exclusive_roles": [],
     "required_params": []
   }

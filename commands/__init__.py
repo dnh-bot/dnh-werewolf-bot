@@ -1,5 +1,7 @@
 """Add cmd decorator here for parsing command parameters"""
 
+from collections import defaultdict
+
 import config
 from config import BOT_PREFIX, TEXT_LANGUAGE
 import utils
@@ -10,6 +12,14 @@ command_info = utils.common.read_json_file("json/command_info.json")
 
 def get_all_commands():
     return [*command_info.keys()]
+
+
+def get_commands_by_type_list():
+    type_commands_list = defaultdict(list)
+    for command, data in command_info.items():
+        type_commands_list[data["type"]].append(command)
+
+    return type_commands_list
 
 
 def get_command_description(command):
