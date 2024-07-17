@@ -43,20 +43,28 @@ class NewMoonMode:
     async def do_new_daytime_phase(self, interface, **kwargs):
         if self.is_on:
             await self.announce_current_event(interface)
-            await self.current_event.on_day_start(interface, **kwargs)
+            return await self.current_event.on_day_start(interface, **kwargs)
+
+        return None
 
     async def do_end_daytime_phase(self, interface, **kwargs):
         if self.is_on:
-            await self.current_event.on_day_end(interface, **kwargs)
+            return await self.current_event.on_day_end(interface, **kwargs)
+
+        return None
 
     async def do_new_nighttime_phase(self, interface, **kwargs):
         if self.is_on:
             await self.announce_current_event(interface)
-            await self.current_event.on_night_start(interface, **kwargs)
+            return await self.current_event.on_night_start(interface, **kwargs)
+
+        return None
 
     async def do_end_nighttime_phase(self, interface, **kwargs):
         if self.is_on:
-            await self.current_event.on_night_end(interface, **kwargs)
+            return await self.current_event.on_night_end(interface, **kwargs)
+
+        return None
 
     async def do_action(self, interface, **kwargs):
         if self.is_on:

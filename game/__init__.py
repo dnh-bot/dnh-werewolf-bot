@@ -873,12 +873,9 @@ class Game:
             self.voter_dict = {}
 
         if self.new_moon_mode.get_current_event() is HeadsOrTails:
-            coin_toss_value = await self.new_moon_mode.do_action(self.interface)
-            print("coin toss value =", coin_toss_value)
+            coin_toss_value = await self.new_moon_mode.do_end_daytime_phase(self.interface)
             if coin_toss_value != 0:
                 lynched, votes = None, 0
-
-            await self.new_moon_mode.do_end_daytime_phase(self.interface, coin_toss_value=coin_toss_value)
 
         day_kill_list = []
         # Kill Tanner if they didn't vote anyone from the second to the sixth day
