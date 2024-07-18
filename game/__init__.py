@@ -16,6 +16,7 @@ import utils
 import text_templates
 from game import const, roles, text_template, modes, generate_roles
 from game.modes.new_moon import NewMoonMode
+from game.modes.new_moon.events import *
 
 
 def command_verify_author(valid_role):
@@ -470,7 +471,7 @@ class Game:
                 following_players.append((follower_id, const.DeadReason.COUPLE))
 
             elif isinstance(reason, const.RebornReason):
-                if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME:
+                if self.new_moon_mode.get_current_event() is TwinFlame:
                     following_players.append((follower_id, const.RebornReason.COUPLE))
 
         return following_players
@@ -618,6 +619,7 @@ class Game:
             "game_status_with_table_embed",
             [
                 [passed_days],
+                [get_event_name(self.new_moon_mode.get_current_event())] if self.new_moon_mode.is_on else [],
                 [text_template.generate_timer_remaining_text(remaining_time)],
                 text_template.generate_vote_field(vote_table),
                 [author_status]
@@ -700,7 +702,6 @@ class Game:
 
                 # New phase
                 await self.new_phase()
-                self.__is_on_phase = True
 
                 await asyncio.gather(*[role.on_phase(self.game_phase) for role in self.get_alive_players()])
 
@@ -713,7 +714,6 @@ class Game:
                 self.next_flag.clear()
                 print("After clear")
 
-                self.__is_on_phase = False
                 await self.end_phase()
                 # End_phase
 
@@ -828,15 +828,6 @@ class Game:
             if self.players[_id].is_alive()
         ])
 
-    async def announce_current_new_moon_event(self):
-        if self.modes.get("new_moon", False):
-            await self.interface.send_action_text_to_channel(
-                f"new_moon_{'special' if self.new_moon_mode.has_special_event() else 'no'}_event_text",
-                config.GAMEPLAY_CHANNEL,
-                event_name=self.new_moon_mode.get_current_event_name(),
-                event_description=self.new_moon_mode.get_current_event_description()
-            )
-
     async def do_new_daytime_phase(self):
         print("do_new_daytime_phase")
         self.day += 1
@@ -849,12 +840,14 @@ class Game:
             embed_data = self.generate_player_list_embed()
             await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
 
-            self.new_moon_mode.set_random_event()
-            await self.announce_current_new_moon_event()
+            if self.new_moon_mode.is_on:
+                self.new_moon_mode.set_random_event()
+                _kwargs = {}
+                if self.new_moon_mode.get_current_event() is Punishment and len(self.get_dead_players()):
+                    alive_players_embed_data = self.generate_player_list_embed(True)
+                    _kwargs = {"alive_players_embed_data": alive_players_embed_data}
 
-            if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT and len(self.get_dead_players()):
-                alive_players_embed_data = self.generate_player_list_embed(True)
-                await self.new_moon_mode.do_new_daytime_phase(self.interface, alive_players_embed_data=alive_players_embed_data)
+                await self.new_moon_mode.do_new_daytime_phase(self.interface, **_kwargs)
 
             # Mute all party channels
             # Unmute all alive players in config.GAMEPLAY_CHANNEL
@@ -879,13 +872,10 @@ class Game:
             print("lynched list:", self.voter_dict)
             self.voter_dict = {}
 
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.HEADS_OR_TAILS:
-            coin_toss_value = self.new_moon_mode.do_coin_toss()
-            print("coin toss value =", coin_toss_value)
+        if self.new_moon_mode.get_current_event() is HeadsOrTails:
+            coin_toss_value = await self.new_moon_mode.do_end_daytime_phase(self.interface)
             if coin_toss_value != 0:
                 lynched, votes = None, 0
-
-            await self.new_moon_mode.do_action(self.interface, coin_toss_value=coin_toss_value)
 
         day_kill_list = []
         # Kill Tanner if they didn't vote anyone from the second to the sixth day
@@ -924,7 +914,9 @@ class Game:
             await self.control_muting_party_channel(config.COUPLE_CHANNEL, False, self.get_couple_player_id_list())
 
             await self.interface.send_action_text_to_channel("night_phase_beginning_text", config.GAMEPLAY_CHANNEL)
-            await self.announce_current_new_moon_event()
+
+            if self.new_moon_mode.is_on:
+                await self.new_moon_mode.do_new_nighttime_phase(self.interface)
 
             # do on_night_start
             alive_embed_data = self.generate_player_list_embed(True)
@@ -941,8 +933,7 @@ class Game:
             self.reborn_set = set()
 
     async def werewolf_do_new_nighttime_phase(self, alive_embed_data):
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
-            await self.new_moon_mode.do_new_nighttime_phase(self.interface)
+        if self.new_moon_mode.get_current_event() is FullMoonVegetarian:
             return
 
         if self.is_werewolf_diseased:
@@ -986,7 +977,7 @@ class Game:
         else:
             await self.interface.send_action_text_to_channel("killed_none_text", config.GAMEPLAY_CHANNEL)
 
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.TWIN_FLAME and self.get_couple_player_id_list():
+        if self.new_moon_mode.get_current_event() is TwinFlame and self.get_couple_player_id_list():
             await self.new_moon_mode.do_end_nighttime_phase(self.interface)
 
         reborn_list_by_reason = await self.get_final_status_changes_with_reasons(self.reborn_set)
@@ -1046,8 +1037,8 @@ class Game:
         if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
             self.night_pending_kill_list.append((target_id, const.DeadReason.HIDDEN))
 
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.SOMNAMBULISM:
-            await self.new_moon_mode.do_action(self.interface, target=target)
+        if self.new_moon_mode.get_current_event() is Somnambulism:
+            await self.new_moon_mode.do_end_nighttime_phase(self.interface, target=target)
 
         await author.send_to_personal_channel(
             text_templates.generate_text(
@@ -1155,8 +1146,11 @@ class Game:
         elif self.game_phase == const.GamePhase.NIGHT:
             await self.do_new_nighttime_phase()
 
+        self.__is_on_phase = True
+
     async def end_phase(self):
         assert self.game_phase != const.GamePhase.NEW_GAME
+        self.__is_on_phase = False
         if self.game_phase == const.GamePhase.DAY:
             await self.do_end_daytime_phase()
         elif self.game_phase == const.GamePhase.NIGHT:
@@ -1266,13 +1260,6 @@ class Game:
                 timer_remaining_text=text_template.generate_timer_remaining_text(self.timecounter)
             )
 
-    async def do_new_moon_event_action(self):
-        if not self.modes.get("new_moon", False):
-            return None
-
-        # TODO
-        return None
-
     async def do_player_action(self, cmd, author_id, *targets_id):
         # FIXME
         # pylint: disable=too-many-return-statements, too-many-branches
@@ -1319,7 +1306,7 @@ class Game:
             return await getattr(self, cmd)(author, targets[0])
 
         if cmd == "ship":
-            if self.modes.get("couple_random"):
+            if self.modes.get("couple_random", False):
                 return text_templates.generate_text("invalid_ship_with_random_couple_text")
             return await self.ship(author, targets[0], targets[1])
 
@@ -1381,13 +1368,8 @@ class Game:
         self.voter_dict[author_id] = target_id
         return text_templates.generate_text("vote_text", author=f"<@{author_id}>", target=f"<@{target_id}>")
 
+    @NewMoonMode.active_in_event(Punishment, const.GamePhase.DAY)
     async def punish(self, author, target):
-        new_moon_punishment_event = self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.PUNISHMENT
-        is_day_time = self.game_phase == const.GamePhase.DAY
-        # May also check if author is dead or not?
-        if not (new_moon_punishment_event and is_day_time):
-            return text_templates.generate_text("invalid_punish_in_cemetery_text")
-
         author_id = author.player_id
         target_id = target.player_id
 
@@ -1399,7 +1381,7 @@ class Game:
     @command_verify_author(roles.Werewolf)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def kill(self, author, target):
-        if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
+        if self.new_moon_mode.get_current_event() is FullMoonVegetarian:
             return await self.new_moon_mode.do_action(self.interface)
 
         author_id = author.player_id

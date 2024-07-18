@@ -664,13 +664,6 @@
       "en": ["You can only use your skill once!"]
     }
   },
-  "invalid_punish_in_cemetery_text": {
-    "params": [],
-    "template": {
-      "vi": ["Chỉ sử dụng trong buổi sáng của sự kiện new moon **Trừng Phạt**!"],
-      "en": ["Only use in the morning of new moon event **Punishment**!"]
-    }
-  },
   "inform_power_used_text": {
     "params": [],
     "template": {
@@ -807,6 +800,27 @@
     "template": {
       "vi": ["Ráng đợi tới {phase} bạn êy!"],
       "en": ["Please wait until the {phase}, my friend!"]
+    }
+  },
+  "invalid_in_event_text": {
+    "params": ["event"],
+    "template": {
+      "vi": ["Chỉ sử dụng trong thời gian sự kiện new moon **{event}**!"],
+      "en": ["Only use in the new moon event **{event}**!"]
+    }
+  },
+  "invalid_out_event_text": {
+    "params": ["event"],
+    "template": {
+      "vi": ["Không được sử dụng trong thời gian sự kiện new moon **{event}**!"],
+      "en": ["Cannot use in the new moon event **{event}**!"]
+    }
+  },
+  "invalid_in_event_phase_text": {
+    "params": ["event", "phase"],
+    "template": {
+      "vi": ["Chỉ sử dụng vào {phase} của sự kiện new moon **{event}**!"],
+      "en": ["Only use in the {phase} of new moon event **{event}**!"]
     }
   },
   "invalid_author_disabled_action_text": {
@@ -1343,12 +1357,12 @@
       "vi": {
         "title": "Trạng thái trò chơi",
         "description": "{status_description}",
-        "content_headers": ["Số ngày đã trải qua", "⏰ Thời gian còn lại của {phase_str}", "{table_title}", "Trạng thái của bạn"]
+        "content_headers": ["Số ngày đã trải qua", "📆 Sự kiện New Moon hiện tại", "⏰ Thời gian còn lại của {phase_str}", "{table_title}", "Trạng thái của bạn"]
       },
       "en": {
         "title": "Game status",
         "description": "{status_description}",
-        "content_headers": ["Number of days", "⏰ Remaining time of {phase_str}", "{table_title}", "Your status"]
+        "content_headers": ["Number of days", "📆 Current New Moon event", "⏰ Remaining time of {phase_str}", "{table_title}", "Your status"]
       }
     }
   },
@@ -1434,10 +1448,10 @@
     }
   },
   "new_moon_punishment_announcement_text": {
-    "params": ["cmd_usages"],
+    "params": [],
     "template": {
-      "vi": ["👹 Sự kiện **Trừng Phạt**: Hãy sử dụng lệnh {cmd_usages} để vote 1 người trong buổi sáng nay"],
-      "en": ["👹 Event **Punishment**: Use command {cmd_usages} to vote 1 person in this morning"]
+      "vi": ["👹 Sự kiện **Trừng Phạt**: Hãy sử dụng lệnh `{bot_prefix}punish` để vote 1 người trong buổi sáng nay"],
+      "en": ["👹 Event **Punishment**: Use command `{bot_prefix}punish` to vote 1 person in this morning"]
     }
   },
   "new_moon_punishment_result_text": {
