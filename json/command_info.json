@@ -186,7 +186,7 @@
       "en": "Vote a player."
     },
     "type": "action",
-    "valid_channels": ["game"],
+    "valid_channels": ["GAMEPLAY"],
     "exclusive_roles": [],
     "required_params": ["player_id"]
   },
