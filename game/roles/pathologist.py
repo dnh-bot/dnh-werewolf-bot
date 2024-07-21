@@ -6,7 +6,7 @@ class Pathologist(Villager):
 
     async def on_night(self):
         pass
-    
+
     async def on_day(self):
         self.target = None
 
