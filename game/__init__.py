@@ -926,6 +926,10 @@ class Game:
                 player.on_night_start(alive_embed_data, dead_embed_data) for player in self.get_all_players()
             ])
 
+            for player in self.get_alive_players():
+                if isinstance(player, roles.ApprenticeSeer):
+                    await self.apprenticeseer_do_new_nighttime_phase(player)
+
     async def werewolf_do_new_nighttime_phase(self, alive_embed_data):
         if self.modes.get("new_moon", False) and self.new_moon_mode.current_event == NewMoonMode.FULL_MOON_VEGETARIAN:
             await self.new_moon_mode.do_new_nighttime_phase(self.interface)
@@ -933,6 +937,14 @@ class Game:
 
         await self.interface.send_action_text_to_channel("werewolf_before_voting_text", config.WEREWOLF_CHANNEL)
         await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
+
+    async def apprenticeseer_do_new_nighttime_phase(self, author):
+        seer_id = self.get_player_with_role(roles.Seer, "dead")
+        active_status = seer_id is not None
+        print("SEER_ID", seer_id)
+        print(active_status)
+        author.set_active(active_status)
+        print(author.is_active)
 
     async def do_end_nighttime_phase(self):
         # FIXME:
@@ -1038,11 +1050,6 @@ class Game:
             )
         )
     async def apprenticeseer_do_end_nighttime_phase(self, author):
-        seer_id = self.get_player_with_role(roles.Seer, "dead")
-        active_status = seer_id is not None
-
-        author.set_active(active_status)
-
         if author.is_active:
             await self.seer_do_end_nighttime_phase(author)
 
