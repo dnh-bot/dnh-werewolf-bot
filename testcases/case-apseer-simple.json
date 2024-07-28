@@ -1,0 +1,73 @@
+{
+	"name": "ApprenticeSeer simple win",
+	"player_list": {
+		"w1": "Werewolf",
+		"s1": "Seer",
+		"aps1": "ApprenticeSeer",
+		"h1": "Hunter",
+		"wi1": "Witch"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"s1",
+				"aps1",
+				"h1",
+				"wi1"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"s1",
+				"aps1",
+				"h1",
+				"wi1"
+			],
+			"action": [
+				"w1 kill s1",
+				"aps1 check_status = false"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"aps1",
+				"h1",
+				"wi1"
+			],
+			"action": []
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"aps1",
+				"h1",
+				"wi1"
+			],
+			"action": [
+				"aps1 check_status = true",
+				"aps1 seer w1 = true"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"aps1",
+				"h1",
+				"wi1"
+			],
+			"action": [
+				"aps1 vote w1"
+			]
+		}
+	],
+	"win": "Villager"
+}
