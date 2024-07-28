@@ -73,8 +73,15 @@ async def test_case(game, filepath):
 
                 author_name, command = action_str.split()[:2]
                 target_name = action_str.split()[2:]
-                text = await game.do_player_action(command, id_map[author_name], *[id_map[i] for i in target_name])
-                print(text)
+                if command == "check_status":
+                    # check apprenticeseer active status
+                    # test example:
+                    # "aps1 check_status = false"
+                    # "aps1 check_status = true"
+                    assert expected_result.capitalize() == str(game.players[id_map[author_name]].is_active)
+                else:
+                    text = await game.do_player_action(command, id_map[author_name], *[id_map[i] for i in target_name])
+                    print(text)
 
                 if command == "seer":
                     # test example:
@@ -110,7 +117,7 @@ async def test_game():
     game = Game(None, interface.ConsoleInterface(None))
 
     # Run single test
-    # await test_case(game, "testcases/case-pathologist-simple-test.json")
+    # await test_case(game, "testcases/case-apseer-simple.json")
 
     # Run all tests
     directory = "testcases"
