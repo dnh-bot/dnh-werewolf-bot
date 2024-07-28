@@ -1357,7 +1357,7 @@ class Game:
             del self.wolf_kill_dict[author_id]
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
         # guard, hunter, seer, autospy, bite
-        if is_personal_channel and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.Pathologist, roles.Rat)) and player.get_target() is not None:
+        if is_personal_channel and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.ApprenticeSeer, roles.Pathologist, roles.Rat)) and player.get_target() is not None:
             player.set_target(None)
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
         # Undo curse, reborn just when Witch did any of them previously
