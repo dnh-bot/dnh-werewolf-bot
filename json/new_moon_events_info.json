@@ -16,8 +16,8 @@
       "en": "Heads or Tails"
     },
     "description": {
-      "vi": "Người bị vote treo cổ sẽ tung đồng xu: nếu là mặt ngửa thì sẽ sống",
-      "en": "The person who gets hanged will toss a coin: if it's heads, they will be alive"
+      "vi": "Người bị vote treo cổ sẽ tung đồng xu: nếu là mặt ngửa thì sẽ sống.",
+      "en": "The person who gets hanged will toss a coin: if it's heads, they will be alive."
     },
     "rate": 1
   },
@@ -60,8 +60,8 @@
       "en": "Punishment"
     },
     "description": {
-      "vi": "Những người đã chết ở nghĩa trang cũng có thể tham gia vote 1 người",
-      "en": "People who have died in the cemetery can also vote to lynch 1 person"
+      "vi": "Những người đã chết ở nghĩa trang cũng có thể tham gia vote 1 người.",
+      "en": "People who have died in the cemetery can also vote to lynch 1 person."
     },
     "rate": 1
   },

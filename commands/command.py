@@ -118,11 +118,15 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
             return
         await player.do_rematch(game, message)
 
-    elif cmd in ("vote", "punish", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto", "autopsy", "aseer"):
+    elif cmd in ("vote", "punish", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto", "autopsy", "bite"):
         try:
             await player.do_character_cmd(game, message, cmd, parameters)
         except Exception as e:
             print(f"Error in do_character_cmd with cmd={cmd}:", e)
+
+    elif cmd == "undo":
+        msg = await game.undo_player_action(message.author.id, message.channel.name)
+        await message.reply(msg)
 
     elif cmd == "selfcheck":
         if not game.is_started():

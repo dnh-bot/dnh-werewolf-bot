@@ -1,0 +1,37 @@
+{
+	"name": "Rat die when bite Guard",
+	"player_list": {
+		"v1": "Villager",
+		"r1": "Rat",
+		"g1": "Guard",
+		"wi1": "Witch"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"v1",
+				"r1",
+				"g1",
+				"wi1"
+			],
+			"action": [
+				"wi1 vote v1",
+				"v1 vote wi1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"v1",
+				"r1",
+				"g1",
+				"wi1"
+			],
+			"action": [
+				"r1 bite g1"
+			]
+		}
+	],
+	"win": "Villager"
+}

@@ -543,19 +543,6 @@
       "en": ["🩸 You have cursed {target}"]
     }
   },
-  "zombie_before_voting_text": {
-    "params": [],
-    "template": {
-      "vi": [
-        "🧟 Bạn có thể đội mồ sống dậy! Bạn chỉ có thể sử dụng kỹ năng này 1 lần.",
-        "💡 Nhập `{bot_prefix}zombie` để trở lại cuộc đời.\n"
-      ],
-      "en": [
-        "🧟 You can be reborn! You can only use this skill once.",
-        "💡 Enter `{bot_prefix}zombie` to return to the life.\n"
-      ]
-    }
-  },
   "pathologist_before_voting_text": {
     "params": [],
     "template": {
@@ -605,7 +592,19 @@
       "en": ["👀 This night, AprrenticeSeer wants to see {target}."]
     }
   },
-
+  "zombie_before_voting_text": {
+    "params": [],
+    "template": {
+      "vi": [
+        "🧟 Bạn có thể đội mồ sống dậy! Bạn chỉ có thể sử dụng kỹ năng này 1 lần.",
+        "💡 Nhập `{bot_prefix}zombie` để trở lại cuộc đời.\n"
+      ],
+      "en": [
+        "🧟 You can be reborn! You can only use this skill once.",
+        "💡 Enter `{bot_prefix}zombie` to return to the life.\n"
+      ]
+    }
+  },
   "zombie_after_reborn_text": {
     "params": [],
     "template": {
@@ -634,10 +633,10 @@
     }
   },
   "couple_shipped_with_text": {
-    "params": ["target"],
+    "params": ["target", "target_role"],
     "template": {
-      "vi": ["👩🏻‍❤️‍👨🏻 Bạn và {target} đã được thần tình yêu chọn làm cặp đôi đồng sinh cộng tử."],
-      "en": ["👩🏻‍❤️‍👨🏻 You and {target} have been chosen by the cupid to be a couple."]
+      "vi": ["👩🏻‍❤️‍👨🏻 Bạn và {target_role} {target} đã được thần tình yêu chọn làm cặp đôi đồng sinh cộng tử."],
+      "en": ["👩🏻‍❤️‍👨🏻 You and {target} the {target_role} have been chosen by the cupid to be a couple."]
     }
   },
   "couple_welcome_text": {
@@ -693,18 +692,32 @@
       "en": ["You can only use your skill once!"]
     }
   },
-  "invalid_punish_in_cemetery_text": {
-    "params": [],
-    "template": {
-      "vi": ["Chỉ sử dụng trong buổi sáng của sự kiện new moon **Trừng Phạt**!"],
-      "en": ["Only use in the morning of new moon event **Punishment**!"]
-    }
-  },
   "inform_power_used_text": {
     "params": [],
     "template": {
       "vi": ["\n💡 Năng lực của bạn sẽ mạnh nhất vào lúc chuyển giao đêm ngày. Hãy chờ đến sáng để xem kết quả nhá ;>"],
       "en": ["\n💡 Your power is most powerful when night meets day. Just wait until morning to see the result ;>"]
+    }
+  },
+  "undo_command_successful_text": {
+    "params": ["player"],
+    "template": {
+      "vi": ["🔁 Hành động đã quay về trạng thái ban đầu.\n{player}, đừng quên bạn nhé :3"],
+      "en": ["🔁 Action returned to its original state.\n{player}, don't forget it :3"]
+    }
+  },
+  "undo_witch_command_successful_text": {
+    "params": ["commands", "player"],
+    "template": {
+      "vi": ["🔁🧙🏻‍♀️ Hành động **`{commands}`** đã quay về trạng thái ban đầu.\n{player}, đừng quên bạn nhé :3"],
+      "en": ["🔁🧙🏻‍♀️ Action **`{commands}`** returned to its original state.\n{player}, don't forget it :3"]
+    }
+  },
+  "undo_command_failed_text": {
+    "params": ["player"],
+    "template": {
+      "vi": ["🔁❌ {player}, không có hành động nào hợp lệ!"],
+      "en": ["🔁❌ {player}, there is no valid action!"]
     }
   },
   "killed_users_text": {
@@ -817,11 +830,32 @@
       "en": ["Please wait until the {phase}, my friend!"]
     }
   },
-  "invalid_nighttime_text": {
+  "invalid_in_event_text": {
+    "params": ["event"],
+    "template": {
+      "vi": ["Chỉ sử dụng trong thời gian sự kiện new moon **{event}**!"],
+      "en": ["Only use in the new moon event **{event}**!"]
+    }
+  },
+  "invalid_out_event_text": {
+    "params": ["event"],
+    "template": {
+      "vi": ["Không được sử dụng trong thời gian sự kiện new moon **{event}**!"],
+      "en": ["Cannot use in the new moon event **{event}**!"]
+    }
+  },
+  "invalid_in_event_phase_text": {
+    "params": ["event", "phase"],
+    "template": {
+      "vi": ["Chỉ sử dụng vào {phase} của sự kiện new moon **{event}**!"],
+      "en": ["Only use in the {phase} of new moon event **{event}**!"]
+    }
+  },
+  "invalid_author_disabled_action_text": {
     "params": [],
     "template": {
-      "vi": ["Ráng đợi tới đêm bạn êy!"],
-      "en": ["Please wait until the night, my friend!"]
+      "vi": ["Bạn đã bị mất năng lượng nên trong hôm nay không thể thi triển sức mạnh. Sau hôm nay có thể bạn sẽ trở lại trạng thái bình thường :)"],
+      "en": ["Your energy was empty so you can't use your power today. After today, maybe you would return to your normal state :)"]
     }
   },
   "invalid_ship_with_random_couple_text": {
@@ -892,6 +926,13 @@
     "template": {
       "vi": ["Hiện bạn đang không ở trong game."],
       "en": ["You are not currently in the game."]
+    }
+  },
+  "not_in_phase_action_time_text": {
+    "params": ["phase"],
+    "template": {
+      "vi": ["Hiện đang ngoài giờ thực hiện chức năng {phase}."],
+      "en": ["You are not currently in the {phase} action time."]
     }
   },
   "maximum_players_exceeded": {
@@ -1029,12 +1070,12 @@
       "vi": {
         "title": "Werewolf Bot Help for commands",
         "description": "Danh sách các lệnh. Bạn có thể xem thêm về 1 lệnh bằng lệnh `{bot_prefix}help cmd <tên lệnh>`",
-        "content_headers": []
+        "content_headers": ["Các lệnh chung", "Các lệnh trò chơi", "Các lệnh hành động"]
       },
       "en": {
         "title": "Werewolf Bot Help for commands",
         "description": "Full command list. You can get more information on a command using `{bot_prefix}help cmd <name of command>`",
-        "content_headers": []
+        "content_headers": ["General commands", "Game commands", "Action commands"]
       }
     }
   },
@@ -1054,6 +1095,28 @@
       }
     }
   },
+  "party_name_list": {
+    "params": [],
+    "template": {
+      "vi": ["Dân", "Sói", "thứ ba"],
+      "en": ["Villager", "Werewolf", "third"]
+    }
+  },
+  "party_description_list": {
+    "params": [],
+    "template": {
+      "vi": [
+        "Chiến thắng nếu sống sót và tiêu diệt được hết phe Sói và Cáo. Không thể nhận biết được người cùng phe.",
+        "Chiến thắng nếu giết hết phe Dân. Nhận biết được **Sói** cùng phe.",
+        "Chiến thắng với những điều kiện đặc biệt."
+      ],
+      "en": [
+        "Win if survives and destroys Werewolf party and Fox. Unable to recognize people on the same side.",
+        "Win if kills Villager party. Identify other **Werewolves** on the same side.",
+        "Win with special conditions."
+      ]
+    }
+  },
   "help_role_all_embed": {
     "params": [],
     "color": "0x206694",
@@ -1061,27 +1124,27 @@
       "vi": {
         "title": "Werewolf Bot Help for roles",
         "description": "Danh sách các nhân vật. Bạn có thể xem thêm về 1 nhân vật bằng lệnh `{bot_prefix}help role <tên nhân vật>`",
-        "content_headers": []
+        "content_headers": ["Phe Dân", "Phe Sói", "Phe thứ 3"]
       },
       "en": {
         "title": "Werewolf Bot Help for roles",
         "description": "Full role list. You can get more information on a role using `{bot_prefix}help role <name of role>`",
-        "content_headers": []
+        "content_headers": ["Villager party", "Werewolf party", "Third party"]
       }
     }
   },
   "help_role_embed": {
-    "params": ["role_title", "role_description"],
+    "params": ["role_title", "role_party", "role_description"],
     "color": "0x3498db",
     "template": {
       "vi": {
         "title": "Werewolf Bot Help về nhân vật {role_title}",
-        "description": "{role_description}",
+        "description": "Thuộc phe {role_party}. {role_description}",
         "content_headers": ["Ban ngày", "Ban đêm"]
       },
       "en": {
         "title": "Werewolf Bot Help for role {role_title}",
-        "description": "{role_description}",
+        "description": "Belongs to the {role_party} party. {role_description}",
         "content_headers": ["Day", "Night"]
       }
     }
@@ -1322,12 +1385,12 @@
       "vi": {
         "title": "Trạng thái trò chơi",
         "description": "{status_description}",
-        "content_headers": ["Số ngày đã trải qua", "⏰ Thời gian còn lại của {phase_str}", "{table_title}", "Trạng thái của bạn"]
+        "content_headers": ["Số ngày đã trải qua", "📆 Sự kiện New Moon hiện tại", "⏰ Thời gian còn lại của {phase_str}", "{table_title}", "Trạng thái của bạn"]
       },
       "en": {
         "title": "Game status",
         "description": "{status_description}",
-        "content_headers": ["Number of days", "⏰ Remaining time of {phase_str}", "{table_title}", "Your status"]
+        "content_headers": ["Number of days", "📆 Current New Moon event", "⏰ Remaining time of {phase_str}", "{table_title}", "Your status"]
       }
     }
   },
@@ -1413,10 +1476,10 @@
     }
   },
   "new_moon_punishment_announcement_text": {
-    "params": ["cmd_usages"],
+    "params": [],
     "template": {
-      "vi": ["👹 Sự kiện **Trừng Phạt**: Hãy sử dụng lệnh {cmd_usages} để vote 1 người trong buổi sáng nay"],
-      "en": ["👹 Event **Punishment**: Use command {cmd_usages} to vote 1 person in this morning"]
+      "vi": ["👹 Sự kiện **Trừng Phạt**: Hãy sử dụng lệnh `{bot_prefix}punish` để vote 1 người trong buổi sáng nay"],
+      "en": ["👹 Event **Punishment**: Use command `{bot_prefix}punish` to vote 1 person in this morning"]
     }
   },
   "new_moon_punishment_result_text": {
@@ -1424,6 +1487,13 @@
     "template": {
       "vi": ["👹 {author} đã biểu quyết trừng phạt {target}"],
       "en": ["👹 {author} voted to punish {target}"]
+    }
+  },
+  "new_moon_punishment_undo_text": {
+    "params": ["author"],
+    "template": {
+      "vi": ["🔁👹 {author} đã huỷ phiếu trừng phạt của mình."],
+      "en": ["🔁👹 {author} has removed their punishment vote."]
     }
   },
   "tanner_killed_by_not_voting_text": {
@@ -1438,6 +1508,20 @@
     "template": {
       "vi": ["{user} đã biến mất trước khi lên đoạn đầu đài."],
       "en": ["{user} has been disappeared before execution."]
+    }
+  },
+  "werewolf_diseased_text": {
+    "params": [],
+    "template": {
+      "vi": ["🤒 Sói đã bị nhiễm bệnh nên phải ăn cháo trắng tĩnh dưỡng. Đợi ngày mai khoẻ lại rồi có thể cắn người lại nha."],
+      "en": ["🤒 The werewolf was diseased, so you have to eat white porridge to revive. Wait until tomorrow to you feel better then you can kill people again."]
+    }
+  },
+  "disabled_action_text": {
+    "params": ["day_count"],
+    "template": {
+      "vi": ["Hôm nay bạn tạm thời không thể sử dụng quyền năng của mình. Hãy đợi hết {day_count} ngày để bạn có thể trở lại trạng thái bình thường."],
+      "en": ["Today you temporarily can't use your power. Please wait {day_count} day(s) so you can return to your normal state."]
     }
   },
   "ban_command_reply_text": {
@@ -1480,6 +1564,49 @@
     "template": {
       "vi": ["Dùng lệnh sai rồi bạn ơi. Phải tag người ta mới bỏ lệnh cấm được nha."],
       "en": ["Invalid usage. Must mention player to be unbanned"]
+    }
+  },
+  "rat_before_voting_text": {
+    "params": [],
+    "template": {
+      "vi": [
+        "🦷 Bạn muốn cắn ai đó? Hãy nhập `{bot_prefix}bite ID` để chọn đối tượng.",
+        "💡 Ví dụ: `{bot_prefix}bite 2`",
+        "⚠️ Bạn được sử dụng kỹ năng này bất kỳ lúc nào vào ban đêm."
+      ],
+      "en": [
+        "🦷 Choose someone to bite? Enter `{bot_prefix}bite ID` to chose person.",
+        "💡 Example: `{bot_prefix}bite 2`",
+        "⚠️ You can use this skill anytime at night."
+      ]
+    }
+  },
+  "rat_after_voting_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🐭 Chuột ma sói muốn cắn {target} trong đêm nay."],
+      "en": ["🐭 Rat wants to bite {target} tonight."]
+    }
+  },
+  "rat_result_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🦷 {target} đã bị Chuột ma sói cắn một miếng."],
+      "en": ["🦷 {target} was bitten by the Rat."]
+    }
+  },
+  "rat_dead_bite_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🦷 Chuột ma sói đã lỡ cắn phải đối tượng không được cắn {target} nên sẽ bị xuống địa ngục."],
+      "en": ["🦷 Rat has accidentally bitten the must-not-bite {target}, so the Rat will go to hell."]
+    }
+  },
+  "rat_diseased_bite_text": {
+    "params": [],
+    "template": {
+      "vi": ["🦷 Chuột ma sói đã bị nhiễm bệnh nên tạm thời ngày mai sẽ không được cắn người."],
+      "en": ["🦷 Rat has been ill, so temporarily you can't bite people tomorrow."]
     }
   }
 }

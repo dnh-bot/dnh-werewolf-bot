@@ -15,6 +15,8 @@ class CharacterStatus(Enum):
 
 
 class Character:
+    # FIXME:
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods
     def __init__(self, interface, player_id, player_name):
         self.interface = interface
         self.player_id = player_id
@@ -25,8 +27,11 @@ class Character:
         valid_channel_name = "".join(c for c in player_name if c not in BANNED_CHARS).lower()
         valid_channel_name = "-".join(valid_channel_name.split())
         self.channel_name = f"{config.PERSONAL}-{valid_channel_name}"
+        self.lover = None
         self.target = None
         self.party = Character
+        self.action_disabled_today = False
+        self.next_disable_action_days = 0
 
     def get_role(self):
         return self.__class__.__name__
@@ -36,6 +41,9 @@ class Character:
 
     def is_alive(self):
         return self.status != CharacterStatus.KILLED
+
+    def is_protected(self):
+        return self.status == CharacterStatus.PROTECTED
 
     async def get_killed(self, is_suicide=False):
         # Suicide means the couple follows lover death
@@ -70,6 +78,23 @@ class Character:
     def get_protected(self):
         self.status = CharacterStatus.PROTECTED
 
+    def get_lover(self):
+        return self.lover
+
+    def set_lover(self, lover_id):
+        self.lover = lover_id
+
+    async def register_lover(self, lover_id, lover_role):
+        if self.lover is not None or lover_id == self.player_id:
+            return False
+
+        self.set_lover(lover_id)
+        await self.interface.send_action_text_to_channel(
+            "couple_shipped_with_text", self.channel_name, target=f"<@{lover_id}>", target_role=lover_role
+        )
+        await self.interface.add_user_to_channel(self.player_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+        return True
+
     def get_target(self):
         return self.target
 
@@ -89,6 +114,18 @@ class Character:
         return text_templates.generate_text(f"{self.get_role().lower()}_after_voting_text", target=f"<@{target_id}>")\
             + text_templates.generate_text("inform_power_used_text")
 
+    def get_next_disable_action_days(self):
+        return self.next_disable_action_days
+
+    def add_next_disable_action_days(self, day_count):
+        self.next_disable_action_days += day_count
+
+    def is_action_disabled_today(self):
+        return self.action_disabled_today
+
+    def set_action_disabled_today(self, action_disabled_today):
+        self.action_disabled_today = action_disabled_today
+
     async def create_personal_channel(self, self_check=False):
         await self.interface.create_channel(self.channel_name)
         await self.interface.add_user_to_channel(self.player_id, self.channel_name, is_read=True, is_send=True)
@@ -104,6 +141,9 @@ class Character:
 
     async def delete_personal_channel(self):
         await self.interface.delete_channel(self.channel_name)
+
+    def seer_seen_as_werewolf(self):
+        pass
 
     async def on_phase(self, phase):
         # Reset Guard protection
@@ -131,7 +171,15 @@ class Character:
 
     async def on_day_start(self, day):
         # Will be overloaded in Child Class
-        pass
+        print(f"on day {day} start")
+        if self.next_disable_action_days > 0:
+            self.set_action_disabled_today(True)
+            await self.send_to_personal_channel(
+                text_templates.generate_text("disabled_action_text", day_count=self.next_disable_action_days)
+            )
+            self.next_disable_action_days -= 1
+        else:
+            self.set_action_disabled_today(False)
 
     async def on_night(self):
         # Will be overloaded in Child Class

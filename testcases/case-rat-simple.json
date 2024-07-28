@@ -1,0 +1,51 @@
+{
+	"name": "Rat simple test",
+	"player_list": {
+		"v1": "Villager",
+		"r1": "Rat",
+		"g1": "Guard",
+		"s1": "Seer"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"v1",
+				"r1",
+				"g1",
+				"s1"
+			],
+			"action": [
+				"s1 vote v1",
+				"v1 vote s1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"v1",
+				"r1",
+				"g1",
+				"s1"
+			],
+			"action": [
+				"r1 bite v1",
+				"s1 seer r1 = true"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"r1",
+				"g1",
+				"s1"
+			],
+			"action": [
+				"r1 vote g1",
+				"s1 vote r1",
+				"g1 vote r1"
+			]
+		}
+	],
+	"win": "Villager"
+}

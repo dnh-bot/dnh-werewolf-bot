@@ -1,0 +1,118 @@
+{
+	"name": "Rat can bite when Werewolf kill Diseased",
+	"player_list": {
+		"wolf": "Werewolf",
+		"rat": "Rat",
+		"guard": "Guard",
+		"seer": "Seer",
+		"diseased": "Diseased",
+		"villager1": "Villager",
+		"villager2": "Villager"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"wolf",
+				"rat",
+				"guard",
+				"seer",
+				"diseased",
+				"villager1",
+				"villager2"
+			],
+			"action": [
+				"rat vote villager2",
+				"guard vote villager2",
+				"diseased vote villager2"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"wolf",
+				"rat",
+				"guard",
+				"seer",
+				"diseased",
+				"villager1"
+			],
+			"action": [
+				"wolf kill diseased",
+				"guard guard diseased",
+				"seer seer rat = true"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"wolf",
+				"rat",
+				"guard",
+				"seer",
+				"diseased",
+				"villager1"
+			],
+			"action": [
+				"rat vote seer",
+				"seer vote guard"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"wolf",
+				"rat",
+				"guard",
+				"seer",
+				"diseased",
+				"villager1"
+			],
+			"action": [
+				"wolf kill rat",
+				"rat bite villager1",
+				"seer seer villager1 = false"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"wolf",
+				"rat",
+				"guard",
+				"seer",
+				"diseased"
+			],
+			"action": [
+				"guard vote rat",
+				"seer vote rat"
+			]
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"wolf",
+				"guard",
+				"seer",
+				"diseased"
+			],
+			"action": [
+				"wolf kill guard",
+				"seer seer wolf = true"
+			]
+		},
+		{
+			"time": "day4",
+			"alive": [
+				"wolf",
+				"seer",
+				"diseased"
+			],
+			"action": [
+				"seer vote wolf",
+				"diseased vote wolf"
+			]
+		}
+	],
+	"win": "Villager"
+}

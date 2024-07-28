@@ -10,6 +10,7 @@ class Tanner(Villager):
         self.is_lynched = False
 
     async def on_day_start(self, day):
+        await super().on_day_start(day)
         if day >= 7:
             self.party = Villager
 

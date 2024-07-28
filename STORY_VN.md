@@ -20,17 +20,20 @@ Vậy bên nào sẽ chiến thắng, Thường dân, Werewolf, hay là phe Ph�
 ### I. Phe dân: Chiến thắng nếu sống sót và tiêu diệt được hết Sói và Cáo. Không thể nhận biết được người cùng phe.
 
 - [Villager] Dân làng: Không có chức năng đặc biệt.
-- [Villager Chief] Trưởng làng: Được vote tính bí mật 2 phiếu.
+- [Chief] Trưởng làng: Trưởng làng sẽ bí mật được tính 2 vote mỗi buổi sáng.
 - [Seer] Tiên tri: Soi một người chơi có phải là sói hay không. Có thể giết chết Cáo nếu soi trúng Cáo.
 - [Guard] Bảo vệ: Bảo vệ được chọn 1 người khác nhau mỗi đêm trừ bản thân và người được chọn sẽ bất tử đêm đó.
 - [Lycan] Người hóa sói: Người hóa sói thuộc Phe dân làng, nhưng nếu được chỉ định bởi Tiên tri, thì sẽ bị thông báo là Sói.
 - [Hunter] Thợ săn: Vào ban đêm, được chọn một người chơi khác để chết chung nếu bản thân bị giết.
+- [Pathologist] Bác sĩ pháp y: Mỗi đêm được chọn 1 người đã chết để xem vai trò.
+- [Diseased] Người bệnh: Nếu Người bệnh bị Sói cắn, đàn Sói sẽ không thể cắn người nào vào đêm tiếp theo do đã bị lây bệnh.
 
 ### II. Phe sói: Chiến thắng nếu giết hết dân làng. Nhận biết được **sói** cùng phe.
 
 - [Werewolf] Sói: Chọn 1 người để giết mỗi đêm.
 - [Superwolf] Sói già: Chọn 1 người để giết mỗi đêm. Sói già có khả năng che giấu Tiên tri và không bị soi ra là sói.
 - [Betrayer] Kẻ phản bội: Là **người** nhưng bị mua chuộc theo phe sói. Betrayer biết ai là sói nhưng phe sói không biết ai là Betrayer.
+- [Rat] Chuột ma sói: Chọn 1 người cắn mỗi đêm. Người đó sẽ chết nếu là Cáo, Bảo vệ hoặc Người bệnh.
 
 ### III. Phe thứ 3: Chiến thắng với những điều kiện đặc biệt
 
@@ -42,8 +45,6 @@ Hệ thống nhân vật này sẽ được cập nhật sau.
 
 ### Các vai trò sẽ được cập nhật:
 
-- [Diseased] Người bệnh: Nếu Người bệnh bị Sói cắn, con Sói đó sẽ không thể cắn người nào vào đêm tiếp theo do đã bị lây bệnh.
-- [D] Trường làng: Khi tiết lộ vai trò, Trưởng làng sẽ có 2 vote mỗi phase đến khi trò chơi kết thúc.
 - [N] Thám tử: Chọn 2 người bất kì mỗi đêm xem họ cùng phe hay không.
 - [N] Pháp sư câm: Chọn 1 người gây câm mỗi đêm. Người bị chọn sẽ không thể nói trong ngày hôm sau.
 - [D/N] Kẻ báo thù: Được chọn 1 người chết chung nếu bị giết.

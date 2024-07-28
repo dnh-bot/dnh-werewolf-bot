@@ -5,6 +5,7 @@
       "vi": "Không có chức năng đặc biệt.",
       "en": "A simple villager."
     },
+    "party": 1,
     "daytime_command": "vote",
     "nighttime_commands": []
   },
@@ -14,6 +15,7 @@
       "vi": "Chọn 1 người để giết mỗi đêm.",
       "en": "Chooses a player to kill at night."
     },
+    "party": 2,
     "daytime_command": "vote",
     "nighttime_commands": ["kill"]
   },
@@ -23,6 +25,7 @@
       "vi": "Chọn 1 người để giết mỗi đêm. Sói già có khả năng che giấu Tiên tri và không bị soi ra là sói.",
       "en": "Chooses a player to kill at night. Can't be seen as a Werewolf."
     },
+    "party": 2,
     "daytime_command": "vote",
     "nighttime_commands": ["kill"]
   },
@@ -32,6 +35,7 @@
       "vi": "Bảo vệ được chọn 1 người khác nhau mỗi đêm và người được chọn sẽ bất tử đêm đó.",
       "en": "Guards a player: Protect the player from being killed."
     },
+    "party": 1,
     "daytime_command": "vote",
     "nighttime_commands": ["guard"]
   },
@@ -41,15 +45,17 @@
       "vi": "Vào ban đêm, chọn 1 người khác để chết chung với mình. Ghi nhận lệnh cuối cùng.",
       "en": "Target a player to die together at night. Accept latest command."
     },
+    "party": 1,
     "daytime_command": "vote",
     "nighttime_commands": ["hunter"]
   },
   "Lycan": {
     "name_vi": "Người hóa sói",
     "description": {
-      "vi": "Người hóa sói thuộc Phe dân làng, nhưng nếu được chỉ định bởi Tiên tri, thì sẽ bị thông báo là Sói.",
+      "vi": "Dù thuộc phe Dân, nhưng nếu được chỉ định bởi Tiên tri, thì sẽ bị thông báo là Sói.",
       "en": "A villager but is seen as a Werewolf."
     },
+    "party": 1,
     "daytime_command": "vote",
     "nighttime_commands": []
   },
@@ -59,24 +65,27 @@
       "vi": "Soi một người chơi có phải là sói hay không. Có thể giết chết Cáo nếu soi trúng Cáo.",
       "en": "Sees who is the Werewolf. Can kill Fox if Seer sees Fox."
     },
+    "party": 1,
     "daytime_command": "vote",
     "nighttime_commands": ["seer"]
   },
   "Betrayer": {
     "name_vi": "Kẻ phản bội",
     "description": {
-      "vi": "Là người nhưng bị mua chuộc theo phe sói. Kẻ phản bội biết ai là sói nhưng phe sói không biết ai là Kẻ phản bội.",
-      "en": "A human but betrays Villagers. Betrayer knows werewolf players."
+      "vi": "Là người nhưng bị mua chuộc theo phe Sói. Kẻ phản bội biết ai là Sói nhưng phe Sói không biết ai là Kẻ phản bội.",
+      "en": "A human but betrays Villagers. Betrayer knows Werewolf players."
     },
+    "party": 2,
     "daytime_command": "vote",
     "nighttime_commands": []
   },
   "Fox": {
     "name_vi": "Cáo",
     "description": {
-      "vi": "Thuộc phe thứ ba, Cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.",
-      "en": "A Fox belongs to third party. Fox wins if all werewolves are killed. Fox is dead if being revealed by Seer. Fox will not be dead if being protected by Guard."
+      "vi": "Cáo sẽ chiến thắng nếu tất cả sói bị giết. Sẽ chết nếu bị Tiên tri soi trúng. Tuy nhiên, Cáo không chết nếu được Bảo vệ trong đêm bị soi.",
+      "en": "Fox wins if all werewolves are killed. Fox is dead if being revealed by Seer. Fox will not be dead if being protected by Guard."
     },
+    "party": 3,
     "daytime_command": "vote",
     "nighttime_commands": []
   },
@@ -86,6 +95,7 @@
       "vi": "Vào ban đêm, Phù thủy có 1 bình phép có thể phục sinh một người chơi đã chết, đôi khi cũng có thể nguyền rủa một người còn sống. Mỗi chức năng này chỉ được sử dụng một lần duy nhất trong game.",
       "en": "Can reborn a dead player, and also can curse an alive player once per game."
     },
+    "party": 1,
     "daytime_command": "vote",
     "nighttime_commands": ["reborn", "curse"]
   },
@@ -95,6 +105,7 @@
       "vi": "Có thể tự hồi sinh một lần duy nhất trong game.",
       "en": "Can reborn once."
     },
+    "party": 1,
     "daytime_command": "vote",
     "nighttime_commands": ["zombie"]
   },
@@ -104,6 +115,7 @@
       "vi": "Đầu mỗi ván chơi, Cupid sẽ được gọi dậy và chọn ra hai người yêu nhau. Cặp đó sẽ chết nếu 1 trong 2 bị chết. Nếu hai người thuộc hai phe khác nhau (Sói vs Dân) thì họ sẽ chiến thắng khi là hai người cuối cùng sống sót (hoặc khi phe của họ thắng). Thần tình yêu có thể chiến thắng cùng cặp đôi hoặc khi dân làng thắng.",
       "en": "On the first day, Cupid can choose 2 players and make them to be a couple. If one of them is dead, the other will be also dead. If the couple belongs to different parties (Werewolf and Villager), then they will win if they are the last stand players (or when their own team win). Cupid may win together with the couple or the Villagers."
     },
+    "party": 3,
     "daytime_command": "vote",
     "nighttime_commands": ["ship"]
   },
@@ -113,6 +125,7 @@
       "vi": "Vào ban ngày, phiếu bầu của Trưởng làng được bí mật tính là 2.",
       "en": "On dayphase, the Chief's vote is secretly counted as 2."
     },
+    "party": 1,
     "daytime_command": "vote",
     "nighttime_commands": []
   },
@@ -122,15 +135,17 @@
       "vi": "Kẻ chán đời sẽ chỉ chiến thắng nếu bị dân làng bỏ phiếu để tử hình. Bắt đầu từ ngày thứ 2, mỗi buổi sáng, Kẻ chán đời phải bầu một người để tử hình, nếu không Kẻ chán đời sẽ chết. Sau 7 ngày, Kẻ chán đời mất khả năng chiến thắng độc lập và trở thành người dân bình thường.",
       "en": "Tanner only wins if he is voted out during the dayphase. From the second day, in every morning, Tanner has to vote one player, or else he will die. After 7 days, Tanner will lose the ability to win as a third party, continue to play as a Villager."
     },
+    "party": 3,
     "daytime_command": "vote",
     "nighttime_commands": []
   },
   "Pathologist": {
     "name_vi": "Bác sĩ pháp y",
     "description": {
-      "vi": "Bác sĩ pháp y mỗi đêm được chọn một người đã chết và biết được role của người đó.",
+      "vi": "Bác sĩ pháp y mỗi đêm được chọn một người đã chết và biết được vai trò của người đó.",
       "en": "Pathologist each night can choose one deceased person and reveal their role."
     },
+    "party": 1,
     "daytime_command": "vote",
     "nighttime_commands": ["autopsy"]
   },
@@ -142,5 +157,25 @@
     },
     "daytime_command": "vote",
     "nighttime_commands": ["aseer"]
+  },
+  "Diseased": {
+    "name_vi": "Người bệnh",
+    "description": {
+      "vi": "Nếu Người bệnh bị Sói cắn, thì Sói sẽ không thể cắn người nào vào đêm tiếp theo do bị bệnh.",
+      "en": "If a Diseased is killed by Werewolf, the Werewolf will not be able to kill anyone the following night due to the diseased."
+    },
+    "party": 1,
+    "daytime_command": "vote",
+    "nighttime_commands": []
+  },
+  "Rat": {
+    "name_vi": "Chuột ma sói",
+    "description": {
+      "vi": "Chuột ma sói không biết ai là Sói và phe Sói không biết ai là Chuột ma sói. Mỗi đêm có thể cắn một người. Chuột ma sói sẽ chết nếu cắn trúng Cáo hoặc Bảo vệ.\nNếu Chuột ma sói cắn phải Người bệnh, cả 2 sẽ chết trừ khi 1 trong 2 người được bảo vệ - lúc này Chuột ma sói sẽ chỉ bị nhiễm bệnh mà không chết.",
+      "en": "Rat doesn't know who belongs to the Werewolf party, and the Werewolf party doesn't know who is Rat. Each night, Rat can bite someone. Rat will die if Rat bit a Fox or a Guard.\nIf Rat bites Diseased, both will die unless one of them is protected - at this case the Rat will only be ill and not die."
+    },
+    "party": 2,
+    "daytime_command": "vote",
+    "nighttime_commands": ["bite"]
   }
 }

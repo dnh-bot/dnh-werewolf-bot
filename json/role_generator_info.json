@@ -5,6 +5,7 @@
     "Guard": 3,
     "Hunter": 3,
     "Zombie": 3,
+    "Diseased": 3,
     "Chief": 2,
     "Pathologist": 2,
     "Villager": 1,
@@ -13,6 +14,7 @@
     "Fox": -1,
     "Betrayer": -2,
     "Cupid": -3,
+    "Rat": -4,
     "Werewolf": -5,
     "Superwolf": -6
   },
