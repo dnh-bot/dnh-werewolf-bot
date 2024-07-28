@@ -155,8 +155,9 @@
       "vi": "Nếu Tiên tri đã chết, Tiên tri tập sự sẽ trở thành Tiên tri của làng.",
       "en": "If the Seer dies, the Apprentice Seer will become the village's Seer."
     },
+    "party": 1,
     "daytime_command": "vote",
-    "nighttime_commands": ["aseer"]
+    "nighttime_commands": ["seer"]
   },
   "Diseased": {
     "name_vi": "Người bệnh",

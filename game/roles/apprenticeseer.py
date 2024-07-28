@@ -23,7 +23,7 @@ class ApprenticeSeer(Seer):
             if active:
                 await self.interface.send_action_text_to_channel("apprenticeseer_announce_text", self.channel_name)
             else:
-                await self.interface.send_action_text_to_channel("apprenticeseer_learn_text", self.channel_name)
+                await self.interface.send_action_text_to_channel("apprenticeseer_demoted_text", self.channel_name)
         self.is_active = active
 
     async def on_night_start(self, alive_embed_data, _):

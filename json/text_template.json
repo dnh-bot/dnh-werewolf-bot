@@ -585,6 +585,13 @@
       "en": ["🤓 The Seer is still on duty, so try to learn from the Seer."]
     }
   },
+  "apprenticeseer_demoted_text": {
+    "params": [],
+    "template": {
+      "vi": ["🤗 Tiên tri thân yêu của bạn đã trở về, hãy tận dụng cơ hội để học tập nhé."],
+      "en": ["🤗 The beloved Seer has returned, so take this opportunity to learn."]
+    }
+  },
   "apprenticeseer_after_voting_text": {
     "params": ["target"],
     "template": {

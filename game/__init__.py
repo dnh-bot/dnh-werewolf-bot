@@ -19,11 +19,11 @@ from game.modes.new_moon import NewMoonMode
 from game.modes.new_moon.events import *
 
 
-def command_verify_author(valid_role):
+def command_verify_author(*valid_roles):
     def wrapper(cmd_func):
         async def execute(game, author, *a, **kw):
             if author is not None:
-                if not isinstance(author, valid_role):
+                if not any(isinstance(author, role) for role in valid_roles):
                     return text_templates.generate_text("invalid_author_text")
 
                 if author.is_action_disabled_today():
@@ -923,13 +923,14 @@ class Game:
             dead_embed_data = self.generate_player_list_embed(False)
 
             await self.werewolf_do_new_nighttime_phase(alive_embed_data)
+            for player in self.get_alive_players():
+                if isinstance(player, roles.ApprenticeSeer):
+                    await self.apprenticeseer_do_new_nighttime_phase(player)
+
             await asyncio.gather(*[
                 player.on_night_start(alive_embed_data, dead_embed_data) for player in self.get_all_players()
             ])
 
-            for player in self.get_alive_players():
-                if isinstance(player, roles.ApprenticeSeer):
-                    await self.apprenticeseer_do_new_nighttime_phase(player)
             # init object
             self.wolf_kill_dict = {}
             self.night_pending_kill_list = []
@@ -949,10 +950,7 @@ class Game:
     async def apprenticeseer_do_new_nighttime_phase(self, author):
         seer_id = self.get_player_with_role(roles.Seer, "dead")
         active_status = seer_id is not None
-        print("SEER_ID", seer_id)
-        print(active_status)
-        author.set_active(active_status)
-        print(author.is_active)
+        await author.set_active(active_status)
 
     async def do_end_nighttime_phase(self):
         # FIXME:
@@ -1414,14 +1412,9 @@ class Game:
         roles.Guard.set_allow_self_protection(self.modes.get("allow_guard_self_protection", False))
         return author.register_target(target.player_id)
 
-    @command_verify_author(roles.Seer)
+    @command_verify_author(roles.Seer, roles.ApprenticeSeer)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def seer(self, author, target):
-        return author.register_target(target.player_id)
-
-    @command_verify_author(roles.ApprenticeSeer)
-    @command_verify_phase(const.GamePhase.NIGHT)
-    async def aseer(self, author, target):
         return author.register_target(target.player_id)
 
     @command_verify_author(roles.Pathologist)
