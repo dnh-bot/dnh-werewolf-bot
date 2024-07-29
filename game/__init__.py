@@ -19,11 +19,11 @@ from game.modes.new_moon import NewMoonMode
 from game.modes.new_moon.events import *
 
 
-def command_verify_author(*valid_roles):
+def command_verify_author(valid_role):
     def wrapper(cmd_func):
         async def execute(game, author, *a, **kw):
             if author is not None:
-                if not any(isinstance(author, role) for role in valid_roles):
+                if not isinstance(author, valid_role):
                     return text_templates.generate_text("invalid_author_text")
 
                 if author.is_action_disabled_today():
@@ -960,10 +960,6 @@ class Game:
 
         # TODO: move to Player class
         for player in self.get_alive_players():
-            if isinstance(player, roles.Guard):
-                await self.guard_do_end_nighttime_phase(player)
-
-        for player in self.get_alive_players():
             if isinstance(player, roles.Seer):
                 await self.seer_do_end_nighttime_phase(player)
             elif isinstance(player, roles.ApprenticeSeer):
@@ -1412,7 +1408,7 @@ class Game:
         roles.Guard.set_allow_self_protection(self.modes.get("allow_guard_self_protection", False))
         return author.register_target(target.player_id)
 
-    @command_verify_author(roles.Seer, roles.ApprenticeSeer)
+    @command_verify_author(roles.Seer)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def seer(self, author, target):
         return author.register_target(target.player_id)
