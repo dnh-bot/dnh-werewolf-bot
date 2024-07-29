@@ -30,7 +30,7 @@
 			],
 			"action": [
 				"w1 kill s1",
-				"aps1 check_status = false",
+				"aps1 check_active = false",
 				"c1 ship c1 aps1"
 			]
 		},
@@ -53,7 +53,7 @@
 				"wi1"
 			],
 			"action": [
-				"aps1 check_status = true",
+				"aps1 check_active = true",
 				"wi1 reborn s1",
 				"wi1 curse c1",
 				"aps1 seer w1 = true"

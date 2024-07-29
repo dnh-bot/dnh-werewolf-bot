@@ -73,11 +73,11 @@ async def test_case(game, filepath):
 
                 author_name, command = action_str.split()[:2]
                 target_name = action_str.split()[2:]
-                if command == "check_status":
+                if command == "check_active":
                     # check apprenticeseer active status
                     # test example:
-                    # "aps1 check_status = false"
-                    # "aps1 check_status = true"
+                    # "aps1 check_active = false"
+                    # "aps1 check_active = true"
                     assert expected_result.capitalize() == str(game.players[id_map[author_name]].is_active)
                 else:
                     text = await game.do_player_action(command, id_map[author_name], *[id_map[i] for i in target_name])

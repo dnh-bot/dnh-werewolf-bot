@@ -30,7 +30,7 @@
 			],
 			"action": [
 				"w1 kill s1",
-				"aps1 check_status = false"
+				"aps1 check_active = false"
 			]
 		},
 		{
@@ -52,7 +52,7 @@
 				"wi1"
 			],
 			"action": [
-				"aps1 check_status = true",
+				"aps1 check_active = true",
 				"wi1 reborn s1",
 				"aps1 seer h1 = false"
 			]
@@ -79,7 +79,7 @@
 				"wi1"
 			],
 			"action": [
-				"aps1 check_status = false",
+				"aps1 check_active = false",
 				"wi1 curse aps1",
 				"w1 kill s1"
 			]

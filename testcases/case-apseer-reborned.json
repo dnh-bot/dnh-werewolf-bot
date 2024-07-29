@@ -30,7 +30,7 @@
 			],
 			"action": [
 				"w1 kill aps1",
-				"aps1 check_status = false"
+				"aps1 check_active = false"
 			]
 		},
 		{
@@ -77,7 +77,7 @@
 				"wi1"
 			],
 			"action": [
-				"aps1 check_status = true",
+				"aps1 check_active = true",
 				"aps1 seer w1 = true",
 				"wi1 curse w1"
 			]
