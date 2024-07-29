@@ -960,12 +960,14 @@ class Game:
 
         # TODO: move to Player class
         for player in self.get_alive_players():
+            if isinstance(player, roles.Guard):
+                await self.guard_do_end_nighttime_phase(player)
+
+        for player in self.get_alive_players():
             if isinstance(player, roles.Seer):
                 await self.seer_do_end_nighttime_phase(player)
             elif isinstance(player, roles.ApprenticeSeer):
                 await self.apprenticeseer_do_end_nighttime_phase(player)
-            elif isinstance(player, roles.Guard):
-                await self.guard_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Witch):
                 await self.witch_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Pathologist):
