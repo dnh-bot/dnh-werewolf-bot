@@ -237,7 +237,7 @@
     },
     "type": "action",
     "valid_channels": ["PERSONAL"],
-    "exclusive_roles": ["Seer"],
+    "exclusive_roles": ["Seer", "ApprenticeSeer"],
     "required_params": ["player_id"]
   },
   "reborn": {
@@ -307,7 +307,7 @@
     },
     "type": "action",
     "valid_channels": ["PERSONAL"],
-    "exclusive_roles": ["Seer", "Guard"],
+    "exclusive_roles": ["Seer", "Guard", "ApprenticeSeer"],
     "required_params": ["cmd"]
   },
   "undo": {

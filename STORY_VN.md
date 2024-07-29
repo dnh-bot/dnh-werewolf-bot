@@ -27,6 +27,7 @@ Vậy bên nào sẽ chiến thắng, Thường dân, Werewolf, hay là phe Ph�
 - [Hunter] Thợ săn: Vào ban đêm, được chọn một người chơi khác để chết chung nếu bản thân bị giết.
 - [Pathologist] Bác sĩ pháp y: Mỗi đêm được chọn 1 người đã chết để xem vai trò.
 - [Diseased] Người bệnh: Nếu Người bệnh bị Sói cắn, đàn Sói sẽ không thể cắn người nào vào đêm tiếp theo do đã bị lây bệnh.
+- [ApprenticeSeer] Tiên tri tập sự: Nếu Tiên tri đã chết, Tiên tri tập sự sẽ trở thành Tiên tri của làng.
 
 ### II. Phe sói: Chiến thắng nếu giết hết dân làng. Nhận biết được **sói** cùng phe.
 
