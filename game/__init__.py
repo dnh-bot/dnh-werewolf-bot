@@ -964,9 +964,9 @@ class Game:
                 await self.guard_do_end_nighttime_phase(player)
 
         for player in self.get_alive_players():
-            if isinstance(player, roles.Seer):
+            if type(player) is roles.Seer:
                 await self.seer_do_end_nighttime_phase(player)
-            elif isinstance(player, roles.ApprenticeSeer):
+            elif type(player) is roles.ApprenticeSeer:
                 await self.apprenticeseer_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Witch):
                 await self.witch_do_end_nighttime_phase(player)
@@ -1057,6 +1057,7 @@ class Game:
                 target=f"<@{target_id}>"
             )
         )
+
     async def apprenticeseer_do_end_nighttime_phase(self, author):
         if author.is_active:
             await self.seer_do_end_nighttime_phase(author)
@@ -1495,7 +1496,7 @@ class Game:
             players = self.get_all_players()
 
         for player in players:
-            if isinstance(player, role):
+            if type(player) is role:
                 player_id = player.player_id
                 return player_id
         return None
