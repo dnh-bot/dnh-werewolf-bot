@@ -923,6 +923,10 @@ class Game:
             dead_embed_data = self.generate_player_list_embed(False)
 
             await self.werewolf_do_new_nighttime_phase(alive_embed_data)
+            for player in self.get_alive_players():
+                if isinstance(player, roles.ApprenticeSeer):
+                    await self.apprenticeseer_do_new_nighttime_phase(player)
+
             await asyncio.gather(*[
                 player.on_night_start(alive_embed_data, dead_embed_data) for player in self.get_all_players()
             ])
@@ -943,6 +947,11 @@ class Game:
         await self.interface.send_action_text_to_channel("werewolf_before_voting_text", config.WEREWOLF_CHANNEL)
         await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
 
+    async def apprenticeseer_do_new_nighttime_phase(self, author):
+        seer_id = self.get_player_with_role(roles.Seer, "dead")
+        active_status = seer_id is not None
+        await author.set_active(active_status)
+
     async def do_end_nighttime_phase(self):
         # FIXME:
         # pylint: disable=too-many-branches
@@ -955,8 +964,10 @@ class Game:
                 await self.guard_do_end_nighttime_phase(player)
 
         for player in self.get_alive_players():
-            if isinstance(player, roles.Seer):
+            if type(player) is roles.Seer:  # pylint: disable=unidiomatic-typecheck
                 await self.seer_do_end_nighttime_phase(player)
+            elif type(player) is roles.ApprenticeSeer:  # pylint: disable=unidiomatic-typecheck
+                await self.apprenticeseer_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Witch):
                 await self.witch_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Pathologist):
@@ -1046,6 +1057,10 @@ class Game:
                 target=f"<@{target_id}>"
             )
         )
+
+    async def apprenticeseer_do_end_nighttime_phase(self, author):
+        if author.is_active:
+            await self.seer_do_end_nighttime_phase(author)
 
     async def pathologist_do_end_nighttime_phase(self, author):
         target_id = author.get_target()
@@ -1341,7 +1356,7 @@ class Game:
             del self.wolf_kill_dict[author_id]
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
         # guard, hunter, seer, autospy, bite
-        if is_personal_channel and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.Pathologist, roles.Rat)) and player.get_target() is not None:
+        if is_personal_channel and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.ApprenticeSeer, roles.Pathologist, roles.Rat)) and player.get_target() is not None:
             player.set_target(None)
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
         # Undo curse, reborn just when Witch did any of them previously
@@ -1481,7 +1496,7 @@ class Game:
             players = self.get_all_players()
 
         for player in players:
-            if isinstance(player, role):
+            if type(player) is role:  # pylint: disable=unidiomatic-typecheck
                 player_id = player.player_id
                 return player_id
         return None

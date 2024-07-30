@@ -1,0 +1,89 @@
+{
+	"name": "Apprenticeseer demoted",
+	"player_list": {
+		"w1": "Werewolf",
+		"s1": "Seer",
+		"aps1": "ApprenticeSeer",
+		"h1": "Hunter",
+		"wi1": "Witch"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"s1",
+				"aps1",
+				"h1",
+				"wi1"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"s1",
+				"aps1",
+				"h1",
+				"wi1"
+			],
+			"action": [
+				"w1 kill s1",
+				"aps1 check_active = false"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"aps1",
+				"h1",
+				"wi1"
+			],
+			"action": []
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"aps1",
+				"h1",
+				"wi1"
+			],
+			"action": [
+				"aps1 check_active = true",
+				"wi1 reborn s1",
+				"aps1 seer h1 = false"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"s1",
+				"aps1",
+				"h1",
+				"wi1"
+			],
+			"action": [
+				"s1 vote h1"
+			]
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"w1",
+				"aps1",
+				"s1",
+				"wi1"
+			],
+			"action": [
+				"aps1 check_active = false",
+				"wi1 curse aps1",
+				"w1 kill s1"
+			]
+		}
+	],
+	"win": "Werewolf"
+}

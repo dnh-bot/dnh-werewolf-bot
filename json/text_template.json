@@ -564,6 +564,41 @@
       "en": ["🧬 Oh, you've examined {target} is a {role}."]
     }
   },
+  "apprenticeseer_announce_text": {
+    "params": [],
+    "template": {
+      "vi": ["🎓 Tiên tri đã hy sinh. Từ giờ, bạn chính là Tiên tri của ngôi làng."],
+      "en": ["🎓 The Seer has sacrificed themselves. From now on, you are the Seer of the village."]
+    }
+  },
+  "invalid_apprenticeseer_text": {
+    "params": [],
+    "template": {
+      "vi": ["🙅 Chưa được tốt nghiệp đâu bạn ơi, hãy học hỏi thêm từ Tiên tri nhé."],
+      "en": ["🙅 You haven't graduated yet, my friend. Keep learning from the Seer."]
+    }
+  },
+  "apprenticeseer_learn_text": {
+    "params": [],
+    "template": {
+      "vi": ["🤓 Tiên tri vẫn còn đang làm nhiệm vụ, bạn hãy cố gắng học hỏi kiến thức từ Tiên tri."],
+      "en": ["🤓 The Seer is still on duty, so try to learn from the Seer."]
+    }
+  },
+  "apprenticeseer_demoted_text": {
+    "params": [],
+    "template": {
+      "vi": ["🤗 Tiên tri thân yêu của bạn đã trở về, hãy tận dụng cơ hội để học tập nhé."],
+      "en": ["🤗 The beloved Seer has returned, so take this opportunity to learn."]
+    }
+  },
+  "apprenticeseer_after_voting_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["👀 Đêm nay, Tiên tri tập sự muốn soi {target}."],
+      "en": ["👀 This night, AprrenticeSeer wants to see {target}."]
+    }
+  },
   "zombie_before_voting_text": {
     "params": [],
     "template": {
