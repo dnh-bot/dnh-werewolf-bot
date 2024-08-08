@@ -1554,6 +1554,21 @@ class Game:
             msg = await self.seer(author, target)
             await author.send_to_personal_channel("[Auto] " + msg)
 
+        @check(is_alive)
+        @check(is_night)
+        @check(has_role(roles.Pathologist))
+        @check(has_no_target)
+        async def auto_autopsy():
+            if not self.get_dead_players():
+                return
+
+            target = random.choice(self.get_dead_players())
+            if author.get_lover():
+                while target.get_lover() == author.player_id:
+                    target = random.choice(self.get_dead_players())
+            msg = await self.autopsy(author, target)
+            await author.send_to_personal_channel("[Auto] " + msg)
+
         if subcmd == "off":
             self.auto_hook[author] = []
             return "Clear auto succeeded"
