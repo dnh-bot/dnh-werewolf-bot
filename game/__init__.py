@@ -1297,9 +1297,6 @@ class Game:
                 status=text_templates.get_word_in_language("alive" if is_alive_author_command else "dead")
             )
 
-        if cmd == "auto":
-            return await self.register_auto(author, *targets_id)
-
         targets = []
         for target_id in targets_id:
             target = self.players.get(target_id)
@@ -1501,7 +1498,13 @@ class Game:
                 return player_id
         return None
 
-    async def register_auto(self, author, subcmd):
+    async def register_auto(self, author_id, subcmd):
+        assert self.players is not None
+        # print(self.players)
+        author = self.players.get(author_id)
+        if author is None:
+            return text_templates.generate_text("invalid_author_text")
+
         def check(pred):
             def wrapper(f):
                 async def execute(*a, **kw):
