@@ -1297,9 +1297,6 @@ class Game:
                 status=text_templates.get_word_in_language("alive" if is_alive_author_command else "dead")
             )
 
-        if cmd == "auto":
-            return await self.register_auto(author, *targets_id)
-
         targets = []
         for target_id in targets_id:
             target = self.players.get(target_id)
@@ -1501,7 +1498,13 @@ class Game:
                 return player_id
         return None
 
-    async def register_auto(self, author, subcmd):
+    async def register_auto(self, author_id, subcmd):
+        assert self.players is not None
+        # print(self.players)
+        author = self.players.get(author_id)
+        if author is None:
+            return text_templates.generate_text("invalid_author_text")
+
         def check(pred):
             def wrapper(f):
                 async def execute(*a, **kw):
@@ -1534,7 +1537,7 @@ class Game:
         async def auto_guard():
             target = random.choice(self.get_alive_players())
             msg = await self.guard(author, target)
-            await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
+            await author.send_to_personal_channel("[Auto] " + msg)
 
         @check(is_alive)
         @check(is_night)
@@ -1542,27 +1545,45 @@ class Game:
         @check(has_no_target)
         async def auto_seer():
             target = random.choice(self.get_alive_players())
+            if isinstance(author, roles.ApprenticeSeer) and not author.is_active:
+                return
+
             if author.get_lover():
                 while target.get_lover() == author.player_id:
                     target = random.choice(self.get_alive_players())
             msg = await self.seer(author, target)
-            await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
+            await author.send_to_personal_channel("[Auto] " + msg)
+
+        @check(is_alive)
+        @check(is_night)
+        @check(has_role(roles.Pathologist))
+        @check(has_no_target)
+        async def auto_autopsy():
+            if not self.get_dead_players():
+                return
+
+            target = random.choice(self.get_dead_players())
+            if author.get_lover():
+                while target.get_lover() == author.player_id:
+                    target = random.choice(self.get_dead_players())
+            msg = await self.autopsy(author, target)
+            await author.send_to_personal_channel("[Auto] " + msg)
 
         if subcmd == "off":
             self.auto_hook[author] = []
             return "Clear auto succeeded"
 
-        if subcmd == "seer":
-            if has_role(roles.Seer)():
-                self.auto_hook[author].append(auto_seer)
-                return "Register auto seer success"
-            return "You are not a seer"
-
-        if subcmd == "guard":
-            if has_role(roles.Guard)():
-                self.auto_hook[author].append(auto_guard)
-                return "Register auto guard success"
-            return "You are not a guard"
+        map_cmd_role = {
+            "seer": (roles.Seer, auto_seer),
+            "guard": (roles.Guard, auto_guard),
+            "autopsy": (roles.Pathologist, auto_autopsy),
+        }
+        if subcmd in map_cmd_role:
+            valid_role, auto_func = map_cmd_role[subcmd]
+            if has_role(valid_role)():
+                self.auto_hook[author].append(auto_func)
+                return f"Register auto {subcmd} success"
+            return f"You are not a {valid_role.__name__}"
 
         return "Unknown auto command, please try again"
 

@@ -191,10 +191,11 @@ async def do_character_cmd(game, message, cmd, parameters):
     required_param_number = len(commands.get_command_required_params(cmd))
 
     if cmd == "auto":
-        msg = await game.do_player_action(cmd, author.id, *parameters)
+        msg = await game.register_auto(author.id, *parameters)
         await message.reply(msg)
+        return
 
-    elif len(message.raw_mentions) == required_param_number:
+    if len(message.raw_mentions) == required_param_number:
         msg = await game.do_player_action(cmd, author.id, *message.raw_mentions)
         await message.reply(msg)
 
