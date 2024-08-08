@@ -195,7 +195,6 @@ async def do_character_cmd(game, message, cmd, parameters):
         await message.reply(msg)
         return
 
-
     if len(message.raw_mentions) == required_param_number:
         msg = await game.do_player_action(cmd, author.id, *message.raw_mentions)
         await message.reply(msg)
