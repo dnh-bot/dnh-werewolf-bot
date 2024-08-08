@@ -134,6 +134,7 @@ def generate_help_command_embed(command=None):
             example_args_list = [
                 {"cmd": "seer"},
                 {"cmd": "guard"},
+                {"cmd": "autopsy"},
                 {"cmd": "off"}
             ]
         else:

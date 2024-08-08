@@ -307,7 +307,7 @@
     },
     "type": "action",
     "valid_channels": ["PERSONAL"],
-    "exclusive_roles": ["Seer", "Guard", "ApprenticeSeer"],
+    "exclusive_roles": ["Seer", "Guard", "ApprenticeSeer", "Pathologist"],
     "required_params": ["cmd"]
   },
   "undo": {
