@@ -1537,7 +1537,7 @@ class Game:
         async def auto_guard():
             target = random.choice(self.get_alive_players())
             msg = await self.guard(author, target)
-            await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
+            await author.send_to_personal_channel("[Auto] " + msg)
 
         @check(is_alive)
         @check(is_night)
@@ -1545,6 +1545,9 @@ class Game:
         @check(has_no_target)
         async def auto_seer():
             target = random.choice(self.get_alive_players())
+            if isinstance(author, roles.ApprenticeSeer) and not author.is_active:
+                return
+
             if author.get_lover():
                 while target.get_lover() == author.player_id:
                     target = random.choice(self.get_alive_players())
