@@ -1552,7 +1552,7 @@ class Game:
                 while target.get_lover() == author.player_id:
                     target = random.choice(self.get_alive_players())
             msg = await self.seer(author, target)
-            await self.interface.send_text_to_channel("[Auto] " + msg, author.channel_name)
+            await author.send_to_personal_channel("[Auto] " + msg)
 
         if subcmd == "off":
             self.auto_hook[author] = []
