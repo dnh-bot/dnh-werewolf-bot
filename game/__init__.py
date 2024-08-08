@@ -1573,17 +1573,17 @@ class Game:
             self.auto_hook[author] = []
             return "Clear auto succeeded"
 
-        if subcmd == "seer":
-            if has_role(roles.Seer)():
-                self.auto_hook[author].append(auto_seer)
-                return "Register auto seer success"
-            return "You are not a seer"
-
-        if subcmd == "guard":
-            if has_role(roles.Guard)():
-                self.auto_hook[author].append(auto_guard)
-                return "Register auto guard success"
-            return "You are not a guard"
+        map_cmd_role = {
+            "seer": (roles.Seer, auto_seer),
+            "guard": (roles.Guard, auto_guard),
+            "autopsy": (roles.Pathologist, auto_autopsy),
+        }
+        if subcmd in map_cmd_role:
+            valid_role, auto_func = map_cmd_role[subcmd]
+            if has_role(valid_role)():
+                self.auto_hook[author].append(auto_func)
+                return f"Register auto {subcmd} success"
+            return f"You are not a {valid_role.__name__}"
 
         return "Unknown auto command, please try again"
 
