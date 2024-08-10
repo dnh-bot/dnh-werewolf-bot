@@ -1615,5 +1615,26 @@
       "vi": ["🦷 Chuột ma sói đã bị nhiễm bệnh nên tạm thời ngày mai sẽ không được cắn người."],
       "en": ["🦷 Rat has been ill, so temporarily you can't bite people tomorrow."]
     }
+  },
+  "cursed_announce_text": {
+    "params": [],
+    "template": {
+      "vi": ["🩸🐺 À húu, vết cắn của Sói đã khiến bạn thay đổi. Từ giờ, bạn đã trở thành Sói."],
+      "en": ["🩸🐺 Howll, the Werewolf's bite has changed you. From now on, you have become a Werewolf."]
+    }
+  },
+  "cursed_safe_text": {
+    "params": [],
+    "template": {
+      "vi": ["🍀 Yên tâm, bạn vẫn là một dân làng thiện lương."],
+      "en": ["🍀 Don't worry, you are still a good villager."]
+    }
+  },
+  "cursed_welcome_text": {
+    "params": ["user"],
+    "template": {
+      "vi": ["😈 Xem ai đến kìa! Chào mừng {user} đã gia nhập vào đàn Sói."],
+      "en": ["😈 Look who's here! Welcome, {user}, to the Wolf pack."]
+    }
   }
 }
