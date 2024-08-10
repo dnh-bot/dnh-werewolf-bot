@@ -1052,8 +1052,8 @@ class Game:
 
         target = self.players[target_id]
 
-            self.night_pending_kill_list.append((target_id, const.DeadReason.HIDDEN))
         if roles.Seer.is_can_kill_fox() and isinstance(target, roles.Fox):
+            self.night_pending_kill_list.append((target_id, const.DeadReason.HIDDEN))
 
         if self.new_moon_mode.get_current_event() is Somnambulism:
             await self.new_moon_mode.do_end_nighttime_phase(self.interface, target=target)
