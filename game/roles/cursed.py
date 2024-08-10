@@ -16,7 +16,7 @@ class Cursed(Werewolf):
                 self.party = Werewolf
         self.is_active = active
 
-    async def on_night_start(self):
+    async def on_night_start(self, _, __):
         if self.is_alive():
             if not self.is_active:
                 await self.interface.send_action_text_to_channel("cursed_safe_text", self.channel_name)
