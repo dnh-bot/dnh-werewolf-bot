@@ -29,7 +29,6 @@ class ApprenticeSeer(Seer):
     async def on_night_start(self, alive_embed_data, _):
         if self.is_alive():
             if self.is_active:
-                await self.interface.send_action_text_to_channel("seer_before_voting_text", self.channel_name)
-                await self.interface.send_embed_to_channel(alive_embed_data, self.channel_name)
+                await super().on_night_start(alive_embed_data, _)
             else:
                 await self.interface.send_action_text_to_channel("apprenticeseer_learn_text", self.channel_name)

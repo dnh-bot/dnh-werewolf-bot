@@ -1,5 +1,5 @@
 # FIXME:
-# pylint: disable=too-many-lines
+# pylint: disable=too-many-lines, unidiomatic-typecheck
 import datetime
 import queue
 import random
@@ -971,10 +971,8 @@ class Game:
                 await self.guard_do_end_nighttime_phase(player)
 
         for player in self.get_alive_players():
-            if type(player) is roles.Seer:  # pylint: disable=unidiomatic-typecheck
+            if isinstance(player, roles.Seer):
                 await self.seer_do_end_nighttime_phase(player)
-            elif type(player) is roles.ApprenticeSeer:  # pylint: disable=unidiomatic-typecheck
-                await self.apprenticeseer_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Witch):
                 await self.witch_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Pathologist):
@@ -1046,6 +1044,9 @@ class Game:
         )
 
     async def seer_do_end_nighttime_phase(self, author):
+        if type(author) is roles.ApprenticeSeer and not author.is_active:
+            return
+
         target_id = author.get_target()
         if target_id is None:
             return
@@ -1064,10 +1065,6 @@ class Game:
                 target=f"<@{target_id}>"
             )
         )
-
-    async def apprenticeseer_do_end_nighttime_phase(self, author):
-        if author.is_active:
-            await self.seer_do_end_nighttime_phase(author)
 
     async def pathologist_do_end_nighttime_phase(self, author):
         target_id = author.get_target()
