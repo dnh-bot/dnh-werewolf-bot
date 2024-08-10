@@ -19,9 +19,9 @@ class Cursed(Werewolf):
     async def on_night_start(self):
         if self.is_alive():
             if not self.is_active:
-              await self.interface.send_action_text_to_channel("cursed_safe_text", self.channel_name)
-              return
-            
+                await self.interface.send_action_text_to_channel("cursed_safe_text", self.channel_name)
+                return
+
             if not self.is_added_to_channel:
                 await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
                 await self.interface.send_action_text_to_channel("cursed_welcome_text", config.WEREWOLF_CHANNEL, user=f"<@{self.player_id}>")
