@@ -1409,7 +1409,6 @@ class Game:
     @command_verify_author(roles.Guard)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def guard(self, author, target):
-        roles.Guard.set_allow_self_protection(self.modes.get("allow_guard_self_protection", False))
         return author.register_target(target.player_id)
 
     @command_verify_author(roles.Seer)
