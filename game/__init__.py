@@ -1127,14 +1127,19 @@ class Game:
         if self.wolf_kill_dict:
             killed, _ = Game.get_top_voted(list(self.wolf_kill_dict.values()))
             print("killed", killed)
+            self.wolf_kill_dict = {}
+
             if killed:
+                # check Cursed case
+                if type(self.players[killed]) is roles.Cursed:  # pylint: disable=unidiomatic-typecheck
+                   await self.players[killed].set_active(True)
+                   return
+
                 self.night_pending_kill_list.append((killed, const.DeadReason.HIDDEN))
                 await self.interface.send_action_text_to_channel(
                     "werewolf_kill_result_text", config.WEREWOLF_CHANNEL, target=f"<@{killed}>"
                 )
                 await self.do_werewolf_killed_effect(self.players[killed])
-
-            self.wolf_kill_dict = {}
 
     async def do_werewolf_killed_effect(self, killed_player):
         if isinstance(killed_player, roles.Diseased):
@@ -1476,7 +1481,7 @@ class Game:
     def get_werewolf_list(self):
         werewolf_list = []
         for _id, player in self.players.items():
-            if isinstance(player, roles.Werewolf):
+            if type(player) is roles.Werewolf: # pylint: disable=unidiomatic-typecheck
                 werewolf_list.append(_id)
 
         return werewolf_list
