@@ -4,6 +4,16 @@ from game.roles.villager import Villager
 class Seer(Villager):
     """Seer can check 1 person each night to see if they are villager/werewolf"""
 
+    can_kill_fox = True
+
+    @staticmethod
+    def set_can_kill_fox(can_kill_fox):
+        Seer.can_kill_fox = can_kill_fox
+
+    @staticmethod
+    def is_can_kill_fox():
+        return Seer.can_kill_fox
+
     async def on_night(self):
         pass
 
