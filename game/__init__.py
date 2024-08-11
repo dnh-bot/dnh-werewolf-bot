@@ -1132,8 +1132,8 @@ class Game:
             if killed:
                 # check Cursed case
                 if type(self.players[killed]) is roles.Cursed:  # pylint: disable=unidiomatic-typecheck
-                   await self.players[killed].set_active(True)
-                   return
+                    await self.players[killed].set_active(True)
+                    return
 
                 self.night_pending_kill_list.append((killed, const.DeadReason.HIDDEN))
                 await self.interface.send_action_text_to_channel(
