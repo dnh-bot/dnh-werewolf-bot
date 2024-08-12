@@ -1,5 +1,5 @@
 # FIXME:
-# pylint: disable=too-many-lines
+# pylint: disable=too-many-lines, unidiomatic-typecheck
 import datetime
 import queue
 import random
@@ -142,16 +142,21 @@ class Game:
             return "Set mode value must be `on` or `off`"
 
         mode_str = modes_list[int(mode_id) - 1]
-        utils.common.update_json_file("json/game_config.json", mode_str, "True" if status == 'on' else "False")
+        mode_on = status == "on"
+        utils.common.update_json_file("json/game_config.json", mode_str, "True" if mode_on else "False")
 
         if mode_str == "new_moon":
-            if status == "on":
+            if mode_on:
                 self.new_moon_mode.turn_on()
             else:
                 self.new_moon_mode.turn_off()
 
         elif mode_str == "witch_can_kill":
-            roles.Witch.set_can_kill(status=="on")
+            roles.Witch.set_can_kill(mode_on)
+        elif mode_str == "allow_guard_self_protection":
+            roles.Guard.set_allow_self_protection(mode_on)
+        elif mode_str == "seer_can_kill_fox":
+            roles.Seer.set_can_kill_fox(mode_on)
 
         status_str = modes.generate_on_off_value(status)
 
@@ -174,6 +179,8 @@ class Game:
             print("prevent_guard_self_protection is deprecated, please use allow_guard_self_protection in config file instead")
 
         roles.Witch.set_can_kill(self.modes.get("witch_can_kill", False))
+        roles.Guard.set_allow_self_protection(self.modes.get("allow_guard_self_protection", False))
+        roles.Seer.set_can_kill_fox(self.modes.get("seer_can_kill_fox", False))
 
     def add_default_roles(self, role_json_in_string):
         try:
@@ -964,10 +971,8 @@ class Game:
                 await self.guard_do_end_nighttime_phase(player)
 
         for player in self.get_alive_players():
-            if type(player) is roles.Seer:  # pylint: disable=unidiomatic-typecheck
+            if isinstance(player, roles.Seer):
                 await self.seer_do_end_nighttime_phase(player)
-            elif type(player) is roles.ApprenticeSeer:  # pylint: disable=unidiomatic-typecheck
-                await self.apprenticeseer_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Witch):
                 await self.witch_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Pathologist):
@@ -1039,13 +1044,16 @@ class Game:
         )
 
     async def seer_do_end_nighttime_phase(self, author):
+        if type(author) is roles.ApprenticeSeer and not author.is_active:
+            return
+
         target_id = author.get_target()
         if target_id is None:
             return
 
         target = self.players[target_id]
 
-        if self.modes.get("seer_can_kill_fox") and isinstance(target, roles.Fox):
+        if roles.Seer.is_can_kill_fox() and isinstance(target, roles.Fox):
             self.night_pending_kill_list.append((target_id, const.DeadReason.HIDDEN))
 
         if self.new_moon_mode.get_current_event() is Somnambulism:
@@ -1057,10 +1065,6 @@ class Game:
                 target=f"<@{target_id}>"
             )
         )
-
-    async def apprenticeseer_do_end_nighttime_phase(self, author):
-        if author.is_active:
-            await self.seer_do_end_nighttime_phase(author)
 
     async def pathologist_do_end_nighttime_phase(self, author):
         target_id = author.get_target()
@@ -1410,7 +1414,6 @@ class Game:
     @command_verify_author(roles.Guard)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def guard(self, author, target):
-        roles.Guard.set_allow_self_protection(self.modes.get("allow_guard_self_protection", False))
         return author.register_target(target.player_id)
 
     @command_verify_author(roles.Seer)
