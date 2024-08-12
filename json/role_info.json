@@ -183,7 +183,7 @@
     "name_vi": "Kẻ bị Nguyền rủa",
     "description": {
       "vi": "Kẻ bị Nguyền rủa ban đầu là người, Tiên tri soi cũng ra người. Nếu Kẻ bị Nguyền rủa bị Sói cắn thì sẽ không chết, mà từ đêm tiếp theo sẽ biến thành Sói, đồng thời nếu Tiên tri soi thì cũng sẽ là Sói.",
-      "en": "Cursed was originally human, and the Seer would see them as human. If the Cursed One is bitten by a Wolf, they will not die but will transform into a Wolf starting from the next night. Additionally, if the Seer checks them afterward, they will also appear as a Wolf"
+      "en": "Cursed was originally human, and the Seer would see them as human. If the Cursed is bitten by a Werewolf, they will not die but will transform into a Werewolf starting from the next night. Additionally, if the Seer checks them afterward, they will also appear as a Werewolf."
     },
     "party": 1,
     "daytime_command": "vote",

@@ -2,6 +2,7 @@ from game.roles.werewolf import Werewolf
 from game.roles.villager import Villager
 import config
 
+
 class Cursed(Werewolf):
     def __init__(self, interface, player_id, player_name):
         super().__init__(interface, player_id, player_name)
