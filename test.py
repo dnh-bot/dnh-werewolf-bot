@@ -74,7 +74,7 @@ async def test_case(game, filepath):
                 author_name, command = action_str.split()[:2]
                 target_name = action_str.split()[2:]
                 if command == "check_active":
-                    # check apprenticeseer active status
+                    # check apprenticeseer/cursed active status
                     # test example:
                     # "aps1 check_active = false"
                     # "aps1 check_active = true"

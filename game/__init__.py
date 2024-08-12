@@ -1476,7 +1476,9 @@ class Game:
 
     @staticmethod
     def is_role_in_werewolf_party(player):
-        return type(player) in (roles.Werewolf, roles.Rat) # pylint: disable=unidiomatic-typecheck
+        if type(player) is roles.Cursed: # pylint: disable=unidiomatic-typecheck
+            return player.is_active
+        return type(player) in (roles.Superwolf, roles.Werewolf, roles.Rat) # pylint: disable=unidiomatic-typecheck
 
     def get_werewolf_list(self):
         werewolf_list = []
