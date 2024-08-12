@@ -1,0 +1,97 @@
+{
+	"name": "Cursed becomes Werewolf, kill Diseased, get diseased effet. Villager win",
+	"player_list": {
+		"w1": "Werewolf",
+		"s1": "Seer",
+		"cursed": "Cursed",
+		"d1": "Diseased",
+		"wi1": "Witch"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"s1",
+				"cursed",
+				"d1",
+				"wi1"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"s1",
+				"cursed",
+				"d1",
+				"wi1"
+			],
+			"action": [
+				"w1 kill cursed",
+				"cursed check_active = false",
+				"s1 seer cursed = false"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"s1",
+				"cursed",
+				"d1",
+				"wi1"
+			],
+			"action": [
+				"wi1 vote w1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"s1",
+				"cursed",
+				"d1",
+				"wi1"
+			],
+			"action": [
+				"cursed check_active = true",
+				"cursed kill d1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"s1",
+				"cursed",
+				"wi1"
+			],
+			"action": []
+		},
+		{
+			"time": "night3",
+			"alive": [
+				"s1",
+				"cursed",
+				"wi1"
+			],
+			"action": [
+				"cursed kill s1",
+				"s1 seer cursed = true"
+			]
+		},
+		{
+			"time": "day4",
+			"alive": [
+				"s1",
+				"cursed",
+				"wi1"
+			],
+			"action": [
+				"s1 vote cursed"
+			]
+		}
+	],
+	"win": "Villager"
+}

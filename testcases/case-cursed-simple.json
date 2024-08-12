@@ -1,0 +1,51 @@
+{
+	"name": "Cursed simple case - Not be killed, still villager, Villager win",
+	"player_list": {
+		"w1": "Werewolf",
+		"s1": "Seer",
+		"cursed": "Cursed",
+		"h1": "Hunter",
+		"wi1": "Witch"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"s1",
+				"cursed",
+				"h1",
+				"wi1"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"s1",
+				"cursed",
+				"h1",
+				"wi1"
+			],
+			"action": [
+				"s1 seer cursed = false",
+				"cursed check_active = false"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"s1",
+				"cursed",
+				"h1",
+				"wi1"
+			],
+			"action": [
+				"s1 vote w1"
+			]
+		}
+	],
+	"win": "Villager"
+}
