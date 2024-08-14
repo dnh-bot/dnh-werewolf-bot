@@ -599,6 +599,13 @@
       "en": ["👀 This night, AprrenticeSeer wants to see {target}."]
     }
   },
+  "harlot_before_voting_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["😴 Đêm nay, Kỹ nữ muốn đến thăm nhà ai? Hãy nhập `{bot_prefix}sleep ID` để chọn người đó."],
+      "en": ["😴 Whose house do you want to visit tonight? Enter `{bot_prefix}sleep ID` to select the person."]
+    }
+  },
   "harlot_after_voting_text": {
     "params": ["target"],
     "template": {
