@@ -599,6 +599,41 @@
       "en": ["👀 This night, AprrenticeSeer wants to see {target}."]
     }
   },
+  "harlot_after_voting_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🛏️ Đêm nay, Kỹ nữ muốn đến ngủ lại nhà {target}."],
+      "en": ["🛏️ This night, Harlot wants to sleep over in {target}'s house."]
+    }
+  },
+  "harlot_result_text": {
+    "params": ["target"],
+    "template": {
+      "vi": ["🛌🏻 Đã chốt đơn với {target} ;)"],
+      "en": ["🛌🏻 You have picked {target} ;)"]
+    }
+  },
+  "harlot_sleep_alone_result_text": {
+    "params": [],
+    "template": {
+      "vi": ["🛌🏻 Đêm nay bạn ngủ một mình :("],
+      "en": ["🛌🏻 You sleep alone tonight :("]
+    }
+  },
+  "invalid_harlot_yesterday_target_text": {
+    "params": [],
+    "template": {
+      "vi": ["Hôm qua bạn đã ghé qua ngủ nhà người này. Hãy đổi mục tiêu khác hôm nay!"],
+      "en": ["You slept over with this person yesterday. Let's change the target today!"]
+    }
+  },
+  "harlot_died_by_slept_over_text": {
+    "params": ["user"],
+    "template": {
+      "vi": ["Hôm qua {user} đã đi ngủ lang đâu đó cả đêm và không thấy về nữa."],
+      "en": ["Yesterday {user} went sleeping over with somebody all night and never came back."]
+    }
+  },
   "zombie_before_voting_text": {
     "params": [],
     "template": {
