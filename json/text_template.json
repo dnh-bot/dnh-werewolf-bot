@@ -602,8 +602,16 @@
   "harlot_before_voting_text": {
     "params": ["target"],
     "template": {
-      "vi": ["😴 Đêm nay, Kỹ nữ muốn đến thăm nhà ai? Hãy nhập `{bot_prefix}sleep ID` để chọn người đó."],
-      "en": ["😴 Whose house do you want to visit tonight? Enter `{bot_prefix}sleep ID` to select the person."]
+      "vi": [
+        "🛏️ Kỹ nữ muốn ghé đến nhà ai đêm nay, hãy nhập `{bot_prefix}sleep ID` để qua đêm với người đó.",
+        "💡 Ví dụ: `{bot_prefix}sleep 2`",
+        "⚠️ Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm. Hãy cẩn trọng!"
+      ],
+      "en": [
+        "🛏️ The harlot wants to visit someone's home tonight, enter `{bot_prefix}sleep ID` to sleep over in that person's house.",
+        "💡 Example: `{bot_prefix}sleep 2`",
+        "⚠️ You can only use the skill once per night. Be careful!"
+      ]
     }
   },
   "harlot_after_voting_text": {
