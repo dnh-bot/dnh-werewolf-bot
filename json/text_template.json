@@ -600,7 +600,7 @@
     }
   },
   "harlot_before_voting_text": {
-    "params": ["target"],
+    "params": [],
     "template": {
       "vi": [
         "🛏️ Kỹ nữ muốn ghé đến nhà ai đêm nay, hãy nhập `{bot_prefix}sleep ID` để qua đêm với người đó.",
