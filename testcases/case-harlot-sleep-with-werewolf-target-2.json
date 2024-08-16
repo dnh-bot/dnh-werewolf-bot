@@ -36,8 +36,8 @@
 			],
 			"action": [
 				"w1 kill f1",
-                "harlot sleep f1",
-				"s1 seer harlot = false",
+				"harlot sleep f1",
+				"s1 seer w1 = true",
                 "g1 guard f1"
 			]
 		},
@@ -47,7 +47,8 @@
 				"w1",
 				"g1",
 				"s1",
-                "f1"
+				"f1",
+				"harlot"
 			],
 			"action": [
 				"w1 vote s1",

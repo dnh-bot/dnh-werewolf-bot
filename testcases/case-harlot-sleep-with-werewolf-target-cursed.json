@@ -34,7 +34,7 @@
 			"action": [
 				"w1 kill cursed",
                 "harlot sleep cursed",
-				"seer seer w1 = true"
+				"s1 seer w1 = true"
 			]
 		},
 		{
@@ -43,8 +43,7 @@
 				"w1",
 				"g1",
 				"s1",
-				"v1",
-				"harlot"
+				"v1"
 			],
 			"action": [
 				"w1 vote s1",

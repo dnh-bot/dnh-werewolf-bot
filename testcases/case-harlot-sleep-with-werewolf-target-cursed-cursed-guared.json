@@ -67,7 +67,7 @@
                 "w1 kill cursed",
 				"harlot sleep s1",
 				"s1 seer w1 = true",
-				"cursed check_active = true"
+				"cursed check_active = false"
 			]
 		},
 		{

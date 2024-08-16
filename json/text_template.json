@@ -604,13 +604,11 @@
     "template": {
       "vi": [
         "🛏️ Kỹ nữ muốn ghé đến nhà ai đêm nay, hãy nhập `{bot_prefix}sleep ID` để qua đêm với người đó.",
-        "💡 Ví dụ: `{bot_prefix}sleep 2`",
-        "⚠️ Bạn chỉ sử dụng kỹ năng được 1 lần mỗi đêm. Hãy cẩn trọng!"
+        "💡 Ví dụ: `{bot_prefix}sleep 2`"
       ],
       "en": [
         "🛏️ The harlot wants to visit someone's home tonight, enter `{bot_prefix}sleep ID` to sleep over in that person's house.",
-        "💡 Example: `{bot_prefix}sleep 2`",
-        "⚠️ You can only use the skill once per night. Be careful!"
+        "💡 Example: `{bot_prefix}sleep 2`"
       ]
     }
   },
