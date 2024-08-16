@@ -1,0 +1,84 @@
+{
+	"name": "Harlot can't sleep with with a person at 2 consecutive night",
+	"player_list": {
+		"w1": "Werewolf",
+		"g1": "Guard",
+		"s1": "Seer",
+		"v1": "Villager",
+		"f1": "Fox",
+		"harlot": "Harlot"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"v1",
+				"f1",
+				"harlot"
+			],
+			"action": [
+				"w1 vote v1",
+				"g1 vote v1",
+				"f1 vote v1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"f1",
+				"harlot"
+			],
+			"action": [
+                "harlot sleep f1",
+				"s1 seer harlot = false"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"f1",
+				"harlot"
+			],
+			"action": [
+				"w1 vote g1",
+				"f1 vote g1",
+				"s1 vote w1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"s1",
+				"f1",
+				"harlot"
+			],
+			"action": [
+				"w1 kill f1",
+				"harlot sleep f1"
+			]
+		},
+		{
+			"time": "day3",
+			"alive": [
+				"w1",
+				"s1",
+				"harlot"
+			],
+			"action": [
+				"harlot vote w1",
+				"s1 vote w1"
+			]
+		}
+	],
+	"win": "Villager"
+}

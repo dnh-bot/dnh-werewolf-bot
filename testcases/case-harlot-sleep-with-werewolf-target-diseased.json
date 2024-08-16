@@ -1,0 +1,66 @@
+{
+	"name": "Harlot sleeps with Diseased - the Werewolves' victim",
+	"player_list": {
+		"w1": "Werewolf",
+		"g1": "Guard",
+		"s1": "Seer",
+		"v1": "Villager",
+		"diseased": "Diseased",
+		"harlot": "Harlot"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"v1",
+				"diseased",
+				"harlot"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"v1",
+				"diseased",
+				"harlot"
+			],
+			"action": [
+				"w1 kill diseased",
+                "harlot sleep diseased"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"v1"
+			],
+			"action": [
+				"w1 vote v1",
+				"g1 vote v1",
+				"s1 vote v1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"g1",
+				"s1"
+			],
+			"action": [
+				"w1 kill s1"
+			]
+		}
+	],
+	"win": "Werewolf"
+}
