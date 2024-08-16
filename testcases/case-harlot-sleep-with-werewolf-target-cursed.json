@@ -33,7 +33,7 @@
 			],
 			"action": [
 				"w1 kill cursed",
-                "harlot sleep cursed",
+				"harlot sleep cursed",
 				"s1 seer w1 = true"
 			]
 		},

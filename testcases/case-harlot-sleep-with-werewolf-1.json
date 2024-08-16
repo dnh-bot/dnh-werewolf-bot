@@ -36,7 +36,7 @@
 			],
 			"action": [
 				"w1 kill f1",
-                "harlot sleep w1",
+				"harlot sleep w1",
 				"s1 seer w1 = true"
 			]
 		},
@@ -46,7 +46,7 @@
 				"w1",
 				"g1",
 				"s1",
-                "f1"
+				"f1"
 			],
 			"action": [
 				"w1 vote s1",
