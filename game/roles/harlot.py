@@ -5,7 +5,6 @@ from game.roles.villager import Villager
 class Harlot(Villager):
     def __init__(self, interface, player_id, player_name):
         super().__init__(interface, player_id, player_name)
-        self.party = Villager
         self.yesterday_target = None
 
     async def on_day(self):

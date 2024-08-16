@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 
 
 class GamePhase(Enum):
@@ -22,11 +22,12 @@ class StatusChangeReason(int, Enum):
 
 
 class DeadReason(StatusChangeReason):
-    HIDDEN = 0
-    TANNER_NO_VOTE = auto()
-    LYNCHED = auto()
-    HUNTED = auto()
-    COUPLE = auto()
+    HIDDEN = -1
+    TANNER_NO_VOTE = -2
+    LYNCHED = -3
+    HUNTED = -4
+    SLEPT_OVER = -5
+    COUPLE = -6
 
     def is_couple_following(self):
         return self == self.__class__.COUPLE
@@ -44,12 +45,15 @@ class DeadReason(StatusChangeReason):
         if self == DeadReason.COUPLE:
             return f"couple_died_on_{game_phase.name.lower()}_text"
 
+        if self == DeadReason.SLEPT_OVER:
+            return "harlot_died_by_slept_over_text"
+
         return "killed_users_text"
 
 
 class RebornReason(StatusChangeReason):
-    HIDDEN = 0
-    COUPLE = auto()
+    HIDDEN = 1
+    COUPLE = 2
 
     def is_couple_following(self):
         return self == self.__class__.COUPLE
