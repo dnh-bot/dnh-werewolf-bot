@@ -42,11 +42,11 @@ class DeadReason(StatusChangeReason):
         if self == DeadReason.HUNTED:
             return "hunter_killed_text"
 
-        if self == DeadReason.COUPLE:
-            return f"couple_died_on_{game_phase.name.lower()}_text"
-
         if self == DeadReason.SLEPT_OVER:
             return "harlot_died_by_slept_over_text"
+
+        if self == DeadReason.COUPLE:
+            return f"couple_died_on_{game_phase.name.lower()}_text"
 
         return "killed_users_text"
 
