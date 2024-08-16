@@ -1015,7 +1015,7 @@ class Game:
                 )
             else:
                 for _id in id_list:
-                    if reason is const.DeadReason.TANNER_NO_VOTE:
+                    if reason is const.DeadReason.TANNER_NO_VOTE or reason is const.DeadReason.SLEPT_OVER:
                         kwargs = {"user": f"<@{_id}>"}
                     elif reason is const.DeadReason.LYNCHED:
                         kwargs = {"voted_user": f"<@{_id}>", "highest_vote_number": kw_info.get("highest_vote_number", 0)}
