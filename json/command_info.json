@@ -280,6 +280,16 @@
     "exclusive_roles": ["Rat"],
     "required_params": ["player_id"]
   },
+  "sleep": {
+    "description": {
+      "vi": "Chọn một ai đó để đến ngủ cùng.",
+      "en": "Select a player to sleep over."
+    },
+    "type": "action",
+    "valid_channels": ["PERSONAL"],
+    "exclusive_roles": ["Harlot"],
+    "required_params": ["player_id"]
+  },
   "zombie": {
     "description": {
       "vi": "Tự đội mồ sống dậy.",

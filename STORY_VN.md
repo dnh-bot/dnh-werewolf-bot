@@ -29,6 +29,7 @@ Vậy bên nào sẽ chiến thắng, Thường dân, Werewolf, hay là phe Ph�
 - [Diseased] Người bệnh: Nếu Người bệnh bị Sói cắn, đàn Sói sẽ không thể cắn người nào vào đêm tiếp theo do đã bị lây bệnh.
 - [ApprenticeSeer] Tiên tri tập sự: Nếu Tiên tri đã chết, Tiên tri tập sự sẽ trở thành Tiên tri của làng.
 - [Cursed] Kẻ bị Nguyền rủa: Thuộc phe dân làng, nhưng nếu bị Sói cắn, Kẻ bị Nguyền rủa sẽ gia nhập vào phe sói, chống lại dân làng.
+- [Harlot] Kỹ nữ: Kỹ nữ được lựa chọn một người để đến ngủ thăm vào mỗi đêm. Nếu Kỹ nữ đến thăm nạn nhân của Sói, Kỹ nữ sẽ chết theo kẻ đó. Nếu Kỹ nữ đến thăm Sói, Sói sẽ không cắn được ai và Kỹ nữ sẽ chết. Nếu Kỹ nữ bị Sói nhắm trúng mà Kỹ nữ đi thăm người khác, Kỹ nữ sẽ không bị sói cắn.
 
 ### II. Phe sói: Chiến thắng nếu giết hết dân làng. Nhận biết được **sói** cùng phe.
 

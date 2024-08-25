@@ -1,0 +1,61 @@
+{
+	"name": "Harlot sleeps with Werewolves' victim, the victim is guarded",
+	"player_list": {
+		"w1": "Werewolf",
+		"g1": "Guard",
+		"s1": "Seer",
+		"v1": "Villager",
+		"f1": "Fox",
+		"harlot": "Harlot"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"v1",
+				"f1",
+				"harlot"
+			],
+			"action": [
+				"w1 vote v1",
+				"g1 vote v1",
+				"f1 vote v1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"f1",
+				"harlot"
+			],
+			"action": [
+				"w1 kill f1",
+				"harlot sleep f1",
+				"s1 seer w1 = true",
+				"g1 guard f1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"f1",
+				"harlot"
+			],
+			"action": [
+				"w1 vote s1",
+				"g1 vote w1",
+				"s1 vote w1"
+			]
+		}
+	],
+	"win": "Fox"
+}

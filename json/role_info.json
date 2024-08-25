@@ -188,5 +188,15 @@
     "party": 1,
     "daytime_command": "vote",
     "nighttime_commands": ["kill"]
+  },
+  "Harlot": {
+    "name_vi": "Kỹ nữ",
+    "description": {
+      "vi": "Kỹ nữ được lựa chọn một người để đến ngủ thăm vào buổi đêm.\n\nNếu Kỹ nữ đến thăm nạn nhân của Sói, Kỹ nữ sẽ chết theo kẻ đó.\nNếu Kỹ nữ đến thăm Sói, Sói sẽ không cắn được ai và Kỹ nữ sẽ chết.\nNếu Kỹ nữ bị Sói nhắm trúng mà Kỹ nữ đi thăm người khác, Kỹ nữ sẽ không bị sói cắn.",
+      "en": "Harlot can select a person to visit each night.\n\nIf Harlot visits Werewolf's victim, Harlot will die with them.\nIf Harlot visits a Werewolf, the Werewolves can't bite anyone and Harlot will die.\nIf Harlot is Werewolf's victim but Harlot was visiting other player, Harlot will not be killed by Werewolf."
+    },
+    "party": 1,
+    "daytime_command": "vote",
+    "nighttime_commands": ["sleep"]
   }
 }

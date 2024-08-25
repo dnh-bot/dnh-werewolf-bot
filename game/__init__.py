@@ -252,7 +252,6 @@ class Game:
 
         if player_list:
             id_player_list = text_template.generate_id_player_list(player_list, alive_status, reveal_role)
-            print("generate_player_list_embed", alive_status, reveal_role, player_list, id_player_list)
             embed_data = text_templates.generate_embed(action_name, [id_player_list, role_list])
             return embed_data
         return None
@@ -979,6 +978,8 @@ class Game:
                 await self.pathologist_do_end_nighttime_phase(player)
             elif isinstance(player, roles.Rat):
                 await self.rat_do_end_nighttime_phase(player)
+            elif isinstance(player, roles.Harlot):
+                await self.harlot_do_end_nighttime_phase(player)
 
         await self.werewolf_do_end_nighttime_phase()
 
@@ -1002,7 +1003,8 @@ class Game:
         self.reborn_set = set()
 
     async def send_status_changes_info_on_end_phase(self, kills_list_by_reason, **kw_info):
-        for reason, id_list in kills_list_by_reason.items():
+        for reason in sorted(kills_list_by_reason, key=lambda r: (r.value > 0, abs(r.value))):
+            id_list = kills_list_by_reason[reason]
             label = reason.get_template_label(self.game_phase)
 
             if reason is const.DeadReason.HIDDEN:
@@ -1013,7 +1015,7 @@ class Game:
                 )
             else:
                 for _id in id_list:
-                    if reason is const.DeadReason.TANNER_NO_VOTE:
+                    if reason is const.DeadReason.TANNER_NO_VOTE or reason is const.DeadReason.SLEPT_OVER:
                         kwargs = {"user": f"<@{_id}>"}
                     elif reason is const.DeadReason.LYNCHED:
                         kwargs = {"voted_user": f"<@{_id}>", "highest_vote_number": kw_info.get("highest_vote_number", 0)}
@@ -1057,7 +1059,7 @@ class Game:
             self.night_pending_kill_list.append((target_id, const.DeadReason.HIDDEN))
 
         if self.new_moon_mode.get_current_event() is Somnambulism:
-            await self.new_moon_mode.do_end_nighttime_phase(self.interface, target=target)
+            await self.new_moon_mode.do_end_nighttime_phase(self.interface, target_role=target.get_role())
 
         await author.send_to_personal_channel(
             text_templates.generate_text(
@@ -1123,6 +1125,26 @@ class Game:
                 if not target.is_protected():
                     self.night_pending_kill_list.append((author.player_id, const.DeadReason.HIDDEN))
 
+    async def harlot_do_end_nighttime_phase(self, author):
+        if not author.is_alive():
+            return
+
+        target_id = author.get_target()
+        if target_id is None or target_id == author.player_id:
+            return
+
+        target = self.players[target_id]
+
+        if Game.is_role_in_werewolf_party(target):
+            self.night_pending_kill_list.append((author.player_id, const.DeadReason.SLEPT_OVER))
+
+        elif isinstance(target, (roles.Diseased, roles.Cursed)):
+            target.set_action_disabled_today(True)
+
+        await author.send_to_personal_channel(
+            text_templates.generate_text("harlot_result_text", target=f"<@{target_id}>")
+        )
+
     async def werewolf_do_end_nighttime_phase(self):
         if self.is_werewolf_diseased:
             self.is_werewolf_diseased = False
@@ -1134,19 +1156,39 @@ class Game:
             self.wolf_kill_dict = {}
 
             if killed:
-                # check Cursed case
-                if type(self.players[killed]) is roles.Cursed:  # pylint: disable=unidiomatic-typecheck
-                    await self.players[killed].set_active(True)
-                    return
-
-                self.night_pending_kill_list.append((killed, const.DeadReason.HIDDEN))
                 await self.interface.send_action_text_to_channel(
                     "werewolf_kill_result_text", config.WEREWOLF_CHANNEL, target=f"<@{killed}>"
                 )
+                # check Harlot case
+                harlot_id = self.get_player_with_role(roles.Harlot)
+                harlot_target_id = None
+                if harlot_id:
+                    harlot_target_id = self.players[harlot_id].get_target()
+                    if harlot_target_id == harlot_id:
+                        harlot_target_id = None
+
+                if killed == harlot_id and (harlot_target_id and harlot_target_id != harlot_id):
+                    # if Harlot is Werewolf's victim but Harlot was visiting someone, Harlot will not die
+                    return
+
+                if harlot_target_id and harlot_target_id != harlot_id and Game.is_role_in_werewolf_party(self.players[harlot_target_id]):
+                    # if Harlot visit Werewolf, Werewolf can't kill anyone
+                    return
+
+                # check Cursed case
+                # pylint: disable=unidiomatic-typecheck
+                if type(self.players[killed]) is roles.Cursed and not self.players[killed].is_action_disabled_today():
+                    await self.players[killed].set_active(True)
+                    return
+
+                if killed == harlot_target_id and not self.players[harlot_target_id].is_protected():
+                    self.night_pending_kill_list.append((harlot_id, const.DeadReason.SLEPT_OVER))
+
+                self.night_pending_kill_list.append((killed, const.DeadReason.HIDDEN))
                 await self.do_werewolf_killed_effect(self.players[killed])
 
     async def do_werewolf_killed_effect(self, killed_player):
-        if isinstance(killed_player, roles.Diseased):
+        if isinstance(killed_player, roles.Diseased) and not killed_player.is_action_disabled_today():
             print("werewolf has been diseased")
             self.is_werewolf_diseased = True
             werewolf_list = self.get_werewolf_list()
@@ -1323,7 +1365,7 @@ class Game:
                 status=text_templates.get_word_in_language("alive" if is_alive_target_command else "dead")
             )
 
-        if cmd in ("vote", "punish", "kill", "guard", "hunter", "seer", "reborn", "curse", "autopsy", "bite"):
+        if cmd in ("vote", "punish", "kill", "guard", "seer", "reborn", "curse", "hunter", "autopsy", "bite", "sleep"):
             return await getattr(self, cmd)(author, targets[0])
 
         if cmd == "ship":
@@ -1362,7 +1404,7 @@ class Game:
             del self.wolf_kill_dict[author_id]
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
         # guard, hunter, seer, autospy, bite
-        if is_personal_channel and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.ApprenticeSeer, roles.Pathologist, roles.Rat)) and player.get_target() is not None:
+        if is_personal_channel and isinstance(player, (roles.Guard, roles.Hunter, roles.Seer, roles.ApprenticeSeer, roles.Pathologist, roles.Rat, roles.Harlot)) and player.get_target() is not None:
             player.set_target(None)
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
         # Undo curse, reborn just when Witch did any of them previously
@@ -1475,6 +1517,11 @@ class Game:
     @command_verify_author(roles.Rat)
     @command_verify_phase(const.GamePhase.NIGHT)
     async def bite(self, author, target):
+        return author.register_target(target.player_id)
+
+    @command_verify_author(roles.Harlot)
+    @command_verify_phase(const.GamePhase.NIGHT)
+    async def sleep(self, author, target):
         return author.register_target(target.player_id)
 
     @staticmethod

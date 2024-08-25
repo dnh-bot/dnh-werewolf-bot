@@ -1,0 +1,74 @@
+{
+	"name": "Harlot in couple with someone in Villager party",
+	"player_list": {
+		"w1": "Werewolf",
+		"g1": "Guard",
+		"s1": "Seer",
+		"c1": "Cupid",
+		"f1": "Fox",
+		"harlot": "Harlot"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"c1",
+				"f1",
+				"harlot"
+			],
+			"action": [
+				"c1 ship harlot s1",
+				"w1 vote c1",
+				"g1 vote c1",
+				"f1 vote c1"
+			]
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"f1",
+				"harlot"
+			],
+			"action": [
+				"harlot sleep f1",
+				"s1 seer f1 = false",
+				"g1 guard f1"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"f1",
+				"harlot"
+			],
+			"action": [
+				"w1 vote f1",
+				"g1 vote f1",
+				"f1 vote w1"
+			]
+		},
+		{
+			"time": "night2",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"harlot"
+			],
+			"action": [
+				"w1 kill g1",
+				"harlot sleep g1"
+			]
+		}
+	],
+	"win": "Werewolf"
+}

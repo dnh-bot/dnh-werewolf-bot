@@ -1,0 +1,56 @@
+{
+	"name": "Harlot sleeps with Cursed - the Werewolves' victim",
+	"player_list": {
+		"w1": "Werewolf",
+		"g1": "Guard",
+		"s1": "Seer",
+		"v1": "Villager",
+		"cursed": "Cursed",
+		"harlot": "Harlot"
+	},
+	"timeline": [
+		{
+			"time": "day1",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"v1",
+				"cursed",
+				"harlot"
+			],
+			"action": []
+		},
+		{
+			"time": "night1",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"v1",
+				"cursed",
+				"harlot"
+			],
+			"action": [
+				"w1 kill cursed",
+				"harlot sleep cursed",
+				"s1 seer w1 = true"
+			]
+		},
+		{
+			"time": "day2",
+			"alive": [
+				"w1",
+				"g1",
+				"s1",
+				"v1"
+			],
+			"action": [
+				"w1 vote s1",
+				"g1 vote w1",
+				"s1 vote w1"
+			]
+		}
+	],
+	"win": "Villager"
+}

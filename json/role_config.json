@@ -39,6 +39,7 @@
     {"Werewolf": 2, "Seer": 1, "Guard": 1, "Hunter": 1, "Witch" : 1, "Cupid": 1, "Chief": 1},
     {"Werewolf": 2, "Seer": 1, "Guard": 1, "ApprenticeSeer": 1, "Witch" : 1, "Cupid": 1, "Chief": 1},
     {"Werewolf": 1, "Rat": 1, "Seer": 1, "Guard": 1, "Villager": 1, "Cupid": 1, "Pathologist": 1, "Chief": 1},
+    {"Werewolf": 1, "Seer": 1, "Guard": 1, "Villager": 1, "Harlot": 1, "Betrayer": 1, "Witch": 1, "Cupid": 1},
     {"Werewolf": 2, "Seer": 1, "Guard": 1, "Chief": 1, "Witch": 1,  "Cupid": 1, "Fox": 1, "Zombie": 1},
     {"Werewolf": 2, "Seer": 1, "Guard": 1, "Chief": 1, "Witch": 1,  "Cursed": 1, "Fox": 1, "Zombie": 1},
     {"Superwolf": 1, "Werewolf": 1, "Seer": 1, "Guard": 1, "Zombie": 1, "Fox": 1, "Lycan": 1, "Cupid": 1, "Witch": 1},
@@ -47,6 +48,7 @@
     {"Superwolf": 1, "Werewolf": 1, "Seer": 1, "Guard": 1, "Villager": 1, "Fox": 1, "Cupid": 1, "Chief": 1, "ApprenticeSeer": 1},
     {"Superwolf": 1, "Werewolf": 1, "Seer": 1, "Guard": 1, "Villager": 1, "Fox": 1, "Cursed": 1, "Chief": 1, "ApprenticeSeer": 1},
     {"Werewolf": 1, "Rat": 1, "Seer": 1, "Guard": 1, "Villager": 1, "Fox": 1, "Tanner": 1, "Witch": 1, "Diseased": 1},
+    {"Werewolf": 1, "Cursed": 1, "Seer": 1, "Guard": 1, "Villager": 1, "Betrayer": 1, "Diseased": 1, "Harlot": 1, "Chief": 1},
     {"Superwolf": 1, "Werewolf": 2, "Seer": 1, "Guard": 1, "Villager": 1, "Tanner": 1, "Diseased": 1, "Fox": 1, "Cupid": 1, "Pathologist": 1},
     {"Superwolf": 1, "Werewolf": 1, "Seer": 1, "Guard": 1, "Zombie": 1, "Fox": 1, "Chief": 1, "Cupid": 1, "Witch": 1, "Betrayer":1},
     {"Superwolf": 1, "Werewolf": 1, "Seer": 1, "Guard": 1, "Zombie": 1, "Fox": 1, "Lycan": 1, "Cupid": 1, "Witch": 1, "Betrayer":1, "Chief": 1},
@@ -66,6 +68,7 @@
     {"Superwolf": 1, "Werewolf": 1, "Seer": 1, "Guard": 1, "Fox": 1, "Witch": 1, "Villager": 1, "Lycan": 2, "Cupid": 1, "Betrayer": 1, "Zombie": 1,  "Hunter": 1},
     {"Superwolf": 1, "Werewolf": 2, "Seer": 1, "Guard": 1, "Villager": 1, "Betrayer": 1, "Pathologist": 1, "Diseased": 1, "Cupid": 1, "Lycan": 1, "Witch": 1},
     {"Superwolf": 1, "Werewolf": 2, "Seer": 1, "Guard": 1, "Villager": 1, "Betrayer": 1, "Pathologist": 1, "Diseased": 1, "Cursed": 1, "Lycan": 1, "Witch": 1},
+    {"Superwolf": 1, "Werewolf": 1, "Rat": 1, "Seer": 1, "Guard": 1, "Villager": 1, "Cursed": 1, "Tanner": 1, "Harlot": 1, "Lycan": 1, "Fox": 1, "Zombie": 1},
     {"Werewolf": 3, "Seer": 1, "Guard": 1, "Witch": 1, "Villager": 4, "Lycan": 1, "Cupid": 1, "Hunter": 1},
     {"Werewolf": 3, "Seer": 1, "Guard": 1, "Witch": 1, "Villager": 4, "Lycan": 1, "Cupid": 1, "Hunter": 1, "Chief": 1},
     {"Werewolf": 3, "Seer": 1, "Guard": 1, "Witch": 1, "Villager": 4, "Lycan": 1, "Cupid": 1, "ApprenticeSeer": 1, "Chief": 1},
@@ -74,5 +77,6 @@
     {"Superwolf": 1, "Werewolf": 1, "Rat": 1, "Seer": 1, "Guard": 1, "Villager": 1, "Betrayer": 1, "Cupid": 1, "Tanner": 1, "Witch": 1, "Fox": 1, "Chief": 1, "Hunter": 1},
     {"Superwolf": 1, "Werewolf": 1, "Rat": 1, "Seer": 1, "Guard": 1, "Villager": 1, "Betrayer": 1, "Cursed": 1, "Tanner": 1, "Witch": 1, "Fox": 1, "Chief": 1, "Hunter": 1},
     {"Superwolf": 1, "Werewolf": 2, "Seer": 1, "Guard": 1, "Witch": 1, "Villager": 5, "Lycan": 1, "Fox": 1, "Cupid": 1},
-    {"Superwolf": 1, "Werewolf": 2, "Seer": 1, "Guard": 1, "Witch": 1, "Villager": 5, "Lycan": 1, "Fox": 1, "Cursed": 1}
+    {"Superwolf": 1, "Werewolf": 2, "Seer": 1, "Guard": 1, "Witch": 1, "Villager": 5, "Lycan": 1, "Fox": 1, "Cursed": 1},
+    {"Superwolf": 1, "Werewolf": 1, "Rat": 1, "Seer": 1, "Guard": 1, "Villager": 1, "Betrayer": 1, "Cursed": 1, "Cupid": 1, "Witch": 1, "Fox": 1, "Hunter": 1, "Harlot": 1, "Pathologist": 1}
 ]

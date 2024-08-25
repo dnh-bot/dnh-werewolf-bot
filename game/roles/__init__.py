@@ -18,6 +18,7 @@ from game.roles.apprenticeseer import ApprenticeSeer
 from game.roles.diseased import Diseased
 from game.roles.rat import Rat
 from game.roles.cursed import Cursed
+from game.roles.harlot import Harlot
 import utils
 
 
@@ -26,7 +27,7 @@ role_info = utils.common.read_json_file("json/role_info.json")
 
 def get_all_roles():
     return Villager, Werewolf, Seer, Guard, Lycan, Superwolf, Betrayer, Fox, Witch, Zombie, Cupid, Chief, Hunter,\
-        Tanner, Pathologist, Diseased, Rat, ApprenticeSeer, Cursed
+        Tanner, Pathologist, Diseased, Rat, ApprenticeSeer, Cursed, Harlot
 
 
 def get_party_roles_list():
