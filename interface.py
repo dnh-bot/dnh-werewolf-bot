@@ -3,8 +3,8 @@ import text_templates
 
 
 class ConsoleInterface:
-    def __init__(self, guild=None):
-        self.guild = guild  # Unused
+    def __init__(self, category=None):
+        self.category = category  # Unused
 
     async def send_action_text_to_channel(self, action, channel_name, **kwargs):
         await self.send_text_to_channel(text_templates.generate_text(action, **kwargs), channel_name)
@@ -32,24 +32,24 @@ class ConsoleInterface:
 
 
 class DiscordInterface:
-    def __init__(self, guild, client):
-        self.guild = guild
+    def __init__(self, category, client):
+        self.category = category
         self.client = client
 
     async def send_action_text_to_channel(self, action, channel_name, **kwargs):
         return await self.send_text_to_channel(text_templates.generate_text(action, **kwargs), channel_name)
 
     async def send_text_to_channel(self, msg, channel_name):
-        return await commands.admin.send_text_to_channel(self.guild, msg, channel_name)
+        return await commands.admin.send_text_to_channel(self.category, msg, channel_name)
 
     async def send_embed_to_channel(self, embed_msg, channel_name):
-        return await commands.admin.send_embed_to_channel(self.guild, embed_msg, channel_name)
+        return await commands.admin.send_embed_to_channel(self.category, embed_msg, channel_name)
 
     async def create_channel(self, channel_name):
-        return await commands.admin.create_channel(self.guild, self.client.user, channel_name)
+        return await commands.admin.create_channel(self.category, self.client.user, channel_name)
 
     async def delete_channel(self, channel_name):
-        return await commands.admin.delete_channel(self.guild, self.client.user, channel_name)
+        return await commands.admin.delete_channel(self.category, self.client.user, channel_name)
 
     async def add_user_to_channel(self, player_id, channel_name, is_read=True, is_send=True):
-        return await commands.admin.add_user_to_channel(self.guild, self.client.get_user(player_id), channel_name, is_read, is_send)
+        return await commands.admin.add_user_to_channel(self.category, self.client.get_user(player_id), channel_name, is_read, is_send)

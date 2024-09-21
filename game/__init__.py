@@ -55,8 +55,8 @@ def command_verify_phase(valid_phase):
 class Game:
     # FIXME:
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
-    def __init__(self, guild, interface):
-        self.guild = guild  # Should not use. Reserved for future.
+    def __init__(self, category, interface):
+        self.category = category
         self.interface = interface
         self.channels = [
             config.LOBBY_CHANNEL,
@@ -119,8 +119,8 @@ class Game:
     def get_last_nextcmd_time(self):
         return self.last_nextcmd_time
 
-    def get_guild(self):
-        return self.guild
+    def get_category(self):
+        return self.category
 
     def is_started(self):
         return self.game_phase != const.GamePhase.NEW_GAME
@@ -1692,11 +1692,11 @@ class GameList:
     def __init__(self):
         self.game_list = {}
 
-    def add_game(self, guild_id, game):
-        self.game_list[guild_id] = game
+    def add_game(self, category_id, game):
+        self.game_list[category_id] = game
 
-    def get_game(self, guild_id):
-        return self.game_list.get(guild_id, None)
+    def get_game(self, category_id):
+        return self.game_list.get(category_id, None)
 
 
 if __name__ == "__main__":
