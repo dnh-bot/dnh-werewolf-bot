@@ -249,9 +249,10 @@ async def do_admin_cmd(client, game, message, cmd, parameters):
         await do_force_delete(client, message, parameters)
     elif cmd_content == "clean":
         if admin.is_valid_category(message, game):
-            await do_force_clean(client, message, game.category.name)
+            await do_force_clean(client, message, game.get_category().name)
     elif cmd_content == "debug":
-        await do_force_debug()
+        if admin.is_valid_category(message, game):
+            await do_force_debug()
     elif cmd_content == "ban":
         if admin.is_valid_category(message, game):
             await do_ban(game, message, parameters)

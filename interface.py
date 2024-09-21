@@ -30,6 +30,9 @@ class ConsoleInterface:
         print(f"Added {player_id} to channel #{channel_name} {is_read} {is_send}")
         return True
 
+    def get_channel_mention(self, channel_name):
+        return f"#{channel_name}"
+
 
 class DiscordInterface:
     def __init__(self, category, client):
