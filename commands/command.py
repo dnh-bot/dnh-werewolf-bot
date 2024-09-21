@@ -282,9 +282,10 @@ async def do_force_create(client, message, parameters):
         await message.reply("Missing @bot_name")
 
     user = message.mentions[0]
-    category_name = config.GAME_CATEGORY if len(parameters) < 2 else parameters[1]
     if user.id == client.user.id:
-        await admin.create_game_category(message.guild, client.user, category_name)
+        category_list = config.GAME_CATEGORIES if len(parameters) < 2 else [parameters[1]]
+        for category_name in category_list:
+            await admin.create_game_category(message.guild, client.user, category_name)
 
 
 async def do_force_delete(client, message, parameters):
@@ -293,9 +294,10 @@ async def do_force_delete(client, message, parameters):
         await message.reply("Missing @bot_name")
 
     user = message.mentions[0]
-    category_name = config.GAME_CATEGORY if len(parameters) < 2 else parameters[1]
     if user.id == client.user.id:
-        await admin.clean_game_category(message.guild, client.user, category_name, True)
+        category_list = config.GAME_CATEGORIES if len(parameters) < 2 else [parameters[1]]
+        for category_name in category_list:
+            await admin.clean_game_category(message.guild, client.user, category_name, True)
 
 
 BAN_FILE = "json/ban_list.json"
