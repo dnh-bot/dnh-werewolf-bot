@@ -232,6 +232,8 @@ def parse_setplaytime_params(parameters):
 
 
 async def do_admin_cmd(client, game, message, cmd, parameters):
+    # FIXME
+    # pylint: disable=too-many-branches
     admin_role = discord.utils.get(message.guild.roles, name="Admin")
     if not admin_role:
         await message.reply("You need to assign role name Admin to this bot.")
