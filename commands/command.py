@@ -232,11 +232,11 @@ def parse_setplaytime_params(parameters):
 async def do_admin_cmd(client, game, message, cmd, parameters):
     admin_role = discord.utils.get(message.guild.roles, name="Admin")
     if not admin_role:
-        await message.reply(f"You need to assign role name Admin to this bot.")
+        await message.reply("You need to assign role name Admin to this bot.")
         return
 
     if not admin.is_admin(message.author):
-        await message.reply(f"You do not have Admin role.")
+        await message.reply("You do not have Admin role.")
         return
 
     cmd_content = cmd[len(config.ADMIN_CMD_PREFIX):]
