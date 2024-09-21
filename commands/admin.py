@@ -80,7 +80,7 @@ def get_channel_in_category(category, channel_name):
 async def create_channel(category, author, channel_name, is_public=False, is_admin_writeonly=False):
     # Create text channel with limited permissions
     # Only the author and Admin roles can view this channel
-    existing_channel = discord.utils.get(category.channels, name=channel_name)
+    existing_channel = get_channel_in_category(category, channel_name)
     if not existing_channel:
         try:
             admin_role = discord.utils.get(category.guild.roles, name="Admin")
@@ -108,7 +108,7 @@ async def create_channel(category, author, channel_name, is_public=False, is_adm
 async def delete_channel(category, author, channel_name):
     # Delete text channel. Any Admin can delete it
     try:
-        channel = discord.utils.get(category.channels, name=channel_name)
+        channel = get_channel_in_category(category, channel_name)
         response = f"{author.display_name} deleted channel {channel_name}"
         assert isinstance(channel, discord.TextChannel)
         print(response)
@@ -123,10 +123,10 @@ async def delete_channel(category, author, channel_name):
 
 async def add_user_to_channel(category, user, channel_name, is_read=True, is_send=True):
     # Add a user to specific channel
-    channel = discord.utils.get(category.channels, name=channel_name)
+    channel = get_channel_in_category(category, channel_name)
     if not channel:
         await asyncio.sleep(1)  # Wait 1s here to wait for channel is ready
-        channel = discord.utils.get(category.channels, name=channel_name)
+        channel = get_channel_in_category(category, channel_name)
     try:
         await channel.set_permissions(user, read_messages=is_read, send_messages=is_send, add_reactions=is_send)
         # await channel.set_permissions(user, create_public_threads=is_send, create_private_threads=False)  # discord.py >= 2.0
@@ -141,7 +141,7 @@ async def add_user_to_channel(category, user, channel_name, is_read=True, is_sen
 async def remove_user_from_channel(category, user, channel_name):
     # Add a user to specific channel
     print("===", user, channel_name)
-    channel = discord.utils.get(category.channels, name=channel_name)
+    channel = get_channel_in_category(category, channel_name)
     try:
         await channel.set_permissions(user, read_messages=False, send_messages=False, add_reactions=False)
         # await channel.set_permissions(user, create_public_threads=False, create_private_threads=False)  # discord.py >= 2.0
@@ -153,7 +153,7 @@ async def remove_user_from_channel(category, user, channel_name):
 
 async def send_text_to_channel(category, text, channel_name):
     """ Send a message to a channel """
-    channel = discord.utils.get(category.channels, name=channel_name)
+    channel = get_channel_in_category(category, channel_name)
     if channel is None:
         print(f"Channel #{channel_name} in category {category.name} does not exist!")
         return False
@@ -170,7 +170,7 @@ async def send_text_to_channel(category, text, channel_name):
 async def send_embed_to_channel(category, embed_data, channel_name, *_):
     """Send an embed message to a channel"""
 
-    channel = discord.utils.get(category.channels, name=channel_name)
+    channel = get_channel_in_category(category, channel_name)
     print(channel, embed_data)
     try:
         color = embed_data["color"] if "color" in embed_data else 0
