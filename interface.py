@@ -53,3 +53,10 @@ class DiscordInterface:
 
     async def add_user_to_channel(self, player_id, channel_name, is_read=True, is_send=True):
         return await commands.admin.add_user_to_channel(self.category, self.client.get_user(player_id), channel_name, is_read, is_send)
+
+    def get_channel_mention(self, channel_name):
+        channel = commands.admin.get_channel_in_category(self.category, channel_name)
+        if channel:
+            return f"<#{channel.id}>"
+
+        return f"#{channel_name}"

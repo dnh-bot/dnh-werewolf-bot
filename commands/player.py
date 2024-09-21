@@ -100,7 +100,8 @@ async def do_start(game, message, force=False):
     if not game.is_started():
         if force:
             await game.start()
-            await message.channel.send(text_templates.generate_text("game_started_text"))
+            gameplay_channel = game.interface.get_channel_mention(config.GAMEPLAY_CHANNEL)
+            await message.channel.send(text_templates.generate_text("game_started_text", gameplay_channel=gameplay_channel))
         else:
             if message.author.id not in game.players:
                 await message.reply(text_templates.generate_text("not_in_game_text"))
@@ -109,7 +110,8 @@ async def do_start(game, message, force=False):
                 valid, text = check_vote_valid(len(game.vote_start), len(game.players), "start")
                 if valid:
                     await game.start()
-                    await message.channel.send(text_templates.generate_text("game_started_text"))
+                    gameplay_channel = game.interface.get_channel_mention(config.GAMEPLAY_CHANNEL)
+                    await message.channel.send(text_templates.generate_text("game_started_text", gameplay_channel=gameplay_channel))
                 else:
                     await message.reply(text_templates.generate_text("vote_for_game_text", command="start", author=message.author.display_name, text=text))
     else:
@@ -164,6 +166,7 @@ async def do_stopgame(game, message, force=False):
         await message.reply(text_templates.generate_text("game_not_started_text"))
 
 
+# Any player can request rematch.
 # Player can call to rematch when they want without voting
 async def do_rematch(game, message):
     """Rematch game"""

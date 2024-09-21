@@ -11,7 +11,7 @@ import config
 
 def is_valid_category(message, game):
     try:  # Channel may not belong to any category, make message.channel.category empty
-        return message.channel.category.id == game.category.id
+        return message.channel.category.id == game.get_category().id
     except Exception as e:  # Command not in Category channel
         print(e)
         return False
@@ -71,6 +71,10 @@ async def delete_category(guild, author, category_name):
         print("Exception at #", category_name, author)
         logger.logger_debug(guild.categories)
         print(e)
+
+
+def get_channel_in_category(category, channel_name):
+    return discord.utils.get(category.channels, name=channel_name)
 
 
 async def create_channel(category, author, channel_name, is_public=False, is_admin_writeonly=False):
@@ -193,8 +197,6 @@ async def create_game_category(guild, client_user, category_name):
     category = await create_category(guild, client_user, category_name)
     if not category:
         return
-
-    print(f"create_game_category {category_name} -> category =", category)
     await create_channel(category, client_user, config.LOBBY_CHANNEL, is_public=True)
     await create_channel(category, client_user, config.GAMEPLAY_CHANNEL, is_public=False)
     await create_channel(category, client_user, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)

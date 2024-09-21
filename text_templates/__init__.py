@@ -1,6 +1,6 @@
 from typing import List
 
-from config import BOT_PREFIX, TEXT_LANGUAGE, GAMEPLAY_CHANNEL
+from config import BOT_PREFIX, TEXT_LANGUAGE
 import utils
 
 text_template_dict = utils.common.read_json_file("json/text_template.json")
@@ -52,7 +52,7 @@ def generate_text_list(action, **kwargs):
         template_obj = text_template_dict[action]
         return [
             line.format(
-                bot_prefix=BOT_PREFIX, gameplay_channel=GAMEPLAY_CHANNEL, **kwargs
+                bot_prefix=BOT_PREFIX, **kwargs
             )
             for line in template_obj["template"][TEXT_LANGUAGE]
         ]
@@ -65,7 +65,7 @@ def generate_text(action, **kwargs):
     if action in text_template_dict:
         template_obj = text_template_dict[action]
         return "\n".join(template_obj["template"][TEXT_LANGUAGE]).format(
-            bot_prefix=BOT_PREFIX, gameplay_channel=GAMEPLAY_CHANNEL, **kwargs
+            bot_prefix=BOT_PREFIX, **kwargs
         ).rstrip()
 
     print(f"Error in generate_text: action={action} not in text_template.json")

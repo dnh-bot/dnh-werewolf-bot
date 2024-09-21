@@ -93,7 +93,12 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         return
 
     if not commands.is_command_in_valid_channel(cmd, message.channel.name):
-        real_channel = commands.get_command_valid_channel_name(cmd)
+        valid_channels = commands.get_command_valid_channels(cmd)
+        real_channel = f' {text_templates.get_word_in_language("or")} '.join(
+            text_templates.get_word_in_language("personal") if channel_name == "PERSONAL" else
+            game.interface.get_channel_mention(getattr(config, f"{channel_name}_CHANNEL", "LOBBY_CHANNEL"))
+            for channel_name in valid_channels
+        )
         await message.reply(text_templates.generate_text("invalid_channel_text", channel=real_channel))
         return
 
@@ -115,9 +120,6 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         await command_function(game, message, force=force)
 
     elif cmd == "rematch":
-        if message.channel.name != config.LOBBY_CHANNEL:  # Any player can request rematch, so only allow in Lobby
-            await message.reply(text_templates.generate_text("invalid_channel_text", channel=f"#{config.LOBBY_CHANNEL}"))
-            return
         await player.do_rematch(game, message)
 
     elif cmd in ("vote", "punish", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto", "autopsy", "bite", "sleep"):
