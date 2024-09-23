@@ -35,6 +35,7 @@ RANKING_SCORE_RATE = {
 
 """ Non-configurable value """
 GAME_CATEGORY = os.getenv("GAME_CATEGORY") if os.getenv("GAME_CATEGORY") else "GAME"
+GAME_CATEGORIES = os.getenv("GAME_CATEGORIES").split(",") if os.getenv("GAME_CATEGORIES") else [GAME_CATEGORY]
 
 LEADERBOARD_CHANNEL = "🏆leaderboard"
 LOBBY_CHANNEL = "🏠lobby"

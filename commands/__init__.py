@@ -105,12 +105,3 @@ def is_command_in_valid_channel(command, channel_name):
         channel_name == getattr(config, f"{valid_channel_name}_CHANNEL", "")
         for valid_channel_name in valid_channels
     )
-
-
-def get_command_valid_channel_name(command):
-    valid_channels = get_command_valid_channels(command)
-    return f' {text_templates.get_word_in_language("or")} '.join(
-        text_templates.get_word_in_language("personal") if valid_channel_name == "PERSONAL" else
-        f'#{getattr(config, f"{valid_channel_name}_CHANNEL", "")}'
-        for valid_channel_name in valid_channels
-    )

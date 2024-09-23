@@ -30,6 +30,13 @@ DISCORD_TOKEN=ODgx**********************.YSsNGw.ya5O**********************.   ==
 DISCORD_DEPLOY_SERVER_ID=881**************     ====> right click on your Discord server and copy the server id.
 ```
 
+You can also define several game categories (for 1 game in each category) by adding `GAME_CATEGORIES` field:
+
+```
+GAME_CATEGORIES=GAME,GAME_Z     =====> The bot will create 2 categories, you can run 2 different games in each category
+```
+
+**Notes: ** `GAME_CATEGORIES` will **override** `GAME_CATEGORY` settings.
 
 Right Click to copy ServerID:
 
@@ -45,7 +52,7 @@ Note: You may need Priviledged Gateway Intents permissions to get the bot work p
 
 You need to set bot's permission to allow it to create channel and run game.
 
-In OAuth2 tab, choose bot in Scopes, then choose Adminstrator permission.
+In OAuth2 tab, choose bot in Scopes, then choose Administrator permission.
 
 ![Alt text](docs/DiscordSetPermission.jpg)
 
@@ -104,7 +111,7 @@ If you want to be a normal player, you can safely remove your Admin role now and
 
 English version: TODO
 
-You can custom langauge under  [./json](json) directory.
+You can customize language under  [./json](json) directory.
 - [./json/command_info.json](json/command_info.json) for command text
 - [./json/role_info.json](json/role_info.json) for role text
 
@@ -197,9 +204,9 @@ https://cron-job.org/en/
 https://uptime.com/
 https://uptime-monitor.io/
 
-# How to use Gist Github as a database
+# How to use Gist GitHub as a database
 
-Currently, data can be stored in local json files or in Github Gist files
+Currently, data can be stored in local json files or in GitHub Gist files
 To use the Gist, please follow these steps:
 
 1. Create a personal access token

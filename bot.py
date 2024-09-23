@@ -18,32 +18,39 @@ async def init_setup(init_game_list=False):
     database_verified = None
 
     for guild in client.guilds:
-        print("Connected to server: ", guild.name, " ServerID: ", guild.id, " Game Category: ", config.GAME_CATEGORY)
-        if init_game_list is False:
-            await admin.create_game_category(guild, client.user)
-        # game_list.add_game(guild.id,Game(guild, interface.ConsoleInterface(guild)))
-        game_list.add_game(guild.id, Game(guild, interface.DiscordInterface(guild, client)))
+        print("Connected to server: ", guild.name, " ServerID: ", guild.id, " Game Categories: ", config.GAME_CATEGORIES)
+        for category_name in config.GAME_CATEGORIES:
+            if init_game_list is False:
+                await admin.create_game_category(guild, client.user, category_name)
 
-        await admin.send_text_to_channel(guild, startup_msg, config.LOBBY_CHANNEL)
-        await admin.send_text_to_channel(guild, startup_msg, config.GAMEPLAY_CHANNEL)
+            category = discord.utils.get(guild.categories, name=category_name)
+            print("category =", category_name, "->", category)
+            if not category:
+                continue
 
-        game = game_list.get_game(guild.id)
+            # game_list.add_game(category.id,Game(category, interface.ConsoleInterface(category)))
+            game_list.add_game(category.id, Game(category, interface.DiscordInterface(category, client)))
 
-        valid_database = database_verified if database_verified is not None else await game.database.verify_init()
-        database_verified = valid_database
-        if not valid_database:
-            verify_database_failed_msg = "Verify database failed, please check `GITHUB_GIST_TOKEN` and `GITHUB_GIST_ID_URL` or remove/comment them in .env file"
-            print(verify_database_failed_msg)
-            await admin.send_text_to_channel(guild, verify_database_failed_msg, config.GAMEPLAY_CHANNEL)
+            await admin.send_text_to_channel(category, startup_msg, config.LOBBY_CHANNEL)
+            await admin.send_text_to_channel(category, startup_msg, config.GAMEPLAY_CHANNEL)
+
+            game = game_list.get_game(category.id)
+
+            valid_database = database_verified if database_verified is not None else await game.database.verify_init()
+            database_verified = valid_database
+            if not valid_database:
+                verify_database_failed_msg = "Verify database failed, please check `GITHUB_GIST_TOKEN` and `GITHUB_GIST_ID_URL` or remove/comment them in .env file"
+                print(verify_database_failed_msg)
+                await admin.send_text_to_channel(category, verify_database_failed_msg, config.GAMEPLAY_CHANNEL)
 
 
 async def process_message(discord_client, message):
     if message.content.strip().startswith(config.BOT_PREFIX):
-        game = game_list.get_game(message.guild.id)
+        game = game_list.get_game(message.channel.category.id)
         if game is None:
             # Init game_list
             await init_setup(True)
-            game = game_list.get_game(message.guild.id)
+            game = game_list.get_game(message.channel.category.id)
 
         await command.process_command(discord_client, game, message)
 
@@ -82,7 +89,9 @@ async def on_ready():
     # Uncomment to run test
     # server_id = config.DISCORD_TESTING_SERVER_ID  # Running test on Nhim's server
     # server_id = config.DISCORD_DEPLOY_SERVER_ID  # Running test on DNH ma sói bot's server
-    # await test_bot(game_list.get_game(server_id), client.get_guild(server_id))
+    # guild = client.get_guild(server_id)
+    # category = discord.utils.get(guild.categories, name=config.GAME_CATEGORIES[0])
+    # await test_bot(game_list.get_game(category.id), guild)
 
 
 @client.event

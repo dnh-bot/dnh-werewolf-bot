@@ -921,10 +921,10 @@
     }
   },
   "game_started_text": {
-    "params": [],
+    "params": ["gameplay_channel"],
     "template": {
-      "vi": ["🎮 Trò chơi đã bắt đầu ở #{gameplay_channel}!"],
-      "en": ["🎮 Game started in #{gameplay_channel}! (Only Player can view)"]
+      "vi": ["🎮 Trò chơi đã bắt đầu ở {gameplay_channel}!"],
+      "en": ["🎮 Game started in {gameplay_channel}! (Only Player can view)"]
     }
   },
   "game_not_started_text": {

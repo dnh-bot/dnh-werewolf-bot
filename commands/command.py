@@ -68,8 +68,6 @@ async def parse_command(client, game, message, cmd, parameters):
     # TODO: Return True/False (if it's a valid and authorized command name) and message to be replied.
     # FIXME:
     # pylint: disable=too-many-nested-blocks, too-many-branches
-    if not admin.is_valid_category(message):
-        return
 
     # Game commands only valid under GAME CATEGORY
     if cmd.startswith(config.ADMIN_CMD_PREFIX):
@@ -77,7 +75,7 @@ async def parse_command(client, game, message, cmd, parameters):
         await do_admin_cmd(client, game, message, cmd, parameters)
     elif cmd == "help":
         await admin.send_embed_to_channel(
-            message.guild, text_template.generate_help_embed(*parameters), message.channel.name, False
+            message.channel.category, text_template.generate_help_embed(*parameters), message.channel.name, False
         )
     elif cmd == "version":
         tag = subprocess.check_output(["git", "describe", "--tags"]).decode('utf-8')  # git describe --tags
@@ -90,8 +88,17 @@ async def parse_command(client, game, message, cmd, parameters):
 async def do_game_cmd(game, message, cmd, parameters, force=False):
     # FIXME
     # pylint: disable=too-many-branches
+    if not admin.is_valid_category(message, game):
+        await message.reply("Invalid message in game category")
+        return
+
     if not commands.is_command_in_valid_channel(cmd, message.channel.name):
-        real_channel = commands.get_command_valid_channel_name(cmd)
+        valid_channels = commands.get_command_valid_channels(cmd)
+        real_channel = f' {text_templates.get_word_in_language("or")} '.join(
+            text_templates.get_word_in_language("personal") if channel_name == "PERSONAL" else
+            game.interface.get_channel_mention(getattr(config, f"{channel_name}_CHANNEL", "LOBBY_CHANNEL"))
+            for channel_name in valid_channels
+        )
         await message.reply(text_templates.generate_text("invalid_channel_text", channel=real_channel))
         return
 
@@ -113,9 +120,6 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         await command_function(game, message, force=force)
 
     elif cmd == "rematch":
-        if message.channel.name != config.LOBBY_CHANNEL:  # Any player can request rematch, so only allow in Lobby
-            await message.reply(text_templates.generate_text("invalid_channel_text", channel=f"#{config.LOBBY_CHANNEL}"))
-            return
         await player.do_rematch(game, message)
 
     elif cmd in ("vote", "punish", "kill", "guard", "seer", "hunter", "reborn", "curse", "zombie", "ship", "auto", "autopsy", "bite", "sleep"):
@@ -228,32 +232,42 @@ def parse_setplaytime_params(parameters):
 
 
 async def do_admin_cmd(client, game, message, cmd, parameters):
+    # FIXME
+    # pylint: disable=too-many-branches
+    admin_role = discord.utils.get(message.guild.roles, name="Admin")
+    if not admin_role:
+        await message.reply("You need to assign role name Admin to this bot.")
+        return
+
     if not admin.is_admin(message.author):
-        if admin.is_valid_category(message):
-            await message.reply("You do not have Admin role.")
+        await message.reply("You do not have Admin role.")
         return
 
     cmd_content = cmd[len(config.ADMIN_CMD_PREFIX):]
 
     if cmd_content == "create":
-        await do_force_create(client, message)
+        await do_force_create(client, message, parameters)
     elif cmd_content == "delete":
-        await do_force_delete(client, message)
+        await do_force_delete(client, message, parameters)
     elif cmd_content == "clean":
-        await do_force_clean(client, message)
+        if admin.is_valid_category(message, game):
+            await do_force_clean(client, message, game.get_category().name)
     elif cmd_content == "debug":
-        await do_force_debug()
+        if admin.is_valid_category(message, game):
+            await do_force_debug()
     elif cmd_content == "ban":
-        await do_ban(game, message, parameters)
+        if admin.is_valid_category(message, game):
+            await do_ban(game, message, parameters)
     elif cmd_content == "unban":
-        await do_unban(message)
+        if admin.is_valid_category(message, game):
+            await do_unban(message)
     elif cmd_content in ("join", "leave", "start", "next", "stopgame"):
         await do_game_cmd(game, message, cmd_content, parameters, True)
 
 
-async def do_force_clean(client, message):
-    """Delete all private channels under config.GAME_CATEGORY"""
-    await admin.clean_game_category(message.guild, client.user, False)
+async def do_force_clean(client, message, category_name):
+    """Delete all private channels under GAME_CATEGORY"""
+    await admin.clean_game_category(message.channel.category, client.user, category_name, False)
 
 
 async def do_force_debug():
@@ -262,24 +276,28 @@ async def do_force_debug():
     pass
 
 
-async def do_force_create(client, message):
+async def do_force_create(client, message, parameters):
     """Create game channels"""
     if not message.mentions:
         await message.reply("Missing @bot_name")
 
     user = message.mentions[0]
     if user.id == client.user.id:
-        await admin.create_game_category(message.guild, client.user)
+        category_list = config.GAME_CATEGORIES if len(parameters) < 2 else [parameters[1]]
+        for category_name in category_list:
+            await admin.create_game_category(message.guild, client.user, category_name)
 
 
-async def do_force_delete(client, message):
-    """Delete all channels and category under config.GAME_CATEGORY"""
+async def do_force_delete(client, message, parameters):
+    """Delete all channels and category under GAME_CATEGORY"""
     if not message.mentions:
         await message.reply("Missing @bot_name")
 
     user = message.mentions[0]
     if user.id == client.user.id:
-        await admin.clean_game_category(message.guild, client.user, True)
+        category_list = config.GAME_CATEGORIES if len(parameters) < 2 else [parameters[1]]
+        for category_name in category_list:
+            await admin.clean_game_category(message.guild, client.user, category_name, True)
 
 
 BAN_FILE = "json/ban_list.json"
