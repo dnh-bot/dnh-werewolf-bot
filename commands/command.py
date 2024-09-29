@@ -92,11 +92,11 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         await message.reply("Invalid message in game category")
         return
 
-    if not commands.is_command_in_valid_channel(cmd, message.channel.name):
+    if not commands.is_command_in_valid_channel(cmd, message.channel.name, game):
         valid_channels = commands.get_command_valid_channels(cmd)
         real_channel = f' {text_templates.get_word_in_language("or")} '.join(
             text_templates.get_word_in_language("personal") if channel_name == "PERSONAL" else
-            game.interface.get_channel_mention(getattr(config, f"{channel_name}_CHANNEL", "LOBBY_CHANNEL"))
+            game.interface.get_channel_mention(game.interface.config.get_channel(channel_name))
             for channel_name in valid_channels
         )
         await message.reply(text_templates.generate_text("invalid_channel_text", channel=real_channel))
@@ -234,13 +234,13 @@ def parse_setplaytime_params(parameters):
 async def do_admin_cmd(client, game, message, cmd, parameters):
     # FIXME
     # pylint: disable=too-many-branches
-    admin_role = discord.utils.get(message.guild.roles, name="Admin")
+    admin_role = discord.utils.get(message.guild.roles, name=config.ADMIN_ROLE)
     if not admin_role:
-        await message.reply("You need to assign role name Admin to this bot.")
+        await message.reply(f"You need to assign role name {config.ADMIN_ROLE} to this bot.")
         return
 
     if not admin.is_admin(message.author):
-        await message.reply("You do not have Admin role.")
+        await message.reply(f"You do not have {config.ADMIN_ROLE} role.")
         return
 
     cmd_content = cmd[len(config.ADMIN_CMD_PREFIX):]

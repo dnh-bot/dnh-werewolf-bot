@@ -1,6 +1,5 @@
 from game.roles.werewolf import Werewolf
 from game.roles.villager import Villager
-import config
 
 
 class Cursed(Werewolf):
@@ -27,8 +26,8 @@ class Cursed(Werewolf):
                 return
 
             if not self.is_added_to_channel and self.is_active:
-                await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
-                await self.interface.send_action_text_to_channel("cursed_welcome_text", config.WEREWOLF_CHANNEL, user=f"<@{self.player_id}>")
+                await self.interface.add_user_to_channel(self.player_id, self.interface.config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
+                await self.interface.send_action_text_to_channel("cursed_welcome_text", self.interface.config.WEREWOLF_CHANNEL, user=f"<@{self.player_id}>")
                 self.is_added_to_channel = True
 
     def seer_seen_as_werewolf(self):

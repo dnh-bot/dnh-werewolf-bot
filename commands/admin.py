@@ -5,6 +5,8 @@ This provides APIs for Admin role and bot role
 import asyncio
 
 import discord
+
+import categories
 from utils import logger, common
 import config
 
@@ -22,7 +24,8 @@ USER_LIST = common.read_json_file("json/user_info.json")
 
 def is_admin(author):
     # Check if this user has "Admin" right
-    return str(author.id) in USER_LIST["dev"] or str(author.id) in USER_LIST["admin"] or discord.utils.get(author.roles, name="Admin") is not None
+    return str(author.id) in USER_LIST["dev"] or str(author.id) in USER_LIST["admin"] \
+        or discord.utils.get(author.roles, name=config.ADMIN_ROLE) is not None
 
 
 def list_users(guild):
@@ -39,7 +42,7 @@ async def create_category(guild, author, category_name):
     existing_category = discord.utils.get(guild.categories, name=category_name)
     if not existing_category:
         try:
-            admin_role = discord.utils.get(guild.roles, name="Admin")
+            admin_role = discord.utils.get(guild.roles, name=config.ADMIN_ROLE)
             overwrites = {
                 guild.default_role: discord.PermissionOverwrite(read_messages=True),
                 guild.me: discord.PermissionOverwrite(read_messages=True),
@@ -83,7 +86,7 @@ async def create_channel(category, author, channel_name, is_public=False, is_adm
     existing_channel = get_channel_in_category(category, channel_name)
     if not existing_channel:
         try:
-            admin_role = discord.utils.get(category.guild.roles, name="Admin")
+            admin_role = discord.utils.get(category.guild.roles, name=config.ADMIN_ROLE)
             overwrites = {
                 category.guild.default_role: discord.PermissionOverwrite(read_messages=is_public, send_messages=is_public and not is_admin_writeonly),
                 category.guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=not is_admin_writeonly),
@@ -186,9 +189,9 @@ async def send_embed_to_channel(category, embed_data, channel_name, *_):
         print("send_embed_to_channel:", e)
 
 
-async def delete_all_personal_channel(category):
+async def delete_all_personal_channel(category, personal_prefix):
     if category:
-        personal_channels = [c for c in category.channels if c.name.startswith(config.PERSONAL)]
+        personal_channels = [c for c in category.channels if c.name.startswith(personal_prefix)]
         await asyncio.gather(*[c.delete() for c in personal_channels])
 
 
@@ -197,9 +200,10 @@ async def create_game_category(guild, client_user, category_name):
     category = await create_category(guild, client_user, category_name)
     if not category:
         return
-    await create_channel(category, client_user, config.LOBBY_CHANNEL, is_public=True)
-    await create_channel(category, client_user, config.GAMEPLAY_CHANNEL, is_public=False)
-    await create_channel(category, client_user, config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
+    category_config = categories.CategoryConfig(category_name)
+    await create_channel(category, client_user, category_config.LOBBY_CHANNEL, is_public=True)
+    await create_channel(category, client_user, category_config.GAMEPLAY_CHANNEL, is_public=False)
+    await create_channel(category, client_user, category_config.LEADERBOARD_CHANNEL, is_public=True, is_admin_writeonly=True)
 
 
 async def clean_game_category(guild, client_user, category_name, is_deleting_category=False):
@@ -208,20 +212,21 @@ async def clean_game_category(guild, client_user, category_name, is_deleting_cat
     print(category)
     if not category:
         return
+    category_config = categories.CategoryConfig(category_name)
     try:
-        await delete_channel(category, client_user, config.GAMEPLAY_CHANNEL)
-        await delete_channel(category, client_user, config.WEREWOLF_CHANNEL)
-        await delete_channel(category, client_user, config.CEMETERY_CHANNEL)
-        await delete_channel(category, client_user, config.COUPLE_CHANNEL)
-        await delete_all_personal_channel(category)
+        await delete_channel(category, client_user, category_config.GAMEPLAY_CHANNEL)
+        await delete_channel(category, client_user, category_config.WEREWOLF_CHANNEL)
+        await delete_channel(category, client_user, category_config.CEMETERY_CHANNEL)
+        await delete_channel(category, client_user, category_config.COUPLE_CHANNEL)
+        await delete_all_personal_channel(category, category_config.PERSONAL)
 
         if is_deleting_category:
             # Comment this to keep the board
-            await delete_channel(category, client_user, config.LEADERBOARD_CHANNEL)
-            await delete_channel(category, client_user, config.LOBBY_CHANNEL)
+            await delete_channel(category, client_user, category_config.LEADERBOARD_CHANNEL)
+            await delete_channel(category, client_user, category_config.LOBBY_CHANNEL)
             await delete_category(guild, client_user, category_name)
         else:
-            await create_channel(category, client_user, config.GAMEPLAY_CHANNEL, is_public=False)
+            await create_channel(category, client_user, category_config.GAMEPLAY_CHANNEL, is_public=False)
 
     except Exception as e:
         print(e)
@@ -239,13 +244,14 @@ async def test_admin_command(guild):
 
     category = await create_category(guild, admin_user, config.GAME_CATEGORY)
     assert category is not None
+    category_config = categories.CategoryConfig()
 
-    channel_name = config.LOBBY_CHANNEL
+    channel_name = category_config.LOBBY_CHANNEL
     channel = await create_channel(category, admin_user, channel_name, is_public=True)
     assert channel is not None
     assert isinstance(channel, discord.TextChannel)
 
-    channel_name = config.WEREWOLF_CHANNEL
+    channel_name = category_config.WEREWOLF_CHANNEL
     channel = await create_channel(category, admin_user, channel_name, is_public=False)
     assert channel is not None
 
@@ -259,8 +265,8 @@ async def test_admin_command(guild):
     assert discord.utils.get(channel.members, name=public_user.name) is None
 
     # TEST send message to private/public channel
-    await send_text_to_channel(category, "Test sending message in public channel", config.LOBBY_CHANNEL)
-    await send_text_to_channel(category, "Test sending message in private channel", config.WEREWOLF_CHANNEL)
+    await send_text_to_channel(category, "Test sending message in public channel", category_config.LOBBY_CHANNEL)
+    await send_text_to_channel(category, "Test sending message in private channel", category_config.WEREWOLF_CHANNEL)
 
-    await delete_channel(category, admin_user, config.WEREWOLF_CHANNEL)
+    await delete_channel(category, admin_user, category_config.WEREWOLF_CHANNEL)
     print("-- End testing admin command --")

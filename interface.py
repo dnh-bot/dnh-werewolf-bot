@@ -1,10 +1,12 @@
 import commands
 import text_templates
+from categories import CategoryConfig
 
 
 class ConsoleInterface:
     def __init__(self, category=None):
         self.category = category  # Unused
+        self.config = CategoryConfig()
 
     async def send_action_text_to_channel(self, action, channel_name, **kwargs):
         await self.send_text_to_channel(text_templates.generate_text(action, **kwargs), channel_name)
@@ -37,6 +39,7 @@ class ConsoleInterface:
 class DiscordInterface:
     def __init__(self, category, client):
         self.category = category
+        self.config = CategoryConfig(self.category.name)
         self.client = client
 
     async def send_action_text_to_channel(self, action, channel_name, **kwargs):

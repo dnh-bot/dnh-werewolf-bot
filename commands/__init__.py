@@ -95,13 +95,13 @@ def get_command_usages(command, **kwargs):
     return []
 
 
-def is_command_in_valid_channel(command, channel_name):
+def is_command_in_valid_channel(command, channel_name, game):
     valid_channels = get_command_valid_channels(command)
     if not valid_channels:
         return True
 
     return any(
-        channel_name.strip().startswith("personal") if valid_channel_name == "PERSONAL" else
-        channel_name == getattr(config, f"{valid_channel_name}_CHANNEL", "")
+        channel_name.strip().startswith(game.interface.config.PERSONAL) if valid_channel_name == "PERSONAL" else
+        channel_name == getattr(game.interface.config, f"{valid_channel_name}_CHANNEL", "")
         for valid_channel_name in valid_channels
     )

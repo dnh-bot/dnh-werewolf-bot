@@ -1,4 +1,3 @@
-import config
 from game.roles.character import Character
 
 
@@ -12,20 +11,20 @@ class Werewolf(Character):
 
     async def get_killed(self, is_suicide=False):
         if await super().get_killed(is_suicide):
-            await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
+            await self.interface.add_user_to_channel(self.player_id, self.interface.config.WEREWOLF_CHANNEL, is_read=False, is_send=False)
             return True
         return False
 
     async def on_reborn(self):
         reborn_status = await super().on_reborn()
         if reborn_status:
-            await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
+            await self.interface.add_user_to_channel(self.player_id, self.interface.config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
 
         return reborn_status
 
     async def on_start_game(self, *_):
-        await self.interface.add_user_to_channel(self.player_id, config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
-        await self.interface.send_action_text_to_channel("werewolf_welcome_text", config.WEREWOLF_CHANNEL, user=f"<@{self.player_id}>")
+        await self.interface.add_user_to_channel(self.player_id, self.interface.config.WEREWOLF_CHANNEL, is_read=True, is_send=True)
+        await self.interface.send_action_text_to_channel("werewolf_welcome_text", self.interface.config.WEREWOLF_CHANNEL, user=f"<@{self.player_id}>")
 
     async def on_night(self):
         pass

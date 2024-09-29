@@ -100,7 +100,7 @@ async def do_start(game, message, force=False):
     if not game.is_started():
         if force:
             await game.start()
-            gameplay_channel = game.interface.get_channel_mention(config.GAMEPLAY_CHANNEL)
+            gameplay_channel = game.interface.get_channel_mention(game.interface.config.GAMEPLAY_CHANNEL)
             await message.channel.send(text_templates.generate_text("game_started_text", gameplay_channel=gameplay_channel))
         else:
             if message.author.id not in game.players:
@@ -110,7 +110,7 @@ async def do_start(game, message, force=False):
                 valid, text = check_vote_valid(len(game.vote_start), len(game.players), "start")
                 if valid:
                     await game.start()
-                    gameplay_channel = game.interface.get_channel_mention(config.GAMEPLAY_CHANNEL)
+                    gameplay_channel = game.interface.get_channel_mention(game.interface.config.GAMEPLAY_CHANNEL)
                     await message.channel.send(text_templates.generate_text("game_started_text", gameplay_channel=gameplay_channel))
                 else:
                     await message.reply(text_templates.generate_text("vote_for_game_text", command="start", author=message.author.display_name, text=text))

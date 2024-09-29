@@ -1,5 +1,4 @@
 import text_templates
-from config import *
 from game.modes.new_moon.events import *
 from game.modes.new_moon.events.no_event import NoEvent
 
@@ -35,7 +34,7 @@ class NewMoonMode:
         if self.is_on:
             await interface.send_action_text_to_channel(
                 f"new_moon_{'no' if self.current_event is NoEvent else 'special'}_event_text",
-                GAMEPLAY_CHANNEL,
+                interface.config.GAMEPLAY_CHANNEL,
                 event_name=get_event_name(self.current_event),
                 event_description=get_event_description(self.current_event)
             )
