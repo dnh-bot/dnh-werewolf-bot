@@ -4,7 +4,7 @@ categories_info = utils.common.read_json_file("json/categories_config.json")
 DEFAULT_CONFIG = categories_info.get("[default]")
 
 
-class CategoryConfig(object):
+class CategoryConfig:
     def __init__(self, category_name="[default]"):
         self.category_name = category_name
         self._config = categories_info.get(self.category_name, DEFAULT_CONFIG)
@@ -20,6 +20,9 @@ class CategoryConfig(object):
         attr_ = attr.upper()
         if attr_ in self._config:
             return self._config[attr_]
-        elif attr_ in DEFAULT_CONFIG:
+        if attr_ in DEFAULT_CONFIG:
             return DEFAULT_CONFIG[attr_]
         return super().__getattribute__(attr)
+
+    def get_channel(self, name_prefix):
+        return self.__getattr__(f"{name_prefix}_CHANNEL")

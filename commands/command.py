@@ -9,7 +9,6 @@ import time
 import discord
 from dateutil import parser, tz
 
-import categories
 from commands import admin, player
 import commands
 import config
@@ -97,7 +96,7 @@ async def do_game_cmd(game, message, cmd, parameters, force=False):
         valid_channels = commands.get_command_valid_channels(cmd)
         real_channel = f' {text_templates.get_word_in_language("or")} '.join(
             text_templates.get_word_in_language("personal") if channel_name == "PERSONAL" else
-            game.interface.get_channel_mention(getattr(game.interface.config, f"{channel_name}_CHANNEL", "LOBBY_CHANNEL"))
+            game.interface.get_channel_mention(game.interface.config.get_channel(channel_name))
             for channel_name in valid_channels
         )
         await message.reply(text_templates.generate_text("invalid_channel_text", channel=real_channel))
