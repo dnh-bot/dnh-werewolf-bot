@@ -540,7 +540,7 @@ class Game:
                 pass
 
             elif author.is_alive():
-                is_personal_channel = channel_name.startswith(config.PERSONAL)
+                is_personal_channel = channel_name.startswith(self.interface.config.PERSONAL)
 
                 if isinstance(author, roles.Werewolf) and (channel_name == self.interface.config.WEREWOLF_CHANNEL or is_personal_channel):
                     vote_table = {f'<@{k}>': v for k, v in self.get_vote_status(self.wolf_kill_dict).items()}
@@ -558,7 +558,7 @@ class Game:
         if self.is_ended() or not author:
             return author_status
 
-        is_channel_for_author = channel_name.startswith(config.PERSONAL)
+        is_channel_for_author = channel_name.startswith(self.interface.config.PERSONAL)
         if self.game_phase == const.GamePhase.NIGHT and is_channel_for_author:
             if author.is_alive():
                 if isinstance(author, (roles.Seer, roles.Guard)):
@@ -1393,7 +1393,7 @@ class Game:
 
     async def __undo_player_nighttime_action(self, author_id, channel_name):
         player = self.players[author_id]
-        is_personal_channel = channel_name.startswith(config.PERSONAL)
+        is_personal_channel = channel_name.startswith(self.interface.config.PERSONAL)
         # kill
         if channel_name == self.interface.config.WEREWOLF_CHANNEL and isinstance(player, roles.Werewolf) and author_id in self.wolf_kill_dict:
             del self.wolf_kill_dict[author_id]

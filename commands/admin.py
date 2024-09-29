@@ -189,9 +189,9 @@ async def send_embed_to_channel(category, embed_data, channel_name, *_):
         print("send_embed_to_channel:", e)
 
 
-async def delete_all_personal_channel(category):
+async def delete_all_personal_channel(category, personal_prefix):
     if category:
-        personal_channels = [c for c in category.channels if c.name.startswith(config.PERSONAL)]
+        personal_channels = [c for c in category.channels if c.name.startswith(personal_prefix)]
         await asyncio.gather(*[c.delete() for c in personal_channels])
 
 
@@ -218,7 +218,7 @@ async def clean_game_category(guild, client_user, category_name, is_deleting_cat
         await delete_channel(category, client_user, category_config.WEREWOLF_CHANNEL)
         await delete_channel(category, client_user, category_config.CEMETERY_CHANNEL)
         await delete_channel(category, client_user, category_config.COUPLE_CHANNEL)
-        await delete_all_personal_channel(category)
+        await delete_all_personal_channel(category, category_config.PERSONAL)
 
         if is_deleting_category:
             # Comment this to keep the board

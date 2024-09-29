@@ -3,7 +3,6 @@ from enum import Enum
 
 import text_templates
 from game import const
-import config
 
 BANNED_CHARS = "`!@#$%^&*()\'\"#/\\<>[]()|{}?+=,."
 

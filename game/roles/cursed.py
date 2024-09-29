@@ -1,6 +1,5 @@
 from game.roles.werewolf import Werewolf
 from game.roles.villager import Villager
-import config
 
 
 class Cursed(Werewolf):

@@ -1,4 +1,3 @@
-import config
 from game.roles.character import Character
 
 
