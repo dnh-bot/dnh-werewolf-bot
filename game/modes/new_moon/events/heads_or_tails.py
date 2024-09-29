@@ -1,7 +1,6 @@
 import random
 
 import text_templates
-from config import GAMEPLAY_CHANNEL
 from game.modes.new_moon.events.base import NewMoonEvent
 
 
@@ -18,5 +17,5 @@ class HeadsOrTails(NewMoonEvent):
         else:
             coin_value_str = text_templates.get_word_in_language("coin_tail")
 
-        await cls.send_result_text(interface, GAMEPLAY_CHANNEL, coin_value_str=coin_value_str)
+        await cls.send_result_text(interface, interface.config.GAMEPLAY_CHANNEL, coin_value_str=coin_value_str)
         return coin_toss_value

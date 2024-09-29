@@ -26,7 +26,7 @@ class Character:
         player_name = player_name.replace("-", " ")
         valid_channel_name = "".join(c for c in player_name if c not in BANNED_CHARS).lower()
         valid_channel_name = "-".join(valid_channel_name.split())
-        self.channel_name = f"{config.PERSONAL}-{valid_channel_name}"
+        self.channel_name = f"{self.interface.config.PERSONAL}-{valid_channel_name}"
         self.lover = None
         self.target = None
         self.party = Character
@@ -50,15 +50,15 @@ class Character:
         if self.status == CharacterStatus.KILLED or (self.status == CharacterStatus.PROTECTED and not is_suicide):
             return False
         self.status = CharacterStatus.KILLED
-        # Mute player in config.GAMEPLAY_CHANNEL
+        # Mute player in GAMEPLAY_CHANNEL
         await asyncio.gather(
-            self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False),
-            self.interface.add_user_to_channel(self.player_id, config.CEMETERY_CHANNEL, is_read=True, is_send=True),
+            self.interface.add_user_to_channel(self.player_id, self.interface.config.GAMEPLAY_CHANNEL, is_read=True, is_send=False),
+            self.interface.add_user_to_channel(self.player_id, self.interface.config.CEMETERY_CHANNEL, is_read=True, is_send=True),
             # Welcome text in Cemetery
             self.interface.send_action_text_to_channel(
-                "after_death_text", config.CEMETERY_CHANNEL, user=f"<@{self.player_id}>"
+                "after_death_text", self.interface.config.CEMETERY_CHANNEL, user=f"<@{self.player_id}>"
             ),
-            self.interface.add_user_to_channel(self.player_id, config.COUPLE_CHANNEL, is_read=False, is_send=False)
+            self.interface.add_user_to_channel(self.player_id, self.interface.config.COUPLE_CHANNEL, is_read=False, is_send=False)
         )
         return True
 
@@ -67,10 +67,10 @@ class Character:
             return False
         self.status = CharacterStatus.ALIVE
         await asyncio.gather(
-            self.interface.add_user_to_channel(self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True),
-            self.interface.add_user_to_channel(self.player_id, config.CEMETERY_CHANNEL, is_read=False, is_send=False),
+            self.interface.add_user_to_channel(self.player_id, self.interface.config.GAMEPLAY_CHANNEL, is_read=True, is_send=True),
+            self.interface.add_user_to_channel(self.player_id, self.interface.config.CEMETERY_CHANNEL, is_read=False, is_send=False),
             self.interface.send_action_text_to_channel(
-                "after_reborn_text", config.GAMEPLAY_CHANNEL, user=f"<@{self.player_id}>"
+                "after_reborn_text", self.interface.config.GAMEPLAY_CHANNEL, user=f"<@{self.player_id}>"
             )
         )
         return True
@@ -92,7 +92,7 @@ class Character:
         await self.interface.send_action_text_to_channel(
             "couple_shipped_with_text", self.channel_name, target=f"<@{lover_id}>", target_role=lover_role
         )
-        await self.interface.add_user_to_channel(self.player_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+        await self.interface.add_user_to_channel(self.player_id, self.interface.config.COUPLE_CHANNEL, is_read=True, is_send=True)
         return True
 
     def get_target(self):
@@ -156,9 +156,9 @@ class Character:
             await self.on_night()  # Special skill here
 
     async def on_end_game(self):
-        # Unmute all players in config.GAMEPLAY_CHANNEL
+        # Unmute all players in GAMEPLAY_CHANNEL
         await self.interface.add_user_to_channel(
-            self.player_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True
+            self.player_id, self.interface.config.GAMEPLAY_CHANNEL, is_read=True, is_send=True
         )
 
     async def on_start_game(self, embed_data, text_data):

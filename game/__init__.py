@@ -11,6 +11,7 @@ from collections import Counter, defaultdict
 from functools import reduce
 
 import config
+from categories import CategoryConfig
 from database import Database
 import utils
 import text_templates
@@ -58,13 +59,7 @@ class Game:
     def __init__(self, category, interface):
         self.category = category
         self.interface = interface
-        self.channels = [
-            config.LOBBY_CHANNEL,
-            config.GAMEPLAY_CHANNEL,
-            config.LEADERBOARD_CHANNEL,
-            config.WEREWOLF_CHANNEL,
-            # Personal channel will go into role class
-        ]  # List of channels in game
+        self.config = CategoryConfig("" if self.category is None else self.category.name)
         self.next_flag = asyncio.Event()
         self.timer_phase = [config.DAYTIME, config.NIGHTTIME, config.ALERT_PERIOD]
         self.timer_enable = True
@@ -262,7 +257,7 @@ class Game:
             self.is_stopped = False
             self.last_nextcmd_time = time.time()
             self.read_modes()  # Read json config mode into runtime dict
-            await self.interface.send_action_text_to_channel("start_text", config.LOBBY_CHANNEL)
+            await self.interface.send_action_text_to_channel("start_text", self.interface.config.LOBBY_CHANNEL)
             if not init_players:
                 self.players = self.generate_roles(self.interface, list(self.players.keys()), self.playersname)
                 # Must use list(dict_keys) in python >= 3.3
@@ -274,11 +269,11 @@ class Game:
             await self.create_channel()
             await self.interface.send_text_to_channel(
                 modes.generate_modes_text({mode: str(value) for mode, value in self.modes.items()}),
-                config.GAMEPLAY_CHANNEL
+                self.interface.config.GAMEPLAY_CHANNEL
             )
 
             if not self.modes.get("hidden_role"):
-                await self.interface.send_text_to_channel(self.formatted_roles, config.GAMEPLAY_CHANNEL)
+                await self.interface.send_text_to_channel(self.formatted_roles, self.interface.config.GAMEPLAY_CHANNEL)
 
             self.start_time = datetime.datetime.now()
 
@@ -287,10 +282,10 @@ class Game:
 
     async def create_channel(self):
         await asyncio.gather(
-            self.interface.create_channel(config.GAMEPLAY_CHANNEL),
-            self.interface.create_channel(config.WEREWOLF_CHANNEL),
-            self.interface.create_channel(config.CEMETERY_CHANNEL),
-            self.interface.create_channel(config.COUPLE_CHANNEL)
+            self.interface.create_channel(self.interface.config.GAMEPLAY_CHANNEL),
+            self.interface.create_channel(self.interface.config.WEREWOLF_CHANNEL),
+            self.interface.create_channel(self.interface.config.CEMETERY_CHANNEL),
+            self.interface.create_channel(self.interface.config.COUPLE_CHANNEL)
         )
         await asyncio.gather(
             *[player.create_personal_channel() for player in self.players.values()]
@@ -308,8 +303,8 @@ class Game:
         if self.players:
             await self.delete_channel()
         self.reset_game_state()
-        await self.interface.send_action_text_to_channel("end_text", config.LOBBY_CHANNEL)
-        await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
+        await self.interface.send_action_text_to_channel("end_text", self.interface.config.LOBBY_CHANNEL)
+        await self.interface.create_channel(self.interface.config.GAMEPLAY_CHANNEL)
         await asyncio.sleep(0)
 
     async def rematch(self, rematch_player_id):
@@ -333,24 +328,24 @@ class Game:
             rematch_player_id=rematch_player_id,
             total_players=len(self.players)
         )
-        await self.interface.send_embed_to_channel(rematch_data, config.LOBBY_CHANNEL)
+        await self.interface.send_embed_to_channel(rematch_data, self.interface.config.LOBBY_CHANNEL)
 
         self.reset_game_state(True)
-        await self.interface.create_channel(config.GAMEPLAY_CHANNEL)
+        await self.interface.create_channel(self.interface.config.GAMEPLAY_CHANNEL)
         # Add current players to Gameplay
         await asyncio.gather(
-            *[self.interface.add_user_to_channel(_id, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True) for _id in self.players]
+            *[self.interface.add_user_to_channel(_id, self.interface.config.GAMEPLAY_CHANNEL, is_read=True, is_send=True) for _id in self.players]
         )
-        await self.interface.send_action_text_to_channel("gameplay_welcome_rematch_text", config.GAMEPLAY_CHANNEL, rematch_players=current_players)
+        await self.interface.send_action_text_to_channel("gameplay_welcome_rematch_text", self.interface.config.GAMEPLAY_CHANNEL, rematch_players=current_players)
         await asyncio.sleep(0)
 
     async def delete_channel(self):
         try:
             await asyncio.gather(
-                self.interface.delete_channel(config.GAMEPLAY_CHANNEL),
-                self.interface.delete_channel(config.WEREWOLF_CHANNEL),
-                self.interface.delete_channel(config.CEMETERY_CHANNEL),
-                self.interface.delete_channel(config.COUPLE_CHANNEL),
+                self.interface.delete_channel(self.interface.config.GAMEPLAY_CHANNEL),
+                self.interface.delete_channel(self.interface.config.WEREWOLF_CHANNEL),
+                self.interface.delete_channel(self.interface.config.CEMETERY_CHANNEL),
+                self.interface.delete_channel(self.interface.config.COUPLE_CHANNEL),
                 *[player.delete_personal_channel() for player in self.players.values()]
             )
         except Exception as e:
@@ -378,8 +373,8 @@ class Game:
 
             self.players[id_] = None
             self.playersname[id_] = player_name
-            await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
-            await self.interface.send_action_text_to_channel("gameplay_join_text", config.GAMEPLAY_CHANNEL, player_id=id_)
+            await self.interface.add_user_to_channel(id_, self.interface.config.GAMEPLAY_CHANNEL, is_read=True, is_send=True)
+            await self.interface.send_action_text_to_channel("gameplay_join_text", self.interface.config.GAMEPLAY_CHANNEL, player_id=id_)
             return len(self.players)  # Return number of current players
 
     async def remove_player(self, id_):
@@ -391,8 +386,8 @@ class Game:
         del self.playersname[id_]
         if id_ in self.vote_start:
             self.vote_start.remove(id_)
-        await self.interface.send_action_text_to_channel("gameplay_leave_text", config.GAMEPLAY_CHANNEL, player_id=id_)
-        await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
+        await self.interface.send_action_text_to_channel("gameplay_leave_text", self.interface.config.GAMEPLAY_CHANNEL, player_id=id_)
+        await self.interface.add_user_to_channel(id_, self.interface.config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
         return len(self.players)  # Return number of current players
 
     def get_all_players(self):
@@ -490,8 +485,8 @@ class Game:
 
         print("Watcher", id_, "watched")
         self.watchers.add(id_)
-        await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
-        await self.interface.send_action_text_to_channel("gameplay_watch_text", config.GAMEPLAY_CHANNEL, player_id=id_)
+        await self.interface.add_user_to_channel(id_, self.interface.config.GAMEPLAY_CHANNEL, is_read=True, is_send=False)
+        await self.interface.send_action_text_to_channel("gameplay_watch_text", self.interface.config.GAMEPLAY_CHANNEL, player_id=id_)
         return len(self.watchers)  # Return number of current watchers
 
     async def remove_watcher(self, id_):
@@ -502,8 +497,8 @@ class Game:
 
         print("Watcher", id_, "unwatched")
         self.watchers.remove(id_)
-        await self.interface.send_action_text_to_channel("gameplay_unwatch_text", config.GAMEPLAY_CHANNEL, player_id=id_)
-        await self.interface.add_user_to_channel(id_, config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
+        await self.interface.send_action_text_to_channel("gameplay_unwatch_text", self.interface.config.GAMEPLAY_CHANNEL, player_id=id_)
+        await self.interface.add_user_to_channel(id_, self.interface.config.GAMEPLAY_CHANNEL, is_read=False, is_send=False)
         return len(self.watchers)  # Return number of current watchers
 
     def get_game_status_description(self):
@@ -547,7 +542,7 @@ class Game:
             elif author.is_alive():
                 is_personal_channel = channel_name.startswith(config.PERSONAL)
 
-                if isinstance(author, roles.Werewolf) and (channel_name == config.WEREWOLF_CHANNEL or is_personal_channel):
+                if isinstance(author, roles.Werewolf) and (channel_name == self.interface.config.WEREWOLF_CHANNEL or is_personal_channel):
                     vote_table = {f'<@{k}>': v for k, v in self.get_vote_status(self.wolf_kill_dict).items()}
                     table_title = text_templates.get_label_in_language("kill_list_title")
             else:
@@ -694,7 +689,7 @@ class Game:
         print("werewolf_list_text", werewolf_info)
         await asyncio.gather(*[role.on_start_game(embed_data, werewolf_info) for role in self.get_alive_players()])
 
-        await self.interface.send_text_to_channel(text_template.generate_play_time_text(self.play_time_start, self.play_time_end, self.play_zone), config.GAMEPLAY_CHANNEL)
+        await self.interface.send_text_to_channel(text_template.generate_play_time_text(self.play_time_start, self.play_time_end, self.play_zone), self.interface.config.GAMEPLAY_CHANNEL)
 
         if self.modes.get("couple_random"):
             random_cupid_couple = random.sample(self.get_alive_players(), 2)
@@ -737,7 +732,7 @@ class Game:
             print(traceback.format_exc())
 
         game_winner = self.get_winner()
-        await self.interface.send_action_text_to_channel("endgame_text", config.GAMEPLAY_CHANNEL, winner=game_winner)
+        await self.interface.send_action_text_to_channel("endgame_text", self.interface.config.GAMEPLAY_CHANNEL, winner=game_winner)
         await asyncio.gather(*[player.on_end_game() for player in self.players.values()])
 
         victory_list = self.generate_victory_list(game_winner)
@@ -748,7 +743,7 @@ class Game:
         couple_reveal_text = "\n\n" + "💘 " + cupid_str if couple_id_list else ""
         await self.interface.send_text_to_channel(
             "\n".join(reveal_str_list) + couple_reveal_text,
-            config.GAMEPLAY_CHANNEL
+            self.interface.config.GAMEPLAY_CHANNEL
         )
 
         # write to leaderboard
@@ -767,7 +762,7 @@ class Game:
                 start_time_str=self.start_time.strftime(text_templates.get_format_string("datetime")),
                 total_players=len(self.players)
             )
-            await self.interface.send_embed_to_channel(game_result, config.LEADERBOARD_CHANNEL)
+            await self.interface.send_embed_to_channel(game_result, self.interface.config.LEADERBOARD_CHANNEL)
 
         await self.cancel_running_task(self.task_run_timer_phase)
         print("End game loop")
@@ -842,9 +837,9 @@ class Game:
             await asyncio.gather(*[
                 player.on_day_start(self.day) for player in self.get_all_players()
             ])
-            await self.interface.send_action_text_to_channel("day_phase_beginning_text", config.GAMEPLAY_CHANNEL, day=self.day)
+            await self.interface.send_action_text_to_channel("day_phase_beginning_text", self.interface.config.GAMEPLAY_CHANNEL, day=self.day)
             embed_data = self.generate_player_list_embed()
-            await self.interface.send_embed_to_channel(embed_data, config.GAMEPLAY_CHANNEL)
+            await self.interface.send_embed_to_channel(embed_data, self.interface.config.GAMEPLAY_CHANNEL)
 
             if self.new_moon_mode.is_on:
                 self.new_moon_mode.set_random_event()
@@ -856,10 +851,10 @@ class Game:
                 await self.new_moon_mode.do_new_daytime_phase(self.interface, **_kwargs)
 
             # Mute all party channels
-            # Unmute all alive players in config.GAMEPLAY_CHANNEL
-            await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, True, self.get_werewolf_list())
-            await self.control_muting_party_channel(config.COUPLE_CHANNEL, True, self.get_couple_player_id_list())
-            await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, False, list(self.players.keys()))
+            # Unmute all alive players in self.interface.config.GAMEPLAY_CHANNEL
+            await self.control_muting_party_channel(self.interface.config.WEREWOLF_CHANNEL, True, self.get_werewolf_list())
+            await self.control_muting_party_channel(self.interface.config.COUPLE_CHANNEL, True, self.get_couple_player_id_list())
+            await self.control_muting_party_channel(self.interface.config.GAMEPLAY_CHANNEL, False, list(self.players.keys()))
 
             # init object
             self.voter_dict = {}
@@ -905,21 +900,21 @@ class Game:
             await self.send_status_changes_info_on_end_phase(kills_list_by_reason, highest_vote_number=votes)
 
         if not lynched:
-            await self.interface.send_action_text_to_channel("execution_none_text", config.GAMEPLAY_CHANNEL)
+            await self.interface.send_action_text_to_channel("execution_none_text", self.interface.config.GAMEPLAY_CHANNEL)
 
         players_embed_data = self.generate_player_list_embed()
-        await self.interface.send_embed_to_channel(players_embed_data, config.GAMEPLAY_CHANNEL)
+        await self.interface.send_embed_to_channel(players_embed_data, self.interface.config.GAMEPLAY_CHANNEL)
 
     async def do_new_nighttime_phase(self):
         print("do_new_nighttime_phase")
         if self.players:
-            # Mute all players in config.GAMEPLAY_CHANNEL
+            # Mute all players in self.interface.config.GAMEPLAY_CHANNEL
             # Unmute all party channels
-            await self.control_muting_party_channel(config.GAMEPLAY_CHANNEL, True, list(self.players.keys()))
-            await self.control_muting_party_channel(config.WEREWOLF_CHANNEL, False, self.get_werewolf_list())
-            await self.control_muting_party_channel(config.COUPLE_CHANNEL, False, self.get_couple_player_id_list())
+            await self.control_muting_party_channel(self.interface.config.GAMEPLAY_CHANNEL, True, list(self.players.keys()))
+            await self.control_muting_party_channel(self.interface.config.WEREWOLF_CHANNEL, False, self.get_werewolf_list())
+            await self.control_muting_party_channel(self.interface.config.COUPLE_CHANNEL, False, self.get_couple_player_id_list())
 
-            await self.interface.send_action_text_to_channel("night_phase_beginning_text", config.GAMEPLAY_CHANNEL)
+            await self.interface.send_action_text_to_channel("night_phase_beginning_text", self.interface.config.GAMEPLAY_CHANNEL)
 
             if self.new_moon_mode.is_on:
                 await self.new_moon_mode.do_new_nighttime_phase(self.interface)
@@ -947,11 +942,11 @@ class Game:
             return
 
         if self.is_werewolf_diseased:
-            await self.interface.send_action_text_to_channel("werewolf_diseased_text", config.WEREWOLF_CHANNEL)
+            await self.interface.send_action_text_to_channel("werewolf_diseased_text", self.interface.config.WEREWOLF_CHANNEL)
             return
 
-        await self.interface.send_action_text_to_channel("werewolf_before_voting_text", config.WEREWOLF_CHANNEL)
-        await self.interface.send_embed_to_channel(alive_embed_data, config.WEREWOLF_CHANNEL)
+        await self.interface.send_action_text_to_channel("werewolf_before_voting_text", self.interface.config.WEREWOLF_CHANNEL)
+        await self.interface.send_embed_to_channel(alive_embed_data, self.interface.config.WEREWOLF_CHANNEL)
 
     async def apprenticeseer_do_new_nighttime_phase(self, author):
         seer_id = self.get_player_with_role(roles.Seer, "dead")
@@ -992,7 +987,7 @@ class Game:
         if kills_list_by_reason:
             await self.send_status_changes_info_on_end_phase(kills_list_by_reason)
         else:
-            await self.interface.send_action_text_to_channel("killed_none_text", config.GAMEPLAY_CHANNEL)
+            await self.interface.send_action_text_to_channel("killed_none_text", self.interface.config.GAMEPLAY_CHANNEL)
 
         if self.new_moon_mode.get_current_event() is TwinFlame and self.get_couple_player_id_list():
             await self.new_moon_mode.do_end_nighttime_phase(self.interface)
@@ -1010,7 +1005,7 @@ class Game:
             if reason is const.DeadReason.HIDDEN:
                 await self.interface.send_action_text_to_channel(
                     label,
-                    config.GAMEPLAY_CHANNEL,
+                    self.interface.config.GAMEPLAY_CHANNEL,
                     user=", ".join(f"<@{_id}>" for _id in id_list)
                 )
             else:
@@ -1025,13 +1020,13 @@ class Game:
                         kwargs = {"died_player": f"<@{self.players[_id].get_lover()}>", "follow_player": f"<@{_id}>"}
                     elif reason is const.RebornReason.COUPLE:
                         lover_id = self.players[_id].get_lover()
-                        await self.interface.add_user_to_channel(lover_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
-                        await self.interface.add_user_to_channel(_id, config.COUPLE_CHANNEL, is_read=True, is_send=True)
+                        await self.interface.add_user_to_channel(lover_id, self.interface.config.COUPLE_CHANNEL, is_read=True, is_send=True)
+                        await self.interface.add_user_to_channel(_id, self.interface.config.COUPLE_CHANNEL, is_read=True, is_send=True)
                         kwargs = {"reborn_player": f"<@{lover_id}>", "follow_player": f"<@{_id}>"}
                     else:
                         continue
 
-                    await self.interface.send_action_text_to_channel(label, config.GAMEPLAY_CHANNEL, **kwargs)
+                    await self.interface.send_action_text_to_channel(label, self.interface.config.GAMEPLAY_CHANNEL, **kwargs)
 
     async def guard_do_end_nighttime_phase(self, author):
         target_id = author.get_target()
@@ -1157,7 +1152,7 @@ class Game:
 
             if killed:
                 await self.interface.send_action_text_to_channel(
-                    "werewolf_kill_result_text", config.WEREWOLF_CHANNEL, target=f"<@{killed}>"
+                    "werewolf_kill_result_text", self.interface.config.WEREWOLF_CHANNEL, target=f"<@{killed}>"
                 )
                 # check Harlot case
                 harlot_id = self.get_player_with_role(roles.Harlot)
@@ -1275,7 +1270,7 @@ class Game:
                     if self.timecounter % period == 0 or self.timecounter <= 5:
                         print(f"{self.timecounter} remaining")
                         await self.interface.send_action_text_to_channel(
-                            "timer_alert_text", config.GAMEPLAY_CHANNEL,
+                            "timer_alert_text", self.interface.config.GAMEPLAY_CHANNEL,
                             timer_remaining_text=text_template.generate_timer_remaining_text(self.timecounter)
                         )
                     self.timecounter -= 1
@@ -1283,7 +1278,7 @@ class Game:
 
             if not self.timer_stopped:
                 print("stop timer")
-                await self.interface.send_action_text_to_channel("timer_up_text", config.GAMEPLAY_CHANNEL)
+                await self.interface.send_action_text_to_channel("timer_up_text", self.interface.config.GAMEPLAY_CHANNEL)
                 await self.next_phase()
         except asyncio.CancelledError:
             print("cancel_me(): cancel sleep")
@@ -1321,7 +1316,7 @@ class Game:
             self.prev_playtime = self.curr_playtime
             await self.interface.send_action_text_to_channel(
                 "play_time_in_range_alert_text" if self.curr_playtime else "play_time_out_range_alert_text",
-                config.GAMEPLAY_CHANNEL,
+                self.interface.config.GAMEPLAY_CHANNEL,
                 text_day=text_templates.get_word_in_language(str(self.game_phase)),
                 timer_remaining_text=text_template.generate_timer_remaining_text(self.timecounter)
             )
@@ -1386,11 +1381,11 @@ class Game:
 
     async def __undo_player_daytime_action(self, author_id, channel_name):
         # vote, punish
-        if channel_name in (config.GAMEPLAY_CHANNEL, config.CEMETERY_CHANNEL) and author_id in self.voter_dict:
+        if channel_name in (self.interface.config.GAMEPLAY_CHANNEL, self.interface.config.CEMETERY_CHANNEL) and author_id in self.voter_dict:
             del self.voter_dict[author_id]
-            if channel_name == config.CEMETERY_CHANNEL:
+            if channel_name == self.interface.config.CEMETERY_CHANNEL:
                 await self.interface.send_action_text_to_channel(
-                    "new_moon_punishment_undo_text", config.GAMEPLAY_CHANNEL, author=f"<@{author_id}>"
+                    "new_moon_punishment_undo_text", self.interface.config.GAMEPLAY_CHANNEL, author=f"<@{author_id}>"
                 )
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
 
@@ -1400,7 +1395,7 @@ class Game:
         player = self.players[author_id]
         is_personal_channel = channel_name.startswith(config.PERSONAL)
         # kill
-        if channel_name == config.WEREWOLF_CHANNEL and isinstance(player, roles.Werewolf) and author_id in self.wolf_kill_dict:
+        if channel_name == self.interface.config.WEREWOLF_CHANNEL and isinstance(player, roles.Werewolf) and author_id in self.wolf_kill_dict:
             del self.wolf_kill_dict[author_id]
             return text_templates.generate_text("undo_command_successful_text", player=f"<@{author_id}>")
         # guard, hunter, seer, autospy, bite
@@ -1502,10 +1497,10 @@ class Game:
         target1_id = target1.player_id
         target2_id = target2.player_id
 
-        await self.interface.create_channel(config.COUPLE_CHANNEL)
+        await self.interface.create_channel(self.interface.config.COUPLE_CHANNEL)
         await target1.register_lover(target2.player_id, target2.get_role())
         await target2.register_lover(target1.player_id, target1.get_role())
-        await self.interface.send_action_text_to_channel("couple_welcome_text", config.COUPLE_CHANNEL, user1=f"<@{target1_id}>", user2=f"<@{target2_id}>")
+        await self.interface.send_action_text_to_channel("couple_welcome_text", self.interface.config.COUPLE_CHANNEL, user1=f"<@{target1_id}>", user2=f"<@{target2_id}>")
 
         return text_templates.generate_text("cupid_after_ship_text", target1=f"<@{target1_id}>", target2=f"<@{target2_id}>")
 

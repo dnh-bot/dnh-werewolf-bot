@@ -1,4 +1,3 @@
-from config import GAMEPLAY_CHANNEL
 from game.modes.new_moon.events.base import NewMoonEvent
 
 
@@ -11,4 +10,4 @@ class Somnambulism(NewMoonEvent):
         if target is None:
             return
 
-        await cls.send_result_text(interface, GAMEPLAY_CHANNEL, target_role=target.get_role())
+        await cls.send_result_text(interface, interface.config.GAMEPLAY_CHANNEL, target_role=target.get_role())

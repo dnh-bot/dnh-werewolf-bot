@@ -37,15 +37,16 @@ RANKING_SCORE_RATE = {
 GAME_CATEGORY = os.getenv("GAME_CATEGORY") if os.getenv("GAME_CATEGORY") else "GAME"
 GAME_CATEGORIES = os.getenv("GAME_CATEGORIES").split(",") if os.getenv("GAME_CATEGORIES") else [GAME_CATEGORY]
 
-LEADERBOARD_CHANNEL = "🏆leaderboard"
-LOBBY_CHANNEL = "🏠lobby"
-GAMEPLAY_CHANNEL = "🎯gameplay"
-WEREWOLF_CHANNEL = "🐺werewolf"
-CEMETERY_CHANNEL = "💀cemetery"
-COUPLE_CHANNEL = "💘couple"
-PERSONAL = "personal"
-
+ADMIN_ROLE = os.getenv("ADMIN_ROLE", "Admin")
 ADMIN_CMD_PREFIX = "f_"
+
+# LEADERBOARD_CHANNEL = "🏆leaderboard"
+# LOBBY_CHANNEL = "🏠lobby"
+# GAMEPLAY_CHANNEL = "🎯gameplay"
+# WEREWOLF_CHANNEL = "🐺werewolf"
+# CEMETERY_CHANNEL = "💀cemetery"
+# COUPLE_CHANNEL = "💘couple"
+# PERSONAL = "personal"
 
 TEXT_LANGUAGE = "vi"
 

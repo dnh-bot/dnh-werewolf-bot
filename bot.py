@@ -28,11 +28,12 @@ async def init_setup(init_game_list=False):
             if not category:
                 continue
 
-            # game_list.add_game(category.id,Game(category, interface.ConsoleInterface(category)))
-            game_list.add_game(category.id, Game(category, interface.DiscordInterface(category, client)))
+            # intf = interface.ConsoleInterface(None)
+            intf = interface.DiscordInterface(category, client)
+            game_list.add_game(category.id, Game(category, intf))
 
-            await admin.send_text_to_channel(category, startup_msg, config.LOBBY_CHANNEL)
-            await admin.send_text_to_channel(category, startup_msg, config.GAMEPLAY_CHANNEL)
+            await admin.send_text_to_channel(category, startup_msg, intf.config.LOBBY_CHANNEL)
+            await admin.send_text_to_channel(category, startup_msg, intf.config.GAMEPLAY_CHANNEL)
 
             game = game_list.get_game(category.id)
 
@@ -41,7 +42,7 @@ async def init_setup(init_game_list=False):
             if not valid_database:
                 verify_database_failed_msg = "Verify database failed, please check `GITHUB_GIST_TOKEN` and `GITHUB_GIST_ID_URL` or remove/comment them in .env file"
                 print(verify_database_failed_msg)
-                await admin.send_text_to_channel(category, verify_database_failed_msg, config.GAMEPLAY_CHANNEL)
+                await admin.send_text_to_channel(category, verify_database_failed_msg, intf.config.GAMEPLAY_CHANNEL)
 
 
 async def process_message(discord_client, message):
