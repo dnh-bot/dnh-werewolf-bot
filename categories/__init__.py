@@ -25,4 +25,4 @@ class CategoryConfig:
         return super().__getattribute__(attr)
 
     def get_channel(self, name_prefix):
-        return self.__getattr__(f"{name_prefix}_CHANNEL")
+        return getattr(self, f"{name_prefix}_CHANNEL", f"{name_prefix}_CHANNEL")
